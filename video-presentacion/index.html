@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Presentación de RiskMann</title>
+  <!-- Google Fonts - Montserrat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <!-- Archivo de Estilos -->
+  <link rel="stylesheet" href="style.css">
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+
+<body>
+  <!-- Contenedor principal de la composición con ID coincidente para HyperFrames -->
+  <div id="canvas" data-composition-id="video-presentacion" data-width="1920" data-height="1080" data-start="0" data-duration="12">
+
+    <!-- ESCENA 1: INTRODUCCIÓN Y LOGO -->
+    <section id="scene-intro" class="scene active">
+      <div class="intro-bg-overlay"></div>
+      <div class="intro-content">
+        <div class="logo-wrapper">
+          <!-- Banner de Riskmann copiado de assets -->
+          <img src="../assets/public/riskmann_icono_blanco.png" alt="RiskMann Logo" class="brand-logo">
+        </div>
+        <h1 class="intro-title">RiskMann</h1>
+        <p class="intro-subtitle">Automatiza y Controla el P.E.S.V.</p>
+      </div>
+    </section>
+
+    <!-- ESCENA 2: MÓDULOS PRINCIPALES -->
+    <section id="scene-modules" class="scene">
+      <div class="scene-header">
+        <h2>Todo lo que necesitas en una sola plataforma</h2>
+        <div class="header-line"></div>
+      </div>
+
+      <div class="modules-grid">
+        <!-- Tarjeta 1: Espacios de Trabajo (Empresa) -->
+        <div class="module-card" id="card-empresas">
+          <div class="card-icon-wrapper">
+            <img src="../assets/img/inicio_icono_empresas.webp" alt="Espacios de Trabajo" class="module-icon">
+          </div>
+          <h3>Espacios de Trabajo</h3>
+          <p>Crea tu espacio de trabajo, vincula trabajadores y gestiona accesos.</p>
+          <div class="submodules-container">
+            <div class="submodule-pill">
+              <img src="../assets/img/empresas_icono_crear_empresa.webp" alt="Crear" class="submodule-pill-icon">
+              <span>Crear Espacio</span>
+            </div>
+            <div class="submodule-pill">
+              <img src="../assets/img/empresas_icono_mis_empresas.webp" alt="Mis Espacios" class="submodule-pill-icon">
+              <span>Mis Espacios</span>
+            </div>
+            <div class="submodule-pill">
+              <img src="../assets/img/empresas_icono_vinculaciones.webp" alt="Vinculaciones"
+                class="submodule-pill-icon">
+              <span>Vinculaciones</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta 2: Capacitaciones -->
+        <div class="module-card" id="card-capacitaciones">
+          <div class="card-icon-wrapper">
+            <img src="../assets/img/inicio_icono_capacitaciones.webp" alt="Capacitaciones" class="module-icon">
+          </div>
+          <h3>Capacitaciones</h3>
+          <p>Entrena y evalúa a tu equipo de trabajo de forma continua.</p>
+          <div class="submodules-container">
+            <div class="submodule-pill">
+              <img src="../assets/img/inicio_icono_capacitaciones.webp" alt="Capacitaciones"
+                class="submodule-pill-icon">
+              <span>Capacitaciones</span>
+            </div>
+            <div class="submodule-pill">
+              <img src="../assets/img/capacitaciones_panel_administrativo.webp" alt="Creador"
+                class="submodule-pill-icon">
+              <span>Creador / Instructor</span>
+            </div>
+            <div class="submodule-pill">
+              <img src="../assets/img/capacitaciones_evaluaciones.webp" alt="Validar" class="submodule-pill-icon">
+              <span>Validar Certificado</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta 3: Seguridad Vial -->
+        <div class="module-card" id="card-vial">
+          <div class="card-icon-wrapper">
+            <img src="../assets/img/inicio_icono_seguridad_vial.webp" alt="Seguridad Vial" class="module-icon">
+          </div>
+          <h3>Seguridad Vial</h3>
+          <p>Cumple con el P.E.S.V mediante control de conductores y vehículos.</p>
+          <div class="submodules-container">
+            <div class="submodule-pill">
+              <img src="../assets/img/seguridad_vial_icono_conductores.webp" alt="Conductores"
+                class="submodule-pill-icon">
+              <span>Conductores</span>
+            </div>
+            <div class="submodule-pill">
+              <img src="../assets/img/seguridad_vial_icono_vehiculos.webp" alt="Vehículos" class="submodule-pill-icon">
+              <span>Vehículos</span>
+            </div>
+            <div class="submodule-pill">
+              <img src="../assets/img/seguridad_vial_icono_inspecciones.webp" alt="Inspecciones"
+                class="submodule-pill-icon">
+              <span>Inspecciones</span>
+            </div>
+            <div class="submodule-pill">
+              <img src="../assets/img/seguridad_vial_icono_mantenimientos.webp" alt="Mantenimientos"
+                class="submodule-pill-icon">
+              <span>Mantenimientos</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ESCENA 3: CARNETIZACIÓN Y CALL TO ACTION -->
+    <section id="scene-cta" class="scene">
+      <div class="cta-container">
+        <div class="cta-visual">
+          <div class="phone-mockup">
+            <!-- Captura de pantalla de login -->
+            <img src="../assets/capturas_de_pantalla/login.png" alt="login" class="phone-screen">
+          </div>
+        </div>
+
+        <div class="cta-text">
+          <span class="badge">Disponible en cualquier dispositivo con navegador web</span>
+          <h2>La gestión del P.E.S.V. en la palma de tu mano</h2>
+          <p>Evite sanciones y automatice su P.E.S.V. RiskMann es su aliado tecnológico estratégico.</p>
+          <div class="cta-buttons">
+            <span class="btn btn-primary">Regístrate Hoy</span>
+            <span class="btn btn-secondary">+57 313 8688692</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Controles flotantes de desarrollo (No se renderizan en el video final) -->
+  <div class="dev-controls">
+    <button onclick="goToScene(1)">Escena 1 (0s)</button>
+    <button onclick="goToScene(2)">Escena 2 (3s)</button>
+    <button onclick="goToScene(3)">Escena 3 (7.5s)</button>
+    <button id="btn-play-pause" onclick="togglePlay()">Play / Pause</button>
+    <span id="playhead-time">Tiempo: 0.0s / 12.0s</span>
+  </div>
+
+  <!-- Archivo de Animaciones con GSAP -->
+  <script src="script.js"></script>
+</body>
+
+</html>
