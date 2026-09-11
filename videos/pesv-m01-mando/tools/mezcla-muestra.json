@@ -1,0 +1,30 @@
+{
+  "duracion": 16,
+  "salida": "assets/mezcla-muestra.wav",
+  "cama": [
+    { "hz": 55.00,  "inicio": 0.0, "fin": 16, "ganancia": 0.08, "entrada": 2.0, "salida": 2.5 },
+    { "hz": 110.00, "inicio": 0.0, "fin": 16, "ganancia": 0.12, "entrada": 2.0, "salida": 2.5 },
+    { "hz": 164.81, "inicio": 1.8, "fin": 16, "ganancia": 0.08, "entrada": 1.2, "salida": 2.5 },
+    { "hz": 220.00, "inicio": 3.0, "fin": 16, "ganancia": 0.06, "entrada": 1.5, "salida": 2.5 },
+    { "hz": 329.63, "inicio": 9.4, "fin": 16, "ganancia": 0.04, "entrada": 1.0, "salida": 2.5 }
+  ],
+  "voz": [
+    { "archivo": "assets/vo/h1.wav", "en": 9.8 },
+    { "archivo": "assets/vo/h2.wav", "en": 12.8 }
+  ],
+  "efectos": [
+    { "efecto": "whoosh-cinematic", "en": 0.0,  "ganancia": 0.35 },
+    { "efecto": "impact-bass-2",    "en": 1.5,  "ganancia": 0.50 },
+    { "efecto": "ping",             "en": 3.0,  "ganancia": 0.28 },
+    { "efecto": "click-soft",       "en": 3.5,  "ganancia": 0.30 },
+    { "efecto": "click-soft",       "en": 3.8,  "ganancia": 0.30 },
+    { "efecto": "click-soft",       "en": 4.1,  "ganancia": 0.30 },
+    { "efecto": "click-soft",       "en": 4.4,  "ganancia": 0.30 },
+    { "efecto": "whoosh",           "en": 4.5,  "ganancia": 0.30 },
+    { "efecto": "typing",           "en": 6.4,  "ganancia": 0.22 },
+    { "efecto": "whoosh-short",     "en": 7.9,  "ganancia": 0.30 },
+    { "efecto": "impact-bass-1",    "en": 9.6,  "ganancia": 0.45 },
+    { "efecto": "click",            "en": 11.8, "ganancia": 0.35 },
+    { "efecto": "glitch-1",         "en": 12.6, "ganancia": 0.28 }
+  ]
+}

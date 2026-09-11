@@ -1,0 +1,435 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* Montserrat — real variable files shipped in assets/fonts (same faces as 01). */
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    #root {
+      position: relative; width: 1920px; height: 1080px; overflow: hidden; container-type: size;
+      color: #F2F7FF; font-family: "Montserrat", sans-serif; -webkit-font-smoothing: antialiased;
+    }
+    .f03-layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; }
+
+    /* ================= PERSISTENT CHROME = 01-apertura at t=16s (static) ================= */
+    .f03-ground { background: #051427; }
+    .f03-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(to right, rgba(142, 143, 196, 0.14) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(142, 143, 196, 0.14) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    /* reserve occluder, frozen in its BUG state (core L60 T60 R409 B227.33) */
+    .f03-occ {
+      position: absolute; left: 98.75px; top: 7.5px; width: 1755.5px; height: 905px;
+      border-radius: 264px; background: #051427; filter: blur(18px); transform-origin: 64px 64px;
+      transform: translate(-102.75px, -11.5px) scale(0.2144393, 0.2153582);
+    }
+    .f03-atmo {
+      background:
+        radial-gradient(ellipse 58% 62% at 50% 44%, rgba(5, 20, 39, 0) 0%, rgba(5, 20, 39, 0.45) 64%, rgba(3, 12, 24, 0.82) 100%),
+        radial-gradient(1100px 700px at 960px 470px, rgba(15, 57, 107, 0.34) 0%, rgba(15, 57, 107, 0) 72%);
+    }
+    .f03-br { position: absolute; width: 130px; height: 130px; opacity: 0.6; }
+    .f03-br svg { display: block; width: 130px; height: 130px; overflow: visible; }
+    .f03-br path { fill: none; stroke: #8E8FC4; stroke-width: 2; stroke-linecap: square; }
+    .f03-br-tl { left: 56px; top: 56px; }
+    .f03-br-tr { left: 1734px; top: 56px; }
+    .f03-br-bl { left: 56px; top: 894px; }
+    .f03-br-br { left: 1734px; top: 894px; }
+    .f03-ruler {
+      position: absolute; top: 480px; width: 16px; height: 361px;
+      background-image:
+        repeating-linear-gradient(to bottom, rgba(142, 143, 196, 0.55) 0 1px, transparent 1px 120px),
+        repeating-linear-gradient(to bottom, rgba(142, 143, 196, 0.32) 0 1px, transparent 1px 30px);
+      background-size: 16px 100%, 8px 100%; background-repeat: no-repeat;
+    }
+    .f03-ruler-l { left: 84px; background-position: left top, left top; }
+    .f03-ruler-r { left: 1820px; background-position: right top, right top; }
+    /* red rule + telemetry label, frozen where 01 leaves them */
+    .f03-rule {
+      position: absolute; left: 930px; top: 862px; width: 60px; height: 3px; border-radius: 2px; background: #E6423C;
+      transform-origin: 50% 50%; transform: translate(-838px, -630.6px) scale(0.6);
+    }
+    .f03-label {
+      position: absolute; left: 960px; top: 874px; white-space: nowrap; perspective: 600px;
+      font-size: 22px; font-weight: 600; line-height: 1; letter-spacing: 0.18em; color: #8E8FC4;
+      transform-origin: 0% 0%; transform: translate(-856px, -632px) scale(0.6);
+    }
+    .f03-ch { position: relative; display: inline-block; transform-origin: 50% 100%; transform-style: preserve-3d; }
+    /* section tag: the only chrome that changes per frame; ink right edge at x=1816 */
+    .f03-section {
+      position: absolute; right: 104px; top: 104px; white-space: nowrap; margin-right: -0.18em;
+      font-size: 13.2px; font-weight: 600; line-height: 1; letter-spacing: 0.18em; color: #8E8FC4;
+    }
+    .f03-lock { position: absolute; left: 0; top: 0; width: 1260px; height: 420px; transform-origin: 0 0; transform: translate(92.3333px, 95px) scale(0.2222222); }
+    .f03-logo { display: block; width: 1260px; height: 420px; }
+
+    /* ================= CONTENT: the aerial feed, full-bleed under the chrome ================= */
+    /* photo world + tracking world share ONE camera push (same origin, same tween),
+       so every reticle stays nailed to its point on the road. */
+    .f03-world { transform-origin: 1100px 480px; }
+    /* 1280x853 source at s = 1.62 -> 2073.6 x 1381.9; screen = 1.62*src + (-100, -190) */
+    .f03-photo {
+      position: absolute; left: -100px; top: -190px; width: 2073.6px; height: 1381.86px; max-width: none;
+      filter: brightness(0.78) contrast(1.14) saturate(0.45) hue-rotate(-6deg);
+    }
+    .f03-tint { position: absolute; inset: 0; background: #0C2B53; mix-blend-mode: multiply; opacity: 0.4; }
+    /* local scrims so the chrome (top) and the headline (bottom-left) stay legible */
+    .f03-scrim {
+      background:
+        radial-gradient(640px 220px at 300px 205px, rgba(5, 20, 39, 0.86) 0%, rgba(5, 20, 39, 0.7) 50%, rgba(5, 20, 39, 0) 100%),
+        linear-gradient(to bottom, rgba(5, 20, 39, 0.74) 0px, rgba(5, 20, 39, 0.32) 190px, rgba(5, 20, 39, 0) 330px),
+        radial-gradient(1180px 430px at 420px 860px, rgba(5, 20, 39, 0.9) 0%, rgba(5, 20, 39, 0.62) 42%, rgba(5, 20, 39, 0) 76%),
+        linear-gradient(to top, rgba(5, 20, 39, 0.55) 0px, rgba(5, 20, 39, 0) 260px);
+    }
+
+    /* ---- tracking system (lives in the tracking world) ---- */
+    .f03-scan {
+      position: absolute; left: 0; top: 0; width: 1920px; height: 90px; opacity: 0;
+      background:
+        linear-gradient(to right, rgba(142, 143, 196, 0) 0%, rgba(142, 143, 196, 0.85) 50%, rgba(142, 143, 196, 0) 100%) 0 88px / 100% 2px no-repeat,
+        linear-gradient(to bottom, rgba(142, 143, 196, 0) 0%, rgba(142, 143, 196, 0.1) 100%) 0 0 / 100% 88px no-repeat;
+    }
+    /* candidate marks: everything the system sees, before it picks the five roles */
+    .f03-cand { position: absolute; width: 14px; height: 14px; margin: -7px 0 0 -7px; opacity: 0; }
+    .f03-cand::before, .f03-cand::after { content: ""; position: absolute; background: #8E8FC4; }
+    .f03-cand::before { left: 6.5px; top: 0; width: 1px; height: 14px; }
+    .f03-cand::after { left: 0; top: 6.5px; width: 14px; height: 1px; }
+
+    /* reticle: authored at its LOCK pose; the search moves each corner on its own,
+       so the stroke never scales */
+    .f03-ret { position: absolute; }
+    .f03-c { position: absolute; width: 18px; height: 18px; opacity: 0; }
+    .f03-c svg { display: block; width: 18px; height: 18px; overflow: visible; }
+    .f03-c path { fill: none; stroke: #8E8FC4; stroke-width: 2; stroke-linecap: square; }
+    .f03-c.f03-red path { stroke: #E6423C; stroke-width: 2.5; }
+    .f03-c-tl { left: 0; top: 0; }
+    .f03-c-tr { right: 0; top: 0; }
+    .f03-c-bl { left: 0; bottom: 0; }
+    .f03-c-br { right: 0; bottom: 0; }
+    .f03-x { position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px; opacity: 0; }
+    .f03-x::before, .f03-x::after { content: ""; position: absolute; background: #8E8FC4; }
+    .f03-x::before { left: 5px; top: 0; width: 2px; height: 12px; }
+    .f03-x::after { left: 0; top: 5px; width: 12px; height: 2px; }
+    .f03-x.f03-red::before, .f03-x.f03-red::after { background: #E6423C; }
+    .f03-flash { position: absolute; inset: -6px; border: 1px solid #8E8FC4; opacity: 0; transform-origin: 50% 50%; }
+    .f03-glow {
+      position: absolute; inset: -2px; opacity: 0;
+      box-shadow: 0 0 26px 2px rgba(230, 66, 60, 0.38), inset 0 0 18px rgba(230, 66, 60, 0.16);
+    }
+    .f03-flash.f03-red { border-color: #E6423C; border-width: 2px; }
+
+    /* label plate — navy so it reads over the picture; fit-content, so it
+       wraps its REAL text; masks are block + fit-content for the same reason */
+    .f03-plate {
+      position: absolute; width: fit-content; white-space: nowrap;
+      padding: 7px 14px 8px 15px; background: rgba(5, 20, 39, 0.86); transform-origin: 0% 50%;
+    }
+    .f03-plate-l { transform-origin: 100% 50%; padding: 7px 15px 8px 14px; text-align: right; }
+    .f03-bar { position: absolute; left: 0; top: 0; width: 3px; height: 100%; background: #8E8FC4; }
+    .f03-plate-l .f03-bar { left: auto; right: 0; }
+    .f03-bar.f03-red { background: #E6423C; opacity: 0; }
+    .f03-m { display: block; width: fit-content; overflow: hidden; padding: 0.08em 0.1em 0.14em; margin-left: -0.1em; }
+    .f03-plate-l .f03-m { margin-left: auto; margin-right: -0.1em; }
+    .f03-in { display: block; }
+    .f03-id { font-size: 11.5px; font-weight: 600; line-height: 1.2; letter-spacing: 0.22em; color: #A7BCCC; padding-right: 0.3em; }
+    .f03-name { font-size: 21px; font-weight: 700; line-height: 1.15; letter-spacing: 0.12em; color: #F2F7FF; padding-right: 0.2em; }
+
+    /* ---- headline, bottom-left (outside the camera push: it never drifts) ---- */
+    .f03-sep { position: absolute; left: 148px; top: 704px; width: 56px; height: 2px; background: #8E8FC4; opacity: 0.7; transform-origin: 0% 50%; }
+    .f03-hl { position: absolute; left: 140px; white-space: nowrap; font-size: 62px; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
+    .f03-hl1 { top: 724px; color: #F2F7FF; }
+    .f03-hl2 { top: 794px; color: #A7BCCC; }
+    .f03-mask { display: inline-block; overflow: hidden; vertical-align: top; padding: 0.1em 0.14em 0.2em 0.1em; }
+    .f03-hin { display: inline-block; position: relative; }
+  </style>
+
+  <div id="root" data-composition-id="03-roles" data-start="0" data-duration="20" data-width="1920" data-height="1080">
+    <!-- 0 · full-bleed navy ground -->
+    <div id="f03-ground-layer" class="clip f03-layer f03-ground" data-start="0" data-duration="20" data-track-index="0"></div>
+
+    <!-- 1 · the aerial feed, full-bleed, graded (inside the camera push) -->
+    <div id="f03-pworld" class="clip f03-layer f03-world" data-start="0" data-duration="20" data-track-index="1">
+      <img class="f03-photo" id="f03-photo" src="assets/fotos/05-aerea-carriles.jpg" alt="Vista aérea de una intersección vial" />
+      <div class="f03-tint"></div>
+    </div>
+    <!-- 2 · legibility scrims (static) -->
+    <div id="f03-scrim-layer" class="clip f03-layer f03-scrim" data-start="0" data-duration="20" data-track-index="2"></div>
+
+    <!-- 3 · HUD grid (fully open, as 01 leaves it) -->
+    <div id="f03-grid-layer" class="clip f03-layer" data-start="0" data-duration="20" data-track-index="3">
+      <div class="f03-grid"></div>
+    </div>
+    <!-- 4 · reserve occluder around the brand bug -->
+    <div id="f03-occ-layer" class="clip f03-layer" data-start="0" data-duration="20" data-track-index="4">
+      <div class="f03-occ"></div>
+    </div>
+    <!-- 5 · static atmosphere -->
+    <div id="f03-atmo-layer" class="clip f03-layer f03-atmo" data-start="0" data-duration="20" data-track-index="5"></div>
+
+    <!-- 6 · TRACKING SYSTEM — same camera push as the photo -->
+    <div id="f03-tworld" class="clip f03-layer f03-world" data-start="0" data-duration="20" data-track-index="6">
+      <div class="f03-scan" id="f03-scan"></div>
+
+      <i class="f03-cand" id="f03-cand-0" style="left: 775px; top: 430px"></i>
+      <i class="f03-cand" id="f03-cand-1" style="left: 782px; top: 527px"></i>
+      <i class="f03-cand" id="f03-cand-2" style="left: 895px; top: 525px"></i>
+      <i class="f03-cand" id="f03-cand-3" style="left: 1138px; top: 514px"></i>
+      <i class="f03-cand" id="f03-cand-4" style="left: 1071px; top: 628px"></i>
+      <i class="f03-cand" id="f03-cand-5" style="left: 1277px; top: 397px"></i>
+      <i class="f03-cand" id="f03-cand-6" style="left: 1465px; top: 380px"></i>
+      <i class="f03-cand" id="f03-cand-7" style="left: 1705px; top: 497px"></i>
+      <i class="f03-cand" id="f03-cand-8" style="left: 970px; top: 272px"></i>
+      <i class="f03-cand" id="f03-cand-9" style="left: 1000px; top: 218px"></i>
+
+      <!-- ROL 01 · PEATÓN — the people waiting on the east crosswalk -->
+      <div class="f03-ret" id="f03-ret-1" style="left: 1167px; top: 206px; width: 76px; height: 132px">
+        <div class="f03-flash" id="f03-flash-1"></div>
+        <div class="f03-c f03-c-tl" id="f03-c1-0"><svg viewBox="0 0 18 18"><path d="M 1 17 L 1 1 L 17 1" /></svg></div>
+        <div class="f03-c f03-c-tr" id="f03-c1-1"><svg viewBox="0 0 18 18"><path d="M 1 1 L 17 1 L 17 17" /></svg></div>
+        <div class="f03-c f03-c-bl" id="f03-c1-2"><svg viewBox="0 0 18 18"><path d="M 17 17 L 1 17 L 1 1" /></svg></div>
+        <div class="f03-c f03-c-br" id="f03-c1-3"><svg viewBox="0 0 18 18"><path d="M 17 1 L 17 17 L 1 17" /></svg></div>
+        <i class="f03-x" id="f03-x-1"></i>
+      </div>
+      <div class="f03-plate" id="f03-plate-1" style="left: 1255px; top: 206px">
+        <i class="f03-bar"></i>
+        <span class="f03-m f03-id"><span class="f03-in" id="f03-id-1">ROL 01</span></span>
+        <span class="f03-m f03-name"><span class="f03-in" id="f03-name-1">PEATÓN</span></span>
+      </div>
+
+      <!-- ROL 02 · CICLISTA — two-wheeler crossing the box -->
+      <div class="f03-ret" id="f03-ret-2" style="left: 819px; top: 583px; width: 64px; height: 64px">
+        <div class="f03-flash" id="f03-flash-2"></div>
+        <div class="f03-c f03-c-tl" id="f03-c2-0"><svg viewBox="0 0 18 18"><path d="M 1 17 L 1 1 L 17 1" /></svg></div>
+        <div class="f03-c f03-c-tr" id="f03-c2-1"><svg viewBox="0 0 18 18"><path d="M 1 1 L 17 1 L 17 17" /></svg></div>
+        <div class="f03-c f03-c-bl" id="f03-c2-2"><svg viewBox="0 0 18 18"><path d="M 17 17 L 1 17 L 1 1" /></svg></div>
+        <div class="f03-c f03-c-br" id="f03-c2-3"><svg viewBox="0 0 18 18"><path d="M 17 1 L 17 17 L 1 17" /></svg></div>
+        <i class="f03-x" id="f03-x-2"></i>
+      </div>
+      <div class="f03-plate f03-plate-l" id="f03-plate-2" style="right: 1113px; top: 583px">
+        <i class="f03-bar"></i>
+        <span class="f03-m f03-id"><span class="f03-in" id="f03-id-2">ROL 02</span></span>
+        <span class="f03-m f03-name"><span class="f03-in" id="f03-name-2">CICLISTA</span></span>
+      </div>
+
+      <!-- ROL 03 · MOTOCICLISTA — motorbike mid-intersection -->
+      <div class="f03-ret" id="f03-ret-3" style="left: 881px; top: 408px; width: 64px; height: 64px">
+        <div class="f03-flash" id="f03-flash-3"></div>
+        <div class="f03-c f03-c-tl" id="f03-c3-0"><svg viewBox="0 0 18 18"><path d="M 1 17 L 1 1 L 17 1" /></svg></div>
+        <div class="f03-c f03-c-tr" id="f03-c3-1"><svg viewBox="0 0 18 18"><path d="M 1 1 L 17 1 L 17 17" /></svg></div>
+        <div class="f03-c f03-c-bl" id="f03-c3-2"><svg viewBox="0 0 18 18"><path d="M 17 17 L 1 17 L 1 1" /></svg></div>
+        <div class="f03-c f03-c-br" id="f03-c3-3"><svg viewBox="0 0 18 18"><path d="M 17 1 L 17 17 L 1 17" /></svg></div>
+        <i class="f03-x" id="f03-x-3"></i>
+      </div>
+      <div class="f03-plate" id="f03-plate-3" style="left: 957px; top: 408px">
+        <i class="f03-bar"></i>
+        <span class="f03-m f03-id"><span class="f03-in" id="f03-id-3">ROL 03</span></span>
+        <span class="f03-m f03-name"><span class="f03-in" id="f03-name-3">MOTOCICLISTA</span></span>
+      </div>
+
+      <!-- ROL 04 · CONDUCTOR — car on the east approach -->
+      <div class="f03-ret" id="f03-ret-4" style="left: 1306px; top: 545px; width: 70px; height: 104px">
+        <div class="f03-flash" id="f03-flash-4"></div>
+        <div class="f03-c f03-c-tl" id="f03-c4-0"><svg viewBox="0 0 18 18"><path d="M 1 17 L 1 1 L 17 1" /></svg></div>
+        <div class="f03-c f03-c-tr" id="f03-c4-1"><svg viewBox="0 0 18 18"><path d="M 1 1 L 17 1 L 17 17" /></svg></div>
+        <div class="f03-c f03-c-bl" id="f03-c4-2"><svg viewBox="0 0 18 18"><path d="M 17 17 L 1 17 L 1 1" /></svg></div>
+        <div class="f03-c f03-c-br" id="f03-c4-3"><svg viewBox="0 0 18 18"><path d="M 17 1 L 17 17 L 1 17" /></svg></div>
+        <i class="f03-x" id="f03-x-4"></i>
+      </div>
+      <div class="f03-plate" id="f03-plate-4" style="left: 1388px; top: 545px">
+        <i class="f03-bar"></i>
+        <span class="f03-m f03-id"><span class="f03-in" id="f03-id-4">ROL 04</span></span>
+        <span class="f03-m f03-name"><span class="f03-in" id="f03-name-4">CONDUCTOR</span></span>
+      </div>
+
+      <!-- ROL 05 · PASAJERO — the one that turns red -->
+      <div class="f03-ret" id="f03-ret-5" style="left: 1443px; top: 665px; width: 110px; height: 74px">
+        <div class="f03-glow" id="f03-glow-5"></div>
+        <div class="f03-flash" id="f03-flash-5"></div>
+        <div class="f03-flash f03-red" id="f03-flash-5r"></div>
+        <div class="f03-c f03-c-tl" id="f03-c5-0"><svg viewBox="0 0 18 18"><path d="M 1 17 L 1 1 L 17 1" /></svg></div>
+        <div class="f03-c f03-c-tr" id="f03-c5-1"><svg viewBox="0 0 18 18"><path d="M 1 1 L 17 1 L 17 17" /></svg></div>
+        <div class="f03-c f03-c-bl" id="f03-c5-2"><svg viewBox="0 0 18 18"><path d="M 17 17 L 1 17 L 1 1" /></svg></div>
+        <div class="f03-c f03-c-br" id="f03-c5-3"><svg viewBox="0 0 18 18"><path d="M 17 1 L 17 17 L 1 17" /></svg></div>
+        <div class="f03-c f03-c-tl f03-red" id="f03-r5-0"><svg viewBox="0 0 18 18"><path d="M 1 17 L 1 1 L 17 1" /></svg></div>
+        <div class="f03-c f03-c-tr f03-red" id="f03-r5-1"><svg viewBox="0 0 18 18"><path d="M 1 1 L 17 1 L 17 17" /></svg></div>
+        <div class="f03-c f03-c-bl f03-red" id="f03-r5-2"><svg viewBox="0 0 18 18"><path d="M 17 17 L 1 17 L 1 1" /></svg></div>
+        <div class="f03-c f03-c-br f03-red" id="f03-r5-3"><svg viewBox="0 0 18 18"><path d="M 17 1 L 17 17 L 1 17" /></svg></div>
+        <i class="f03-x" id="f03-x-5"></i>
+        <i class="f03-x f03-red" id="f03-x-5r"></i>
+      </div>
+      <div class="f03-plate" id="f03-plate-5" style="left: 1565px; top: 665px">
+        <i class="f03-bar"></i>
+        <i class="f03-bar f03-red" id="f03-bar-5r"></i>
+        <span class="f03-m f03-id"><span class="f03-in" id="f03-id-5">ROL 05</span></span>
+        <span class="f03-m f03-name"><span class="f03-in" id="f03-name-5">PASAJERO</span></span>
+      </div>
+    </div>
+
+    <!-- 7 · headline, bottom-left, by mask -->
+    <div id="f03-head-layer" class="clip f03-layer" data-start="0" data-duration="20" data-track-index="7">
+      <i class="f03-sep" id="f03-sep"></i>
+      <div class="f03-hl f03-hl1"><span class="f03-mask"><span class="f03-hin" id="f03-hl1">Todos los colaboradores.</span></span></div>
+      <div class="f03-hl f03-hl2"><span class="f03-mask"><span class="f03-hin" id="f03-hl2">Sin importar el cargo.</span></span></div>
+    </div>
+
+    <!-- 8 · HUD chrome (static, on top of the feed) -->
+    <div id="f03-hud-layer" class="clip f03-layer" data-start="0" data-duration="20" data-track-index="8">
+      <div class="f03-ruler f03-ruler-l"></div>
+      <div class="f03-ruler f03-ruler-r"></div>
+      <div class="f03-br f03-br-tl"><svg viewBox="0 0 130 130"><path d="M 1 129 L 1 1 L 129 1" /></svg></div>
+      <div class="f03-br f03-br-tr"><svg viewBox="0 0 130 130"><path d="M 1 1 L 129 1 L 129 129" /></svg></div>
+      <div class="f03-br f03-br-bl"><svg viewBox="0 0 130 130"><path d="M 129 129 L 1 129 L 1 1" /></svg></div>
+      <div class="f03-br f03-br-br"><svg viewBox="0 0 130 130"><path d="M 129 1 L 129 129 L 1 129" /></svg></div>
+      <div class="f03-rule"></div>
+      <div class="f03-label" id="f03-label" data-text="CAPACITACIÓN PESV · MÓDULO 01 · ACTOR VIAL" aria-label="CAPACITACIÓN PESV · MÓDULO 01 · ACTOR VIAL"></div>
+      <div class="f03-section">03 · CADA ROL</div>
+    </div>
+
+    <!-- 9 · the official RiskMann bug — TOPMOST, static, nothing over it -->
+    <div id="f03-lock-layer" class="clip f03-layer" data-start="0" data-duration="20" data-track-index="9">
+      <div class="f03-lock">
+        <img class="f03-logo" src="assets/marca/riskmann_logo_blanco.png" alt="RiskMann by SOFU" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      /* ---- static chrome: telemetry label rebuilt exactly as 01 leaves it
+         (per-char inline-blocks, nbsp for spaces, rotateX 0, opacity 1) ---- */
+      var labelEl = document.getElementById("f03-label");
+      var TXT = labelEl.getAttribute("data-text");
+      for (var c = 0; c < TXT.length; c++) {
+        var ch = TXT.charAt(c);
+        var outer = document.createElement("span");
+        outer.className = "f03-ch";
+        outer.setAttribute("data-layout-allow-overlap", "");
+        outer.style.transform = "rotateX(0deg)";
+        outer.textContent = ch === " " ? "\u00A0" : ch;
+        labelEl.appendChild(outer);
+      }
+
+      /* VO (03.wav placed at 1.5s; measured with silencedetect + formant
+         tracking, times in FRAME seconds):
+           «Esto aplica a todos los colaboradores,» 1.54-3.53 («todos» ~2.3)
+           «sin importar su cargo.»                 3.71-4.87
+           «Y a cada rol:»                          5.08-5.80
+           «peatón,»        6.12   «ciclista,»   7.32-7.96
+           «motociclista,»  8.06-8.92   (pause 8.92-9.10)
+           «conductor»      9.10-9.61   «o» 9.62   «pasajero.» 9.65-10.37
+         Each reticle LOCKS ~0.15s after its role word starts. */
+
+      /* ---- camera: one slow push under the whole shot (photo + tracking
+         worlds get the identical tween, so reticles never slide) --------- */
+      tl.fromTo(["#f03-pworld", "#f03-tworld"], { scale: 1 }, { scale: 1.045, duration: 19.6, ease: "power3.inOut" }, 0);
+
+      /* ---- 0-1.1s · the feed settles in (visible from frame 0) ---------- */
+      tl.fromTo("#f03-photo", { opacity: 0.35 }, { opacity: 1, duration: 1.1, ease: "power3.out" }, 0);
+
+      /* ---- 1.9-4.5s · headline by mask («todos los colaboradores» /
+         «sin importar su cargo») ----------------------------------------- */
+      tl.fromTo("#f03-sep", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 1.9);
+      tl.fromTo("#f03-hl1", { yPercent: 115 }, { yPercent: 0, duration: 0.75, ease: "power3.out" }, 2.2);
+      tl.fromTo("#f03-hl2", { yPercent: 115 }, { yPercent: 0, duration: 0.75, ease: "power3.out" }, 3.7);
+
+      /* ---- 5.0-6.0s · «Y a cada rol:» — the tracking system arms: one scan
+         pass, and every candidate on the road gets a faint mark ---------- */
+      tl.fromTo("#f03-scan", { y: 110 }, { y: 820, duration: 1.0, ease: "power3.inOut" }, 5.0);
+      tl.fromTo("#f03-scan", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power3.out" }, 5.0);
+      tl.fromTo("#f03-scan", { opacity: 1 }, { opacity: 0, duration: 0.25, ease: "power3.in", immediateRender: false }, 5.8);
+      var CAND_AT = [5.25, 5.5, 5.62, 5.44, 5.7, 5.34, 5.4, 5.56, 5.18, 5.12];
+      for (var q = 0; q < CAND_AT.length; q++) {
+        tl.fromTo("#f03-cand-" + q, { scale: 0.3, opacity: 0 }, { scale: 1, opacity: 0.55, duration: 0.3, ease: "power3.out" }, CAND_AT[q]);
+      }
+
+      /* ---- the five reticles ----------------------------------------------
+         box = lock pose [left, top, w, h]; A / B = search poses as
+         [dx, dy, size factor] about the lock centre. */
+      var RET = [
+        { n: 1, box: [1167, 206, 76, 132], lock: 6.3,  A: [-70, 46, 1.7],  B: [22, -14, 1.3] },
+        { n: 2, box: [819, 583, 64, 64],   lock: 7.48, A: [64, -40, 2.0],  B: [-16, 12, 1.35] },
+        { n: 3, box: [881, 408, 64, 64],   lock: 8.22, A: [-58, -36, 2.0], B: [14, 10, 1.35] },
+        { n: 4, box: [1306, 545, 70, 104], lock: 9.26, A: [-60, -44, 1.7], B: [16, 12, 1.3] },
+        { n: 5, box: [1443, 665, 110, 74], lock: 9.84, A: [56, -40, 1.6],  B: [-12, 8, 1.25] }
+      ];
+      function pose(b, p) { return [b[0] + b[2] / 2 + p[0], b[1] + b[3] / 2 + p[1], b[2] * p[2], b[3] * p[2]]; }
+      function cornerOff(b, P, k) {
+        var l = P[0] - P[2] / 2, t = P[1] - P[3] / 2, r = P[0] + P[2] / 2, bt = P[1] + P[3] / 2;
+        var L0 = b[0], T0 = b[1], R0 = b[0] + b[2], B0 = b[1] + b[3];
+        if (k === 0) return { x: l - L0, y: t - T0 };
+        if (k === 1) return { x: r - R0, y: t - T0 };
+        if (k === 2) return { x: l - L0, y: bt - B0 };
+        return { x: r - R0, y: bt - B0 };
+      }
+      /* one expanding hairline square: a 0.05s pop from 0 (so its pre-state is
+         invisible, seek-safe), then it grows and fades. */
+      function flash(id, peak, grow, dur, at) {
+        tl.fromTo(id, { scale: 1, opacity: 0 }, { scale: 1, opacity: peak, duration: 0.05, ease: "none" }, at);
+        tl.fromTo(id, { scale: 1, opacity: peak }, { scale: grow, opacity: 0, duration: dur, ease: "power3.out", immediateRender: false }, at + 0.05);
+      }
+      function maskIn(id, at, dur) {
+        tl.fromTo(id, { yPercent: 110 }, { yPercent: 0, duration: dur, ease: "power3.out" }, at);
+      }
+      for (var i = 0; i < RET.length; i++) {
+        var R = RET[i], T = R.lock;
+        var PA = pose(R.box, R.A), PB = pose(R.box, R.B);
+        for (var k = 0; k < 4; k++) {
+          var el = "#f03-c" + R.n + "-" + k;
+          var a = cornerOff(R.box, PA, k), b = cornerOff(R.box, PB, k);
+          // acquire (appears at search pose A)
+          tl.fromTo(el, { x: a.x, y: a.y, opacity: 0 }, { x: a.x, y: a.y, opacity: 0.8, duration: 0.2, ease: "power3.out" }, T - 0.82);
+          // search A -> B
+          tl.fromTo(el, { x: a.x, y: a.y }, { x: b.x, y: b.y, duration: 0.4, ease: "power3.inOut", immediateRender: false }, T - 0.72);
+          // lock B -> box
+          tl.fromTo(el, { x: b.x, y: b.y }, { x: 0, y: 0, duration: 0.32, ease: "power3.out", immediateRender: false }, T - 0.32);
+          tl.fromTo(el, { opacity: 0.8 }, { opacity: 1, duration: 0.15, ease: "power3.out", immediateRender: false }, T);
+        }
+        // lock click: centre cross + one expanding hairline square
+        tl.fromTo("#f03-x-" + R.n, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: "power3.out" }, T);
+        flash("#f03-flash-" + R.n, 0.8, 1.3, 0.55, T);
+        // label: plate wipes from the reticle side, then ID + role by mask
+        tl.fromTo("#f03-plate-" + R.n, { scaleX: 0 }, { scaleX: 1, duration: 0.36, ease: "power3.out" }, T + 0.04);
+        maskIn("#f03-id-" + R.n, T + 0.14, 0.45);
+        maskIn("#f03-name-" + R.n, T + 0.2, 0.55);
+      }
+
+      /* ---- 11.3s · PASAJERO turns red — the frame's single red focus.
+         Lavender -> red is a crossfade of twin elements (paint only); the
+         other four roles step back so the red one leads. ----------------- */
+      var RED = 11.3, RD = 0.7;
+      for (var r = 0; r < 4; r++) {
+        tl.fromTo("#f03-c5-" + r, { opacity: 1 }, { opacity: 0, duration: RD, ease: "power3.inOut", immediateRender: false }, RED);
+        tl.fromTo("#f03-r5-" + r, { opacity: 0 }, { opacity: 1, duration: RD, ease: "power3.inOut" }, RED);
+      }
+      tl.fromTo("#f03-x-5", { opacity: 1 }, { opacity: 0, duration: RD, ease: "power3.inOut", immediateRender: false }, RED);
+      tl.fromTo("#f03-x-5r", { opacity: 0 }, { opacity: 1, duration: RD, ease: "power3.inOut" }, RED);
+      tl.fromTo("#f03-bar-5r", { opacity: 0 }, { opacity: 1, duration: RD, ease: "power3.inOut" }, RED);
+      tl.fromTo("#f03-glow-5", { opacity: 0 }, { opacity: 1, duration: 1.1, ease: "power3.out" }, RED + 0.2);
+      flash("#f03-flash-5r", 0.9, 1.45, 0.8, RED + 0.35);
+      for (var d = 1; d <= 4; d++) {
+        tl.fromTo("#f03-ret-" + d, { opacity: 1 }, { opacity: 0.55, duration: 0.9, ease: "power3.inOut" }, RED);
+        tl.fromTo("#f03-plate-" + d, { opacity: 1 }, { opacity: 0.72, duration: 0.9, ease: "power3.inOut" }, RED);
+      }
+      for (var e = 0; e < CAND_AT.length; e++) {
+        tl.fromTo("#f03-cand-" + e, { opacity: 0.55 }, { opacity: 0.22, duration: 0.9, ease: "power3.inOut", immediateRender: false }, RED);
+      }
+
+      /* 12.4-20s · deliberate calm: the five roles held, PASAJERO in red;
+         only the camera push finishes (still by 19.6s). */
+      window.__timelines["03-roles"] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,285 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* Montserrat — real variable files shipped in assets/fonts. */
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    #root {
+      position: relative; width: 1920px; height: 1080px; overflow: hidden; container-type: size;
+      color: #F2F7FF; font-family: "Montserrat", sans-serif; -webkit-font-smoothing: antialiased;
+    }
+    .f05-layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; }
+
+    /* ================= PERSISTENT CHROME = 01-apertura at t=16s (static) ================= */
+    .f05-ground { background: #051427; }
+    .f05-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(to right, rgba(142, 143, 196, 0.14) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(142, 143, 196, 0.14) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    /* reserve occluder, frozen in its BUG state (core L60 T60 R409 B227.33) */
+    .f05-occ {
+      position: absolute; left: 98.75px; top: 7.5px; width: 1755.5px; height: 905px;
+      border-radius: 264px; background: #051427; filter: blur(18px); transform-origin: 64px 64px;
+      transform: translate(-102.75px, -11.5px) scale(0.2144393, 0.2153582);
+    }
+    .f05-atmo {
+      background:
+        radial-gradient(ellipse 58% 62% at 50% 44%, rgba(5, 20, 39, 0) 0%, rgba(5, 20, 39, 0.45) 64%, rgba(3, 12, 24, 0.82) 100%),
+        radial-gradient(1100px 700px at 960px 470px, rgba(15, 57, 107, 0.34) 0%, rgba(15, 57, 107, 0) 72%);
+    }
+    .f05-br { position: absolute; width: 130px; height: 130px; opacity: 0.6; }
+    .f05-br svg { display: block; width: 130px; height: 130px; overflow: visible; }
+    .f05-br path { fill: none; stroke: #8E8FC4; stroke-width: 2; stroke-linecap: square; }
+    .f05-br-tl { left: 56px; top: 56px; }
+    .f05-br-tr { left: 1734px; top: 56px; }
+    .f05-br-bl { left: 56px; top: 894px; }
+    .f05-br-br { left: 1734px; top: 894px; }
+    .f05-ruler {
+      position: absolute; top: 480px; width: 16px; height: 361px;
+      background-image:
+        repeating-linear-gradient(to bottom, rgba(142, 143, 196, 0.55) 0 1px, transparent 1px 120px),
+        repeating-linear-gradient(to bottom, rgba(142, 143, 196, 0.32) 0 1px, transparent 1px 30px);
+      background-size: 16px 100%, 8px 100%; background-repeat: no-repeat;
+    }
+    .f05-ruler-l { left: 84px; background-position: left top, left top; }
+    .f05-ruler-r { left: 1820px; background-position: right top, right top; }
+    /* red rule + telemetry label, frozen where 01 leaves them */
+    .f05-rule {
+      position: absolute; left: 930px; top: 862px; width: 60px; height: 3px; border-radius: 2px; background: #E6423C;
+      transform-origin: 50% 50%; transform: translate(-838px, -630.6px) scale(0.6);
+    }
+    .f05-label {
+      position: absolute; left: 960px; top: 874px; white-space: nowrap; perspective: 600px;
+      font-size: 22px; font-weight: 600; line-height: 1; letter-spacing: 0.18em; color: #8E8FC4;
+      transform-origin: 0% 0%; transform: translate(-856px, -632px) scale(0.6);
+    }
+    .f05-ch { position: relative; display: inline-block; transform-origin: 50% 100%; transform-style: preserve-3d; }
+    /* section tag: the only chrome that changes per frame; ink right edge at x=1816 */
+    .f05-section {
+      position: absolute; right: 104px; top: 104px; white-space: nowrap; margin-right: -0.18em;
+      font-size: 13.2px; font-weight: 600; line-height: 1; letter-spacing: 0.18em; color: #8E8FC4;
+    }
+    .f05-lock { position: absolute; left: 0; top: 0; width: 1260px; height: 420px; transform-origin: 0 0; transform: translate(92.3333px, 95px) scale(0.2222222); }
+    .f05-logo { display: block; width: 1260px; height: 420px; }
+
+    /* ================= CONTENT: the analog gauge ================= */
+    .f05-world { transform-origin: 960px 520px; }
+    .f05-gauge { position: absolute; left: 0; top: 0; overflow: visible; }
+    .f05-face { fill: rgba(12, 43, 83, 0.45); }
+    .f05-hair { fill: none; stroke: #8E8FC4; stroke-width: 1.5; stroke-linecap: butt; }
+    .f05-hair-out { opacity: 0.55; }
+    .f05-hair-in { opacity: 0.32; }
+    .f05-band { fill: none; stroke: url(#f05-band-grad); stroke-width: 18; stroke-linecap: butt; }
+    .f05-stub { fill: none; stroke: #8E8FC4; stroke-width: 1.5; opacity: 0.55; }
+    .f05-tick { stroke: #8E8FC4; stroke-width: 2; stroke-linecap: butt; }
+    .f05-needle { fill: #E6423C; }
+    .f05-hub-ring { fill: #0C2B53; stroke: rgba(142, 143, 196, 0.7); stroke-width: 2; }
+    .f05-hub-dot { fill: #F2F7FF; }
+    .f05-mark { fill: #F2F7FF; }
+
+    /* end labels — masks are inline-blocks, so they size to the real text */
+    .f05-end {
+      position: absolute; top: 616px; width: 600px; margin-left: -300px; text-align: center; white-space: nowrap;
+      font-size: 26px; font-weight: 700; line-height: 1.2; letter-spacing: 0.18em;
+    }
+    .f05-end-l { left: 576px; color: #A7BCCC; }
+    .f05-end-r { left: 1344px; color: #F2F7FF; }
+    .f05-end .f05-wm { padding: 0.14em 0.1em 0.2em 0.28em; }
+
+    /* the sentence — one mask per word, each sized to its word */
+    .f05-sline {
+      position: absolute; left: 0; width: 1920px; text-align: center; white-space: nowrap;
+      font-size: 50px; font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; color: #F2F7FF;
+    }
+    .f05-sline-1 { top: 684px; }
+    .f05-sline-2 { top: 762px; }
+    .f05-wm { display: inline-block; overflow: hidden; vertical-align: top; padding: 0.14em 0.08em 0.2em; }
+    .f05-w { display: inline-block; }
+    .f05-emph { position: relative; display: inline-block; vertical-align: top; }
+    .f05-uline {
+      position: absolute; left: 0.1em; right: 0.1em; bottom: 0.28em; height: 3px; border-radius: 2px;
+      background: #A7BCCC; opacity: 0.75; transform-origin: 0% 50%;
+    }
+  </style>
+
+  <div id="root" data-composition-id="05-principio" data-start="0" data-duration="16" data-width="1920" data-height="1080">
+    <!-- 0 · full-bleed navy ground -->
+    <div id="f05-ground-layer" class="clip f05-layer f05-ground" data-start="0" data-duration="16" data-track-index="0"></div>
+    <!-- 1 · HUD grid (fully open, as 01 leaves it) -->
+    <div id="f05-grid-layer" class="clip f05-layer" data-start="0" data-duration="16" data-track-index="1">
+      <div class="f05-grid"></div>
+    </div>
+    <!-- 2 · reserve occluder around the brand bug -->
+    <div id="f05-occ-layer" class="clip f05-layer" data-start="0" data-duration="16" data-track-index="2">
+      <div class="f05-occ"></div>
+    </div>
+    <!-- 3 · static atmosphere -->
+    <div id="f05-atmo-layer" class="clip f05-layer f05-atmo" data-start="0" data-duration="16" data-track-index="3"></div>
+    <!-- 4 · HUD chrome (static) -->
+    <div id="f05-hud-layer" class="clip f05-layer" data-start="0" data-duration="16" data-track-index="4">
+      <div class="f05-ruler f05-ruler-l"></div>
+      <div class="f05-ruler f05-ruler-r"></div>
+      <div class="f05-br f05-br-tl"><svg viewBox="0 0 130 130"><path d="M 1 129 L 1 1 L 129 1" /></svg></div>
+      <div class="f05-br f05-br-tr"><svg viewBox="0 0 130 130"><path d="M 1 1 L 129 1 L 129 129" /></svg></div>
+      <div class="f05-br f05-br-bl"><svg viewBox="0 0 130 130"><path d="M 129 129 L 1 129 L 1 1" /></svg></div>
+      <div class="f05-br f05-br-br"><svg viewBox="0 0 130 130"><path d="M 129 1 L 129 129 L 1 129" /></svg></div>
+      <div class="f05-rule"></div>
+      <div class="f05-label" id="f05-label" data-text="CAPACITACIÓN PESV · MÓDULO 01 · ACTOR VIAL" aria-label="CAPACITACIÓN PESV · MÓDULO 01 · ACTOR VIAL"></div>
+      <div class="f05-section">05 · PRINCIPIO CLAVE</div>
+    </div>
+
+    <!-- 5 · THE GAUGE + THE SENTENCE (inside one slow camera push) -->
+    <div id="f05-world" class="clip f05-layer f05-world" data-start="0" data-duration="16" data-track-index="5">
+      <svg class="f05-gauge" width="1920" height="1080" viewBox="0 0 1920 1080" aria-hidden="true">
+        <defs>
+          <linearGradient id="f05-band-grad" gradientUnits="userSpaceOnUse" x1="576" y1="0" x2="1344" y2="0">
+            <stop offset="0" stop-color="#A7BCCC" stop-opacity="0.22" />
+            <stop offset="0.6" stop-color="#A7BCCC" stop-opacity="0.85" />
+            <stop offset="1" stop-color="#F2F7FF" stop-opacity="1" />
+          </linearGradient>
+        </defs>
+        <!-- pivot C = (960, 590). No numerals, no scale values: only REDUCE / AUMENTA. -->
+        <path id="f05-face" class="f05-face" d="M 654 590 A 306 306 0 0 1 1266 590 Z" />
+        <path id="f05-arc-out" class="f05-hair f05-hair-out" d="M 530 590 A 430 430 0 0 1 1390 590" />
+        <path id="f05-arc-in" class="f05-hair f05-hair-in" d="M 654 590 A 306 306 0 0 1 1266 590" />
+        <path id="f05-band" class="f05-band" d="M 576 590 A 384 384 0 0 1 1344 590" />
+        <path id="f05-stub-l" class="f05-stub" d="M 530 590 L 654 590" />
+        <path id="f05-stub-r" class="f05-stub" d="M 1390 590 L 1266 590" />
+        <g id="f05-ticks"></g>
+        <polygon id="f05-mark" class="f05-mark" points="950,148 970,148 960,162" />
+        <polygon id="f05-needle" class="f05-needle" points="960,242 967,590 960,634 953,590" />
+        <g id="f05-hub">
+          <circle class="f05-hub-ring" cx="960" cy="590" r="26" />
+          <circle class="f05-hub-dot" cx="960" cy="590" r="7" />
+        </g>
+      </svg>
+
+      <div class="f05-end f05-end-l"><span class="f05-wm"><span class="f05-w" id="f05-end-l">REDUCE</span></span></div>
+      <div class="f05-end f05-end-r"><span class="f05-wm"><span class="f05-w" id="f05-end-r">AUMENTA</span></span></div>
+
+      <div class="f05-sline f05-sline-1"><span class="f05-wm"><span class="f05-w" id="f05-w0">Cada</span></span> <span class="f05-wm"><span class="f05-w" id="f05-w1">decisión</span></span> <span class="f05-wm"><span class="f05-w" id="f05-w2">del</span></span> <span class="f05-wm"><span class="f05-w" id="f05-w3">pasajero</span></span> <span class="f05-wm"><span class="f05-w" id="f05-w4">puede</span></span></div>
+      <div class="f05-sline f05-sline-2"><span class="f05-emph"><span class="f05-wm"><span class="f05-w" id="f05-w5">aumentar</span></span> <span class="f05-wm"><span class="f05-w" id="f05-w6">o</span></span> <span class="f05-wm"><span class="f05-w" id="f05-w7">reducir</span></span><i class="f05-uline" id="f05-uline"></i></span> <span class="f05-wm"><span class="f05-w" id="f05-w8">la</span></span> <span class="f05-wm"><span class="f05-w" id="f05-w9">exposición</span></span> <span class="f05-wm"><span class="f05-w" id="f05-w10">al</span></span> <span class="f05-wm"><span class="f05-w" id="f05-w11">riesgo.</span></span></div>
+    </div>
+
+    <!-- 6 · the official RiskMann bug — TOPMOST, static, nothing over it -->
+    <div id="f05-lock-layer" class="clip f05-layer" data-start="0" data-duration="16" data-track-index="6">
+      <div class="f05-lock">
+        <img class="f05-logo" src="assets/marca/riskmann_logo_blanco.png" alt="RiskMann by SOFU" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var CX = 960, CY = 590, SVG_O = "960 590";
+
+      /* ---- static chrome: telemetry label rebuilt exactly as 01 leaves it
+         (per-char inline-blocks, nbsp for spaces, rotateX 0, opacity 1) ---- */
+      var labelEl = document.getElementById("f05-label");
+      var TXT = labelEl.getAttribute("data-text");
+      for (var c = 0; c < TXT.length; c++) {
+        var ch = TXT.charAt(c);
+        var outer = document.createElement("span");
+        outer.className = "f05-ch";
+        outer.setAttribute("data-layout-allow-overlap", "");
+        outer.style.transform = "rotateX(0deg)";
+        outer.textContent = ch === " " ? " " : ch;
+        labelEl.appendChild(outer);
+      }
+
+      /* ---- ticks: 37 evenly spaced graduations, NO values ---------------- */
+      var SVGNS = "http://www.w3.org/2000/svg";
+      var ticksG = document.getElementById("f05-ticks");
+      var ticks = [];
+      for (var i = 0; i <= 36; i++) {
+        var th = (180 - i * 5) * Math.PI / 180;
+        var major = i % 6 === 0;
+        var r0 = major ? 322 : 336, r1 = 356;
+        var ln = document.createElementNS(SVGNS, "line");
+        ln.setAttribute("x1", (CX + r0 * Math.cos(th)).toFixed(2));
+        ln.setAttribute("y1", (CY - r0 * Math.sin(th)).toFixed(2));
+        ln.setAttribute("x2", (CX + r1 * Math.cos(th)).toFixed(2));
+        ln.setAttribute("y2", (CY - r1 * Math.sin(th)).toFixed(2));
+        ln.setAttribute("class", "f05-tick");
+        ln.setAttribute("data-op", major ? "0.75" : "0.35");
+        ticksG.appendChild(ln);
+        ticks.push(ln);
+      }
+
+      /* ---- camera: one slow push under the whole shot ------------------- */
+      tl.fromTo("#f05-world", { scale: 0.965 }, { scale: 1, duration: 15.4, ease: "power3.inOut" }, 0);
+
+      /* ---- 0.1-1.6s · the instrument traces itself (svg-path-draw) ------ */
+      function draw(id, at, dur, ease) {
+        var p = document.getElementById(id);
+        var len = p.getTotalLength();
+        p.style.strokeDasharray = len + " " + len;
+        tl.fromTo(p, { strokeDashoffset: len }, { strokeDashoffset: 0, duration: dur, ease: ease }, at);
+      }
+      draw("f05-arc-out", 0.1, 1.1, "power2.out");
+      draw("f05-arc-in", 0.22, 1.05, "power2.out");
+      draw("f05-band", 0.35, 1.25, "power3.inOut");
+      draw("f05-stub-l", 0.12, 0.5, "power2.out");
+      draw("f05-stub-r", 1.1, 0.5, "power2.out");
+      tl.fromTo("#f05-face", { opacity: 0 }, { opacity: 1, duration: 0.9, ease: "power2.out" }, 0.3);
+      for (var t = 0; t < ticks.length; t++) {
+        tl.fromTo(ticks[t], { opacity: 0 }, { opacity: parseFloat(ticks[t].getAttribute("data-op")), duration: 0.22, ease: "power2.out" }, 0.3 + t * 0.022);
+      }
+      /* end labels by mask */
+      tl.fromTo("#f05-end-l", { yPercent: 120 }, { yPercent: 0, duration: 0.6, ease: "power3.out" }, 1.0);
+      tl.fromTo("#f05-end-r", { yPercent: 120 }, { yPercent: 0, duration: 0.6, ease: "power3.out" }, 1.45);
+
+      /* hub + needle wake at the REDUCE rest */
+      tl.fromTo("#f05-hub", { scale: 0, svgOrigin: SVG_O }, { scale: 1, duration: 0.5, ease: "power3.out" }, 0.85);
+      var needle = document.getElementById("f05-needle");
+      tl.fromTo(needle, { rotation: -84, scaleY: 0, svgOrigin: SVG_O }, { rotation: -84, scaleY: 1, duration: 0.5, ease: "power3.out" }, 1.0);
+
+      /* ---- 1.5-9.4s · the needle swings WITH the sentence -----------------
+         Each swing is its own fromTo chained end->start: seek-safe, no repeat /
+         yoyo. VO (from ~1.5s): «Cada decisión del pasajero» 1.5-3.8 · «puede»
+         3.85 · «aumentar» 4.45 · «o reducir» 5.15-6.5 · «la exposición al
+         riesgo» 6.6-7.9. Then a damped settle onto the centre. */
+      var SWINGS = [
+        [-84, -22, 1.55, 1.8],  // «Cada decisión del pasajero»: it starts to move
+        [-22, -44, 3.35, 0.95], // «puede»: hesitation
+        [-44, 74, 4.35, 0.8],   // «aumentar» -> towards AUMENTA
+        [74, -68, 5.3, 0.95],   // «o reducir» -> towards REDUCE
+        [-68, 32, 6.5, 0.75],   // «la exposición»
+        [32, -14, 7.25, 0.7],   // «al riesgo»
+        [-14, 6, 7.95, 0.65],
+        [6, 0, 8.6, 0.8]        // settles at the centre
+      ];
+      for (var s = 0; s < SWINGS.length; s++) {
+        var sw = SWINGS[s];
+        tl.fromTo(needle, { rotation: sw[0] },
+          { rotation: sw[1], duration: sw[3], ease: s === SWINGS.length - 1 ? "power3.out" : "power3.inOut", immediateRender: false }, sw[2]);
+      }
+
+      /* ---- the sentence, word by word by mask, on the voice --------------- */
+      var WORD_AT = [1.45, 1.8, 2.5, 2.75, 3.8, 4.4, 5.1, 5.3, 6.5, 6.65, 7.3, 7.45];
+      for (var w = 0; w < WORD_AT.length; w++) {
+        tl.fromTo("#f05-w" + w, { yPercent: 120 }, { yPercent: 0, duration: 0.6, ease: "power3.out" }, WORD_AT[w]);
+      }
+
+      /* ---- 9.3-10.7s · after the settle: centre mark + the two verbs underlined */
+      tl.fromTo("#f05-mark", { y: -14, opacity: 0 }, { y: 0, opacity: 0.9, duration: 0.6, ease: "power3.out" }, 9.3);
+      tl.fromTo("#f05-uline", { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "power3.inOut" }, 9.9);
+
+      /* 10.7-16s · hold; only the camera finishes its push. */
+      window.__timelines["05-principio"] = tl;
+    })();
+  </script>
+</template>
