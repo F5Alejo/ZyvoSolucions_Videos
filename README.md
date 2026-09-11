@@ -26,14 +26,19 @@ videos/
 
 ## Videos
 
-| Video | Proyecto | Enlace |
+Todos los videos terminados están en la carpeta compartida de Drive:
+**[Videos HyperFrames — Google Drive](https://drive.google.com/drive/folders/1PKZKu0SMgxrLslJFHqhBHAsHuTa-K8ig?usp=sharing)**
+
+| Video | Proyecto | Archivo en Drive |
 | --- | --- | --- |
-| PESV · Módulo 01 «Actor vial» — Centro de mando (2:31, con voz) | `videos/pesv-m01-mando/` | _pendiente_ |
-| PESV · Módulo 01 «Actor vial» — Ritmo (1:00, sin voz) | `videos/pesv-m01-ritmo/` | _pendiente_ |
-| RiskMann · Sala de control (1:08) | `videos/riskmann-sala-de-control/` | _pendiente_ |
+| PESV · Módulo 01 «Actor vial» — Centro de mando (2:31, con voz) · **entregable del PoC** | `videos/pesv-m01-mando/` | `PESV-M01-Centro-de-mando.mp4` (y `-vista`, versión liviana) |
+| PESV · Módulo 01 «Actor vial» — Ritmo (1:00, sin voz) | `videos/pesv-m01-ritmo/` | `PESV-M01-Ritmo.mp4` |
+| PESV · Módulo 01 «Actor vial» — fiel a las diapositivas (2:36) | fuera del repo | `PESV-M01-Actor-vial.mp4` |
+| RiskMann · Sala de control (1:08) — *no usar comercialmente aún* | `videos/riskmann-sala-de-control/` | `RiskMann-Sala-de-Control.mp4` (y `-narrado`) |
 
 Los MP4 **no se versionan** (cada render pesa decenas de MB): se generan con el comando
-de abajo y se comparten por enlace.
+de abajo y se comparten por enlace. *Sala de control* está pendiente de corregir el logo
+(manual de marca) y una cifra sin respaldo — ver `PRODUCCION-VIDEOS.md` §9.
 
 ## Puesta en marcha
 

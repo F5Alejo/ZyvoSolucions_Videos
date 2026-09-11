@@ -8,7 +8,7 @@ issue y qué queda pendiente antes de la revisión con el CEO.
 | **Entregable** | Módulo 01 «Actor vial» de la capacitación *Seguridad Vial para Pasajeros* |
 | **Proyecto** | [`videos/pesv-m01-mando/`](../videos/pesv-m01-mando/) — formato «Centro de mando» |
 | **Video** | MP4 1920×1080, 30 fps, **2:31**, con locución, efectos y cama musical · 39 MB |
-| **Enlace para el CEO** | _pendiente: subir el MP4 a Drive y pegar aquí el enlace_ |
+| **Enlace para el CEO** | [Videos HyperFrames — Google Drive](https://drive.google.com/drive/folders/1PKZKu0SMgxrLslJFHqhBHAsHuTa-K8ig?usp=sharing) · `PESV-M01-Centro-de-mando.mp4` |
 | **Versión corta** | [`videos/pesv-m01-ritmo/`](../videos/pesv-m01-ritmo/) — formato «Ritmo»: 60 s al compás de una pista, sin voz · 15 MB |
 | **Motor** | [HyperFrames](https://github.com/heygen-com/hyperframes) 0.8.31 (HTML → MP4) |
 
@@ -38,7 +38,7 @@ issue y qué queda pendiente antes de la revisión con el CEO.
 | --- | --- | --- |
 | Renderizar el video final en HD (MP4) | ✅ | `npx hyperframes render --quality high` → 1920×1080, 151 s |
 | Control de calidad visual y de timing | ✅ | `hyperframes check` → **Check passed** (0 errores de layout, 208/208 textos con contraste WCAG AA); revisión de fotogramas de cada plano; voz verificada en el MP4 final (banda >400 Hz: −22.9 dB) |
-| Subir la entrega y preparar demo para el CEO | ⏳ | Falta subir el MP4 y compartir el enlace (§4) |
+| Subir la entrega y preparar demo para el CEO | ✅ | Videos en la [carpeta compartida de Drive](https://drive.google.com/drive/folders/1PKZKu0SMgxrLslJFHqhBHAsHuTa-K8ig?usp=sharing) |
 
 ---
 
@@ -49,7 +49,7 @@ issue y qué queda pendiente antes de la revisión con el CEO.
 | Video renderizado completo del módulo | ✅ Módulo 01 completo, 2:31 |
 | Cumplimiento estricto del manual de identidad | ✅ Solo el archivo oficial del logo, sin redibujar, re-letrar, recolorear ni tapar; área de reserva libre; paleta y tipografía de marca |
 | Consistencia visual y de ritmo con el video de referencia | ⚠️ Validada contra las capturas entregadas; falta la comparación directa con el video (§1) |
-| Enlace compartido y listo para feedback del CEO | ⏳ Pendiente de subir |
+| Enlace compartido y listo para feedback del CEO | ✅ [Carpeta compartida de Drive](https://drive.google.com/drive/folders/1PKZKu0SMgxrLslJFHqhBHAsHuTa-K8ig?usp=sharing) |
 
 ---
 
@@ -97,7 +97,7 @@ para repetirla en otros módulos está en [`PRODUCCION-VIDEOS.md` §13](../PRODU
 
 ## 5. Pendientes y siguientes pasos
 
-1. **Subir los MP4 a Drive** (`videos-finales/`) y pegar los enlaces arriba, en el README y en el PR.
+1. ~~Subir los MP4 a Drive~~ — hecho: enlace arriba y en el README.
 2. Comparar el video con la referencia en producción (alguien con acceso al Drive corporativo).
 3. Revisión con el CEO → ajustes.
 4. Escalar a los módulos 02–08 con la plantilla.
