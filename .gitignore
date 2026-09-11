@@ -141,3 +141,27 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# ============================================================
+# Producción de video (HyperFrames)
+# ============================================================
+# Los MP4 no van en git: cada re-render suma decenas de MB al historial para siempre.
+# El video final se comparte por enlace (Drive / GitHub Release) — ver README.
+videos/*/renders/
+*.mp4
+!video-presentacion/renders/*.mp4
+!assets/videos/*.mp4
+!videos/*/assets/**/*.mp4
+
+# Capturas de revisión (se regeneran con `npx hyperframes snapshot`)
+videos/*/snapshots/
+
+# Intermedios de construcción
+videos/*/.hyperframes/
+videos/*/capture/
+.impeccable/
+**/.impeccable/
+__pycache__/
+
+# Modelo de voz (~60 MB). Se baja con: python tools/descargar-voz.py
+tools/voces/
