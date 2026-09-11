@@ -8,7 +8,7 @@ issue y qué queda pendiente antes de la revisión con el CEO.
 | **Entregable** | Módulo 01 «Actor vial» de la capacitación *Seguridad Vial para Pasajeros* |
 | **Proyecto** | [`videos/pesv-m01-mando/`](../videos/pesv-m01-mando/) — formato «Centro de mando» |
 | **Video** | MP4 1920×1080, 30 fps, **2:31**, con locución, efectos y cama musical · 39 MB |
-| **Enlace para el CEO** | [Videos HyperFrames — Google Drive](https://drive.google.com/drive/folders/1PKZKu0SMgxrLslJFHqhBHAsHuTa-K8ig?usp=sharing) · `PESV-M01-Centro-de-mando.mp4` |
+| **Enlace para el CEO** | [Videos HyperFrames — Google Drive](https://drive.google.com/drive/folders/1PKZKu0SMgxrLslJFHqhBHAsHuTa-K8ig?usp=sharing) · archivo `01 - … Capacitacion completa narrada (2m31)` |
 | **Versión corta** | [`videos/pesv-m01-ritmo/`](../videos/pesv-m01-ritmo/) — formato «Ritmo»: 60 s al compás de una pista, sin voz · 15 MB |
 | **Motor** | [HyperFrames](https://github.com/heygen-com/hyperframes) 0.8.31 (HTML → MP4) |
 

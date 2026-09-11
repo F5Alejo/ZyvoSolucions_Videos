@@ -29,12 +29,17 @@ videos/
 Todos los videos terminados están en la carpeta compartida de Drive:
 **[Videos HyperFrames — Google Drive](https://drive.google.com/drive/folders/1PKZKu0SMgxrLslJFHqhBHAsHuTa-K8ig?usp=sharing)**
 
-| Video | Proyecto | Archivo en Drive |
-| --- | --- | --- |
-| PESV · Módulo 01 «Actor vial» — Centro de mando (2:31, con voz) · **entregable del PoC** | `videos/pesv-m01-mando/` | `PESV-M01-Centro-de-mando.mp4` (y `-vista`, versión liviana) |
-| PESV · Módulo 01 «Actor vial» — Ritmo (1:00, sin voz) | `videos/pesv-m01-ritmo/` | `PESV-M01-Ritmo.mp4` |
-| PESV · Módulo 01 «Actor vial» — fiel a las diapositivas (2:36) | fuera del repo | `PESV-M01-Actor-vial.mp4` |
-| RiskMann · Sala de control (1:08) — *no usar comercialmente aún* | `videos/riskmann-sala-de-control/` | `RiskMann-Sala-de-Control.mp4` (y `-narrado`) |
+| # | Archivo en Drive | Qué es | Proyecto |
+| --- | --- | --- | --- |
+| 01 | `Capacitacion completa narrada (2m31)` | Módulo 1 completo con voz — **entregable del PoC** | `videos/pesv-m01-mando/` |
+| 01b | `Capacitacion completa (version liviana para compartir)` | El mismo 01, comprimido a 11 MB | `videos/pesv-m01-mando/` |
+| 02 | `Resumen dinamico sin voz (1m00)` | Pieza corta de gancho, al compás de una pista | `videos/pesv-m01-ritmo/` |
+| 03 | `Version presentacion fiel a las diapositivas (2m36)` | El módulo siguiendo el documento original | fuera del repo |
+| 04 | `Presentacion de la plataforma - Video promocional (1m08)` | Marketing de RiskMann, sin sonido — *no usar comercialmente aún* | `videos/riskmann-sala-de-control/` |
+| 04b | `Presentacion de la plataforma - Video promocional narrado (1m08)` | El mismo 04, con voz y música | `videos/riskmann-sala-de-control/` |
+
+Los archivos 01–03 empiezan por `NN - Seguridad Vial para Pasajeros - Modulo 1 Actor Vial - …` y
+los 04 por `NN - RiskMann - …`; el número es el orden sugerido para verlos.
 
 Los MP4 **no se versionan** (cada render pesa decenas de MB): se generan con el comando
 de abajo y se comparten por enlace. *Sala de control* está pendiente de corregir el logo
