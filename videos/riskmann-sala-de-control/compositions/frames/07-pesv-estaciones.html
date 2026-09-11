@@ -1,0 +1,707 @@
+<template>
+  <style>
+
+    /* Montserrat — la familia normativa de frame.md. Los .woff2 viven en
+       assets/fonts/, así que la familia se declara con archivo real: sin esto
+       el render en Chrome headless caería a una genérica y la tipografía
+       de toda la pieza sería otra. Es un archivo variable (100-900). */
+    @font-face {
+      font-family: "Montserrat";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
+    @font-face {
+      font-family: "Montserrat";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      color: #F2F7FF;
+      font-family: "Montserrat", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── layers ───────────────────────────────────────────────── */
+    .f07-layer {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+    }
+
+    /* full-bleed ground (clip layer, never on #root) */
+    .f07-ground {
+      background:
+        radial-gradient(1300px 820px at 960px 440px, rgba(15, 57, 107, 0.52) 0%, rgba(5, 20, 39, 0) 74%),
+        #051427;
+    }
+
+    /* ── virtual camera: ONE .world wrapper ───────────────────── */
+    .f07-world {
+      position: absolute;
+      inset: 0;
+      transform-origin: 50% 50%;
+      will-change: transform;
+      filter: url(#f07-streak);
+    }
+
+    /* parallax plates (all children of the world; written by applyCamera) */
+    .f07-plate {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 9600px;
+      height: 1080px;
+      will-change: transform;
+    }
+
+    /* far plate — ghost station numerals */
+    .f07-ghost-num {
+      position: absolute;
+      top: 236px;
+      width: 640px;
+      margin-left: -320px;
+      text-align: center;
+      font-size: 300px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      color: rgba(142, 143, 196, 0.075);
+    }
+
+    /* mid plate — the telemetry rail */
+    .f07-rail {
+      position: absolute;
+      left: 0;
+      top: 748px;
+      width: 9600px;
+      height: 1px;
+      background: rgba(142, 143, 196, 0.30);
+    }
+    .f07-ticks {
+      position: absolute;
+      left: 0;
+      top: 749px;
+      width: 9600px;
+      height: 13px;
+      background-image: repeating-linear-gradient(
+        to right,
+        rgba(142, 143, 196, 0.34) 0px,
+        rgba(142, 143, 196, 0.34) 2px,
+        rgba(142, 143, 196, 0) 2px,
+        rgba(142, 143, 196, 0) 295px
+      );
+      background-position: 960px 0;
+    }
+    .f07-rail-tag {
+      position: absolute;
+      top: 776px;
+      width: 420px;
+      margin-left: -210px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: rgba(142, 143, 196, 0.55);
+    }
+
+    /* near plate — HUD grid (travels with the world: sells the pan) */
+    .f07-hud-grid {
+      background-image:
+        linear-gradient(to right, rgba(142, 143, 196, 0.14) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(142, 143, 196, 0.14) 1px, transparent 1px);
+      background-size: 60px 60px;
+      background-position: 0px 0px;
+    }
+
+    /* the full-width band the stations sit on */
+    .f07-band {
+      position: absolute;
+      left: 0;
+      top: 246px;
+      width: 9600px;
+      height: 392px;
+      background: linear-gradient(
+        to bottom,
+        rgba(12, 43, 83, 0) 0%,
+        rgba(12, 43, 83, 0.55) 22%,
+        rgba(12, 43, 83, 0.55) 78%,
+        rgba(12, 43, 83, 0) 100%
+      );
+      border-top: 1px solid rgba(142, 143, 196, 0.18);
+      border-bottom: 1px solid rgba(142, 143, 196, 0.18);
+    }
+
+    /* ── stations ─────────────────────────────────────────────── */
+    .f07-station {
+      position: absolute;
+      top: 302px;
+      width: 1000px;
+      height: 280px;
+      display: flex;
+      align-items: center;
+      gap: 46px;
+    }
+
+    .f07-tile {
+      flex: 0 0 auto;
+      width: 200px;
+      height: 200px;
+      border-radius: 14px;
+      background: rgba(242, 247, 255, 0.94);
+      border: 1.5px solid rgba(142, 143, 196, 0.28);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .f07-tile img {
+      width: 158px;
+      height: 158px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .f07-callout {
+      position: relative;
+      display: inline-flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 26px 44px 30px 44px;
+      border-radius: 14px;
+      background: rgba(226, 236, 248, 0.05);
+      border: 1.5px solid rgba(142, 143, 196, 0.28);
+      transform-origin: 0% 50%;
+      opacity: 0;
+    }
+    /* triangle pointing back at the icon tile */
+    .f07-callout::before {
+      content: "";
+      position: absolute;
+      left: -13px;
+      top: 50%;
+      margin-top: -12px;
+      width: 0;
+      height: 0;
+      border-top: 12px solid transparent;
+      border-bottom: 12px solid transparent;
+      border-right: 13px solid rgba(142, 143, 196, 0.34);
+    }
+    .f07-eyebrow {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #E6423C;
+    }
+    .f07-label {
+      font-size: 56px;
+      font-weight: 700;
+      line-height: 1.02;
+      letter-spacing: -0.01em;
+      color: #F2F7FF;
+      white-space: nowrap;
+    }
+    .f07-callout.f07-solo {
+      padding: 22px 46px 26px 46px;
+    }
+
+    /* ── final station: SINIESTRALIDAD VIAL ───────────────────── */
+    .f07-final {
+      position: absolute;
+      top: 254px;
+      width: 940px;
+      height: 380px;
+      display: flex;
+      align-items: center;
+      gap: 52px;
+    }
+    .f07-halo {
+      position: absolute;
+      left: 470px;
+      top: 190px;
+      width: 1180px;
+      height: 860px;
+      margin-left: -590px;
+      margin-top: -430px;
+      border-radius: 50%;
+      background: radial-gradient(
+        closest-side,
+        rgba(230, 66, 60, 0.42) 0%,
+        rgba(230, 66, 60, 0.18) 46%,
+        rgba(230, 66, 60, 0) 100%
+      );
+      opacity: 0;
+      pointer-events: none;
+    }
+    .f07-tile-xl {
+      width: 320px;
+      height: 320px;
+      border-radius: 14px;
+    }
+    .f07-tile-xl img {
+      width: 254px;
+      height: 254px;
+    }
+    .f07-final-copy {
+      position: relative;
+    }
+    .f07-final-eyebrow {
+      font-size: 19px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #E6423C;
+      margin-bottom: 14px;
+      opacity: 0;
+    }
+    .f07-final-line {
+      display: block;
+      font-size: 74px;
+      font-weight: 700;
+      line-height: 1.06;
+      letter-spacing: -0.02em;
+      color: #F2F7FF;
+      white-space: nowrap;
+      opacity: 0;
+    }
+
+    /* closing statement + drawn underline */
+    .f07-close {
+      position: absolute;
+      top: 686px;
+      width: 1200px;
+      margin-left: -600px;
+      text-align: center;
+    }
+    .f07-close-wrap {
+      position: relative;
+      display: inline-block;
+      padding: 0 8px;
+    }
+    .f07-close-text {
+      position: relative;
+      z-index: 1;
+      font-size: 46px;
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      color: #F2F7FF;
+      white-space: nowrap;
+      opacity: 0;
+    }
+    .f07-underline-svg {
+      position: absolute;
+      left: 0;
+      bottom: -22px;
+      width: 100%;
+      height: 24px;
+      z-index: 0;
+      overflow: visible;
+    }
+    .f07-underline-svg path {
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+    }
+
+    /* ── camera-fixed chrome: corner brackets (OUTSIDE the world) ─ */
+    .f07-bracket {
+      position: absolute;
+      width: 128px;
+      height: 128px;
+      opacity: 0.6;
+    }
+    .f07-bracket::before,
+    .f07-bracket::after {
+      content: "";
+      position: absolute;
+      background: #8E8FC4;
+    }
+    .f07-bracket::before { width: 128px; height: 2px; }
+    .f07-bracket::after  { width: 2px; height: 128px; }
+    .f07-br-tl { top: 56px;  left: 56px;  }
+    .f07-br-tl::before { top: 0; left: 0; }
+    .f07-br-tl::after  { top: 0; left: 0; }
+    .f07-br-tr { top: 56px;  right: 56px; }
+    .f07-br-tr::before { top: 0; right: 0; }
+    .f07-br-tr::after  { top: 0; right: 0; }
+    .f07-br-bl { bottom: 56px; left: 56px; }
+    .f07-br-bl::before { bottom: 0; left: 0; }
+    .f07-br-bl::after  { bottom: 0; left: 0; }
+    .f07-br-br { bottom: 56px; right: 56px; }
+    .f07-br-br::before { bottom: 0; right: 0; }
+    .f07-br-br::after  { bottom: 0; right: 0; }
+
+    /* fixed module eyebrow, top-left inside the brackets */
+    .f07-module {
+      position: absolute;
+      left: 100px;
+      top: 108px;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #8E8FC4;
+    }
+  </style>
+
+  <div
+    id="root"
+    data-composition-id="07-pesv-estaciones"
+    data-start="0"
+    data-duration="8.5"
+    data-width="1920"
+    data-height="1080"
+  >
+    <!-- full-bleed ground -->
+    <div class="clip f07-layer f07-ground" data-start="0" data-duration="8.5" data-track-index="0"></div>
+
+    <!-- directional velocity-blur filter for the camera legs -->
+    <svg width="0" height="0" aria-hidden="true" style="position: absolute">
+      <filter id="f07-streak" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur id="f07-streak-blur" in="SourceGraphic" stdDeviation="0 0" />
+      </filter>
+    </svg>
+
+    <!-- ── the panned world ─────────────────────────────────── -->
+    <div class="clip f07-layer" data-start="0" data-duration="8.5" data-track-index="1">
+      <div class="f07-world" id="f07-world">
+
+        <!-- far parallax plate: ghost station numerals -->
+        <div class="f07-plate" id="f07-far">
+          <div class="f07-ghost-num" style="left: 960px;">01</div>
+          <div class="f07-ghost-num" style="left: 2140px;">02</div>
+          <div class="f07-ghost-num" style="left: 3320px;">03</div>
+          <div class="f07-ghost-num" style="left: 4500px;">04</div>
+          <div class="f07-ghost-num" style="left: 5680px;">05</div>
+          <div class="f07-ghost-num" style="left: 6860px;">06</div>
+          <div class="f07-ghost-num" style="left: 8040px;">07</div>
+        </div>
+
+        <!-- mid parallax plate: telemetry rail -->
+        <div class="f07-plate" id="f07-mid">
+          <div class="f07-rail"></div>
+          <div class="f07-ticks"></div>
+          <div class="f07-rail-tag" style="left: 960px;">Módulo · Seguridad vial</div>
+          <div class="f07-rail-tag" style="left: 3320px;">Módulo · Seguridad vial</div>
+          <div class="f07-rail-tag" style="left: 5680px;">Módulo · Seguridad vial</div>
+          <div class="f07-rail-tag" style="left: 8040px;">Módulo · Seguridad vial</div>
+        </div>
+
+        <!-- near plate (1.0× with the camera): HUD grid + band + stations -->
+        <div class="f07-plate">
+          <div class="f07-hud-grid" style="position: absolute; left: 0; top: 0; width: 9600px; height: 1080px;"></div>
+          <div class="f07-band"></div>
+
+          <!-- station 01 -->
+          <div class="f07-station" style="left: 460px;">
+            <div class="f07-tile"><img src="assets/seguridad_vial_icono_conductores.webp" alt="" /></div>
+            <div class="f07-callout" id="f07-co-0">
+              <div class="f07-eyebrow">Estación 01 / 07</div>
+              <div class="f07-label">CONDUCTORES</div>
+            </div>
+          </div>
+
+          <!-- station 02 -->
+          <div class="f07-station" style="left: 1640px;">
+            <div class="f07-tile"><img src="assets/seguridad_vial_icono_vehiculos.webp" alt="" /></div>
+            <div class="f07-callout" id="f07-co-1">
+              <div class="f07-eyebrow">Estación 02 / 07</div>
+              <div class="f07-label">VEHÍCULOS</div>
+            </div>
+          </div>
+
+          <!-- station 03 -->
+          <div class="f07-station" style="left: 2820px;">
+            <div class="f07-tile"><img src="assets/seguridad_vial_icono_inspecciones.webp" alt="" /></div>
+            <div class="f07-callout" id="f07-co-2">
+              <div class="f07-eyebrow">Estación 03 / 07</div>
+              <div class="f07-label">INSPECCIONES</div>
+            </div>
+          </div>
+
+          <!-- station 04 — one-word callout -->
+          <div class="f07-station" style="left: 4000px;">
+            <div class="f07-tile"><img src="assets/seguridad_vial_icono_mantenimientos.webp" alt="" /></div>
+            <div class="f07-callout f07-solo" id="f07-co-3">
+              <div class="f07-label">MANTENIMIENTOS</div>
+            </div>
+          </div>
+
+          <!-- station 05 — one-word callout -->
+          <div class="f07-station" style="left: 5180px;">
+            <div class="f07-tile"><img src="assets/seguridad_vial_icono_formatos.webp" alt="" /></div>
+            <div class="f07-callout f07-solo" id="f07-co-4">
+              <div class="f07-label">FORMATOS</div>
+            </div>
+          </div>
+
+          <!-- station 06 — one-word callout -->
+          <div class="f07-station" style="left: 6360px;">
+            <div class="f07-tile"><img src="assets/seguridad_vial_icono_infografias.webp" alt="" /></div>
+            <div class="f07-callout f07-solo" id="f07-co-5">
+              <div class="f07-label">INFOGRAFÍAS</div>
+            </div>
+          </div>
+
+          <!-- station 07 — the terminal station, held -->
+          <div class="f07-halo" id="f07-halo" style="left: 8040px;"></div>
+          <div class="f07-final" style="left: 7570px;">
+            <div class="f07-tile f07-tile-xl">
+              <img src="assets/seguridad_vial_icono_siniestralidad_vial.webp" alt="" />
+            </div>
+            <div class="f07-final-copy">
+              <div class="f07-final-eyebrow" id="f07-final-eyebrow">Estación 07 / 07</div>
+              <span class="f07-final-line" id="f07-final-l1">SINIESTRALIDAD</span>
+              <span class="f07-final-line" id="f07-final-l2">VIAL</span>
+            </div>
+          </div>
+
+          <!-- the landing line + drawn underline -->
+          <div class="f07-close" style="left: 8040px;">
+            <span class="f07-close-wrap">
+              <span class="f07-close-text" id="f07-close-text">El PESV completo. No una parte.</span>
+              <svg class="f07-underline-svg" viewBox="0 0 500 24" preserveAspectRatio="none">
+                <path
+                  id="f07-underline"
+                  pathLength="100"
+                  d="M0,13 Q31,3 62,13 Q93,23 125,13 Q156,3 187,13 Q218,23 250,13 Q281,3 312,13 Q343,23 375,13 Q406,3 437,13 Q468,23 500,13"
+                  fill="none"
+                  stroke="#E6423C"
+                  stroke-width="3.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── camera-fixed HUD chrome (never pans) ───────────────── -->
+    <div class="clip f07-layer" data-start="0" data-duration="8.5" data-track-index="2">
+      <div class="f07-bracket f07-br-tl"></div>
+      <div class="f07-bracket f07-br-tr"></div>
+      <div class="f07-bracket f07-br-bl"></div>
+      <div class="f07-bracket f07-br-br"></div>
+      <div class="f07-module">PESV · Recorrido de estaciones</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      var SPACING = 1180;
+
+      var world = document.getElementById("f07-world");
+      var farPlate = document.getElementById("f07-far");
+      var midPlate = document.getElementById("f07-mid");
+      var blurNode = document.getElementById("f07-streak-blur");
+
+      /* ── viewport-change, PAN mode ────────────────────────────
+         Single camera state; ONE writer composes the world transform.
+         Single-wrapper counter-translate: T = -offset x S.
+         The two background plates counter-move inside the world to
+         yield 0.35x / 0.72x parallax against the station plate.      */
+      var cam = { offset: 0, scale: 1 };
+      var blurProxy = { v: 0 };
+
+      function applyCamera() {
+        var tx = -cam.offset * cam.scale;
+        world.style.transform = "translate(" + tx + "px, 0px) scale(" + cam.scale + ")";
+        farPlate.style.transform = "translateX(" + (cam.offset * 0.65) + "px)";
+        midPlate.style.transform = "translateX(" + (cam.offset * 0.28) + "px)";
+      }
+      function writeBlur() {
+        blurNode.setAttribute("stdDeviation", blurProxy.v + " 0");
+      }
+      applyCamera(); // seed frame 0 — camera opens on station 01
+      writeBlur();   // seed at 0: the streak lives mid-leg, not at t=0
+
+      /* pan-to-target leg: ease-in-out, blur envelope split at the
+         velocity peak (motion-blur-streak, camera-travel carve-out) */
+      function panTo(index, at, dur, peak) {
+        tl.to(
+          cam,
+          {
+            offset: index * SPACING,
+            duration: dur,
+            ease: "power2.inOut",
+            onUpdate: applyCamera
+          },
+          at
+        );
+        if (peak) {
+          tl.to(
+            blurProxy,
+            { v: peak, duration: dur / 2, ease: "power2.in", onUpdate: writeBlur },
+            at
+          );
+          tl.to(
+            blurProxy,
+            { v: 0, duration: dur / 2, ease: "power2.out", onUpdate: writeBlur },
+            at + dur / 2
+          );
+        }
+      }
+
+      /* spring-pop callout, transform-origin pinned at the triangle tip */
+      function popCallout(sel, at, overshoot) {
+        tl.fromTo(
+          sel,
+          { scale: 0, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.46, ease: "back.out(" + overshoot + ")" },
+          at
+        );
+      }
+
+      /* ── Scene 1 (0.0–1.6s) — camera opens framed on station 01.
+         The icon is on screen from frame 0; its callout springs a
+         beat after the station has settled. ─────────────────────── */
+      popCallout("#f07-co-0", 0.42, 1.5);
+      tl.fromTo(
+        "#f07-co-0 .f07-eyebrow",
+        { y: 14, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.4, ease: "power2.out" },
+        0.62
+      );
+
+      /* ── Scene 2 (1.6–3.4s) — one continuous lateral move that
+         decelerates onto VEHÍCULOS, then onto INSPECCIONES. Each
+         callout reveals only once its station is centered. ──────── */
+      panTo(1, 1.55, 0.70, 0);
+      popCallout("#f07-co-1", 2.22, 1.7);
+      tl.fromTo(
+        "#f07-co-1 .f07-eyebrow",
+        { y: 14, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.34, ease: "power2.out" },
+        2.38
+      );
+
+      panTo(2, 2.55, 0.70, 0);
+      popCallout("#f07-co-2", 3.22, 1.7);
+      tl.fromTo(
+        "#f07-co-2 .f07-eyebrow",
+        { y: 14, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.34, ease: "power2.out" },
+        3.36
+      );
+
+      /* ── Scene 3 (3.4–5.4s) — the traverse accelerates through
+         MANTENIMIENTOS · FORMATOS · INFOGRAFÍAS, each leg carrying a
+         lateral motion-blur streak. One-word callouts, faster pops. */
+      panTo(3, 3.45, 0.50, 14);
+      popCallout("#f07-co-3", 3.90, 2.0);
+
+      panTo(4, 4.08, 0.45, 15);
+      popCallout("#f07-co-4", 4.49, 2.0);
+
+      panTo(5, 4.70, 0.45, 16);
+      popCallout("#f07-co-5", 5.11, 2.0);
+
+      /* ── Scene 4 (5.4–8.0s) — the whip sweep brakes hard onto the
+         terminal station. Position: ramp-in → linear burst → power4
+         tail. Blur: 0→PEAK on the ramp, held through the burst,
+         PEAK→0 across the tail. Camera then goes static. ────────── */
+      var OFF_5 = 5 * SPACING;
+      var OFF_6 = 6 * SPACING;
+      var WHIP_AT = 5.35;
+
+      tl.to(
+        cam,
+        { offset: OFF_5 + SPACING * 0.10, duration: 0.12, ease: "power3.in", onUpdate: applyCamera },
+        WHIP_AT
+      );
+      tl.to(
+        cam,
+        { offset: OFF_5 + SPACING * 0.75, duration: 0.10, ease: "none", onUpdate: applyCamera },
+        WHIP_AT + 0.12
+      );
+      tl.to(
+        cam,
+        { offset: OFF_6, duration: 0.45, ease: "power4.out", onUpdate: applyCamera },
+        WHIP_AT + 0.22
+      );
+
+      tl.to(
+        blurProxy,
+        { v: 18, duration: 0.12, ease: "power3.in", onUpdate: writeBlur },
+        WHIP_AT
+      );
+      /* blur rests at PEAK through the linear burst */
+      tl.to(
+        blurProxy,
+        { v: 0, duration: 0.45, ease: "power4.out", onUpdate: writeBlur },
+        WHIP_AT + 0.22
+      );
+
+      /* a small settle push so the terminal station holds ~45% of frame */
+      tl.to(
+        cam,
+        { scale: 1.05, duration: 0.95, ease: "power3.out", onUpdate: applyCamera },
+        WHIP_AT + 0.22
+      );
+
+      /* halo ambiental — the one red focus glow of the scene */
+      tl.fromTo(
+        "#f07-halo",
+        { opacity: 0, scale: 0.82 },
+        { opacity: 1, scale: 1, duration: 0.85, ease: "power2.out" },
+        5.90
+      );
+
+      tl.fromTo(
+        "#f07-final-eyebrow",
+        { y: 16, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.38, ease: "power2.out" },
+        6.00
+      );
+      tl.fromTo(
+        "#f07-final-l1",
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" },
+        6.10
+      );
+      tl.fromTo(
+        "#f07-final-l2",
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" },
+        6.26
+      );
+
+      /* the landing line + its drawn underline (css-marker-patterns,
+         scribble mode: stroke-dashoffset draw on a normalized path) */
+      tl.fromTo(
+        "#f07-close-text",
+        { y: 22, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.46, ease: "power3.out" },
+        6.58
+      );
+      tl.to(
+        "#f07-underline",
+        { strokeDashoffset: 0, duration: 0.85, ease: "power1.inOut" },
+        6.95
+      );
+
+      /* holds static to 8.0s — no exit tween (not the final frame) */
+
+      window.__timelines["07-pesv-estaciones"] = tl;
+    })();
+  </script>
+</template>

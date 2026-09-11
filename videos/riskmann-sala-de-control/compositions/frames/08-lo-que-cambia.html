@@ -1,0 +1,495 @@
+<template>
+  <div
+    id="root"
+    data-composition-id="08-lo-que-cambia"
+    data-start="0"
+    data-duration="7.5"
+    data-width="1920"
+    data-height="1080"
+  >
+    <!-- ===== Capa 1 — retícula / HUD (fondo a pantalla completa, estático desde t=0) ===== -->
+    <div
+      class="clip"
+      id="lqc-ground"
+      data-start="0"
+      data-duration="7.5"
+      data-track-index="0"
+    >
+      <div class="lqc-field"></div>
+      <div class="lqc-grid"></div>
+
+      <!-- cuatro marcas de esquina en L (lavanda) -->
+      <div class="lqc-br lqc-br-tl"></div>
+      <div class="lqc-br lqc-br-tr"></div>
+      <div class="lqc-br lqc-br-bl"></div>
+      <div class="lqc-br lqc-br-br"></div>
+
+      <!-- cromo de ritmo: cinco marcas de compás -->
+      <div class="lqc-ticks" aria-hidden="true">
+        <i class="lqc-tick"></i><i class="lqc-tick"></i><i class="lqc-tick"></i><i
+          class="lqc-tick"
+        ></i><i class="lqc-tick"></i>
+      </div>
+
+      <!-- Capa 3 — viñeta -->
+      <div class="lqc-vignette"></div>
+    </div>
+
+    <!-- ===== Capa 2 — frase (los beats) ===== -->
+    <div
+      class="clip"
+      id="lqc-stage"
+      data-start="0"
+      data-duration="7.5"
+      data-track-index="1"
+    >
+      <svg width="0" height="0" aria-hidden="true" class="lqc-defs">
+        <filter id="lqc-streak" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur id="lqc-streak-blur" in="SourceGraphic" stdDeviation="0 0" />
+        </filter>
+      </svg>
+
+      <!-- Beat 1 -->
+      <div class="lqc-beat" id="lqc-b1">
+        <div class="lqc-phrase lqc-phrase-a">UN SOLO LUGAR</div>
+      </div>
+
+      <!-- Beat 2 -->
+      <div class="lqc-beat" id="lqc-b2">
+        <!-- Partido en glifos: el colapso de interletraje se anima como x por
+             carácter, no como letterSpacing (esa propiedad reflota el texto y
+             encaja los glifos en píxeles enteros, lo que tiembla bajo el motor
+             de captura por seek). -->
+        <div class="lqc-phrase lqc-phrase-a" id="lqc-b2-line"><span class="lqc-glyph">T</span><span class="lqc-glyph">O</span><span class="lqc-glyph">D</span><span class="lqc-glyph">O</span><span class="lqc-glyph">&nbsp;</span><span class="lqc-glyph">T</span><span class="lqc-glyph">R</span><span class="lqc-glyph">A</span><span class="lqc-glyph">Z</span><span class="lqc-glyph">A</span><span class="lqc-glyph">B</span><span class="lqc-glyph">L</span><span class="lqc-glyph">E</span></div>
+      </div>
+
+      <!-- Beat 3 -->
+      <div class="lqc-beat" id="lqc-b3">
+        <div class="lqc-mask">
+          <div class="lqc-phrase lqc-phrase-b" id="lqc-b3-line">
+            AUDITABLE EN<br /><span class="lqc-hot">MINUTOS</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Beat 4 -->
+      <div class="lqc-beat" id="lqc-b4">
+        <div class="lqc-phrase lqc-phrase-b" id="lqc-b4-line" style="filter: url(#lqc-streak)">
+          EN TIEMPO REAL
+        </div>
+      </div>
+
+      <!-- Beat 5 — los cuatro fragmentos vuelven a las esquinas del HUD -->
+      <div class="lqc-burst" id="lqc-burst">
+        <div class="lqc-frag" data-target-x="-690" data-target-y="-330">UN SOLO LUGAR</div>
+        <div class="lqc-frag" data-target-x="690" data-target-y="-330">TODO TRAZABLE</div>
+        <div class="lqc-frag" data-target-x="-690" data-target-y="330">AUDITABLE EN MINUTOS</div>
+        <div class="lqc-frag" data-target-x="690" data-target-y="330">EN TIEMPO REAL</div>
+      </div>
+
+      <!-- Beat 5 — línea de cierre al centro -->
+      <div class="lqc-beat" id="lqc-close">
+        <div class="lqc-close-stack">
+          <div class="lqc-rule" id="lqc-rule"></div>
+          <div class="lqc-closeline">
+            <span class="lqc-w">Eso</span> <span class="lqc-w">es</span>
+            <span class="lqc-w">un</span> <span class="lqc-w">centro</span>
+            <span class="lqc-w">de</span> <span class="lqc-w">control.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+
+    /* Montserrat — la familia normativa de frame.md. Los .woff2 viven en
+       assets/fonts/, así que la familia se declara con archivo real: sin esto
+       el render en Chrome headless caería a una genérica y la tipografía
+       de toda la pieza sería otra. Es un archivo variable (100-900). */
+    @font-face {
+      font-family: "Montserrat";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
+    @font-face {
+      font-family: "Montserrat";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      font-family: "Montserrat", sans-serif;
+      color: #f2f7ff;
+    }
+
+    #root .clip {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+    }
+
+    /* ---------- fondo / HUD ---------- */
+    .lqc-field {
+      position: absolute;
+      inset: 0;
+      background: #051427;
+    }
+    .lqc-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(
+          to right,
+          rgba(142, 143, 196, 0.14) 0,
+          rgba(142, 143, 196, 0.14) 1px,
+          transparent 1px,
+          transparent 60px
+        ),
+        repeating-linear-gradient(
+          to bottom,
+          rgba(142, 143, 196, 0.14) 0,
+          rgba(142, 143, 196, 0.14) 1px,
+          transparent 1px,
+          transparent 60px
+        );
+    }
+    .lqc-vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        ellipse 62% 62% at 50% 44%,
+        rgba(5, 20, 39, 0) 0%,
+        rgba(3, 12, 24, 0.45) 62%,
+        rgba(2, 8, 18, 0.82) 100%
+      );
+    }
+
+    .lqc-br {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border: 0 solid rgba(142, 143, 196, 0.5);
+    }
+    .lqc-br-tl {
+      left: 72px;
+      top: 72px;
+      border-left-width: 2px;
+      border-top-width: 2px;
+    }
+    .lqc-br-tr {
+      left: 1728px;
+      top: 72px;
+      border-right-width: 2px;
+      border-top-width: 2px;
+    }
+    .lqc-br-bl {
+      left: 72px;
+      top: 760px;
+      border-left-width: 2px;
+      border-bottom-width: 2px;
+    }
+    .lqc-br-br {
+      left: 1728px;
+      top: 760px;
+      border-right-width: 2px;
+      border-bottom-width: 2px;
+    }
+
+    .lqc-ticks {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 846px;
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+    }
+    .lqc-tick {
+      display: block;
+      width: 6px;
+      height: 22px;
+      background: #e6423c;
+      opacity: 0.18;
+    }
+
+    /* ---------- frases ---------- */
+    .lqc-defs {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    .lqc-beat {
+      position: absolute;
+      left: 72px;
+      right: 72px;
+      top: 72px;
+      height: 808px;
+      display: grid;
+      place-items: center;
+      opacity: 0;
+    }
+    .lqc-phrase {
+      font-weight: 800;
+      line-height: 0.98;
+      letter-spacing: -0.02em;
+      text-align: center;
+      color: #f2f7ff;
+      white-space: nowrap;
+    }
+    .lqc-glyph {
+      display: inline-block;
+      will-change: transform;
+    }
+    .lqc-phrase-a {
+      font-size: 158px;
+    }
+    .lqc-phrase-b {
+      font-size: 148px;
+      white-space: normal;
+    }
+    .lqc-hot {
+      color: #e6423c;
+    }
+    .lqc-mask {
+      overflow: hidden;
+      padding: 0 24px;
+    }
+
+    /* ---------- fragmentos a las esquinas ---------- */
+    .lqc-burst {
+      position: absolute;
+      left: 72px;
+      right: 72px;
+      top: 72px;
+      height: 808px;
+    }
+    .lqc-frag {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      opacity: 0;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #a7bccc;
+      white-space: nowrap;
+      will-change: transform;
+    }
+
+    /* ---------- cierre ---------- */
+    .lqc-close-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 34px;
+    }
+    .lqc-rule {
+      width: 60px;
+      height: 4px;
+      border-radius: 2px;
+      background: #e6423c;
+      opacity: 0;
+    }
+    .lqc-closeline {
+      font-size: 70px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      color: #f2f7ff;
+      text-align: center;
+    }
+    .lqc-w {
+      display: inline-block;
+      opacity: 0;
+      will-change: transform;
+    }
+  </style>
+
+  <script>
+    (function () {
+      var root = document.querySelector('[data-composition-id="08-lo-que-cambia"]');
+      var q = function (sel) {
+        return root.querySelector(sel);
+      };
+      var qa = function (sel) {
+        return Array.prototype.slice.call(root.querySelectorAll(sel));
+      };
+
+      var tl = gsap.timeline({ paused: true });
+
+      /* ---- una sola rejilla de tempo: todo lee de aquí ---- */
+      var PULSE = 0.2;
+      var BEATS = [PULSE * 0.25, PULSE * 7, PULSE * 13, PULSE * 19, PULSE * 25];
+      // = [0.05, 1.4, 2.6, 3.8, 5.0]
+      var SCENE_DURATION = 7;
+
+      /* ---- cromo de ritmo: cada marca se enciende en su beat ---- */
+      qa(".lqc-tick").forEach(function (tick, i) {
+        tl.fromTo(
+          tick,
+          { opacity: 0.18 },
+          { opacity: 1, duration: 0.1, ease: "power2.out" },
+          BEATS[i]
+        );
+        tl.to(tick, { opacity: 0.45, duration: 0.32, ease: "power1.out" }, BEATS[i] + 0.1);
+      });
+
+      /* ================= Scene 1 (0.0–1.4) — corte duro ================= */
+      tl.fromTo(
+        "#lqc-b1",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.001, ease: "none" },
+        BEATS[0]
+      );
+
+      /* ================= Scene 2 (1.4–2.6) — colapso de interletraje ================= */
+      tl.set("#lqc-b1", { opacity: 0 }, BEATS[1]); // corte duro: nada del beat anterior queda
+      tl.fromTo(
+        "#lqc-b2",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.001, ease: "none" },
+        BEATS[1]
+      );
+      // El interletraje inicial (0.42em sobre 158px = 66.4px por hueco) se
+      // reparte como desplazamiento acumulado desde el centro de la línea: el
+      // glifo i arranca en (i - centro) x 66.4 y viaja a 0. Índice puro, sin
+      // medir el DOM y sin tocar el layout — sólo transform.
+      (function () {
+        var glyphs = document.querySelectorAll("#lqc-b2-line .lqc-glyph");
+        var mid = (glyphs.length - 1) / 2;
+        var SPREAD = 66.4;
+        for (var i = 0; i < glyphs.length; i++) {
+          tl.fromTo(
+            glyphs[i],
+            { x: (i - mid) * SPREAD },
+            { x: 0, duration: 0.5, ease: "power4.out", immediateRender: false },
+            BEATS[1]
+          );
+        }
+      })();
+      tl.fromTo(
+        "#lqc-b2-line",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.5, ease: "power4.out" },
+        BEATS[1]
+      );
+
+      /* ========== Scene 3 (2.6–3.8) — deslizamiento enmascarado desde abajo ========== */
+      tl.set("#lqc-b2", { opacity: 0 }, BEATS[2]);
+      tl.fromTo(
+        "#lqc-b3",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.001, ease: "none" },
+        BEATS[2]
+      );
+      tl.fromTo(
+        "#lqc-b3-line",
+        { yPercent: 108, opacity: 0 },
+        { yPercent: 0, opacity: 1, duration: 0.55, ease: "circ.out" },
+        BEATS[2]
+      );
+
+      /* ================= Scene 4 (3.8–5.0) — estela de velocidad ================= */
+      var blurNode = q("#lqc-streak-blur");
+      var PEAK_BLUR = 26;
+      var MOVE_DUR = 0.5;
+      var blurProxy = { v: PEAK_BLUR };
+      var writeBlur = function () {
+        blurNode.setAttribute("stdDeviation", blurProxy.v + " 0");
+      };
+      writeBlur(); // semilla en el frame 0
+
+      tl.set("#lqc-b3", { opacity: 0 }, BEATS[3]);
+      tl.fromTo(
+        "#lqc-b4",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.001, ease: "none" },
+        BEATS[3]
+      );
+      tl.fromTo(
+        "#lqc-b4-line",
+        { x: -560, opacity: 0 },
+        { x: 0, opacity: 1, duration: MOVE_DUR, ease: "expo.out" },
+        BEATS[3]
+      );
+      tl.to(
+        blurProxy,
+        { v: 0, duration: MOVE_DUR, ease: "expo.out", onUpdate: writeBlur },
+        BEATS[3]
+      );
+
+      /* ===== Scene 5 (5.0–7.0) — center-outward-expansion a las cuatro esquinas ===== */
+      tl.set("#lqc-b4", { opacity: 0 }, BEATS[4]);
+
+      var EXPAND_DUR = 0.9;
+      var STAGGER = 0.06;
+      qa(".lqc-frag").forEach(function (el, i) {
+        tl.fromTo(
+          el,
+          { xPercent: -50, yPercent: -50, x: 0, y: 0, scale: 0.6, opacity: 0 },
+          {
+            x: Number(el.dataset.targetX),
+            y: Number(el.dataset.targetY),
+            scale: 1,
+            opacity: 1,
+            duration: EXPAND_DUR,
+            ease: "power3.out"
+          },
+          BEATS[4] + i * STAGGER
+        );
+      });
+
+      /* la línea de cierre se revela DESPUÉS de la ráfaga, por palabra */
+      tl.fromTo(
+        "#lqc-close",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.001, ease: "none" },
+        BEATS[4] + 0.55
+      );
+      tl.fromTo(
+        "#lqc-rule",
+        { opacity: 0, scaleX: 0, transformOrigin: "50% 50%" },
+        { opacity: 1, scaleX: 1, duration: 0.35, ease: "power3.out" },
+        BEATS[4] + 0.55
+      );
+      qa(".lqc-w").forEach(function (w, i) {
+        tl.fromTo(
+          w,
+          { opacity: 0, y: 26, filter: "blur(8px)" },
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 0.4,
+            ease: "power3.out"
+          },
+          BEATS[4] + 0.75 + i * 0.11
+        );
+      });
+
+      /* asentamiento final: el cierre se sostiene quieto hasta el final */
+      tl.fromTo(
+        ".lqc-close-stack",
+        { scale: 0.995 },
+        { scale: 1, duration: 0.5, ease: "sine.out" },
+        BEATS[4] + 1.45
+      );
+      window.__timelines = window.__timelines || {};
+      window.__timelines["08-lo-que-cambia"] = tl;
+    })();
+  </script>
+</template>

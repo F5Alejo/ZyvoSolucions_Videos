@@ -1,0 +1,622 @@
+<template>
+  <style>
+
+    /* Montserrat — la familia normativa de frame.md. Los .woff2 viven en
+       assets/fonts/, así que la familia se declara con archivo real: sin esto
+       el render en Chrome headless caería a una genérica y la tipografía
+       de toda la pieza sería otra. Es un archivo variable (100-900). */
+    @font-face {
+      font-family: "Montserrat";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
+    @font-face {
+      font-family: "Montserrat";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      color: #F2F7FF;
+      font-family: "Montserrat", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .f09-layer {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+    }
+
+    /* ---------- ground (full-bleed, on a clip layer) ---------- */
+    .f09-ground {
+      background:
+        radial-gradient(1180px 780px at 960px 452px, rgba(15, 57, 107, 0.50) 0%, rgba(5, 20, 39, 0) 70%),
+        #051427;
+    }
+    .f09-vignette {
+      background: radial-gradient(
+        ellipse 78% 66% at 50% 42%,
+        rgba(5, 20, 39, 0) 0%,
+        rgba(5, 20, 39, 0.50) 62%,
+        rgba(3, 12, 24, 0.92) 100%
+      );
+    }
+
+    /* ---------- HUD continuity: 60px lavender grid ---------- */
+    .f09-grid {
+      background-image:
+        linear-gradient(to right, rgba(142, 143, 196, 0.14) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(142, 143, 196, 0.14) 1px, transparent 1px);
+      background-size: 60px 60px;
+      background-position: 0px 0px;
+    }
+
+    /* ---------- HUD corner brackets: 128px arms, 2px, #8E8FC4 @ .6, inset 56 ---------- */
+    .f09-bracket {
+      position: absolute;
+      width: 130px;
+      height: 130px;
+      opacity: 0.6;
+    }
+    .f09-bracket svg {
+      display: block;
+      width: 130px;
+      height: 130px;
+      overflow: visible;
+    }
+    .f09-bracket path {
+      fill: none;
+      stroke: #8E8FC4;
+      stroke-width: 2;
+      stroke-linecap: square;
+      stroke-linejoin: miter;
+    }
+    .f09-br-tl { left: 56px;  top: 56px; }
+    .f09-br-tr { right: 56px; top: 56px; }
+    .f09-br-bl { left: 56px;  bottom: 56px; }
+    .f09-br-br { right: 56px; bottom: 56px; }
+
+    /* ---------- the furniture that clears the stage ---------- */
+    .f09-panel {
+      position: absolute;
+      width: 380px;
+      height: 210px;
+      box-sizing: border-box;
+      padding: 22px 24px;
+      border-radius: 14px;
+      background: rgba(226, 236, 248, 0.05);
+      border: 1.5px solid rgba(142, 143, 196, 0.28);
+      will-change: transform, opacity;
+    }
+    .f09-panel-eyebrow {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #8E8FC4;
+    }
+    .f09-panel-rule {
+      margin-top: 14px;
+      width: 60px;
+      height: 4px;
+      border-radius: 2px;
+      background: #E6423C;
+    }
+    .f09-track {
+      margin-top: 18px;
+      height: 6px;
+      border-radius: 6px;
+      background: rgba(230, 66, 60, 0.12);
+      overflow: hidden;
+    }
+    .f09-track i {
+      display: block;
+      height: 6px;
+      border-radius: 6px;
+      background: #E6423C;
+      opacity: 0.75;
+    }
+    .f09-dotrow {
+      margin-top: 22px;
+      display: flex;
+      gap: 10px;
+    }
+    .f09-dotrow i {
+      display: block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(142, 143, 196, 0.42);
+    }
+
+    .f09-pill {
+      position: absolute;
+      padding: 12px 30px;
+      border-radius: 100px;
+      background: rgba(230, 66, 60, 0.12);
+      border: 1.5px solid rgba(230, 66, 60, 0.22);
+      color: #E6423C;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      will-change: transform, opacity;
+    }
+
+    /* ---------- closing atmosphere: concentric rings ---------- */
+    .f09-ring {
+      position: absolute;
+      left: 960px;
+      top: 452px;
+      border: 1.5px solid rgba(142, 143, 196, 0.55);
+      border-radius: 50%;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+    .f09-ring-1 { width: 720px;  height: 720px;  margin-left: -360px; margin-top: -360px; }
+    .f09-ring-2 { width: 1060px; height: 1060px; margin-left: -530px; margin-top: -530px; }
+    .f09-ring-3 { width: 1420px; height: 1420px; margin-left: -710px; margin-top: -710px; }
+
+    /* ---------- red focus halo (ambient-glow-bloom, peak <= 0.45) ---------- */
+    .f09-halo {
+      position: absolute;
+      left: 960px;
+      top: 452px;
+      width: 980px;
+      height: 700px;
+      margin-left: -490px;
+      margin-top: -350px;
+      border-radius: 50%;
+      background: radial-gradient(
+        closest-side,
+        rgba(230, 66, 60, 0.55) 0%,
+        rgba(230, 66, 60, 0.20) 46%,
+        rgba(230, 66, 60, 0) 100%
+      );
+      opacity: 0;
+      will-change: opacity, transform;
+    }
+
+    /* ---------- the lockup ---------- */
+    .f09-lockup {
+      position: absolute;
+      left: 960px;
+      top: 452px;
+      width: 0;
+      height: 0;
+      will-change: transform;
+    }
+    .f09-mark {
+      position: absolute;
+      left: -88px;
+      top: -106px;
+      width: 176px;
+      height: 212px;
+    }
+    .f09-mark-draw {
+      position: absolute;
+      inset: 0;
+      width: 176px;
+      height: 212px;
+      overflow: visible;
+    }
+    .f09-mark-draw path,
+    .f09-mark-draw circle {
+      fill: none;
+      stroke: #F2F7FF;
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .f09-mark-img {
+      position: absolute;
+      inset: 0;
+      width: 176px;
+      height: 212px;
+      object-fit: contain;
+      opacity: 0;
+    }
+
+    .f09-wordmark {
+      position: absolute;
+      left: -150px;
+      top: -52px;
+      white-space: nowrap;
+      font-size: 100px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: #F2F7FF;
+    }
+    .f09-ltr {
+      display: inline-block;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    /* the real brand lockup (RiskMann by SOFU), matched geometry */
+    .f09-real {
+      position: absolute;
+      left: -387px;
+      top: -122px;
+      width: 820px;
+      height: 273px;
+      object-fit: contain;
+      opacity: 0;
+      will-change: opacity, transform;
+    }
+
+    /* marker sweep beneath the signature (css-marker-patterns, highlight mode) */
+    .f09-marker {
+      position: absolute;
+      left: -350px;
+      top: 168px;
+      width: 700px;
+      height: 4px;
+      border-radius: 2px;
+      background: #E6423C;
+      transform-origin: left center;
+    }
+    .f09-signline {
+      position: absolute;
+      left: -600px;
+      top: 214px;
+      width: 1200px;
+      text-align: center;
+      font-size: 30px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      line-height: 1.3;
+      color: #A7BCCC;
+      clip-path: inset(0 100% 0 0);
+    }
+  </style>
+
+  <div
+    id="root"
+    data-composition-id="09-cierre-riskmann"
+    data-start="0"
+    data-duration="8"
+    data-width="1920"
+    data-height="1080"
+  >
+    <!-- ===== full-bleed ground ===== -->
+    <div class="clip f09-layer f09-ground" data-start="0" data-duration="8" data-track-index="0"></div>
+
+    <!-- ===== HUD: grid + corner brackets (present at t=0, dissolved in Scene 1) ===== -->
+    <div class="clip f09-layer" data-start="0" data-duration="8" data-track-index="1">
+      <div class="f09-layer f09-grid" id="f09-grid"></div>
+      <div class="f09-bracket f09-br-tl" id="f09-br-0">
+        <svg viewBox="0 0 130 130"><path d="M 1 129 L 1 1 L 129 1" /></svg>
+      </div>
+      <div class="f09-bracket f09-br-tr" id="f09-br-1">
+        <svg viewBox="0 0 130 130"><path d="M 129 129 L 129 1 L 1 1" /></svg>
+      </div>
+      <div class="f09-bracket f09-br-bl" id="f09-br-2">
+        <svg viewBox="0 0 130 130"><path d="M 1 1 L 1 129 L 129 129" /></svg>
+      </div>
+      <div class="f09-bracket f09-br-br" id="f09-br-3">
+        <svg viewBox="0 0 130 130"><path d="M 129 1 L 129 129 L 1 129" /></svg>
+      </div>
+    </div>
+
+    <!-- ===== Scene 1 - the panels / pills still in frame ===== -->
+    <div class="clip f09-layer" data-start="0" data-duration="8" data-track-index="2">
+      <div class="f09-panel f09-furn" id="f09-fu-0" style="left: 280px; top: 215px;"
+           data-out-x="-1000" data-out-y="-150">
+        <div class="f09-panel-eyebrow">Control de personal</div>
+        <div class="f09-panel-rule"></div>
+        <div class="f09-track"><i style="width: 72%"></i></div>
+        <div class="f09-track"><i style="width: 44%"></i></div>
+        <div class="f09-dotrow"><i></i><i></i><i></i><i></i></div>
+      </div>
+      <div class="f09-panel f09-furn" id="f09-fu-1" style="left: 1260px; top: 215px;"
+           data-out-x="1000" data-out-y="-150">
+        <div class="f09-panel-eyebrow">Seguridad vial</div>
+        <div class="f09-panel-rule"></div>
+        <div class="f09-track"><i style="width: 58%"></i></div>
+        <div class="f09-track"><i style="width: 81%"></i></div>
+        <div class="f09-dotrow"><i></i><i></i><i></i><i></i></div>
+      </div>
+      <div class="f09-panel f09-furn" id="f09-fu-2" style="left: 280px; top: 535px;"
+           data-out-x="-1000" data-out-y="240">
+        <div class="f09-panel-eyebrow">Capacitaciones</div>
+        <div class="f09-panel-rule"></div>
+        <div class="f09-track"><i style="width: 66%"></i></div>
+        <div class="f09-track"><i style="width: 35%"></i></div>
+        <div class="f09-dotrow"><i></i><i></i><i></i><i></i></div>
+      </div>
+      <div class="f09-panel f09-furn" id="f09-fu-3" style="left: 1260px; top: 535px;"
+           data-out-x="1000" data-out-y="240">
+        <div class="f09-panel-eyebrow">Empresas</div>
+        <div class="f09-panel-rule"></div>
+        <div class="f09-track"><i style="width: 49%"></i></div>
+        <div class="f09-track"><i style="width: 77%"></i></div>
+        <div class="f09-dotrow"><i></i><i></i><i></i><i></i></div>
+      </div>
+
+      <div class="f09-pill f09-furn" id="f09-fu-4" style="left: 810px; top: 262px;"
+           data-out-x="0" data-out-y="-620">SG-SST</div>
+      <div class="f09-pill f09-furn" id="f09-fu-5" style="left: 840px; top: 436px;"
+           data-out-x="0" data-out-y="-680">PESV</div>
+      <div class="f09-pill f09-furn" id="f09-fu-6" style="left: 758px; top: 610px;"
+           data-out-x="0" data-out-y="620">Tiempo real</div>
+    </div>
+
+    <!-- ===== closing atmosphere: concentric rings ===== -->
+    <div class="clip f09-layer" data-start="0" data-duration="8" data-track-index="3">
+      <div class="f09-ring f09-ring-1" id="f09-ring-0"></div>
+      <div class="f09-ring f09-ring-2" id="f09-ring-1"></div>
+      <div class="f09-ring f09-ring-3" id="f09-ring-2"></div>
+    </div>
+
+    <!-- ===== red focus halo, behind the mark ===== -->
+    <div class="clip f09-layer" data-start="0" data-duration="8" data-track-index="4">
+      <div class="f09-halo" id="f09-halo"></div>
+    </div>
+
+    <!-- ===== the lockup ===== -->
+    <div class="clip f09-layer" data-start="0" data-duration="8" data-track-index="5">
+      <div class="f09-lockup" id="f09-lockup">
+        <div class="f09-mark" id="f09-mark">
+          <svg class="f09-mark-draw" id="f09-mark-draw" viewBox="0 0 291 350">
+            <circle id="f09-seg-0" cx="185" cy="133" r="80" />
+            <path id="f09-seg-1" d="M 78 148 L 156 176 L 132 216" />
+            <path id="f09-seg-2" d="M 42 170 A 44 44 0 0 0 22 252" />
+            <path id="f09-seg-3" d="M 78 288 A 48 48 0 0 0 154 286" />
+          </svg>
+          <img class="f09-mark-img" id="f09-mark-img" src="assets/riskmann_icono_blanco.png" alt="" />
+        </div>
+
+        <div class="f09-wordmark" id="f09-wordmark"><span class="f09-ltr" id="f09-l0">R</span><span class="f09-ltr" id="f09-l1">i</span><span class="f09-ltr" id="f09-l2">s</span><span class="f09-ltr" id="f09-l3">k</span><span class="f09-ltr" id="f09-l4">M</span><span class="f09-ltr" id="f09-l5">a</span><span class="f09-ltr" id="f09-l6">n</span><span class="f09-ltr" id="f09-l7">n</span></div>
+
+        <img class="f09-real" id="f09-real" src="assets/riskmann_logo_blanco.png" alt="" />
+
+        <div class="f09-marker" id="f09-marker"></div>
+        <div class="f09-signline" id="f09-signline">Gesti&oacute;n de riesgo laboral y seguridad vial</div>
+      </div>
+    </div>
+
+    <div class="clip f09-layer f09-vignette" data-start="0" data-duration="8" data-track-index="6"></div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      /* ==========================================================
+         Scene 1 (0.0-1.6s) - DESPEJE.
+         The panels and pills still in frame disperse off the four
+         edges (center-outward-expansion machinery run OUTWARD,
+         out-easing, staggered by index) while the HUD grid is
+         dissolved outward-in and the corner brackets release.
+         This is the only frame where the HUD leaves.
+         ========================================================== */
+      var furn = Array.prototype.slice.call(document.querySelectorAll(".f09-furn"));
+
+      /* the formation is on screen at t=0 - no CSS-hidden start */
+      furn.forEach(function (el) {
+        gsap.set(el, { x: 0, y: 0, opacity: 1 });
+      });
+
+      furn.forEach(function (el, i) {
+        var at = 0.06 + i * 0.06;
+        tl.to(
+          el,
+          {
+            x: Number(el.dataset.outX),
+            y: Number(el.dataset.outY),
+            duration: 0.92,
+            ease: "power3.out"
+          },
+          at
+        );
+        tl.to(el, { opacity: 0, duration: 0.36, ease: "power1.in" }, at + 0.46);
+      });
+
+      /* grid: dissolved outward-in - the outer field goes first,
+         the centre is the last thing to let go. */
+      tl.fromTo(
+        "#f09-grid",
+        { clipPath: "circle(1500px at 960px 452px)" },
+        { clipPath: "circle(0px at 960px 452px)", duration: 1.3, ease: "power2.inOut" },
+        0.14
+      );
+
+      /* brackets: released outward, one after another */
+      var BR_DX = [-30, 30, -30, 30];
+      var BR_DY = [-24, -24, 24, 24];
+      for (var b = 0; b < 4; b++) {
+        tl.to(
+          "#f09-br-" + b,
+          {
+            x: BR_DX[b],
+            y: BR_DY[b],
+            opacity: 0,
+            duration: 0.56,
+            ease: "power2.out"
+          },
+          0.10 + b * 0.07
+        );
+      }
+
+      /* ==========================================================
+         Scene 2 (1.6-3.4s) - the isotype BLOOMS from zero at centre
+         (spring-pop-entrance, power3.out long-tail settle, no
+         overshoot) and its contour DRAWS ITSELF (svg-path-draw,
+         measured getTotalLength, segments staggered at ~75%).
+         A contained red halo blooms behind it (ambient glow,
+         peak 0.40) over the closing rings.
+         ========================================================== */
+      tl.fromTo(
+        "#f09-mark",
+        { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.64, ease: "power3.out" },
+        1.62
+      );
+
+      var segs = ["#f09-seg-0", "#f09-seg-1", "#f09-seg-2", "#f09-seg-3"];
+      segs.forEach(function (sel) {
+        var p = document.querySelector(sel);
+        var len = p.getTotalLength() * 1.02;
+        p.style.strokeDasharray = String(len);
+        p.style.strokeDashoffset = String(len);
+      });
+      var SEG_AT = [1.70, 2.08, 2.40, 2.66];
+      var SEG_DUR = [0.50, 0.44, 0.38, 0.32];
+      segs.forEach(function (sel, i) {
+        tl.to(sel, { strokeDashoffset: 0, duration: SEG_DUR[i], ease: "power2.out" }, SEG_AT[i]);
+      });
+
+      /* draw -> fill: the solid white isotype seats as the last stroke lands */
+      tl.fromTo(
+        "#f09-mark-img",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.42, ease: "power2.out" },
+        2.96
+      );
+      tl.to("#f09-mark-draw", { opacity: 0, duration: 0.4, ease: "power1.out" }, 3.14);
+
+      /* halo bloom - lands with the mark's settle, then a bounded breathe */
+      tl.fromTo(
+        "#f09-halo",
+        { opacity: 0, scale: 0.84 },
+        { opacity: 0.40, scale: 1, duration: 0.9, ease: "power2.out" },
+        1.66
+      );
+      var haloEl = document.getElementById("f09-halo");
+      var haloPhase = { p: 0 };
+      var HALO_CYCLES = 1.5; /* whole half-cycles -> sin() lands exactly at 0 */
+      tl.to(
+        haloPhase,
+        {
+          p: Math.PI * 2 * HALO_CYCLES,
+          duration: 4.6,
+          ease: "none",
+          onUpdate: function () {
+            var s = Math.sin(haloPhase.p);
+            haloEl.style.opacity = String(0.40 + s * 0.03);
+          }
+        },
+        2.60
+      );
+
+      /* closing rings - the atmosphere reserved for the closing frame */
+      for (var r = 0; r < 3; r++) {
+        tl.fromTo(
+          "#f09-ring-" + r,
+          { opacity: 0, scale: 0.88 },
+          { opacity: 0.10 - r * 0.02, scale: 1, duration: 1.1, ease: "power2.out" },
+          1.90 + r * 0.16
+        );
+      }
+
+      /* ==========================================================
+         Scene 3 (3.4-5.0s) - the lockup completes: the mark slides
+         left and the wordmark CASCADES in letter by letter
+         (waterfall-entry: binary opacity via tl.set, one direction,
+         overlapping, weight-varied travel).
+         ========================================================== */
+      tl.to("#f09-mark", { x: -262, duration: 0.62, ease: "power3.out" }, 3.44);
+      tl.to("#f09-halo", { x: -110, duration: 0.62, ease: "power3.out" }, 3.44);
+
+      var F = 1 / 60;
+      var LTR_Y = [78, 44, 46, 52, 74, 44, 46, 50];
+      var LTR_D = [0.18, 0.13, 0.13, 0.14, 0.17, 0.13, 0.13, 0.14];
+      var tCur = 3.66;
+      for (var L = 0; L < 8; L++) {
+        tl.set("#f09-l" + L, { opacity: 1, y: LTR_Y[L] }, tCur);
+        tl.to("#f09-l" + L, { y: 0, duration: LTR_D[L], ease: "power4.out" }, tCur);
+        tCur = tCur + LTR_D[L] - F;
+      }
+
+      /* ==========================================================
+         Scene 4 (5.0-6.4s) - the typeset lockup HANDS OFF to the
+         real brand asset at matched geometry (crossfade), which
+         carries the "by SOFU" signature; a red marker sweeps
+         left->right beneath it (css-marker-patterns, highlight
+         mode re-skinned as a rule), and a beat later the closing
+         line wipes in below in text-muted.
+         ========================================================== */
+      tl.fromTo(
+        "#f09-real",
+        { opacity: 0, scale: 0.985 },
+        { opacity: 1, scale: 1, duration: 0.58, ease: "power2.out" },
+        5.02
+      );
+      tl.to("#f09-mark", { opacity: 0, duration: 0.5, ease: "power1.out" }, 5.06);
+      tl.to("#f09-wordmark", { opacity: 0, duration: 0.5, ease: "power1.out" }, 5.06);
+
+      tl.fromTo(
+        "#f09-marker",
+        { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.55, ease: "power2.out" },
+        5.50
+      );
+
+      tl.fromTo(
+        "#f09-signline",
+        { clipPath: "inset(0 100% 0 0)" },
+        { clipPath: "inset(0 0% 0 0)", duration: 0.68, ease: "power2.out" },
+        6.02
+      );
+
+      /* ==========================================================
+         Scene 5 (6.4-8.0s) - SOSTENIDA FINAL. Everything still;
+         only a low-amplitude sine jitter on the lockup
+         (sine-wave-loop, low end + settle-and-fade envelope).
+         This is the one frame with a real exit: the halo closes
+         and the frame comes to rest.
+         ========================================================== */
+      var lockEl = document.getElementById("f09-lockup");
+      var idle = { p: 0 };
+      var IDLE_CYCLES = 0.5; /* ends at sin(pi) = 0 -> rests exactly where it entered */
+      tl.to(
+        idle,
+        {
+          p: Math.PI * 2 * IDLE_CYCLES,
+          duration: 1.6,
+          ease: "none",
+          onUpdate: function () {
+            var prog = idle.p / (Math.PI * 2 * IDLE_CYCLES);
+            var env = prog < 0.8 ? 1 : (1 - prog) / 0.2;
+            var s = Math.sin(idle.p);
+            lockEl.style.transform =
+              "translateY(" + (s * 2.4 * env).toFixed(3) + "px) scale(" +
+              (1 + s * 0.005 * env).toFixed(5) + ")";
+          }
+        },
+        6.40
+      );
+
+      /* the halo closes - the frame rests on the mark alone */
+      tl.fromTo(
+        "#f09-halo",
+        { opacity: 0.40 },
+        { opacity: 0.13, duration: 0.72, ease: "power2.inOut" },
+        7.26
+      );
+      tl.to("#f09-ring-0", { opacity: 0.05, duration: 0.72, ease: "power2.inOut" }, 7.26);
+      tl.to("#f09-ring-1", { opacity: 0.03, duration: 0.72, ease: "power2.inOut" }, 7.26);
+      tl.to("#f09-ring-2", { opacity: 0.02, duration: 0.72, ease: "power2.inOut" }, 7.26);
+
+      window.__timelines["09-cierre-riskmann"] = tl;
+    })();
+  </script>
+</template>
