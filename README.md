@@ -39,7 +39,8 @@ Todos los videos terminados están en la carpeta compartida de Drive:
 | 04b | `Presentacion de la plataforma - Video promocional narrado (1m08)` | El mismo 04, con voz y música | `videos/riskmann-sala-de-control/` |
 
 Los archivos 01–03 empiezan por `NN - Seguridad Vial para Pasajeros - Modulo 1 Actor Vial - …` y
-los 04 por `NN - RiskMann - …`; el número es el orden sugerido para verlos.
+los 04 por `NN - RiskMann - …`; el número es el orden sugerido para verlos. Los nombres coinciden con los
+de la carpeta de Drive.
 
 Los MP4 **no se versionan** (cada render pesa decenas de MB): se generan con el comando
 de abajo y se comparten por enlace. *Sala de control* está pendiente de corregir el logo
