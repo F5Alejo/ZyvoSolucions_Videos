@@ -181,6 +181,33 @@ normativo, 8 planos, mezcla y render.
 > sola sala si comparten las mismas constantes escritas (posición exacta del logo, retícula,
 > escuadras, etiqueta). Es el contrato que hace posible construir en paralelo.
 
+### 2.4c — Más ritmo y animaciones nuevas, sin voz
+
+**Consigues:** una versión corta (60 s) del mismo módulo que se sostiene sola: cada
+entrada cae sobre el pulso de una pista, cada escena se mueve con una técnica distinta y
+los cambios de escena son fluidos. Es el formato **«Ritmo»**; el cliente lo aprobó sin
+cambios («EXCELENTE»).
+
+```
+Sigue siendo una presentación del mismo módulo, pero quiero probar
+animaciones mejores: más ritmo, más movimiento, fluidez, que sea
+entretenido. Cosas nuevas, nada que ya hayamos usado. 60 segundos, sin voz.
+```
+
+**Te devuelve:** una muestra de ~16 s con sonido para aprobar; con el sí, los 60 s.
+**Tarda:** ~30 min la muestra, ~1 h el resto, 4 min de render.
+
+> **Lo que hizo funcionar este prompt:**
+> - **«Nada que ya hayamos usado»** obliga a escoger técnicas nuevas del catálogo del
+>   framework: tipografía que golpea al compás, trazos a mano, una forma que se transforma
+>   entre escenas, tarjetas que giran en 3D, un rodillo tipo tragamonedas. Qué técnica va en
+>   cada escena está en `PRODUCCION-VIDEOS.md` §13.3.
+> - **Sin voz, la música manda:** todo cae en múltiplos de medio segundo (120 BPM) y la
+>   pista se sintetiza con `tools/ritmo.py` al mismo tempo.
+> - **Ojo con la pregunta de concepto.** Primero se propusieron cinco conceptos visuales
+>   radicales y el cliente aclaró que no quería otro concepto, sino **mejor movimiento** en
+>   el mismo formato. Si lo que falla es la animación, dilo así: ahorra una ronda.
+
 ### 2.5 — Corregir un plano concreto
 
 **Consigues:** un cambio quirúrgico sin tocar el resto.
@@ -268,6 +295,23 @@ cabe, acórtala sin cambiar el sentido y sin salirte del documento.
 **falla** si una línea no cabe en su plano.
 **Tarda:** ~1 min por módulo. Modelo: `videos/pesv-m01-mando/tools/guion.json`.
 
+### 3.6 — Música propia a un tempo, para videos sin voz
+
+```
+Sintetiza una pista rítmica a 120 BPM con tools/ritmo.py para <proyecto>:
+más ligera en el arranque, completa desde la segunda escena, una subida
+antes de cada cambio de escena y un cierre suave. Mézclala con efectos en
+cada golpe y cada transición, con pasa_altos 90, y mide tres bandas.
+```
+
+**Te devuelve:** `assets/ritmo-video.wav` y `assets/mezcla-video.wav`, más el balance
+por bandas.
+**Tarda:** ~2 min. Sin derechos de terceros: es síntesis propia.
+
+> **Por qué «mide tres bandas»:** la primera mezcla tenía los agudos 16 dB por debajo de
+> los graves; en un portátil habría sonado a puro bombo. El paso-altos a 90 Hz y bajar los
+> impactos lo dejó en −21 / −20 / −22.5 dB. El modelo no puede oír: la medición es su oído.
+
 ---
 
 # 4 · Verificar
@@ -316,6 +360,9 @@ revisa la hoja de contactos antes de renderizar.
 | Poner `visibility = "visible"` en un hijo animado | Un `visible` explícito **atraviesa** el ocultamiento de su plano: los glifos de la etiqueta del plano 01 seguían vivos debajo de los planos siguientes. Solo lo delató `check` (texto «tapado» en el plano 04) | Revelar con `visibility = "inherit"`, nunca `"visible"`; y nunca animar `visibility`/`display` de un elemento `clip` |
 | Espacios en glifos `inline-block` | Se colapsan: «CAPACITACIÓNPESV» | Espacio duro en cada celda de espacio, escrito como `"\u00A0"` en el código |
 | Lanzar muchos constructores en paralelo | Los límites de uso los cortan a medias y dejan archivos parciales | Oleadas de 2, que cada uno escriba su archivo pronto, y revisar el disco antes de relanzar |
+| Guardar el estado de una animación en un callback (`onUpdate`) | Al saltar hacia atrás el renderizador no lo ejecuta: el rodillo mostraba la palabra equivocada | Pedir que cada paso sea una animación explícita («seek-safe») |
+| Calcular a ojo dónde queda cada palabra | Dos píldoras se montaron | Pedir que la fila se ordene sola (flexbox) y animar desde ahí |
+| Fiarse del verificador con tarjetas 3D o rodillos | Lee como visible la cara oculta y lo que está fuera de la ventana: decenas de falsos errores | Hacer invisible de verdad lo que no se ve en cada instante |
 | Enviar el MP4 master por la sesión | Límite de 30 MB; la fotografía lo supera (el refactor pesa 44.6 MB) | Copia de visualización con `ffmpeg -crf 26` (quedó en 6.9 MB) y el master aparte |
 
 ---
@@ -330,6 +377,7 @@ revisa la hoja de contactos antes de renderizar.
 | PESV Módulo 01 «plus» — *rechazada* | 3 min 22 s | ~1 h | 9 min 04 s | 19.9 MB |
 | PESV Módulo 01 refactor — *«muy básico»* | 2 min 28 s | ~1 h, con muestra previa | 10 min 08 s | 44.6 MB |
 | PESV Módulo 01 «Centro de mando» — *dirección aprobada* | 2 min 31 s | muestra 16 s + ~2 h el resto, con voz/efectos/cama | ~9 min 30 s | 39.1 MB (11.4 MB copia de vista) |
+| PESV Módulo 01 «Ritmo» — *aprobado sin cambios* | 1 min 00 s | muestra 16 s + ~1 h el resto, pista rítmica y efectos | 4 min 02 s | 15.3 MB |
 
 **La lectura útil:** el primer video de una serie cuesta un día porque hay que inventar el
 sistema. El segundo cuesta una hora porque el sistema ya existe. Ahí está el retorno.

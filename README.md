@@ -16,10 +16,11 @@ Repositorio dedicado a la elaboración de videos para presentaciones, marketing 
 assets/                  material fuente compartido (marca, iconos, capturas, grabaciones)
   fotos-pixabay/         fotos candidatas ya revisadas para la serie PESV
 docs/                    informes (PoC)
-tools/                   voz.py · mezcla.py · descargar-voz.py
+tools/                   voz.py · ritmo.py · mezcla.py · descargar-voz.py
 video-presentacion/      pieza previa del equipo (12 s)
 videos/
-  pesv-m01-mando/        PoC «Seguridad Vial para Pasajeros» · Módulo 01 — plantilla de la serie
+  pesv-m01-mando/        PoC «Seguridad Vial para Pasajeros» · Módulo 01, formato «Centro de mando» (con voz)
+  pesv-m01-ritmo/        el mismo módulo en formato «Ritmo»: 60 s, al compás de una pista, sin voz
   riskmann-sala-de-control/  video de marketing de la plataforma (68 s)
 ```
 
@@ -27,7 +28,8 @@ videos/
 
 | Video | Proyecto | Enlace |
 | --- | --- | --- |
-| PESV · Módulo 01 «Actor vial» (2:31) | `videos/pesv-m01-mando/` | _pendiente_ |
+| PESV · Módulo 01 «Actor vial» — Centro de mando (2:31, con voz) | `videos/pesv-m01-mando/` | _pendiente_ |
+| PESV · Módulo 01 «Actor vial» — Ritmo (1:00, sin voz) | `videos/pesv-m01-ritmo/` | _pendiente_ |
 | RiskMann · Sala de control (1:08) | `videos/riskmann-sala-de-control/` | _pendiente_ |
 
 Los MP4 **no se versionan** (cada render pesa decenas de MB): se generan con el comando
@@ -46,6 +48,12 @@ npm run render -- --quality high --output renders/pesv-m01-mando.mp4 --browser-t
 Solo para narrar o mezclar un módulo nuevo:
 
 ```bash
-pip install piper-tts
+pip install piper-tts numpy
 python tools/descargar-voz.py     # una vez: baja la voz aprobada (60 MB, fuera de git)
 ```
+
+| Herramienta | Qué hace |
+| --- | --- |
+| `tools/voz.py` | Locución con la voz aprobada desde un guion JSON; avisa si una frase no cabe en su plano |
+| `tools/ritmo.py` | Pista rítmica sintetizada (bombo, platillos, palmas, bajo, acordes) a un BPM dado, para videos sin voz |
+| `tools/mezcla.py` | Mezcla voz, pistas, cama y efectos desde un JSON; normaliza a −16 LUFS y verifica que el audio llegó |

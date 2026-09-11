@@ -9,6 +9,7 @@ issue y qué queda pendiente antes de la revisión con el CEO.
 | **Proyecto** | [`videos/pesv-m01-mando/`](../videos/pesv-m01-mando/) — formato «Centro de mando» |
 | **Video** | MP4 1920×1080, 30 fps, **2:31**, con locución, efectos y cama musical · 39 MB |
 | **Enlace para el CEO** | _pendiente: subir el MP4 a Drive y pegar aquí el enlace_ |
+| **Versión corta** | [`videos/pesv-m01-ritmo/`](../videos/pesv-m01-ritmo/) — formato «Ritmo»: 60 s al compás de una pista, sin voz · 15 MB |
 | **Motor** | [HyperFrames](https://github.com/heygen-com/hyperframes) 0.8.31 (HTML → MP4) |
 
 ---
@@ -85,9 +86,18 @@ pie legal del documento.
 
 ---
 
+## 4b. Segunda versión: «Ritmo»
+
+Tras aprobar el «Centro de mando» se probó hasta dónde llega el movimiento del framework:
+el mismo módulo como pieza de **60 s sin voz**, con animaciones que la serie no había
+usado (tipografía al compás, trazos a mano, tarjetas 3D, rodillo tipo tragamonedas, forma
+que se transforma entre escenas) y una pista rítmica sintetizada a 120 BPM. Aprobada sin
+cambios. Render: 4 min 02 s. Sirve como gancho junto al módulo completo; el procedimiento
+para repetirla en otros módulos está en [`PRODUCCION-VIDEOS.md` §13](../PRODUCCION-VIDEOS.md).
+
 ## 5. Pendientes y siguientes pasos
 
-1. **Subir el MP4 a Drive** y pegar el enlace arriba y en el PR.
+1. **Subir los MP4 a Drive** (`videos-finales/`) y pegar los enlaces arriba, en el README y en el PR.
 2. Comparar el video con la referencia en producción (alguien con acceso al Drive corporativo).
 3. Revisión con el CEO → ajustes.
 4. Escalar a los módulos 02–08 con la plantilla.

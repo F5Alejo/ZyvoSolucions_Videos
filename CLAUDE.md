@@ -40,6 +40,14 @@ python ../../tools/mezcla.py tools/mezcla-modulo.json   # cama + voz + efectos, 
 
 Primero la apertura con sonido para aprobar; luego el resto.
 
+Para la **pieza corta sin voz** del mismo módulo (60 s al compás de una pista), la
+plantilla es `videos/pesv-m01-ritmo/` y el procedimiento es **§13**:
+
+```bash
+python ../../tools/ritmo.py tools/ritmo-video.json      # pista a 120 BPM
+python ../../tools/mezcla.py tools/mezcla-video.json    # pista + efectos, verificada
+```
+
 ## Empezar un video de marketing nuevo
 
 ```bash
@@ -58,7 +66,7 @@ archivos reales o el render sale con otra tipografía.
   `public/riskmann_logo_blanco.png`; `riskmann_logo_central_blanco.svg` **no sirve**
   (es una ilustración a color).
 - `videos/<proyecto>/` — un proyecto HyperFrames por video.
-- `tools/` — herramientas compartidas: `voz.py` (Piper), `mezcla.py` (ffmpeg) y
+- `tools/` — herramientas compartidas: `voz.py` (Piper), `ritmo.py` (pista sintetizada), `mezcla.py` (ffmpeg) y
   `descargar-voz.py` (baja la voz aprobada a `tools/voces/`, que no va en git).
 - `assets/fotos-pixabay/` — fotos candidatas ya revisadas para la serie PESV.
 - **No van en git:** `renders/`, `snapshots/`, los MP4 y el modelo de voz (ver `.gitignore`).

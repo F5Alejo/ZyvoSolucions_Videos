@@ -6,7 +6,8 @@
 > | Formato | Para qué | Proyecto de referencia | Secciones |
 > | --- | --- | --- | --- |
 > | **Marketing** | Presentar la plataforma o un módulo a quien compra | `videos/riskmann-sala-de-control/` (68 s) | §1–§8 |
-> | **Capacitación «Centro de mando»** | Módulos de formación (serie PESV «Pasajero seguro») | `videos/pesv-m01-mando/` (151 s) — **aprobado por el cliente** | §10–§12 |
+> | **Capacitación «Centro de mando»** | Módulos de formación (serie PESV «Pasajero seguro»), con voz | `videos/pesv-m01-mando/` (151 s) — **aprobado por el cliente** | §10–§12 |
+> | **Capacitación «Ritmo»** | El mismo módulo como pieza corta de gancho, al compás de una pista, sin voz | `videos/pesv-m01-ritmo/` (60 s) — **aprobado por el cliente** | §13 |
 >
 > Los valores son los que realmente se usaron y renderizaron, no recomendaciones
 > genéricas. Los prompts para pedir cada cosa están en [`GUIA-PROMPTS.md`](GUIA-PROMPTS.md).
@@ -433,6 +434,11 @@ Trampas añadidas en la serie PESV (formato de capacitación):
 | **Foto sobregradada** | Brillo 0.5 + multiply 0.82 + velo global: la foto desaparece, queda azul plano. | Grado de §10.4 y un **scrim local** solo bajo el texto. |
 | **Voz más corta que el plano** | 04 estaba pensado a 30 s y su voz duraba 9.6 s: 17 s de cola muerta. | Generar la voz **antes** de fijar duraciones (§11). |
 | **Muchos constructores en paralelo** | Los límites de uso los cortan a medias y dejan archivos parciales. | Oleadas de 2; revisar el disco antes de relanzar. |
+| **Estado guardado en `onUpdate`** | El renderizador salta en el tiempo y, al retroceder, ese callback no se ejecuta: el rodillo del formato «Ritmo» mostraba «REDUCIR» cuando tocaba «AUMENTAR». | Cada paso como `fromTo` explícito sobre la propiedad real; un desenfoque SVG se anima con `attr: { stdDeviation }`, no con un proxy. |
+| **Lo invisible sigue contando** | `check` no entiende `backface-visibility` ni el recorte de `overflow: hidden`: la cara oculta de una tarjeta 3D y las palabras del rodillo fuera de la ventana dieron decenas de errores de solape y contraste. | Hacer invisible de verdad lo que no se ve: `opacity: 0` a la cara oculta en el medio giro, y a cada palabra del rodillo cuando sale de la ventana. |
+| **Posiciones calculadas a ojo** | Anchos de palabras estimados → dos píldoras se montaron. | Que la fila la ordene flexbox y animar desde el lugar natural de cada elemento (`x: 0, y: 0` como destino). |
+| **Texto decorativo auditado** | Números o cintas de fondo solo contorno (`color: transparent`) fallan «texto sin pintar» y contraste. | Marcarlos con `data-layout-ignore` (y `aria-hidden`). No forzarles contraste: son fondo. |
+| **Graves que se comen la mezcla** | Con bombo e impactos, la subgrave se llevaba la normalización y los agudos quedaban 16 dB abajo. | `"pasa_altos": 90` en el JSON de mezcla; medir tres bandas (<120, 120–400, >400 Hz) y buscar que queden a pocos dB entre sí. |
 | **MP4 > 30 MB** | No se puede enviar por la sesión. | Copia de vista: `ffmpeg -crf 24` (el módulo 01 quedó en 11.4 MB). |
 | **Escribir con `Set-Content`** | Corrompe los acentos. | Escribir archivos con Python o la herramienta de escritura. |
 
@@ -488,7 +494,8 @@ Trampas añadidas en la serie PESV (formato de capacitación):
 | PESV M01 base (réplica de diapositivas) | Referencia de contenido — fuera del repo | archivo local del equipo |
 | PESV M01 «plus» | Rechazado (seguía siendo diapositiva; monigotes) — fuera del repo | archivo local del equipo |
 | PESV M01 refactor fotográfico | Superado («muy básico») — fuera del repo | archivo local del equipo |
-| PESV M02–M08 | Por hacer, con §10 | — |
+| **PESV M01 «Ritmo»** (60 s) | **Renderizado y aprobado.** Pieza corta sin voz. | `videos/pesv-m01-ritmo/` → `renders/pesv-m01-ritmo.mp4` |
+| PESV M02–M08 | Por hacer, con §10 (y §13 para su pieza corta) | — |
 | Presentación anterior (12 s) | Del equipo, previo | `video-presentacion/` |
 
 **Pendiente en el primer video:** sustituir «100% · TRAZABILIDAD DEL REGISTRO», revisar
@@ -612,7 +619,8 @@ Todo es gratuito, local y sin límite de uso. Las herramientas compartidas viven
 | **Voz** | Piper TTS, voz **`es_ES-davefx-medium`** (elegida por el cliente) | `pip install piper-tts` y, una vez, `python tools/descargar-voz.py` (baja el modelo de 60 MB a `tools/voces/` y verifica su huella; no va en git). `tools/voz.py` genera un WAV por línea y **avisa si una línea no cabe** en su plano (`"maximo"`). |
 | **Efectos** | Biblioteca de `/media-use` (19 efectos) | Licencia Pixabay: uso comercial sin atribución. En `~/.claude/skills/media-use/audio/assets/sfx/`. |
 | **Cama** | Síntesis propia con osciladores | Sin derechos de terceros. **Fundamentales ≥ 110 Hz**: un drone de 55–82 Hz mide bien y suena a silencio en un portátil. |
-| **Mezcla** | `tools/mezcla.py` + un JSON por pieza | Voz con `adelay`, ducking por cadena lateral, −16 LUFS, y **verificación del espectro**: falla si la voz no llegó. |
+| **Pista rítmica** | `tools/ritmo.py` + un JSON por pieza | Bombo, platillos, palmas, bajo y acordes sintetizados a un BPM, por secciones, con subidas de ruido antes de cada cambio. Determinista, sin derechos de terceros. Para videos sin voz. |
+| **Mezcla** | `tools/mezcla.py` + un JSON por pieza | Voz y `pistas` con `adelay`, cama opcional con ducking por cadena lateral, `pasa_altos` opcional, −16 LUFS, y **verificación del espectro**: falla si la banda alta está vacía. |
 
 **Reglas:**
 
@@ -634,6 +642,75 @@ La mezcla del módulo 01 (`videos/pesv-m01-mando/tools/mezcla-modulo.json`) es e
 | --- | --- | --- | --- | --- |
 | Marketing «Sala de control» | 68 s | ~1 día (inventar el sistema) | 4 min 44 s | 15.9 MB |
 | PESV M01 «Centro de mando» | 151 s | muestra ~10 min + ~2 h | ~9 min 30 s | 39.1 MB (vista 11.4 MB) |
+| PESV M01 «Ritmo» (sin voz) | 60 s | muestra ~30 min + ~1 h | 4 min 02 s | 15.3 MB |
 
 Con la plantilla de §10 un módulo nuevo debería costar bastante menos que el primero: el
 sistema ya existe y solo cambian el guion y los planos de contenido.
+
+---
+
+## 13. Formato de capacitación — «Ritmo» (pieza corta, sin voz)
+
+La misma presentación del módulo, pero como pieza de **60 s que se sostiene sin voz**: la
+música marca el tiempo y cada entrada cae sobre el pulso. Sirve de gancho (redes,
+pantallas, apertura de una sesión) junto al módulo completo con voz de §10. El cliente pidió
+«mejores animaciones, mejor ritmo, más movimiento, fluidez, que sea entretenido» y lo aprobó
+sin cambios. Proyecto de referencia: `videos/pesv-m01-ritmo/` (lee su `DIRECCION.md`).
+
+### 13.1 El pulso manda
+
+**120 BPM → pulso de 0.5 s, compás de 2 s.** Cada escena empieza en frontera de compás y
+todos sus tiempos son múltiplos del pulso (`const P = 0.5; const B = n => n * P;`). La pista
+de `tools/ritmo.py` usa el mismo BPM, así que imagen y sonido coinciden sin ajustar a mano.
+
+### 13.2 Diferencias con «Centro de mando»
+
+| | Centro de mando (§10) | Ritmo |
+| --- | --- | --- |
+| Duración | ~2:30, dictada por la voz | 60 s, dictada por el pulso |
+| Fondo | HUD oscuro persistente | Paleta de las diapositivas del documento: papel `#F5F8FC` y marino `#0B2F6B` alternados escena a escena |
+| Logo | Firma blanca arriba a la izquierda | Logo a color en una píldora blanca abajo a la izquierda (se lee sobre papel y sobre marino) |
+| Cromo | Retícula, escuadras, reglas | Barra de progreso del video completo con una marca en cada cambio de escena |
+| Cortes | Fundidos entre planos | **Cada escena cierra tapando la pantalla con el fondo de la siguiente** (ver 13.3) |
+
+### 13.3 El repertorio de movimiento
+
+Cada técnica es una receta de `/hyperframes-animation` que la serie no había usado. Ninguna
+se repite en dos escenas: esa variedad es lo que hace entretenida la pieza.
+
+| Escena | Técnica | Receta |
+| --- | --- | --- |
+| Gancho | Cada palabra entra distinto (escala con desenfoque, golpe lateral, subida inclinada); estela de velocidad | `kinetic-beat-slam`, `motion-blur-streak` |
+| Gancho | Tachón y círculo dibujados a mano | `css-marker-patterns` (sketchout, circle) |
+| Corresponsable | Cascada de palabras, cada una antes de que termine la anterior; marcador detrás de una palabra | `waterfall-entry`, `css-marker-patterns` |
+| Corresponsable | Un punto que se transforma en la tarjeta con la foto | `card-morph-anchor` |
+| Roles | Palabras que llegan desde una nube 3D y se ordenan; barrido de color por dentro de las letras | `depth-scatter-assemble`, `gradient-text-sweep` |
+| Deberes | Tarjetas que giran en 3D por turno | `transitions/css-3d` (card flip) |
+| Principio | Rodillo tipo tragamonedas | `vertical-spring-ticker` |
+| Ruta | Luz que recorre los 8 módulos, uno por pulso | pasos discretos sobre el pulso |
+
+**Salidas:** iris desde el círculo · bloques verticales alternados · barrido diagonal ·
+barrido con estela y panel que empuja · la ventana del rodillo crece hasta llenar ·
+persianas · y el único fundido de la pieza al final.
+
+### 13.4 Sonido
+
+```bash
+python ../../tools/ritmo.py tools/ritmo-video.json    # pista a 120 BPM por secciones
+python ../../tools/mezcla.py tools/mezcla-video.json  # pista + efectos, pasa_altos 90, -16 LUFS
+```
+
+Un efecto en cada golpe y en cada transición (62 en el módulo 01). Balance medido del
+módulo 01: −21 / −20 / −22.5 dB en graves, medios y agudos.
+
+### 13.5 Producir la pieza «Ritmo» de otro módulo
+
+1. Copiar `videos/pesv-m01-ritmo/` (sin `renders/` ni `snapshots/`).
+2. Escoger del documento de ese módulo **una frase por escena**. Sin voz, lo que no cabe en
+   pantalla no se dice: menos texto que en el módulo completo.
+3. Reasignar las técnicas de 13.3 a las ideas nuevas, sin repetir ninguna, y mantener una
+   salida distinta por escena.
+4. Ajustar `tools/ritmo-video.json` (secciones y subidas en los cambios de escena) y los
+   efectos de `tools/mezcla-video.json` a los nuevos tiempos.
+5. **Primero una muestra de ~16 s con sonido**, luego el resto.
+6. `check` → capturas en cada cambio de escena → render → revisar los cortes en el MP4.
