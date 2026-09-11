@@ -1,0 +1,119 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Montserrat", sans-serif; }
+    .s6-layer { position: absolute; inset: 0; }
+    .s6-ground { background: #0B2F6B; }
+
+    .s6-head { position: absolute; left: 0; width: 1920px; top: 130px; display: flex; justify-content: center; align-items: baseline; gap: 28px; white-space: nowrap; }
+    .s6-head span { display: inline-block; opacity: 0; line-height: 1; }
+    .s6-mod { font-size: 58px; font-weight: 700; color: #9CCBF3; }
+    .s6-big { font-size: 230px; font-weight: 900; color: #FFFFFF; letter-spacing: -0.03em; }
+    .s6-of { font-size: 110px; font-weight: 700; color: #5AA7E8; }
+
+    /* ---- the route: 8 segments, number above, name below ---- */
+    .s6-route { position: absolute; left: 180px; top: 500px; width: 1560px; height: 260px; }
+    .s6-stop { position: absolute; top: 0; width: 180px; height: 260px; }
+    .s6-num { position: absolute; left: 0; top: 0; font-size: 30px; font-weight: 800; color: #9CCBF3; letter-spacing: 0.04em; opacity: 0; }
+    .s6-seg { position: absolute; left: 0; top: 52px; width: 180px; height: 14px; border-radius: 7px; background: rgba(183, 211, 239, 0.3); transform: scaleX(0); transform-origin: 0 50%; }
+    .s6-seg-lit { position: absolute; left: 0; top: 52px; width: 180px; height: 14px; border-radius: 7px; background: #5AA7E8; transform: scaleX(0); transform-origin: 0 50%; }
+    .s6-name { position: absolute; left: 0; top: 90px; width: 180px; font-size: 24px; font-weight: 700; line-height: 1.25; color: #FFFFFF; opacity: 0; }
+    .s6-name div { white-space: nowrap; }
+    .s6-here-seg { background: #E6423C; }
+    .s6-here { position: absolute; left: 0; top: -64px; padding: 8px 16px; border-radius: 999px; background: #E6423C; color: #FFFFFF;
+      font-size: 20px; font-weight: 800; letter-spacing: 0.12em; white-space: nowrap; opacity: 0; transform-origin: 0 100%; }
+
+    .s6-tail { position: absolute; left: 0; width: 1920px; top: 800px; text-align: center; font-size: 44px; font-weight: 600; color: #D9E8F7; white-space: nowrap; }
+    .s6-tail b { color: #FFFFFF; font-weight: 800; }
+
+    /* exit: paper blinds close top to bottom (scene 07's ground) */
+    .s6-blind { position: absolute; left: 0; width: 1920px; height: 180px; background: #F5F8FC; transform: scaleY(0); transform-origin: 50% 0; }
+  </style>
+
+  <div id="root" data-composition-id="s06-ruta" data-start="0" data-duration="8" data-width="1920" data-height="1080">
+    <div id="s6-ground" class="clip s6-layer s6-ground" data-start="0" data-duration="8" data-track-index="0"></div>
+
+    <div id="s6-stage" class="clip s6-layer" data-start="0" data-duration="8" data-track-index="1">
+      <div class="s6-head"><span class="s6-mod" id="s6-mod">Módulo</span><span class="s6-big" id="s6-big">01</span><span class="s6-of" id="s6-of">/ 08</span></div>
+
+      <div class="s6-route" id="s6-route">
+        <div class="s6-stop" style="left: 0px"><div class="s6-num">01</div><div class="s6-seg s6-here-seg"></div><div class="s6-here" id="s6-here">ESTÁS AQUÍ</div><div class="s6-name"><div>Actor</div><div>vial</div></div></div>
+        <div class="s6-stop" style="left: 197.14px"><div class="s6-num">02</div><div class="s6-seg"></div><div class="s6-seg-lit"></div><div class="s6-name"><div>Antes del</div><div>viaje</div></div></div>
+        <div class="s6-stop" style="left: 394.29px"><div class="s6-num">03</div><div class="s6-seg"></div><div class="s6-seg-lit"></div><div class="s6-name"><div>Ascenso y</div><div>descenso</div></div></div>
+        <div class="s6-stop" style="left: 591.43px"><div class="s6-num">04</div><div class="s6-seg"></div><div class="s6-seg-lit"></div><div class="s6-name"><div>Durante</div><div>el viaje</div></div></div>
+        <div class="s6-stop" style="left: 788.57px"><div class="s6-num">05</div><div class="s6-seg"></div><div class="s6-seg-lit"></div><div class="s6-name"><div>Pasajeros</div><div>vulnerables</div></div></div>
+        <div class="s6-stop" style="left: 985.71px"><div class="s6-num">06</div><div class="s6-seg"></div><div class="s6-seg-lit"></div><div class="s6-name"><div>Acompañante</div><div>en moto</div></div></div>
+        <div class="s6-stop" style="left: 1182.86px"><div class="s6-num">07</div><div class="s6-seg"></div><div class="s6-seg-lit"></div><div class="s6-name"><div>Emergencias</div><div>PAS</div></div></div>
+        <div class="s6-stop" style="left: 1380px"><div class="s6-num">08</div><div class="s6-seg"></div><div class="s6-seg-lit"></div><div class="s6-name"><div>Taller y</div><div>evaluación</div></div></div>
+      </div>
+
+      <div class="s6-tail" id="s6-tail">Una ruta para convertir <b>intención en conducta.</b></div>
+
+      <div class="s6-blind" style="top: 0px" aria-hidden="true" data-layout-ignore></div>
+      <div class="s6-blind" style="top: 180px" aria-hidden="true" data-layout-ignore></div>
+      <div class="s6-blind" style="top: 360px" aria-hidden="true" data-layout-ignore></div>
+      <div class="s6-blind" style="top: 540px" aria-hidden="true" data-layout-ignore></div>
+      <div class="s6-blind" style="top: 720px" aria-hidden="true" data-layout-ignore></div>
+      <div class="s6-blind" style="top: 900px" aria-hidden="true" data-layout-ignore></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var P = 0.5;
+      function B(n) { return n * P; }
+
+      /* beats 1-2 · "Módulo 01 / 08": three parts, three hits */
+      tl.set("#s6-mod", { opacity: 1 }, B(1));
+      tl.fromTo("#s6-mod", { y: -60 }, { y: 0, duration: 0.35, ease: "power4.out" }, B(1));
+      tl.set("#s6-big", { opacity: 1 }, B(1) + 0.15);
+      tl.fromTo("#s6-big", { scale: 2.2, filter: "blur(18px)" }, { scale: 1, filter: "blur(0px)", duration: 0.45, ease: "power4.out" }, B(1) + 0.15);
+      tl.set("#s6-of", { opacity: 1 }, B(2));
+      tl.fromTo("#s6-of", { x: 300 }, { x: 0, duration: 0.4, ease: "expo.out" }, B(2));
+
+      /* beat 3 · the eight segments draw in as one quick wave, numbers with them */
+      var segs = gsap.utils.toArray("#s6-route .s6-seg");
+      var nums = gsap.utils.toArray("#s6-route .s6-num");
+      var names = gsap.utils.toArray("#s6-route .s6-name");
+      var lits = gsap.utils.toArray("#s6-route .s6-seg-lit");
+      for (var i = 0; i < 8; i++) {
+        tl.fromTo(segs[i], { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "expo.out" }, B(3) + i * 0.05);
+        tl.fromTo(nums[i], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, B(3) + i * 0.05);
+      }
+      /* beat 4 · you are here: the one red of the scene */
+      tl.fromTo("#s6-here", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, B(4));
+      tl.fromTo(names[0], { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, B(4));
+
+      /* beats 5-11 · a light runs the route, naming each module on its beat */
+      for (var k = 1; k < 8; k++) {
+        var at = B(4 + k);
+        tl.fromTo(lits[k - 1], { scaleX: 0, opacity: 1 }, { scaleX: 1, duration: 0.28, ease: "power2.out" }, at);
+        tl.to(lits[k - 1], { opacity: 0.25, duration: 0.3, ease: "power1.out" }, at + 0.35);
+        tl.fromTo(names[k], { opacity: 0, y: 14 }, { opacity: 0.85, y: 0, duration: 0.3, ease: "power3.out" }, at);
+      }
+
+      /* beat 12 · the purpose line wipes in */
+      tl.fromTo("#s6-tail", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.55, ease: "power3.out" }, B(12));
+
+      /* beats 15-16 · exit: paper blinds close, top to bottom */
+      var blinds = gsap.utils.toArray("#s6-stage .s6-blind");
+      for (var b = 0; b < blinds.length; b++) {
+        tl.fromTo(blinds[b], { scaleY: 0 }, { scaleY: 1, duration: 0.3, ease: "power3.in" }, B(15) + b * 0.035);
+      }
+
+      window.__timelines["s06-ruta"] = tl;
+    })();
+  </script>
+</template>
