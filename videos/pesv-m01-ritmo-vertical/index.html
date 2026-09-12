@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #F5F8FC; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #F5F8FC; }
+      .scene { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .chrome { position: absolute; inset: 0; pointer-events: none; }
+      /* brand bug and progress bar sit ABOVE the space TikTok / Reels covers with its own UI */
+      .bug { position: absolute; left: 60px; top: 1560px; width: 236px; height: 78px; border-radius: 39px; background: #FFFFFF;
+             box-shadow: 0 0 0 1.5px rgba(11, 47, 107, 0.14); }
+      .bug img { position: absolute; left: 24px; top: 10px; width: 152px; height: 57px; }
+      .bar { position: absolute; left: 60px; top: 1690px; width: 960px; height: 7px; border-radius: 4px; background: rgba(90, 167, 232, 0.28); overflow: hidden; }
+      .bar-fill { position: absolute; inset: 0; background: #1565C0; transform: scaleX(0); transform-origin: 0 50%; }
+      .tick { position: absolute; top: 1681px; width: 3px; height: 25px; border-radius: 2px; background: rgba(90, 167, 232, 0.55); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="60" data-width="1080" data-height="1920">
+      <div id="el-s01" class="scene" data-composition-id="s01-gancho"
+           data-composition-src="compositions/s01-gancho.html"
+           data-start="0" data-duration="8" data-track-index="1"></div>
+      <div id="el-s02" class="scene" data-composition-id="s02-corresponsable"
+           data-composition-src="compositions/s02-corresponsable.html"
+           data-start="8" data-duration="8" data-track-index="1"></div>
+      <div id="el-s03" class="scene" data-composition-id="s03-roles"
+           data-composition-src="compositions/s03-roles.html"
+           data-start="16" data-duration="10" data-track-index="1"></div>
+      <div id="el-s04" class="scene" data-composition-id="s04-deberes"
+           data-composition-src="compositions/s04-deberes.html"
+           data-start="26" data-duration="12" data-track-index="1"></div>
+      <div id="el-s05" class="scene" data-composition-id="s05-principio"
+           data-composition-src="compositions/s05-principio.html"
+           data-start="38" data-duration="8" data-track-index="1"></div>
+      <div id="el-s06" class="scene" data-composition-id="s06-ruta"
+           data-composition-src="compositions/s06-ruta.html"
+           data-start="46" data-duration="8" data-track-index="1"></div>
+      <div id="el-s07" class="scene" data-composition-id="s07-cierre"
+           data-composition-src="compositions/s07-cierre.html"
+           data-start="54" data-duration="6" data-track-index="1"></div>
+      <div id="chrome" class="clip chrome" data-start="0" data-duration="60" data-track-index="5">
+        <div class="bar"><div class="bar-fill" id="bar-fill"></div></div>
+        <!-- scene borders on the 60 s map: 8 · 16 · 26 · 38 · 46 · 54 -->
+        <div class="tick" style="left: 188px"></div>
+        <div class="tick" style="left: 316px"></div>
+        <div class="tick" style="left: 476px"></div>
+        <div class="tick" style="left: 668px"></div>
+        <div class="tick" style="left: 796px"></div>
+        <div class="tick" style="left: 924px"></div>
+        <div class="bug" id="bug"><img src="assets/marca/riskmann_logo_color.png" alt="RiskMann by SOFU" /></div>
+      </div>
+
+      <audio id="mezcla" class="clip" src="assets/mezcla-video.wav"
+             data-start="0" data-duration="60" data-track-index="10"></audio>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      /* the progress bar fills across the whole piece */
+      tl.fromTo("#bar-fill", { scaleX: 0 }, { scaleX: 1, duration: 60, ease: "none" }, 0);
+      /* the bug steps aside for the closing lockup; the bar leaves with the final fade */
+      tl.to("#bug", { opacity: 0, y: 20, duration: 0.3, ease: "power2.in" }, 54);
+      tl.to(".bar, .tick", { opacity: 0, duration: 0.8, ease: "power1.in" }, 59.2);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
