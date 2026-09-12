@@ -21,6 +21,7 @@ video-presentacion/      pieza previa del equipo (12 s)
 videos/
   pesv-m01-mando/        PoC «Seguridad Vial para Pasajeros» · Módulo 01, formato «Centro de mando» (con voz)
   pesv-m01-ritmo/        el mismo módulo en formato «Ritmo»: 60 s, al compás de una pista, sin voz
+  pesv-m01-ritmo-vertical/  el «Ritmo» recompuesto en 9:16 para redes sociales
   riskmann-sala-de-control/  video de marketing de la plataforma (68 s)
 ```
 
@@ -34,6 +35,7 @@ Todos los videos terminados están en la carpeta compartida de Drive:
 | 01 | `Capacitacion completa narrada (2m31)` | Módulo 1 completo con voz — **entregable del PoC** | `videos/pesv-m01-mando/` |
 | 01b | `Capacitacion completa (version liviana para compartir)` | El mismo 01, comprimido a 11 MB | `videos/pesv-m01-mando/` |
 | 02 | `Resumen dinamico sin voz (1m00)` | Pieza corta de gancho, al compás de una pista | `videos/pesv-m01-ritmo/` |
+| 02b | `Resumen dinamico vertical para redes (1m00)` | El mismo 02 en 9:16 para TikTok / Reels / Shorts | `videos/pesv-m01-ritmo-vertical/` |
 | 03 | `Version presentacion fiel a las diapositivas (2m36)` | El módulo siguiendo el documento original | fuera del repo |
 | 04 | `Presentacion de la plataforma - Video promocional (1m08)` | Marketing de RiskMann, sin sonido — *no usar comercialmente aún* | `videos/riskmann-sala-de-control/` |
 | 04b | `Presentacion de la plataforma - Video promocional narrado (1m08)` | El mismo 04, con voz y música | `videos/riskmann-sala-de-control/` |

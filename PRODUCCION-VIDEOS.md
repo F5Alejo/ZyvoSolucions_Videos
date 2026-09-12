@@ -495,6 +495,7 @@ Trampas añadidas en la serie PESV (formato de capacitación):
 | PESV M01 «plus» | Rechazado (seguía siendo diapositiva; monigotes) — fuera del repo | archivo local del equipo |
 | PESV M01 refactor fotográfico | Superado («muy básico») — fuera del repo | archivo local del equipo |
 | **PESV M01 «Ritmo»** (60 s) | **Renderizado y aprobado.** Pieza corta sin voz. | `videos/pesv-m01-ritmo/` → `renders/pesv-m01-ritmo.mp4` |
+| **PESV M01 «Ritmo» vertical** (60 s, 9:16) | **Renderizado.** Para TikTok / Reels / Shorts. | `videos/pesv-m01-ritmo-vertical/` |
 | PESV M02–M08 | Por hacer, con §10 (y §13 para su pieza corta) | — |
 | Presentación anterior (12 s) | Del equipo, previo | `video-presentacion/` |
 
@@ -643,6 +644,7 @@ La mezcla del módulo 01 (`videos/pesv-m01-mando/tools/mezcla-modulo.json`) es e
 | Marketing «Sala de control» | 68 s | ~1 día (inventar el sistema) | 4 min 44 s | 15.9 MB |
 | PESV M01 «Centro de mando» | 151 s | muestra ~10 min + ~2 h | ~9 min 30 s | 39.1 MB (vista 11.4 MB) |
 | PESV M01 «Ritmo» (sin voz) | 60 s | muestra ~30 min + ~1 h | 4 min 02 s | 15.3 MB |
+| PESV M01 «Ritmo» vertical 9:16 | 60 s | ~1 h (recomposición de las 7 escenas) | 4 min 09 s | 14.5 MB |
 
 Con la plantilla de §10 un módulo nuevo debería costar bastante menos que el primero: el
 sistema ya existe y solo cambian el guion y los planos de contenido.
@@ -702,6 +704,26 @@ python ../../tools/mezcla.py tools/mezcla-video.json  # pista + efectos, pasa_al
 
 Un efecto en cada golpe y en cada transición (62 en el módulo 01). Balance medido del
 módulo 01: −21 / −20 / −22.5 dB en graves, medios y agudos.
+
+### 13.4b La variante vertical (9:16) para redes
+
+`videos/pesv-m01-ritmo-vertical/` es el mismo minuto en **1080×1920**, para TikTok, Reels y
+Shorts. **No es el horizontal recortado**: cada escena se recompone, y eso es todo el trabajo.
+
+- **Lienzo**: `data-width="1080" data-height="1920"` en `index.html` y en cada escena, más el
+  `width`/`height` del `#root` y del `body`.
+- **Zona segura**: el contenido vive entre y≈300 y y≈1500. Arriba va el nombre de usuario y
+  abajo los botones y los subtítulos de la app; la firma y la barra de progreso suben a
+  y≈1560-1700.
+- **Recomponer, no escalar**: lo que iba lado a lado se apila (la foto bajo el texto), las
+  frases largas se parten en dos líneas, las filas de fichas se envuelven en dos renglones y
+  la ruta de 8 módulos pasa de barra horizontal a **riel vertical**.
+- **Tipografía proporcionalmente mayor**: un titular de 92 px en 16:9 se lee en 86 px sobre un
+  cuadro que mide la mitad de ancho.
+- **Mismo pulso, mismo audio**: los tiempos no cambian, así que las dos versiones comparten la
+  mezcla (`assets/mezcla-video.wav`) y quedan sincronizadas.
+
+Medido: render 4 min 09 s, 14.5 MB.
 
 ### 13.5 Producir la pieza «Ritmo» de otro módulo
 
