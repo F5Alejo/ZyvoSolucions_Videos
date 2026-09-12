@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #E8EAE9; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #E8EAE9; }
+      .scene { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .chrome { position: absolute; inset: 0; pointer-events: none; }
+      /* brand bug: the official lockup on a white pill, legible on paper and on petrol */
+      .bug { position: absolute; left: 60px; top: 1548px; width: 240px; height: 92px; border-radius: 46px; background: #FFFFFF;
+             box-shadow: 0 0 0 1.5px rgba(25, 72, 77, 0.14); }
+      .bug img { position: absolute; left: 28px; top: 7px; width: 184px; height: 93.4px; }
+      .bar { position: absolute; left: 60px; top: 1690px; width: 960px; height: 7px; border-radius: 3px; background: rgba(25, 72, 77, 0.2); overflow: hidden; }
+      .bar-fill { position: absolute; inset: 0; background: #F9B410; transform: scaleX(0); transform-origin: 0 50%; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="52" data-width="1080" data-height="1920">
+      <div id="el-s0" class="scene" data-composition-id="s0-impacto"
+           data-composition-src="compositions/s0-impacto.html"
+           data-start="0" data-duration="2" data-track-index="1"></div>
+      <div id="el-s1" class="scene" data-composition-id="s1-gancho"
+           data-composition-src="compositions/s1-gancho.html"
+           data-start="2" data-duration="6" data-track-index="1"></div>
+      <div id="el-s2" class="scene" data-composition-id="s2-quienes"
+           data-composition-src="compositions/s2-quienes.html"
+           data-start="8" data-duration="8" data-track-index="1"></div>
+      <div id="el-s3" class="scene" data-composition-id="s3-servicios"
+           data-composition-src="compositions/s3-servicios.html"
+           data-start="16" data-duration="12" data-track-index="1"></div>
+      <div id="el-s4" class="scene" data-composition-id="s4-riskmann"
+           data-composition-src="compositions/s4-riskmann.html"
+           data-start="28" data-duration="8" data-track-index="1"></div>
+      <div id="el-s5" class="scene" data-composition-id="s5-porque"
+           data-composition-src="compositions/s5-porque.html"
+           data-start="36" data-duration="6" data-track-index="1"></div>
+      <div id="el-s6" class="scene" data-composition-id="s6-cierre"
+           data-composition-src="compositions/s6-cierre.html"
+           data-start="42" data-duration="10" data-track-index="1"></div>
+      <div id="chrome" class="clip chrome" data-start="0" data-duration="52" data-track-index="5">
+        <div class="bar"><div class="bar-fill" id="bar-fill"></div></div>
+        <div class="bug" id="bug"><img src="assets/marca/sofu-logo.png" alt="SOFU BIC SAS" /></div>
+      </div>
+
+      <audio id="mezcla" class="clip" src="assets/mezcla-sofu-v2.wav"
+             data-start="0" data-duration="52" data-track-index="10"></audio>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      /* the progress bar fills across the whole piece */
+      tl.fromTo("#bar-fill", { scaleX: 0 }, { scaleX: 1, duration: 52, ease: "none" }, 0);
+      /* the bug steps aside for the closing lockup */
+      tl.to("#bug", { opacity: 0, y: 20, duration: 0.3, ease: "power2.in" }, 42);
+      tl.to(".bar", { opacity: 0, duration: 0.8, ease: "power1.in" }, 51.2);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

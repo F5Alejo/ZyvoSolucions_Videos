@@ -1,0 +1,95 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Montserrat", sans-serif; background: #19484D; }
+    .h-layer { position: absolute; inset: 0; }
+    .h-shake { position: absolute; inset: -70px; will-change: transform; }
+
+    /* four cuts in two seconds: the hook lands before anyone can scroll away */
+    .h-card { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; }
+    .h-teal { background: #19484D; }
+    .h-yellow { background: #F9B410; }
+    .h-paper { background: #E8EAE9; }
+    .h-word { font-size: 118px; font-weight: 900; line-height: 1; letter-spacing: -0.035em; white-space: nowrap; }
+    .h-on-teal { color: #FFFFFF; }
+    .h-on-yellow { color: #19484D; }
+    .h-on-paper { color: #19484D; }
+    .h-bar { position: absolute; left: -20%; width: 140%; height: 26px; transform: scaleX(0); transform-origin: 0 50%; }
+    .h-bar-y { background: #F9B410; }
+    .h-bar-t { background: #19484D; }
+
+    /* their own pieces, flashed for two frames each: proof that the company already speaks */
+    .h-piece { position: absolute; inset: 0; opacity: 0; overflow: hidden; }
+    .h-piece img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .h-flash { position: absolute; inset: 0; background: #FFFFFF; opacity: 0; }
+  </style>
+
+  <div id="root" data-composition-id="s0-impacto" data-start="0" data-duration="2" data-width="1080" data-height="1920">
+    <div id="h-stage" class="clip h-layer" data-start="0" data-duration="2" data-track-index="1">
+      <div class="h-shake" id="h-shake">
+        <div class="h-card h-teal" id="h-c1"><div class="h-word h-on-teal">SU EMPRESA</div></div>
+        <div class="h-card h-yellow" id="h-c2"><div class="h-word h-on-yellow">PIERDE</div></div>
+        <div class="h-card h-paper" id="h-c3"><div class="h-word h-on-paper">TIEMPO.</div></div>
+        <div class="h-piece" id="h-p1"><img src="assets/piezas/todo-bajo-control.jpg" alt="Pieza de SOFU: Todo bajo control" /></div>
+        <div class="h-piece" id="h-p2"><img src="assets/piezas/cumple-sin-estres.jpg" alt="Pieza de SOFU: Cumple sin estrés" /></div>
+        <div class="h-bar h-bar-y" id="h-bar-1" style="top: 620px"></div>
+        <div class="h-bar h-bar-t" id="h-bar-2" style="top: 1240px"></div>
+      </div>
+      <div class="h-flash" id="h-flash" aria-hidden="true" data-layout-ignore></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var F = 1 / 30;
+
+      /* 0.00 · frame one is already the message: no fade-in anywhere */
+      tl.set("#h-c1", { opacity: 1 }, 0);
+      tl.fromTo("#h-c1 .h-word", { scale: 1.28 }, { scale: 1, duration: 0.22, ease: "expo.out" }, 0);
+      tl.fromTo("#h-bar-1", { scaleX: 0 }, { scaleX: 1, duration: 0.16, ease: "expo.out" }, 0.02);
+      tl.set("#h-c1", { opacity: 0 }, 0.42);
+
+      /* 0.42 · yellow card */
+      tl.set("#h-c2", { opacity: 1 }, 0.42);
+      tl.fromTo("#h-c2 .h-word", { scale: 0.84, rotation: -3 }, { scale: 1, rotation: 0, duration: 0.2, ease: "expo.out" }, 0.42);
+      tl.fromTo("#h-bar-2", { scaleX: 0 }, { scaleX: 1, duration: 0.16, ease: "expo.out", immediateRender: false }, 0.44);
+      tl.set("#h-c2", { opacity: 0 }, 0.84);
+
+      /* 0.84 · two frames of their own piece, then the third word */
+      tl.set("#h-p1", { opacity: 1 }, 0.84);
+      tl.set("#h-p1", { opacity: 0 }, 0.84 + 2 * F);
+      tl.set("#h-c3", { opacity: 1 }, 0.84 + 2 * F);
+      tl.fromTo("#h-c3 .h-word", { scale: 2.1 }, { scale: 1, duration: 0.28, ease: "expo.out" }, 0.84 + 2 * F);
+      tl.set("#h-c3", { opacity: 0 }, 1.4);
+
+      /* 1.40 · second piece, two frames, then white flash into the question */
+      tl.set("#h-p2", { opacity: 1 }, 1.4);
+      tl.set("#h-p2", { opacity: 0 }, 1.4 + 2 * F);
+      tl.set("#h-c3", { opacity: 1 }, 1.4 + 2 * F);
+      tl.to("#h-c3 .h-word", { scale: 4.6, opacity: 0, duration: 0.22, ease: "power3.in" }, 1.55);
+      tl.set("#h-flash", { opacity: 1 }, 1.86);
+      tl.set("#h-flash", { opacity: 0 }, 1.86 + 2 * F);
+
+      /* camera shake on every hit, always back to zero */
+      [0, 0.42, 0.84, 1.4].forEach(function (t, i) {
+        var d = i % 2 === 0 ? 18 : -18;
+        tl.fromTo("#h-shake", { x: 0, y: 0 }, { x: d, y: -d * 0.55, duration: 2 * F, ease: "none", immediateRender: false }, t);
+        tl.to("#h-shake", { x: 0, y: 0, duration: 3 * F, ease: "power2.out" }, t + 2 * F);
+      });
+
+      window.__timelines["s0-impacto"] = tl;
+    })();
+  </script>
+</template>

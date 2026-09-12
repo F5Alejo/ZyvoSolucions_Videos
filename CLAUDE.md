@@ -48,6 +48,19 @@ python ../../tools/ritmo.py tools/ritmo-video.json      # pista a 120 BPM
 python ../../tools/mezcla.py tools/mezcla-video.json    # pista + efectos, verificada
 ```
 
+## Curso a partir de un PPTX con notas de orador
+
+La plantilla es `videos/ruta-segura-m1/` y el procedimiento es **§14** de
+`PRODUCCION-VIDEOS.md`. Un video por módulo, **sin voz**, montado sobre la duración
+real de la narración medida frase por frase con Piper. Las composiciones se generan:
+
+```bash
+python tools/construir.py   # compositions/*.html + index.html
+python tools/guion.py       # GUION-VOZ.md, el libreto con ventanas absolutas
+```
+
+Se entrega el MP4 **más** `GUION-VOZ.md` para que la locución colombiana se grabe encima.
+
 ## Empezar un video de marketing nuevo
 
 ```bash

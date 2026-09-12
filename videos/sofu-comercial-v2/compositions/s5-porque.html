@@ -1,0 +1,88 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Montserrat", sans-serif; }
+    .p-layer { position: absolute; inset: 0; }
+    .p-ground { background: radial-gradient(1400px 900px at 50% 44%, #FFFFFF 0%, #E8EAE9 64%, #DCE0DF 100%); }
+
+    .p-head { position: absolute; left: 0; top: 130px; width: 1920px; text-align: center; white-space: nowrap;
+      font-size: 74px; font-weight: 900; color: #19484D; line-height: 1.1; }
+    .p-head span { display: inline-block; opacity: 0; }
+    .p-sub { position: absolute; left: 0; top: 232px; width: 1920px; text-align: center; font-size: 38px; font-weight: 500; color: #3C5A5C; white-space: nowrap; opacity: 0; }
+
+    /* five pillars on a rail: each lands on its own beat */
+    .p-rail { position: absolute; left: 300px; top: 360px; width: 1320px; height: 520px; }
+    .p-line { position: absolute; left: 26px; top: 10px; width: 6px; height: 500px; border-radius: 3px; background: rgba(25, 72, 77, 0.18); transform: scaleY(0); transform-origin: 50% 0; }
+    .p-item { position: absolute; left: 0; width: 1320px; height: 100px; opacity: 0; will-change: transform, opacity; }
+    .p-dot { position: absolute; left: 8px; top: 22px; width: 42px; height: 42px; border-radius: 50%; background: #F9B410; }
+    .p-name { position: absolute; left: 96px; top: 12px; font-size: 46px; font-weight: 900; color: #19484D; white-space: nowrap; }
+    .p-desc { position: absolute; left: 96px; top: 64px; font-size: 30px; font-weight: 500; color: #3C5A5C; white-space: nowrap; }
+
+    /* exit: the petrol iris opens from the centre (scene 6's ground) */
+    .p-iris { position: absolute; left: 860px; top: 440px; width: 200px; height: 200px; border-radius: 50%; background: #19484D; transform: scale(0); }
+  </style>
+
+  <div id="root" data-composition-id="s5-porque" data-start="0" data-duration="6" data-width="1920" data-height="1080">
+    <div id="p-ground" class="clip p-layer p-ground" data-start="0" data-duration="6" data-track-index="0"></div>
+
+    <div id="p-stage" class="clip p-layer" data-start="0" data-duration="6" data-track-index="1">
+      <div class="p-head" id="p-head"><span>¿Por</span> <span>qué</span> <span>elegir</span> <span>SOFU?</span></div>
+      <div class="p-sub" id="p-sub">Porque cada empresa tiene necesidades diferentes.</div>
+
+      <div class="p-rail" id="p-rail">
+        <div class="p-line" id="p-line" aria-hidden="true" data-layout-ignore></div>
+        <div class="p-item" style="top: 0px"><div class="p-dot"></div><div class="p-name">Tecnología</div><div class="p-desc">Herramientas digitales para optimizar procesos.</div></div>
+        <div class="p-item" style="top: 100px"><div class="p-dot"></div><div class="p-name">Experiencia</div><div class="p-desc">Conocimiento en gestión empresarial y prevención de riesgos.</div></div>
+        <div class="p-item" style="top: 200px"><div class="p-dot"></div><div class="p-name">Acompañamiento</div><div class="p-desc">Soluciones orientadas a las necesidades de cada cliente.</div></div>
+        <div class="p-item" style="top: 300px"><div class="p-dot"></div><div class="p-name">Innovación</div><div class="p-desc">Búsqueda constante de nuevas formas de mejorar los procesos.</div></div>
+        <div class="p-item" style="top: 400px"><div class="p-dot"></div><div class="p-name">Compromiso</div><div class="p-desc">Generar valor para las organizaciones y la sociedad.</div></div>
+      </div>
+    </div>
+
+    <div id="p-exit" class="clip p-layer" data-start="0" data-duration="6" data-track-index="2">
+      <div class="p-iris" id="p-iris" aria-hidden="true" data-layout-ignore></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      var hw = gsap.utils.toArray("#p-head span");
+      for (var i = 0; i < hw.length; i++) {
+        tl.set(hw[i], { opacity: 1 }, 0.15 + i * 0.06);
+        tl.fromTo(hw[i], { y: -44 }, { y: 0, duration: 0.34, ease: "power4.out" }, 0.15 + i * 0.06);
+      }
+      tl.fromTo("#p-sub", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 0.6);
+
+      /* 1.4 · the rail draws down, then one pillar per beat */
+      tl.fromTo("#p-line", { scaleY: 0 }, { scaleY: 1, duration: 0.7, ease: "power3.out" }, 0.9);
+      var items = gsap.utils.toArray("#p-rail .p-item");
+      for (var k = 0; k < items.length; k++) {
+        var at = 1.2 + k * 0.72;
+        tl.set(items[k], { opacity: 1 }, at);
+        tl.fromTo(items[k], { x: -80 }, { x: 0, duration: 0.5, ease: "expo.out" }, at);
+        tl.fromTo(items[k].querySelector(".p-dot"), { scale: 0.3 }, { scale: 1, duration: 0.4, ease: "power4.out" }, at);
+      }
+
+      /* 8.6 · the whole list breathes once, together */
+      tl.fromTo("#p-rail", { scale: 1 }, { scale: 1.02, duration: 1.0, ease: "sine.inOut", immediateRender: false }, 4.8);
+
+      /* 11.0 · exit: the petrol iris opens into the closing scene */
+      tl.fromTo("#p-iris", { scale: 0 }, { scale: 13, duration: 0.9, ease: "power3.in" }, 5.1);
+
+      window.__timelines["s5-porque"] = tl;
+    })();
+  </script>
+</template>
