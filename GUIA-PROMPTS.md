@@ -208,6 +208,34 @@ entretenido. Cosas nuevas, nada que ya hayamos usado. 60 segundos, sin voz.
 >   radicales y el cliente aclaró que no quería otro concepto, sino **mejor movimiento** en
 >   el mismo formato. Si lo que falla es la animación, dilo así: ahorra una ronda.
 
+### 2.4d — Convertir un PPTX de capacitación en video, con hueco para voz humana
+
+**Consigues:** el curso partido en videos por módulo (8 a 12 min cada uno), **sin voz**, con
+cada aparición en pantalla montada sobre el segundo exacto en que la narración la menciona,
+más el libreto con la ventana de tiempo de cada lámina para grabar la locución después.
+
+```
+Necesito animar esta presentación: <ruta al .pptx>
+Hazlo por módulos, un video por módulo.
+Dejo el hueco para voz humana: entrégalo sin locución, pero montado
+sobre los tiempos reales de la narración, y dame el guion con los
+tiempos para grabarla después.
+```
+
+**Te devuelve:** el MP4 del primer módulo y un `GUION-VOZ.md` con la ventana absoluta de
+cada lámina y las frases en el orden en que el video las muestra.
+**Tarda:** ~25 min medir la narración, ~2 h componer las láminas, ~40 min de render.
+
+> **Lo que hizo funcionar este prompt:**
+> - **Las notas del orador son el guion.** Antes de animar nada se sintetiza **frase por
+>   frase** con Piper y se guardan las duraciones. La duración de cada lámina sale de ahí, no
+>   de una estimación. Sin esa medición el resultado es una secuencia de láminas quietas.
+> - **«Dejo el hueco para voz humana»** es lo que permite aprobar la imagen antes de pagar
+>   estudio: una corrección de texto no obliga a re-renderizar doce minutos.
+> - **Pedir «por módulos» acota el riesgo.** Un PPTX de 33 láminas son ~29 min de narración;
+>   si algo no gusta, se rehace un módulo, no el curso.
+> - Detalle del procedimiento en `PRODUCCION-VIDEOS.md` §14.
+
 ### 2.5 — Corregir un plano concreto
 
 **Consigues:** un cambio quirúrgico sin tocar el resto.

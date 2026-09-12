@@ -9,6 +9,7 @@ Repositorio dedicado a la elaboración de videos para presentaciones, marketing 
 | [`GUIA-PROMPTS.md`](GUIA-PROMPTS.md) | Quien pide los videos (marketing, gerencia) | «Con este prompt consigo esto»: instrucciones probadas, tiempos y lo que no funciona |
 | [`PRODUCCION-VIDEOS.md`](PRODUCCION-VIDEOS.md) | Quien los produce (persona o agente) | El estándar: veracidad, marca, identidad visual, formatos, procedimiento, audio, trampas |
 | `videos/<proyecto>/DIRECCION.md` | Quien construye un módulo | La dirección de arte normativa de ese video |
+| [`videos/ruta-segura-m1/GUION-VOZ.md`](videos/ruta-segura-m1/GUION-VOZ.md) | Quien graba la voz | El libreto del curso de ciclistas con la ventana de tiempo exacta de cada lámina |
 
 ## Estructura
 
@@ -25,6 +26,7 @@ videos/
   pesv-m01-profundidad/  exploración: partículas por GPU y 3D con cámara (16:9)
   pesv-m01-profundidad-vertical/  la misma exploración en 9:16
   sofu-comercial/        comercial de SOFU BIC S.A.S. (68 s, 16:9)
+  ruta-segura-m1/        curso «Ruta Segura» · apertura + módulo 1 (11:47, sin voz)
   riskmann-sala-de-control/  video de marketing de la plataforma (68 s)
 ```
 
@@ -43,6 +45,8 @@ Todos los videos terminados están en la carpeta compartida de Drive:
 | 04 | `Presentacion de la plataforma - Video promocional (1m08)` | Marketing de RiskMann, sin sonido — *no usar comercialmente aún* | `videos/riskmann-sala-de-control/` |
 | 04b | `Presentacion de la plataforma - Video promocional narrado (1m08)` | El mismo 04, con voz y música | `videos/riskmann-sala-de-control/` |
 | 05 | `SOFU BIC SAS - Presentacion comercial de la empresa (1m08)` | Comercial de la casa matriz SOFU, a partir de su guion | `videos/sofu-comercial/` |
+| 07 | `Ruta Segura - Modulo 1 Actor vial y Sistema Seguro - SIN VOZ (11m47)` | Curso de ciclistas: apertura + módulo 1, **sin voz**, listo para locutar — el libreto es [`GUION-VOZ.md`](videos/ruta-segura-m1/GUION-VOZ.md) | `videos/ruta-segura-m1/` |
+| 07b | `Ruta Segura - Modulo 1 - SIN VOZ (version liviana para compartir)` | El mismo 07, comprimido a 10 MB | `videos/ruta-segura-m1/` |
 
 Los archivos 01–03 empiezan por `NN - Seguridad Vial para Pasajeros - Modulo 1 Actor Vial - …` y
 los 04 por `NN - RiskMann - …`; el número es el orden sugerido para verlos. Los nombres coinciden con los

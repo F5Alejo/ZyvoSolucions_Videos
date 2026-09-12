@@ -742,3 +742,78 @@ Medido: render 4 min 09 s, 14.5 MB.
    efectos de `tools/mezcla-video.json` a los nuevos tiempos.
 5. **Primero una muestra de ~16 s con sonido**, luego el resto.
 6. `check` → capturas en cada cambio de escena → render → revisar los cortes en el MP4.
+
+---
+
+## 14. Formato de curso — «lámina a lámina», con hueco para voz humana
+
+Cuando el material de entrada es un **PPTX de capacitación con notas de orador**, el video ya
+viene escrito: las notas son el guion y las láminas son la estructura. Lo que hay que resolver
+es el **tiempo**. La plantilla es `videos/ruta-segura-m1/`.
+
+### 14.1 La decisión de formato
+
+- **Un video por módulo**, no uno por curso. Un PPTX de 33 láminas son ~29 min de narración;
+  partido por módulos quedan piezas de 8 a 12 min, que es lo que una persona ve de una sentada
+  y lo que se puede volver a grabar sin rehacer todo.
+- **Se entrega sin voz.** La locución final es humana y colombiana; el video se monta sobre
+  tiempos medidos y el locutor graba encima. Así el cliente aprueba la imagen antes de pagar
+  estudio, y una corrección de texto no obliga a re-renderizar.
+
+### 14.2 Medir antes de animar
+
+El paso que hace que el formato funcione:
+
+```bash
+# frase por frase, no la nota entera
+python -m piper -m tools/voces/es_ES-davefx-medium.onnx -f frase.wav   # texto por stdin
+```
+
+Se sintetiza **cada frase** de cada nota y se guarda su duración
+(`tools/tiempos-medidos.json`). Con eso:
+
+- la **duración de la lámina** = duración de su narración + ~1,2 s de aire;
+- el **momento de cada aparición** = el segundo en que el narrador nombra esa cosa.
+
+Sin esa medición, un video de doce minutos es una secuencia de láminas quietas. Con ella, cada
+elemento entra cuando la voz lo menciona y el módulo se deja ver.
+
+> **Piper falla con comillas angulares** (`«…»`): termina en código 1 sin escribir el WAV
+> (`wave.Error: # channels not specified`). Medir frase por frase aísla el problema; si una
+> frase falla, se estima por conteo de palabras (~0,46 s/palabra a 130 ppm).
+
+> Las notas pueden traer rótulos del documento (`GUION DE VOZ — PRIMERA PERSONA`). No son
+> narración: se descuentan del tiempo y no entran al libreto.
+
+### 14.3 Las composiciones se generan, no se escriben
+
+Once láminas con el mismo encuadre no se mantienen a mano. En `tools/`:
+
+- `base.py` — paleta, fuentes y **el encuadre común** (ceja, número, título, regla, pie).
+- `eNN.py` — una lámina por archivo: CSS, cuerpo y línea de tiempo, con la marca de tiempo de
+  la frase que dispara cada aparición escrita en el comentario.
+- `construir.py` — encadena, calcula inicios y arma el `index.html` con barra de avance y sello.
+- `guion.py` — escribe `GUION-VOZ.md`, el libreto con la **ventana absoluta** de cada lámina.
+
+Mover una lámina es cambiar su `DUR` y volver a construir.
+
+### 14.4 Reglas de composición para láminas de ~60 s
+
+- **Una sola línea de fuente documental** abajo (y=946). Nada puede invadirla: es el error que
+  más veces apareció. Los cierres de lámina van en una sola línea, no en dos.
+- **Título de máximo dos renglones** (50 px, ancho 1450) y la regla de acento **debajo** de esa
+  caja, no dentro.
+- **Sustituir en vez de acumular.** Cuando entra la idea de cierre, se apaga la anterior en el
+  mismo sitio; si no, la lámina termina siendo un muro.
+- **Una sola petición al espectador**: la pastilla «PAUSA EL VIDEO Y RESPONDE», y solo donde la
+  narración lo pide.
+- `check` toma **nueve muestras** en doce minutos: no basta. Hay que sacar `snapshot` en el
+  momento más lleno de cada lámina (el final) y revisar la hoja de contactos.
+
+### 14.5 Producir el módulo siguiente
+
+1. Extraer las láminas del módulo del PPTX (texto y notas) y medir frase por frase.
+2. Copiar `videos/ruta-segura-m1/` sin `renders/`, `snapshots/` ni `compositions/`.
+3. Reemplazar `tools/eNN.py` por las láminas nuevas, reutilizando `base.py` sin tocarlo.
+4. `python tools/construir.py` → `npx hyperframes check` → capturas → render.
+5. `python tools/guion.py` y entregar `GUION-VOZ.md` junto con el MP4.
