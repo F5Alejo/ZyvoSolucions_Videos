@@ -439,6 +439,10 @@ Trampas añadidas en la serie PESV (formato de capacitación):
 | **Posiciones calculadas a ojo** | Anchos de palabras estimados → dos píldoras se montaron. | Que la fila la ordene flexbox y animar desde el lugar natural de cada elemento (`x: 0, y: 0` como destino). |
 | **Texto decorativo auditado** | Números o cintas de fondo solo contorno (`color: transparent`) fallan «texto sin pintar» y contraste. | Marcarlos con `data-layout-ignore` (y `aria-hidden`). No forzarles contraste: son fondo. |
 | **Graves que se comen la mezcla** | Con bombo e impactos, la subgrave se llevaba la normalización y los agudos quedaban 16 dB abajo. | `"pasa_altos": 90` en el JSON de mezcla; medir tres bandas (<120, 120–400, >400 Hz) y buscar que queden a pocos dB entre sí. |
+| **Bloque del catálogo con su propia duración** | Cada bloque instalado lee su `data-duration` interno, no la del montaje: la foto del bloque de partículas se apagaba a mitad de escena aunque el hueco durara 8 s. | Editar `data-duration` y `data-composition-duration` dentro del archivo instalado. |
+| **Variables de un bloque que chocan con los tokens de color** | La variable `accent` del bloque define `--accent`, así que elegir «blue» pintaba el azul puro de CSS en vez del de marca. | Fijar los colores de marca directamente en el archivo del bloque (es un archivo del proyecto desde que se instala). |
+| **El bloque mide el texto con otro grosor** | El bloque calculaba el ancho con peso 600 mientras la hoja de estilos lo pintaba en 900: la frase se salía del cuadro. | Igualar el peso de la medición al que se ve. |
+| **Amarillo (u otro color claro) como texto sobre fondo claro** | `#F9B410` sobre gris claro da 1.6:1; ilegible y `check` lo marca. | El color claro va en formas (pastillas, barras, subrayados) con tinta oscura encima; para texto, un tono oscuro de la marca. |
 | **MP4 > 30 MB** | No se puede enviar por la sesión. | Copia de vista: `ffmpeg -crf 24` (el módulo 01 quedó en 11.4 MB). |
 | **Escribir con `Set-Content`** | Corrompe los acentos. | Escribir archivos con Python o la herramienta de escritura. |
 
@@ -496,6 +500,8 @@ Trampas añadidas en la serie PESV (formato de capacitación):
 | PESV M01 refactor fotográfico | Superado («muy básico») — fuera del repo | archivo local del equipo |
 | **PESV M01 «Ritmo»** (60 s) | **Renderizado y aprobado.** Pieza corta sin voz. | `videos/pesv-m01-ritmo/` → `renders/pesv-m01-ritmo.mp4` |
 | **PESV M01 «Ritmo» vertical** (60 s, 9:16) | **Renderizado.** Para TikTok / Reels / Shorts. | `videos/pesv-m01-ritmo-vertical/` |
+| **SOFU BIC S.A.S. · comercial** (68 s) | **Renderizado.** Pieza de la casa matriz, desde su propio guion. Pendiente: datos de contacto y validación del portafolio. | `videos/sofu-comercial/` |
+| PESV M01 «Profundidad» 16:9 y 9:16 | Exploración técnica: partículas por GPU y 3D con cámara. Apertura aprobada; escenas 3–7 sin construir. | `videos/pesv-m01-profundidad/` · `-vertical/` |
 | PESV M02–M08 | Por hacer, con §10 (y §13 para su pieza corta) | — |
 | Presentación anterior (12 s) | Del equipo, previo | `video-presentacion/` |
 

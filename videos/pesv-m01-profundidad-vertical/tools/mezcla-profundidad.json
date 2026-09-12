@@ -1,0 +1,129 @@
+{
+ "duracion": 16,
+ "salida": "assets/mezcla-profundidad.wav",
+ "pasa_altos": 90,
+ "pistas": [
+  {
+   "archivo": "assets/ritmo-video.wav",
+   "en": 0,
+   "ganancia": 0.8
+  }
+ ],
+ "efectos": [
+  {
+   "efecto": "impact-bass-2",
+   "en": 0.0,
+   "ganancia": 0.5
+  },
+  {
+   "efecto": "whoosh-cinematic",
+   "en": 0.0,
+   "ganancia": 0.3
+  },
+  {
+   "efecto": "impact-bass-1",
+   "en": 0.25,
+   "ganancia": 0.42
+  },
+  {
+   "efecto": "glitch-1",
+   "en": 0.25,
+   "ganancia": 0.3
+  },
+  {
+   "efecto": "impact-bass-2",
+   "en": 0.5,
+   "ganancia": 0.45
+  },
+  {
+   "efecto": "riser",
+   "en": 0.5,
+   "ganancia": 0.3
+  },
+  {
+   "efecto": "whoosh",
+   "en": 0.85,
+   "ganancia": 0.4
+  },
+  {
+   "efecto": "sparkle",
+   "en": 1.0,
+   "ganancia": 0.3
+  },
+  {
+   "efecto": "whoosh-short",
+   "en": 2.0,
+   "ganancia": 0.3
+  },
+  {
+   "efecto": "impact-bass-1",
+   "en": 3.0,
+   "ganancia": 0.4
+  },
+  {
+   "efecto": "impact-bass-2",
+   "en": 3.5,
+   "ganancia": 0.45
+  },
+  {
+   "efecto": "glitch-2",
+   "en": 3.5,
+   "ganancia": 0.25
+  },
+  {
+   "efecto": "click",
+   "en": 5.0,
+   "ganancia": 0.35
+  },
+  {
+   "efecto": "click",
+   "en": 5.3,
+   "ganancia": 0.35
+  },
+  {
+   "efecto": "click",
+   "en": 5.6,
+   "ganancia": 0.35
+  },
+  {
+   "efecto": "impact-bass-1",
+   "en": 5.9,
+   "ganancia": 0.4
+  },
+  {
+   "efecto": "whoosh-cinematic",
+   "en": 7.3,
+   "ganancia": 0.38
+  },
+  {
+   "efecto": "impact-bass-2",
+   "en": 8.0,
+   "ganancia": 0.35
+  },
+  {
+   "efecto": "key-press",
+   "en": 8.6,
+   "ganancia": 0.25
+  },
+  {
+   "efecto": "pop",
+   "en": 9.6,
+   "ganancia": 0.3
+  },
+  {
+   "efecto": "whoosh",
+   "en": 10.6,
+   "ganancia": 0.28
+  },
+  {
+   "efecto": "ping",
+   "en": 13.0,
+   "ganancia": 0.22
+  },
+  {
+   "efecto": "whoosh",
+   "en": 15.4,
+   "ganancia": 0.3
+  }
+ ]
+}
