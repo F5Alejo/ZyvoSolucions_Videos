@@ -28,7 +28,7 @@ videos/
   sofu-comercial/        comercial de SOFU BIC S.A.S. (68 s, 16:9)
   sofu-comercial-v2/     el comercial rehecho con gancho, golpe inicial y cierre (52 s, 16:9)
   sofu-comercial-v2-vertical/  la versión v2 en 9:16 para redes
-  ruta-segura-m1/        curso «Ruta Segura» · apertura + módulo 1 (11:47, sin voz)
+  ruta-segura-m1/        curso «Ruta Segura» · apertura + módulo 1 (11:35, con locución)
   riskmann-sala-de-control/  video de marketing de la plataforma (68 s)
 ```
 
@@ -49,8 +49,8 @@ Todos los videos terminados están en la carpeta compartida de Drive:
 | 05 | `SOFU BIC SAS - Presentacion comercial de la empresa (1m08)` | Comercial de la casa matriz SOFU, a partir de su guion | `videos/sofu-comercial/` |
 | 06 | `SOFU BIC SAS - Comercial dinamico (52s)` | El comercial rehecho: gancho, golpe inicial y cierre | `videos/sofu-comercial-v2/` |
 | 06b | `SOFU BIC SAS - Comercial dinamico vertical para redes (52s)` | El mismo 06 en 9:16 | `videos/sofu-comercial-v2-vertical/` |
-| 07 | `Ruta Segura - Modulo 1 Actor vial y Sistema Seguro - SIN VOZ (11m47)` | Curso de ciclistas: apertura + módulo 1, **sin voz**, listo para locutar — el libreto es [`GUION-VOZ.md`](videos/ruta-segura-m1/GUION-VOZ.md) | `videos/ruta-segura-m1/` |
-| 07b | `Ruta Segura - Modulo 1 - SIN VOZ (version liviana para compartir)` | El mismo 07, comprimido a 10 MB | `videos/ruta-segura-m1/` |
+| 07 | `Ruta Segura - Modulo 1 Actor vial y Sistema Seguro - Narrado (11m35)` | Curso de ciclistas: apertura + módulo 1, con locución sintética — el libreto para regrabarla con una persona es [`GUION-VOZ.md`](videos/ruta-segura-m1/GUION-VOZ.md) | `videos/ruta-segura-m1/` |
+| 07b | `Ruta Segura - Modulo 1 - Narrado (version liviana para compartir)` | El mismo 07, comprimido a 19 MB | `videos/ruta-segura-m1/` |
 
 Los archivos 01–03 empiezan por `NN - Seguridad Vial para Pasajeros - Modulo 1 Actor Vial - …` y
 los 04 por `NN - RiskMann - …`; el número es el orden sugerido para verlos. Los nombres coinciden con los
@@ -82,3 +82,5 @@ python tools/descargar-voz.py     # una vez: baja la voz aprobada (60 MB, fuera 
 | `tools/voz.py` | Locución con la voz aprobada desde un guion JSON; avisa si una frase no cabe en su plano |
 | `tools/ritmo.py` | Pista rítmica sintetizada (bombo, platillos, palmas, bajo, acordes) a un BPM dado, para videos sin voz |
 | `tools/mezcla.py` | Mezcla voz, pistas, cama y efectos desde un JSON; normaliza a −16 LUFS y verifica que el audio llegó |
+| `videos/ruta-segura-m1/tools/voz-eleven.py` | Locución con ElevenLabs (`eleven_v3`) pidiendo timestamps por carácter |
+| `videos/ruta-segura-m1/tools/cronometro.py` | Traduce los tiempos de una locución a los de otra y recoloca todo el montaje |

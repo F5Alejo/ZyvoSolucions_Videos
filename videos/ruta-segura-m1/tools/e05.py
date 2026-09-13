@@ -4,9 +4,11 @@
 Dos columnas: a la izquierda la pregunta y la respuesta; a la derecha, primero
 lo que la prudencia no controla y después la frase que el curso descarta.
 """
+import cronometro
 from base import chrome, envoltura, PAUSA_HTML, pausa_tl
 
-DUR = 65
+LAMINA = 5
+DUR = cronometro.duracion(LAMINA)
 
 CSS = """
     .s-foto { position: absolute; left: 50%; top: 50%; width: 2016px; height: 1344px;
@@ -126,4 +128,4 @@ TL += """
 
 
 def escena():
-    return envoltura("e05-cuidado", DUR, CSS, CUERPO, TL)
+    return envoltura("e05-cuidado", DUR, CSS, CUERPO, TL, lamina=LAMINA)

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """Lámina 06 · Sistema Seguro. Las capas que impiden que un error termine en daño grave."""
+import cronometro
 from base import chrome, envoltura
 
-DUR = 59
+LAMINA = 6
+DUR = cronometro.duracion(LAMINA)
 
 CSS = """
     .c-hecho { position: absolute; top: 300px; width: 820px; height: 104px; border-radius: 8px;
@@ -80,4 +82,4 @@ TL += """
 
 
 def escena():
-    return envoltura("e06-sistema", DUR, CSS, CUERPO, TL)
+    return envoltura("e06-sistema", DUR, CSS, CUERPO, TL, lamina=LAMINA)

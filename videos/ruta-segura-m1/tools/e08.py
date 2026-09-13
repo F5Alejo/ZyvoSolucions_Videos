@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """Lámina 08 · Caso práctico. Ruta inundada, sin iluminación y con retraso."""
+import cronometro
 from base import chrome, envoltura, PAUSA_HTML, pausa_tl
 
-DUR = 70.5
+LAMINA = 8
+DUR = cronometro.duracion(LAMINA)
 
 CSS = """
     .k-foto { position: absolute; left: 1178px; top: 296px; width: 618px; height: 412px;
@@ -98,4 +100,4 @@ TL = """      /* 1.59 · «La ruta ordenada está inundada, no tiene iluminació
 
 
 def escena():
-    return envoltura("e08-caso", DUR, CSS, CUERPO, TL)
+    return envoltura("e08-caso", DUR, CSS, CUERPO, TL, lamina=LAMINA)

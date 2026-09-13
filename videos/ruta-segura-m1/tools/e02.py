@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """Lámina 02 · Pregunta inicial. Cinco fallas encadenadas."""
+import cronometro
 from base import chrome, envoltura, PAUSA_HTML, pausa_tl
 
-DUR = 58.5
+LAMINA = 2
+DUR = cronometro.duracion(LAMINA)
 
 CSS = """
     /* la lluvia del PPTX queda al fondo, muy baja: ambienta sin competir con el texto */
@@ -129,4 +131,4 @@ TL += """
 
 
 def escena():
-    return envoltura("e02-pregunta", DUR, CSS, CUERPO, TL)
+    return envoltura("e02-pregunta", DUR, CSS, CUERPO, TL, lamina=LAMINA)

@@ -6,6 +6,9 @@ La paleta sale del propio PPTX (colores más usados en las láminas 1-11):
 Sobre fondo oscuro el oro #AC841D queda en 5:1 contra el azul noche; para texto
 pequeño se usa la versión clara #D4A62B.
 """
+import re
+
+import cronometro
 
 W, H = 1920, 1080
 
@@ -81,7 +84,25 @@ CHROME_TL = """      /* cabecera: entra siempre igual, en los primeros 1.2 s */
 """
 
 
-def envoltura(cid, dur, css, cuerpo, tl, con_chrome=True, con_cola=True):
+POSICION = re.compile(r",(\s*)(-?\d+(?:\.\d+)?)(\s*)\);")
+
+
+def recronometrar(tl, lamina):
+    """Lleva las marcas de tiempo de la línea de tiempo a la locución vigente.
+
+    Toda sentencia generada aquí termina en `, <posición>);`, así que la
+    posición es lo último antes del cierre; las duraciones y los valores de
+    animación van dentro de las llaves y no se tocan — el movimiento debe durar
+    lo mismo aunque la voz hable más rápido.
+    """
+    f = cronometro.mapa(lamina)
+
+    def cambia(m):
+        return ",%s%s%s);" % (m.group(1), ("%.2f" % f(float(m.group(2)))).rstrip("0").rstrip("."), m.group(3))
+    return POSICION.sub(cambia, tl)
+
+
+def envoltura(cid, dur, css, cuerpo, tl, con_chrome=True, con_cola=True, lamina=None):
     """Arma el archivo de sub-composición completo.
 
     `con_chrome=False` para las láminas que no usan la cabecera común (portada,
@@ -91,7 +112,12 @@ def envoltura(cid, dur, css, cuerpo, tl, con_chrome=True, con_cola=True):
     `con_cola=True` apaga el contenido en los últimos 0,65 s. Sin eso el corte
     entre láminas salta de una pantalla llena a una vacía que se vuelve a
     construir; con la cola, las dos caras del corte son el fondo limpio.
+
+    `lamina` es el número de lámina del PPTX: con él las marcas de tiempo se
+    reconvierten a la locución vigente (ver `tools/cronometro.py`).
     """
+    if lamina is not None:
+        tl = recronometrar(tl, lamina)
     cola = ""
     if con_cola:
         salida = (
