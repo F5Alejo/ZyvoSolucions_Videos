@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """Lámina 01 · Portada. 60 s, atada a la narración medida de la lámina 1."""
+import cronometro
 from base import envoltura, PAUSA_HTML, pausa_tl
 
-DUR = 60
+LAMINA = 1
+DUR = cronometro.duracion(LAMINA)
 
 CSS = """
     /* --- fotografía del propio PPTX, con empuje lento: la única animación continua --- */
@@ -98,11 +100,11 @@ CUERPO = """    <div class="clip capa" data-start="0" data-duration="{d}" data-t
 
 """ + PAUSA_HTML
 
-TL = """      /* empuje continuo de la fotografía durante toda la lámina */
-      tl.fromTo("#p-foto", { scale: 1, x: 0 }, { scale: 1.075, x: -40, duration: 60, ease: "none" }, 0);
+TL = ("""      /* empuje continuo de la fotografía durante toda la lámina */
+      tl.fromTo("#p-foto", { scale: 1, x: 0 }, { scale: 1.075, x: -40, duration: %.1f, ease: "none" }, 0);
 
       /* 0.00 · «Te doy la bienvenida a Ruta Segura:» */
-      tl.fromTo("#p-ceja", { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.15);
+"""  % DUR) + """      tl.fromTo("#p-ceja", { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.15);
       tl.set("#p-t1", { opacity: 1 }, 0.45);
       tl.fromTo("#p-t1", { y: 120, rotationX: -48, transformOrigin: "50% 100%" },
         { y: 0, rotationX: 0, duration: 0.7, ease: "power4.out" }, 0.45);
@@ -153,4 +155,4 @@ TL += """
 
 
 def escena():
-    return envoltura("e01-portada", DUR, CSS, CUERPO, TL, con_chrome=False)
+    return envoltura("e01-portada", DUR, CSS, CUERPO, TL, lamina=LAMINA, con_chrome=False)

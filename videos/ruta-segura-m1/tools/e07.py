@@ -4,9 +4,11 @@
 Los tiempos están corridos −2.3 s respecto de la medición: la nota del PPTX
 arrancaba con el rótulo «GUION DE VOZ — PRIMERA PERSONA», que no se locuta.
 """
+import cronometro
 from base import chrome, envoltura
 
-DUR = 70
+LAMINA = 7
+DUR = cronometro.duracion(LAMINA)
 
 CSS = """
     .r-lead { position: absolute; left: 128px; top: 300px; width: 1664px; font-size: 31px;
@@ -64,4 +66,4 @@ for _i, _t in enumerate([14.10, 20.50, 28.65, 38.85, 44.40, 57.75]):
 
 
 def escena():
-    return envoltura("e07-reglas", DUR, CSS, CUERPO, TL)
+    return envoltura("e07-reglas", DUR, CSS, CUERPO, TL, lamina=LAMINA)

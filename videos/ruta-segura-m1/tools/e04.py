@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """Lámina 04 · Ruta de aprendizaje. Tres módulos y las reglas del Reto RiskMann."""
+import cronometro
 from base import chrome, envoltura
 
-DUR = 65.5
+LAMINA = 4
+DUR = cronometro.duracion(LAMINA)
 
 CSS = """
     .m-riel { position: absolute; left: 128px; top: 372px; width: 1664px; height: 4px;
@@ -113,4 +115,4 @@ TL += """
 
 
 def escena():
-    return envoltura("e04-ruta", DUR, CSS, CUERPO, TL)
+    return envoltura("e04-ruta", DUR, CSS, CUERPO, TL, lamina=LAMINA)

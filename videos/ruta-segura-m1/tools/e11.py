@@ -4,9 +4,11 @@
 Tiempos corridos −2.3 s: la nota del PPTX empezaba con el rótulo
 «GUION DE VOZ — PRIMERA PERSONA», que no se locuta.
 """
+import cronometro
 from base import chrome, envoltura, PAUSA_HTML, pausa_tl
 
-DUR = 71
+LAMINA = 11
+DUR = cronometro.duracion(LAMINA)
 
 CSS = """
     .z-preg { position: absolute; left: 128px; width: 1664px; height: 108px; border-radius: 10px;
@@ -74,4 +76,4 @@ TL = """      /* 5.44 · «la seguridad no depende de una sola persona» — pri
 
 
 def escena():
-    return envoltura("e11-repaso", DUR, CSS, CUERPO, TL)
+    return envoltura("e11-repaso", DUR, CSS, CUERPO, TL, lamina=LAMINA)

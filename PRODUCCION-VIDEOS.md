@@ -756,21 +756,24 @@ es el **tiempo**. La plantilla es `videos/ruta-segura-m1/`.
 - **Un video por módulo**, no uno por curso. Un PPTX de 33 láminas son ~29 min de narración;
   partido por módulos quedan piezas de 8 a 12 min, que es lo que una persona ve de una sentada
   y lo que se puede volver a grabar sin rehacer todo.
-- **Se entrega sin voz.** La locución final es humana y colombiana; el video se monta sobre
-  tiempos medidos y el locutor graba encima. Así el cliente aprueba la imagen antes de pagar
-  estudio, y una corrección de texto no obliga a re-renderizar.
+- **La voz se puede cambiar sin rehacer el video.** El montaje no guarda tiempos absolutos
+  escritos a mano: los calcula a partir de la locución vigente (§14.3). Así se entrega una
+  versión con voz sintética para aprobar la imagen, y el día que la grabe una persona se
+  corre el mismo procedimiento sin tocar ninguna marca de tiempo.
 
 ### 14.2 Medir antes de animar
 
-El paso que hace que el formato funcione:
+El paso que hace que el formato funcione. Con Piper, frase por frase:
 
 ```bash
-# frase por frase, no la nota entera
 python -m piper -m tools/voces/es_ES-davefx-medium.onnx -f frase.wav   # texto por stdin
 ```
 
-Se sintetiza **cada frase** de cada nota y se guarda su duración
-(`tools/tiempos-medidos.json`). Con eso:
+Con ElevenLabs no hace falta trocear: el endpoint `/with-timestamps` devuelve el instante de
+**cada carácter**, así que el inicio de cada frase se lee en vez de estimarse. Es la forma
+preferida — más exacta y una sola llamada por lámina.
+
+Se guarda la duración de cada frase (`tools/tiempos-medidos.json`). Con eso:
 
 - la **duración de la lámina** = duración de su narración + ~1,2 s de aire;
 - el **momento de cada aparición** = el segundo en que el narrador nombra esa cosa.
@@ -785,6 +788,18 @@ elemento entra cuando la voz lo menciona y el módulo se deja ver.
 > Las notas pueden traer rótulos del documento (`GUION DE VOZ — PRIMERA PERSONA`). No son
 > narración: se descuentan del tiempo y no entran al libreto.
 
+**Con ElevenLabs, tres decisiones probadas:**
+
+- **`eleven_v3`, no `eleven_multilingual_v2`.** En español la entonación interrogativa sube
+  al final sin palabra que la anuncie, y estos guiones están llenos de preguntas: v2 las lee
+  como afirmaciones y delata el video como sintético. v3 las resuelve, habla más pausado y
+  también devuelve timestamps. No acepta `previous_text` / `next_text` — el encadenado de
+  entonación entre láminas solo sirve en los modelos v2.
+- **Las cifras, escritas en palabras** antes de enviarlas. «Ley 2466 de 2025» leída como
+  «veinticuatro sesenta y seis» arruina la única referencia jurídica de un módulo.
+- **El máster de voz, en MP3.** En WAV, once minutos pesan 61 MB y el navegador no lo carga
+  dentro de los 10 s que da `check`: el runtime se cae con `Navigation timeout of 10000 ms`.
+
 ### 14.3 Las composiciones se generan, no se escriben
 
 Once láminas con el mismo encuadre no se mantienen a mano. En `tools/`:
@@ -792,10 +807,22 @@ Once láminas con el mismo encuadre no se mantienen a mano. En `tools/`:
 - `base.py` — paleta, fuentes y **el encuadre común** (ceja, número, título, regla, pie).
 - `eNN.py` — una lámina por archivo: CSS, cuerpo y línea de tiempo, con la marca de tiempo de
   la frase que dispara cada aparición escrita en el comentario.
-- `construir.py` — encadena, calcula inicios y arma el `index.html` con barra de avance y sello.
+- `cronometro.py` — **el mapa entre dos locuciones** (ver abajo).
+- `voz-eleven.py` — pide la locución con timestamps y escribe `tiempos-voz.json`.
+- `pista.py` — coloca cada lámina en su sitio del máster, normaliza a −16 LUFS y verifica.
+- `construir.py` — encadena, calcula inicios y arma el `index.html` con barra, sello y voz.
 - `guion.py` — escribe `GUION-VOZ.md`, el libreto con la **ventana absoluta** de cada lámina.
 
-Mover una lámina es cambiar su `DUR` y volver a construir.
+**Lo que hace sostenible el formato es `cronometro.py`.** Las apariciones se escriben una vez
+contra una locución de referencia; cuando la voz definitiva dura otra cosa, el módulo traduce
+cada marca de tiempo: exacto en cada frontera de frase, proporcional dentro de la frase,
+desplazamiento fijo en la cola. Las ochenta y tantas marcas se recolocan solas y `DUR` deja de
+escribirse (`DUR = cronometro.duracion(LAMINA)`).
+
+Esto no es una comodidad: es lo que permite entregar una versión con voz sintética para
+aprobar la imagen y luego reemplazarla por una grabación humana sin rehacer el montaje. Ojo,
+la voz nueva no es uniformemente más rápida ni más lenta — en la primera prueba una lámina se
+acortó 3 s y la siguiente se alargó 6 s.
 
 ### 14.4 Reglas de composición para láminas de ~60 s
 
@@ -810,10 +837,39 @@ Mover una lámina es cambiar su `DUR` y volver a construir.
 - `check` toma **nueve muestras** en doce minutos: no basta. Hay que sacar `snapshot` en el
   momento más lleno de cada lámina (el final) y revisar la hoja de contactos.
 
+### 14.4b Renderizar once minutos en una máquina de 8 GB
+
+Un módulo entero de una sola vez **no cabe**: el sistema mata el proceso. Los tres
+consumidores son el Chrome del usuario (~1,5 GB), el Chrome sin cabeza del render y un
+`ffmpeg` que se asienta en ~650 MB y no baja. Dos medidas, en este orden:
+
+1. **La voz fuera del `index.html`.** Con el `<audio>` dentro, Chrome decodifica el MP3
+   entero a PCM —unos 250 MB para once minutos— y ese es justo el margen que falta. Se
+   renderiza mudo y se pega después: las dos pistas arrancan en cero y miden lo mismo.
+2. **El render por partes.** `construir.py --partes 4` escribe cuatro `index-parte-N.html`
+   con las escenas rebasadas a su propio cero y la barra de avance ajustada para que siga
+   midiendo el módulo completo. Cada parte se renderiza sola y se unen sin recodificar.
+
+```bash
+python tools/construir.py --sin-audio --partes 4
+npx hyperframes render -c index-parte-1.html -o renders/parte-1.mp4 --quality high --low-memory-mode --workers 1
+# ... una por una
+python tools/montar.py     # une, pega la voz y verifica duraciones
+```
+
+Partir no baja el pico de memoria: **acorta la exposición y hace barato el fallo**. Si una
+parte muere se repite esa parte (≈10 min), no cuarenta minutos de trabajo. Los cortes caen
+en frontera de escena, donde la lámina saliente ya está apagada (§14.4), así que la unión no
+se ve.
+
+> Cuando un render muere por memoria **deja un `ffmpeg` huérfano de ~650 MB**. Hay que
+> matarlo antes de reintentar o el siguiente intento arranca con menos margen que el anterior.
+
 ### 14.5 Producir el módulo siguiente
 
 1. Extraer las láminas del módulo del PPTX (texto y notas) y medir frase por frase.
 2. Copiar `videos/ruta-segura-m1/` sin `renders/`, `snapshots/` ni `compositions/`.
 3. Reemplazar `tools/eNN.py` por las láminas nuevas, reutilizando `base.py` sin tocarlo.
 4. `python tools/construir.py` → `npx hyperframes check` → capturas → render.
-5. `python tools/guion.py` y entregar `GUION-VOZ.md` junto con el MP4.
+5. Locutar (`voz-eleven.py`), volver a construir, armar la pista (`pista.py`).
+6. `python tools/guion.py` y entregar `GUION-VOZ.md` junto con el MP4.

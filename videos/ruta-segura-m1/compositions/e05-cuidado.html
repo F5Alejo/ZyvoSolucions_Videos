@@ -80,15 +80,15 @@
 
   </style>
 
-  <div id="root" data-composition-id="e05-cuidado" data-start="0" data-duration="65" data-width="1920" data-height="1080">
-    <div class="clip capa fondo" data-start="0" data-duration="65" data-track-index="0"></div>
-    <div class="clip capa" data-start="0" data-duration="65" data-track-index="1">
+  <div id="root" data-composition-id="e05-cuidado" data-start="0" data-duration="59.5" data-width="1920" data-height="1080">
+    <div class="clip capa fondo" data-start="0" data-duration="59.5" data-track-index="0"></div>
+    <div class="clip capa" data-start="0" data-duration="59.5" data-track-index="1">
       <img class="s-foto" id="s-foto" src="assets/fotos/semaforo.jpg"
            alt="Ciclista y motociclista esperando en un semáforo" data-layout-ignore />
       <div class="s-velo" data-layout-ignore></div>
     </div>
 
-    <div id="ch" class="clip capa" data-start="0" data-duration="65" data-track-index="2">
+    <div id="ch" class="clip capa" data-start="0" data-duration="59.5" data-track-index="2">
       <div class="marco" id="ch-marco" data-layout-ignore></div>
       <div class="ceja" id="ch-ceja">MÓDULO 1</div>
       <div class="lamina" id="ch-lamina">05</div>
@@ -97,7 +97,7 @@
       <div class="fuente" id="ch-fuente">Documento fuente: Ruta Segura, sep. 2026</div>
     </div>
 
-    <div class="clip capa" data-start="0" data-duration="65" data-track-index="3">
+    <div class="clip capa" data-start="0" data-duration="59.5" data-track-index="3">
       <div class="s-preg" id="s-preg">¿Ser cuidadoso basta para estar seguro?</div>
       <div class="s-no" id="s-no">NO.</div>
       <div class="s-no-r" id="s-no-r" data-layout-ignore></div>
@@ -136,46 +136,46 @@
       tl.fromTo("#ch-marco", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power1.out" }, 0);
       tl.fromTo("#ch-fuente", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power1.out" }, 0.7);
       /* 3.23 · «¿ser cuidadoso basta para estar seguro?» */
-      tl.fromTo("#s-preg", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 3.30);
+      tl.fromTo("#s-preg", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 2.6);
 
       /* 5.84 · «Mi respuesta es no.» */
       tl.fromTo("#s-no", { opacity: 0, scale: 1.5, transformOrigin: "0% 50%" },
-        { opacity: 1, scale: 1, duration: 0.45, ease: "power4.out" }, 5.90);
-      tl.fromTo("#s-no-r", { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "power2.out" }, 6.20);
+        { opacity: 1, scale: 1, duration: 0.45, ease: "power4.out" }, 5.42);
+      tl.fromTo("#s-no-r", { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "power2.out" }, 5.88);
 
       /* 7.20 · «no controla por sí sola una bicicleta defectuosa, una intersección…» */
-      tl.fromTo("#s-lead", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 7.40);
-      tl.fromTo("#s-r1", { opacity: 0, x: 46 }, { opacity: 1, x: 0, duration: 0.48, ease: "power3.out" }, 10.40);
-      tl.fromTo("#s-r2", { opacity: 0, x: 46 }, { opacity: 1, x: 0, duration: 0.48, ease: "power3.out" }, 13.00);
-      tl.fromTo("#s-r3", { opacity: 0, x: 46 }, { opacity: 1, x: 0, duration: 0.48, ease: "power3.out" }, 15.60);
-      tl.fromTo("#s-r4", { opacity: 0, x: 46 }, { opacity: 1, x: 0, duration: 0.48, ease: "power3.out" }, 18.20);
+      tl.fromTo("#s-lead", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 7.57);
+      tl.fromTo("#s-r1", { opacity: 0, x: 46 }, { opacity: 1, x: 0, duration: 0.48, ease: "power3.out" }, 10.24);
+      tl.fromTo("#s-r2", { opacity: 0, x: 46 }, { opacity: 1, x: 0, duration: 0.48, ease: "power3.out" }, 12.56);
+      tl.fromTo("#s-r3", { opacity: 0, x: 46 }, { opacity: 1, x: 0, duration: 0.48, ease: "power3.out" }, 14.88);
+      tl.fromTo("#s-r4", { opacity: 0, x: 46 }, { opacity: 1, x: 0, duration: 0.48, ease: "power3.out" }, 17.2);
 
       /* 21.63 · «observo a la persona, la bicicleta, la vía, la velocidad, la organización…» */
-      tl.fromTo("#s-cap", { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 21.80);
-      tl.fromTo("#s-f1", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 23.40);
-      tl.fromTo("#s-f2", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 25.10);
-      tl.fromTo("#s-f3", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 26.80);
-      tl.fromTo("#s-f4", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 28.50);
-      tl.fromTo("#s-f5", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 30.20);
-      tl.fromTo("#s-f6", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 31.90);
+      tl.fromTo("#s-cap", { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 20.4);
+      tl.fromTo("#s-f1", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 21.72);
+      tl.fromTo("#s-f2", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 23.11);
+      tl.fromTo("#s-f3", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 24.51);
+      tl.fromTo("#s-f4", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 25.9);
+      tl.fromTo("#s-f5", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 27.3);
+      tl.fromTo("#s-f6", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 28.7);
 
       /* 34.61 · la columna derecha cambia de contenido: entra la frase que se descarta */
-      tl.to(".s-chip", { opacity: 0, x: 30, duration: 0.4, ease: "power2.in" }, 33.90);
-      tl.to("#s-lead", { opacity: 0, duration: 0.4, ease: "power1.in" }, 33.90);
-      tl.fromTo("#s-frase", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 34.75);
-      tl.fromTo("#s-tacha", { scaleX: 0 }, { scaleX: 1, duration: 0.42, ease: "power2.out" }, 38.10);
+      tl.to(".s-chip", { opacity: 0, x: 30, duration: 0.4, ease: "power2.in" }, 30.34);
+      tl.to("#s-lead", { opacity: 0, duration: 0.4, ease: "power1.in" }, 30.34);
+      tl.fromTo("#s-frase", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 31.06);
+      tl.fromTo("#s-tacha", { scaleX: 0 }, { scaleX: 1, duration: 0.42, ease: "power2.out" }, 34.41);
 
       /* 40.13 · «deposita toda la responsabilidad en una sola persona» */
-      tl.fromTo("#s-porque", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 40.30);
+      tl.fromTo("#s-porque", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 36.64);
 
-      tl.fromTo("#pausa", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 45.90);
+      tl.fromTo("#pausa", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 43.14);
 
       /* 57.77 · «varias capas de protección deben trabajar juntas» */
-      tl.to("#pausa", { opacity: 0, duration: 0.4, ease: "power1.in" }, 57.30);
-      tl.to("#s-porque", { opacity: 0, duration: 0.4, ease: "power1.in" }, 57.30);
-      tl.fromTo("#s-final", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 57.90);
+      tl.to("#pausa", { opacity: 0, duration: 0.4, ease: "power1.in" }, 52.78);
+      tl.to("#s-porque", { opacity: 0, duration: 0.4, ease: "power1.in" }, 52.78);
+      tl.fromTo("#s-final", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 53.23);
       /* salida: el corte a la lámina siguiente ocurre sobre el fondo limpio */
-      tl.to(".capa:not(.fondo)", { opacity: 0, duration: 0.55, ease: "power1.in" }, 64.35);
+      tl.to(".capa:not(.fondo)", { opacity: 0, duration: 0.55, ease: "power1.in" }, 58.85);
 
       window.__timelines["e05-cuidado"] = tl;
     })();

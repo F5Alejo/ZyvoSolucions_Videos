@@ -51,15 +51,21 @@ python ../../tools/mezcla.py tools/mezcla-video.json    # pista + efectos, verif
 ## Curso a partir de un PPTX con notas de orador
 
 La plantilla es `videos/ruta-segura-m1/` y el procedimiento es **§14** de
-`PRODUCCION-VIDEOS.md`. Un video por módulo, **sin voz**, montado sobre la duración
-real de la narración medida frase por frase con Piper. Las composiciones se generan:
+`PRODUCCION-VIDEOS.md`. Un video por módulo, montado sobre la duración **real** de
+la narración: la locución se pide con timestamps por carácter y cada aparición cae
+sobre la frase que la nombra. Las composiciones se generan:
 
 ```bash
-python tools/construir.py   # compositions/*.html + index.html
-python tools/guion.py       # GUION-VOZ.md, el libreto con ventanas absolutas
+set ELEVENLABS_API_KEY=...
+python tools/voz-eleven.py <voice_id> eleven_v3   # locución + tiempos reales
+python tools/construir.py                          # recoloca el video sobre esa voz
+python tools/pista.py                              # máster de voz, verificado
+python tools/guion.py                              # GUION-VOZ.md con ventanas absolutas
 ```
 
-Se entrega el MP4 **más** `GUION-VOZ.md` para que la locución colombiana se grabe encima.
+`tools/cronometro.py` traduce los tiempos de una locución a los de otra, así que
+cambiar de voz —o grabarla con una persona— no obliga a tocar ninguna marca de
+tiempo. Sin `tiempos-voz.json` el video se construye igual, mudo.
 
 ## Empezar un video de marketing nuevo
 

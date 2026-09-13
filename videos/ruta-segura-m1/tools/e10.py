@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """Lámina 10 · Retroalimentación del reto."""
+import cronometro
 from base import chrome, envoltura
 
-DUR = 62
+LAMINA = 10
+DUR = cronometro.duracion(LAMINA)
 
 CSS = """
     .f-card { position: absolute; width: 812px; height: 300px; border-radius: 10px;
@@ -82,4 +84,4 @@ TL = """      /* 1.87 · «la opción correcta es la B» (pregunta 1) */
 
 
 def escena():
-    return envoltura("e10-retro", DUR, CSS, CUERPO, TL)
+    return envoltura("e10-retro", DUR, CSS, CUERPO, TL, lamina=LAMINA)

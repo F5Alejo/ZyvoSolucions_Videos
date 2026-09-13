@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """Lámina 03 · Propósito. Los cuatro verbos que ordenan toda la capacitación."""
+import cronometro
 from base import chrome, envoltura
 
-DUR = 57.5
+LAMINA = 3
+DUR = cronometro.duracion(LAMINA)
 
 CSS = """
     .v-fila { position: absolute; left: 120px; top: 300px; width: 1680px; height: 300px;
@@ -83,4 +85,4 @@ TL += """
 
 
 def escena():
-    return envoltura("e03-proposito", DUR, CSS, CUERPO, TL)
+    return envoltura("e03-proposito", DUR, CSS, CUERPO, TL, lamina=LAMINA)

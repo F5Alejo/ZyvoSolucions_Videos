@@ -153,6 +153,11 @@ videos/*/renders/
 !assets/videos/*.mp4
 !videos/*/assets/**/*.mp4
 
+# Locución generada (ElevenLabs) y su mezcla: pesa decenas de MB y se rehace con
+# `python tools/voz-eleven.py <voice_id>` + `python tools/pista.py`. Los tiempos
+# sí van en git (tools/tiempos-voz.json): son de lo que depende el montaje.
+videos/*/assets/voz/
+
 # Capturas de revisión (se regeneran con `npx hyperframes snapshot`)
 videos/*/snapshots/
 
@@ -165,3 +170,6 @@ __pycache__/
 
 # Modelo de voz (~60 MB). Se baja con: python tools/descargar-voz.py
 tools/voces/
+
+# Indices parciales del render por partes (se regeneran con --partes N)
+videos/*/index-parte-*.html

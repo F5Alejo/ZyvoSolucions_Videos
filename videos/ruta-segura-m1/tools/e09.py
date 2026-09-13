@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """Lámina 09 · Reto RiskMann. Dos decisiones, sin pistas."""
+import cronometro
 from base import chrome, envoltura, PAUSA_HTML, pausa_tl
 
-DUR = 61.5
+LAMINA = 9
+DUR = cronometro.duracion(LAMINA)
 
 CSS = """
     .t-escudo { position: absolute; right: 128px; top: 150px; width: 208px; height: 96px;
@@ -85,4 +87,4 @@ TL = """      /* 1.47 · «Llegamos al primer reto» */
 
 
 def escena():
-    return envoltura("e09-reto", DUR, CSS, CUERPO, TL)
+    return envoltura("e09-reto", DUR, CSS, CUERPO, TL, lamina=LAMINA)
