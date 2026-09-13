@@ -29,6 +29,7 @@ videos/
   sofu-comercial-v2/     el comercial rehecho con gancho, golpe inicial y cierre (52 s, 16:9)
   sofu-comercial-v2-vertical/  la versión v2 en 9:16 para redes
   ruta-segura-m1/        curso «Ruta Segura» · apertura + módulo 1 (11:35, con locución)
+  ruta-segura-m2/        curso «Ruta Segura» · módulo 2, bicicleta lista (7:20)
   riskmann-sala-de-control/  video de marketing de la plataforma (68 s)
 ```
 
@@ -51,6 +52,8 @@ Todos los videos terminados están en la carpeta compartida de Drive:
 | 06b | `SOFU BIC SAS - Comercial dinamico vertical para redes (52s)` | El mismo 06 en 9:16 | `videos/sofu-comercial-v2-vertical/` |
 | 07 | `Ruta Segura - Modulo 1 Actor vial y Sistema Seguro - Narrado (11m35)` | Curso de ciclistas: apertura + módulo 1, con locución sintética — el libreto para regrabarla con una persona es [`GUION-VOZ.md`](videos/ruta-segura-m1/GUION-VOZ.md) | `videos/ruta-segura-m1/` |
 | 07b | `Ruta Segura - Modulo 1 - Narrado (version liviana para compartir)` | El mismo 07, comprimido a 19 MB | `videos/ruta-segura-m1/` |
+| 08 | `Ruta Segura - Modulo 2 Bicicleta lista - Narrado (7m20)` | Inspección preoperacional, clasificación de la bicicleta, protección y visibilidad | `videos/ruta-segura-m2/` |
+| 08b | `Ruta Segura - Modulo 2 - Narrado (version liviana para compartir)` | El mismo 08, comprimido a 12 MB | `videos/ruta-segura-m2/` |
 
 Los archivos 01–03 empiezan por `NN - Seguridad Vial para Pasajeros - Modulo 1 Actor Vial - …` y
 los 04 por `NN - RiskMann - …`; el número es el orden sugerido para verlos. Los nombres coinciden con los

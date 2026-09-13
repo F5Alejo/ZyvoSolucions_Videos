@@ -1,0 +1,161 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden;
+             font-family: "Montserrat", sans-serif; background: #101B33;
+             color: #FFFFFF; }
+    .capa { position: absolute; inset: 0; }
+    .fondo { background: radial-gradient(1400px 900px at 50% 34%, #1E2C4E 0%, #101B33 72%); }
+    .marco { position: absolute; left: 96px; top: 78px; width: 1728px; height: 924px;
+              border: 1.5px solid rgba(174,188,214,0.16); border-radius: 4px; }
+    .ceja { position: absolute; left: 128px; top: 112px; font-size: 24px; font-weight: 800;
+             letter-spacing: 0.22em; color: #D4A62B; }
+    .lamina { position: absolute; right: 128px; top: 106px; font-size: 30px; font-weight: 800;
+               letter-spacing: 0.1em; color: rgba(174,188,214,0.55); }
+    .titulo { position: absolute; left: 128px; top: 150px; width: 1450px; font-size: 50px;
+               font-weight: 800; line-height: 1.12; color: #FFFFFF; }
+    .regla { position: absolute; left: 128px; top: 272px; width: 220px; height: 5px;
+              background: #AC841D; transform-origin: 0 50%; }
+    .fuente { position: absolute; left: 128px; top: 946px; font-size: 21px; font-weight: 600;
+               letter-spacing: 0.04em; color: rgba(174,188,214,0.80); }
+    /* aviso de pausa: el único elemento que pide al espectador hacer algo */
+    .pausa { position: absolute; right: 128px; bottom: 108px; height: 58px; padding: 0 30px;
+              display: flex; align-items: center; gap: 16px; border-radius: 29px;
+              background: rgba(0,200,212,0.12); border: 1.5px solid #00C8D4;
+              font-size: 24px; font-weight: 700; letter-spacing: 0.04em; color: #00C8D4; opacity: 0; }
+    .pausa-icono { width: 16px; height: 20px; border-left: 5px solid #00C8D4; border-right: 5px solid #00C8D4; }
+
+
+    .g-col { position: absolute; top: 316px; width: 540px; height: 470px; border-radius: 10px;
+             background: rgba(174,188,214,0.09); border: 1.5px solid rgba(174,188,214,0.26);
+             opacity: 0; will-change: transform, opacity; }
+    .g-t { position: absolute; left: 26px; top: 24px; font-size: 32px; font-weight: 900;
+           letter-spacing: 0.05em; color: #D4A62B; }
+    .g-raya { position: absolute; left: 26px; top: 72px; width: 60px; height: 4px; background: #00C8D4;
+              transform: scaleX(0); transform-origin: 0 50%; }
+    .g-item { position: absolute; left: 26px; right: 22px; font-size: 24px; font-weight: 500;
+              line-height: 1.32; color: #DCE4F2; opacity: 0; }
+    .g-item b { color: #FFFFFF; font-weight: 800; }
+
+    .g-escudo { position: absolute; right: 128px; top: 150px; width: 208px; height: 96px;
+                border-radius: 10px; background: #AC841D; opacity: 0; }
+    .g-escudo-n { position: absolute; left: 0; top: 10px; width: 208px; text-align: center;
+                  font-size: 46px; font-weight: 900; color: #101B33; line-height: 1; }
+    .g-escudo-t { position: absolute; left: 0; top: 64px; width: 208px; text-align: center;
+                  font-size: 17px; font-weight: 800; letter-spacing: 0.1em; color: #101B33; }
+
+    .g-retiro { position: absolute; left: 120px; top: 812px; width: 1010px; height: 84px;
+                border-radius: 10px; background: rgba(172,132,29,0.16); border-left: 6px solid #AC841D;
+                opacity: 0; }
+    .g-retiro span { position: absolute; left: 26px; right: 22px; top: 16px; font-size: 24px;
+                     font-weight: 600; line-height: 1.3; color: #DCE4F2; }
+    .g-retiro b { color: #D4A62B; font-weight: 800; }
+    .g-tarea { position: absolute; left: 1158px; top: 812px; width: 642px; font-size: 25px;
+               font-weight: 700; line-height: 1.3; color: #00C8D4; opacity: 0; }
+
+  </style>
+
+  <div id="root" data-composition-id="e15-visible" data-start="0" data-duration="64.0" data-width="1920" data-height="1080">
+    <div class="clip capa fondo" data-start="0" data-duration="64.0" data-track-index="0"></div>
+    <div id="ch" class="clip capa" data-start="0" data-duration="64.0" data-track-index="2">
+      <div class="marco" id="ch-marco" data-layout-ignore></div>
+      <div class="ceja" id="ch-ceja">ACTIVIDAD</div>
+      <div class="lamina" id="ch-lamina">15</div>
+      <div class="titulo" id="ch-titulo">Visible a 360°: <b style="color:#D4A62B">proteger sin perder control</b></div>
+      <div class="regla" id="ch-regla" data-layout-ignore></div>
+      <div class="fuente" id="ch-fuente">Documento fuente: Ruta Segura, sep. 2026</div>
+    </div>
+
+    <div class="clip capa" data-start="0" data-duration="64.0" data-track-index="3">
+      <div class="g-escudo" id="g-escudo">
+        <div class="g-escudo-n">+300</div><div class="g-escudo-t">EN JUEGO</div>
+      </div>
+      <div class="g-col" id="g-c1" style="left: 120px">
+        <div class="g-t">CASCO</div>
+        <div class="g-raya" id="g-r1" data-layout-ignore></div>
+        <div class="g-item" id="g-i11" style="top: 100px">Talla adecuada, colocado <b>horizontal</b>.</div>
+        <div class="g-item" id="g-i12" style="top: 168px">Correas en <b>«V»</b> alrededor de las orejas.</div>
+        <div class="g-item" id="g-i13" style="top: 236px">Barboquejo ajustado y abrochado.</div>
+      </div>
+      <div class="g-col" id="g-c2" style="left: 690px">
+        <div class="g-t">SER VISTO</div>
+        <div class="g-raya" id="g-r2" data-layout-ignore></div>
+        <div class="g-item" id="g-i21" style="top: 100px">Luz <b>blanca</b> adelante.</div>
+        <div class="g-item" id="g-i22" style="top: 168px">Luz o elemento <b>rojo</b> atrás.</div>
+        <div class="g-item" id="g-i23" style="top: 236px">Reflectivos visibles: la carga no los cubre.</div>
+      </div>
+      <div class="g-col" id="g-c3" style="left: 1260px">
+        <div class="g-t">SIN BLOQUEAR</div>
+        <div class="g-raya" id="g-r3" data-layout-ignore></div>
+        <div class="g-item" id="g-i31" style="top: 100px">Ninguna prenda, capucha, audífono ni accesorio</div>
+        <div class="g-item" id="g-i32" style="top: 168px">puede bloquear <b>audición, visión, movilidad</b></div>
+        <div class="g-item" id="g-i33" style="top: 236px">ni <b>control</b> de la bicicleta.</div>
+      </div>
+
+      <div class="g-retiro" id="g-retiro"><span>Tras un <b>impacto relevante</b>, daño o el límite del fabricante:
+        retirar el casco y evaluarlo o reemplazarlo.</span></div>
+      <div class="g-tarea" id="g-tarea">Pausa y revisa tu propio equipo frente a un espejo.</div>
+    </div>
+
+      <div class="pausa" id="pausa"><span class="pausa-icono" data-layout-ignore></span>PAUSA EL VIDEO Y RESPONDE</div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      /* cabecera: entra siempre igual, en los primeros 1.2 s */
+      tl.fromTo("#ch-ceja", { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0);
+      tl.fromTo("#ch-lamina", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out" }, 0.1);
+      tl.fromTo("#ch-titulo", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.62, ease: "power3.out" }, 0.18);
+      tl.fromTo("#ch-regla", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power2.out" }, 0.42);
+      tl.fromTo("#ch-marco", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power1.out" }, 0);
+      tl.fromTo("#ch-fuente", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power1.out" }, 0.7);
+      tl.fromTo("#g-escudo", { opacity: 0, scale: 0.8, transformOrigin: "50% 50%" },
+        { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, 0.6);
+
+      /* 3.48 · el casco / 5.66 · cómo se ajusta */
+      tl.fromTo("#g-c1", { opacity: 0, y: 44 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 3.55);
+      tl.fromTo("#g-r1", { scaleX: 0 }, { scaleX: 1, duration: 0.42, ease: "power2.out" }, 3.85);
+      tl.fromTo("#g-i11", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.45, ease: "power2.out" }, 5.75);
+      tl.fromTo("#g-i12", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.45, ease: "power2.out" }, 8.9);
+      tl.fromTo("#g-i13", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.45, ease: "power2.out" }, 12.4);
+
+      /* 15.65 · cuándo se retira el casco */
+      tl.fromTo("#g-retiro", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 15.75);
+
+      /* 25.18 · la visibilidad / 30.69 · los tres elementos */
+      tl.fromTo("#g-c2", { opacity: 0, y: 44 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 25.25);
+      tl.fromTo("#g-r2", { scaleX: 0 }, { scaleX: 1, duration: 0.42, ease: "power2.out" }, 25.55);
+      tl.fromTo("#g-i21", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.45, ease: "power2.out" }, 30.8);
+      tl.fromTo("#g-i22", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.45, ease: "power2.out" }, 33.4);
+      tl.fromTo("#g-i23", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.45, ease: "power2.out" }, 36);
+
+      /* 39.85 · la compatibilidad / 43.09 · qué no puede bloquearse */
+      tl.fromTo("#g-c3", { opacity: 0, y: 44 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 39.95);
+      tl.fromTo("#g-r3", { scaleX: 0 }, { scaleX: 1, duration: 0.42, ease: "power2.out" }, 40.25);
+      tl.fromTo("#g-i31", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.45, ease: "power2.out" }, 43.2);
+      tl.fromTo("#g-i32", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.45, ease: "power2.out" }, 45.9);
+      tl.fromTo("#g-i33", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.45, ease: "power2.out" }, 48.6);
+
+      /* 52.29 · «pausa el video y revisa tu propio equipo» */
+      tl.fromTo("#g-tarea", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 52.4);
+      tl.fromTo("#pausa", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 52.9);
+      /* salida: el corte a la lámina siguiente ocurre sobre el fondo limpio */
+      tl.to(".capa:not(.fondo)", { opacity: 0, duration: 0.55, ease: "power1.in" }, 63.35);
+
+      window.__timelines["e15-visible"] = tl;
+    })();
+  </script>
+</template>

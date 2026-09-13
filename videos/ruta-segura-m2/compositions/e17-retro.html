@@ -1,0 +1,144 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden;
+             font-family: "Montserrat", sans-serif; background: #101B33;
+             color: #FFFFFF; }
+    .capa { position: absolute; inset: 0; }
+    .fondo { background: radial-gradient(1400px 900px at 50% 34%, #1E2C4E 0%, #101B33 72%); }
+    .marco { position: absolute; left: 96px; top: 78px; width: 1728px; height: 924px;
+              border: 1.5px solid rgba(174,188,214,0.16); border-radius: 4px; }
+    .ceja { position: absolute; left: 128px; top: 112px; font-size: 24px; font-weight: 800;
+             letter-spacing: 0.22em; color: #D4A62B; }
+    .lamina { position: absolute; right: 128px; top: 106px; font-size: 30px; font-weight: 800;
+               letter-spacing: 0.1em; color: rgba(174,188,214,0.55); }
+    .titulo { position: absolute; left: 128px; top: 150px; width: 1450px; font-size: 50px;
+               font-weight: 800; line-height: 1.12; color: #FFFFFF; }
+    .regla { position: absolute; left: 128px; top: 272px; width: 220px; height: 5px;
+              background: #AC841D; transform-origin: 0 50%; }
+    .fuente { position: absolute; left: 128px; top: 946px; font-size: 21px; font-weight: 600;
+               letter-spacing: 0.04em; color: rgba(174,188,214,0.80); }
+    /* aviso de pausa: el único elemento que pide al espectador hacer algo */
+    .pausa { position: absolute; right: 128px; bottom: 108px; height: 58px; padding: 0 30px;
+              display: flex; align-items: center; gap: 16px; border-radius: 29px;
+              background: rgba(0,200,212,0.12); border: 1.5px solid #00C8D4;
+              font-size: 24px; font-weight: 700; letter-spacing: 0.04em; color: #00C8D4; opacity: 0; }
+    .pausa-icono { width: 16px; height: 20px; border-left: 5px solid #00C8D4; border-right: 5px solid #00C8D4; }
+
+
+    .f-card { position: absolute; top: 316px; width: 812px; height: 322px; border-radius: 10px;
+              background: rgba(0,200,212,0.10); border-left: 6px solid #00C8D4;
+              opacity: 0; will-change: transform, opacity; }
+    .f-n { position: absolute; left: 26px; top: 22px; width: 44px; height: 44px;
+           border-radius: 22px; background: rgba(0,200,212,0.20); }
+    .f-n span { position: absolute; left: 0; top: 9px; width: 44px; text-align: center;
+                font-size: 24px; font-weight: 900; color: #7FE5EC; }
+    .f-resp { position: absolute; left: 88px; top: 24px; font-size: 38px; font-weight: 900;
+              color: #FFFFFF; }
+    .f-txt { position: absolute; left: 26px; right: 24px; top: 92px; font-size: 26px;
+             font-weight: 500; line-height: 1.38; color: #DCE4F2; opacity: 0; }
+    .f-mas { position: absolute; left: 26px; right: 24px; font-size: 24px; font-weight: 500;
+             line-height: 1.34; color: #AEBCD6; opacity: 0; }
+
+    .f-principio { position: absolute; left: 128px; top: 680px; width: 1664px; height: 160px;
+                   border-radius: 10px; background: rgba(172,132,29,0.14); border-left: 6px solid #AC841D;
+                   opacity: 0; }
+    .f-p-t { position: absolute; left: 28px; top: 20px; font-size: 23px; font-weight: 900;
+             letter-spacing: 0.16em; color: #D4A62B; }
+    .f-p-l { position: absolute; left: 28px; right: 26px; top: 58px; font-size: 27px;
+             font-weight: 600; line-height: 1.34; color: #DCE4F2; }
+    .f-p-l b { color: #FFFFFF; font-weight: 800; }
+
+    .f-cierre { position: absolute; left: 128px; top: 878px; width: 1664px; font-size: 29px;
+                font-weight: 800; color: #00C8D4; opacity: 0; }
+
+  </style>
+
+  <div id="root" data-composition-id="e17-retro" data-start="0" data-duration="58.0" data-width="1920" data-height="1080">
+    <div class="clip capa fondo" data-start="0" data-duration="58.0" data-track-index="0"></div>
+    <div id="ch" class="clip capa" data-start="0" data-duration="58.0" data-track-index="2">
+      <div class="marco" id="ch-marco" data-layout-ignore></div>
+      <div class="ceja" id="ch-ceja">RETROALIMENTACIÓN</div>
+      <div class="lamina" id="ch-lamina">17</div>
+      <div class="titulo" id="ch-titulo">La falla crítica <b style="color:#D4A62B">no se negocia con el recorrido</b></div>
+      <div class="regla" id="ch-regla" data-layout-ignore></div>
+      <div class="fuente" id="ch-fuente">Documento fuente: Ruta Segura, sep. 2026</div>
+    </div>
+
+    <div class="clip capa" data-start="0" data-duration="58.0" data-track-index="3">
+      <div class="f-card" id="f-c1" style="left: 128px">
+        <div class="f-n" data-layout-ignore><span>1</span></div>
+        <div class="f-resp">Respuesta B</div>
+        <div class="f-txt" id="f-t1">Un freno inoperante exige declarar la bicicleta no apta, inmovilizarla y reportarla.</div>
+        <div class="f-mas" id="f-m1" style="top: 210px">Circular lentamente o cambiar de infraestructura no sustituye
+          la capacidad de frenar.</div>
+      </div>
+
+      <div class="f-card" id="f-c2" style="left: 980px">
+        <div class="f-n" data-layout-ignore><span>2</span></div>
+        <div class="f-resp">Respuesta B</div>
+        <div class="f-txt" id="f-t2">Tras un impacto relevante, retiro el casco y aplico las indicaciones del fabricante
+          para evaluarlo o reemplazarlo.</div>
+        <div class="f-mas" id="f-m2" style="top: 210px">El material interno puede haber absorbido energía sin mostrar
+          grieta externa: prestarlo deja a otra persona sin protección efectiva.</div>
+      </div>
+
+      <div class="f-principio" id="f-principio">
+        <div class="f-p-t">EL MISMO PRINCIPIO, EN DIRECCIÓN, RUEDA O LLANTA</div>
+        <div class="f-p-l">No se normaliza la falla con <b>«es solo un trayecto corto»</b> ni con
+          <b>«yo ya conozco la bicicleta»</b>.</div>
+      </div>
+
+      <div class="f-cierre" id="f-cierre">La autorización se recupera con mantenimiento o evaluación competente, no con confianza.</div>
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      /* cabecera: entra siempre igual, en los primeros 1.2 s */
+      tl.fromTo("#ch-ceja", { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0);
+      tl.fromTo("#ch-lamina", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out" }, 0.1);
+      tl.fromTo("#ch-titulo", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.62, ease: "power3.out" }, 0.18);
+      tl.fromTo("#ch-regla", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power2.out" }, 0.42);
+      tl.fromTo("#ch-marco", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power1.out" }, 0);
+      tl.fromTo("#ch-fuente", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power1.out" }, 0.7);
+      /* 0.00 · «en las dos preguntas, la respuesta correcta es la B» */
+      tl.fromTo("#f-c1", { opacity: 0, y: 34 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 0.5);
+      tl.fromTo("#f-c2", { opacity: 0, y: 34 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 0.85);
+
+      /* 3.63 · por qué la primera */
+      tl.fromTo("#f-t1", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 3.7);
+      /* 10.20 · «circular lentamente no sustituye la capacidad de frenar» */
+      tl.fromTo("#f-m1", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 10.3);
+
+      /* 15.89 · por qué la segunda */
+      tl.fromTo("#f-t2", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 16);
+      /* 23.57 · la energía absorbida sin grieta visible */
+      tl.fromTo("#f-m2", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 23.65);
+
+      /* 34.86 · el principio general / 42.32 · las dos frases que lo rompen */
+      tl.fromTo("#f-principio", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 34.95);
+
+      /* 49.49 · «la autorización se recupera después del mantenimiento» */
+      tl.fromTo("#f-cierre", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 49.6);
+      /* salida: el corte a la lámina siguiente ocurre sobre el fondo limpio */
+      tl.to(".capa:not(.fondo)", { opacity: 0, duration: 0.55, ease: "power1.in" }, 57.35);
+
+      window.__timelines["e17-retro"] = tl;
+    })();
+  </script>
+</template>
