@@ -1,0 +1,149 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden;
+             font-family: "Montserrat", sans-serif; background: #101B33;
+             color: #FFFFFF; }
+    .capa { position: absolute; inset: 0; }
+    .fondo { background: radial-gradient(1400px 900px at 50% 34%, #1E2C4E 0%, #101B33 72%); }
+    .marco { position: absolute; left: 96px; top: 78px; width: 1728px; height: 924px;
+              border: 1.5px solid rgba(174,188,214,0.16); border-radius: 4px; }
+    .ceja { position: absolute; left: 128px; top: 112px; font-size: 24px; font-weight: 800;
+             letter-spacing: 0.22em; color: #D4A62B; }
+    .lamina { position: absolute; right: 128px; top: 106px; font-size: 30px; font-weight: 800;
+               letter-spacing: 0.1em; color: rgba(174,188,214,0.55); }
+    .titulo { position: absolute; left: 128px; top: 150px; width: 1450px; font-size: 50px;
+               font-weight: 800; line-height: 1.12; color: #FFFFFF; }
+    .regla { position: absolute; left: 128px; top: 272px; width: 220px; height: 5px;
+              background: #AC841D; transform-origin: 0 50%; }
+    .fuente { position: absolute; left: 128px; top: 946px; font-size: 21px; font-weight: 600;
+               letter-spacing: 0.04em; color: rgba(174,188,214,0.80); }
+    /* aviso de pausa: el único elemento que pide al espectador hacer algo */
+    .pausa { position: absolute; right: 128px; bottom: 108px; height: 58px; padding: 0 30px;
+              display: flex; align-items: center; gap: 16px; border-radius: 29px;
+              background: rgba(0,200,212,0.12); border: 1.5px solid #00C8D4;
+              font-size: 24px; font-weight: 700; letter-spacing: 0.04em; color: #00C8D4; opacity: 0; }
+    .pausa-icono { width: 16px; height: 20px; border-left: 5px solid #00C8D4; border-right: 5px solid #00C8D4; }
+
+
+    .n-lead { position: absolute; left: 128px; top: 300px; width: 1664px; font-size: 26px;
+              font-weight: 600; color: #AEBCD6; opacity: 0; }
+
+    .n-grupo { position: absolute; top: 362px; width: 540px; opacity: 0; }
+    .n-g-t { font-size: 21px; font-weight: 900; letter-spacing: 0.13em; color: #D4A62B;
+             line-height: 1.3; margin-bottom: 16px; }
+    .n-g-l { font-size: 22px; font-weight: 600; line-height: 1.26; color: #DCE4F2;
+             margin-bottom: 12px; }
+
+    .n-trazable { position: absolute; left: 128px; top: 714px; width: 1664px; font-size: 27px;
+                  font-weight: 700; line-height: 1.3; color: #FFFFFF; opacity: 0; }
+    .n-trazable b { color: #7FE5EC; font-weight: 800; }
+
+    .n-antes { position: absolute; left: 128px; top: 782px; width: 1664px; height: 104px;
+               border-radius: 10px; background: rgba(172,132,29,0.16); border-left: 6px solid #AC841D;
+               opacity: 0; }
+    .n-antes span { position: absolute; left: 28px; right: 24px; top: 20px; font-size: 25px;
+                    font-weight: 600; line-height: 1.3; color: #DCE4F2; }
+    .n-antes b { color: #D4A62B; font-weight: 800; }
+
+    .n-fin { position: absolute; left: 128px; top: 904px; width: 1664px; font-size: 30px;
+             font-weight: 900; color: #00C8D4; opacity: 0; }
+
+  </style>
+
+  <div id="root" data-composition-id="e33-fuentes" data-start="0" data-duration="60.0" data-width="1920" data-height="1080">
+    <div class="clip capa fondo" data-start="0" data-duration="60.0" data-track-index="0"></div>
+    <div id="ch" class="clip capa" data-start="0" data-duration="60.0" data-track-index="2">
+      <div class="marco" id="ch-marco" data-layout-ignore></div>
+      <div class="ceja" id="ch-ceja">FUENTES</div>
+      <div class="lamina" id="ch-lamina">33</div>
+      <div class="titulo" id="ch-titulo">Normas e instrumentos <b style="color:#D4A62B">citados por el documento base</b></div>
+      <div class="regla" id="ch-regla" data-layout-ignore></div>
+      <div class="fuente" id="ch-fuente">Documento base: programa integral «Ruta Segura», versión septiembre de 2026</div>
+    </div>
+
+    <div class="clip capa" data-start="0" data-duration="60.0" data-track-index="3">
+      <div class="n-lead" id="n-lead">Tránsito, ciclistas, PESV y Sistema de Gestión de SST.</div>
+      <div class="n-grupo" id="n-g1" style="left: 128px">
+        <div class="n-g-t">TRÁNSITO Y CICLISTAS</div>
+        <div class="n-g-l">· Ley 769 de 2002</div>
+        <div class="n-g-l">· Ley 1811 de 2016</div>
+        <div class="n-g-l">· Ley 1503 de 2011</div>
+        <div class="n-g-l">· Decreto Ley 2106 de 2019</div>
+        <div class="n-g-l">· Ley 2050 de 2020</div>
+        <div class="n-g-l">· Ley 2251 de 2022</div>
+      </div>
+      <div class="n-grupo" id="n-g2" style="left: 698px">
+        <div class="n-g-t">PESV Y TRANSPORTE</div>
+        <div class="n-g-l">· Decreto 1079 de 2015</div>
+        <div class="n-g-l">· Decreto 1252 de 2021</div>
+        <div class="n-g-l">· Resoluciones 20223040040595 y 20223040045295 de 2022 (Anexo 63)</div>
+        <div class="n-g-l">· Concepto MinTransporte 20251340739071 (12 jun. 2025)</div>
+      </div>
+      <div class="n-grupo" id="n-g3" style="left: 1268px">
+        <div class="n-g-t">SEGURIDAD Y SALUD EN EL TRABAJO</div>
+        <div class="n-g-l">· Decreto 1072 de 2015</div>
+        <div class="n-g-l">· Resolución 0312 de 2019</div>
+        <div class="n-g-l">· Ley 1562 de 2012</div>
+        <div class="n-g-l">· Ley 2466 de 2025</div>
+        <div class="n-g-l">· Decreto 402 de 2025</div>
+        <div class="n-g-l">· OMS · Cyclist safety</div>
+      </div>
+
+      <div class="n-trazable" id="n-trazable">No es una lista para memorizar: está aquí para
+        <b>asegurar trazabilidad y consulta</b>.</div>
+
+      <div class="n-antes" id="n-antes"><span>Antes de adoptar el programa, cada empresa debe verificar el
+        <b>texto vigente</b>, revisar las reglas territoriales y ajustarlo a su actividad, sedes, rutas,
+        PESV y matriz de peligros.</span></div>
+
+      <div class="n-fin" id="n-fin">Ruta Segura · cada pedaleo cuenta.</div>
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      /* cabecera: entra siempre igual, en los primeros 1.2 s */
+      tl.fromTo("#ch-ceja", { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0);
+      tl.fromTo("#ch-lamina", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out" }, 0.1);
+      tl.fromTo("#ch-titulo", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.62, ease: "power3.out" }, 0.18);
+      tl.fromTo("#ch-regla", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power2.out" }, 0.42);
+      tl.fromTo("#ch-marco", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power1.out" }, 0);
+      tl.fromTo("#ch-fuente", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power1.out" }, 0.7);
+      /* 0.00 · «finalizo indicando las fuentes» */
+      tl.fromTo("#n-lead", { opacity: 0, x: -26 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 0.55);
+
+      /* 4.31 · la enumeración: un grupo por tercio de la frase larga */
+      tl.fromTo("#n-g1", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 5.4);
+      tl.fromTo("#n-g2", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 13.6);
+      tl.fromTo("#n-g3", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 21.8);
+
+      /* 30.13 · «no las leo como una lista para memorizar» */
+      tl.fromTo("#n-trazable", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 30.23);
+
+      /* 37.77 · lo que cada empresa debe verificar antes de adoptar */
+      tl.fromTo("#n-antes", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 37.87);
+
+      /* 53.61 · «con esto concluyo la capacitación» / 57.11 · «cada pedaleo cuenta» */
+      tl.fromTo("#n-fin", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 53.71);
+      /* salida: el corte a la lámina siguiente ocurre sobre el fondo limpio */
+      tl.to(".capa:not(.fondo)", { opacity: 0, duration: 0.55, ease: "power1.in" }, 59.35);
+
+      window.__timelines["e33-fuentes"] = tl;
+    })();
+  </script>
+</template>

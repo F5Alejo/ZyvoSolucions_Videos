@@ -30,6 +30,8 @@ videos/
   sofu-comercial-v2-vertical/  la versión v2 en 9:16 para redes
   ruta-segura-m1/        curso «Ruta Segura» · apertura + módulo 1 (11:35, con locución)
   ruta-segura-m2/        curso «Ruta Segura» · módulo 2, bicicleta lista (7:20)
+  ruta-segura-m3/        curso «Ruta Segura» · módulo 3, misión segura (7:08, sin locutar)
+  ruta-segura-m4/        curso «Ruta Segura» · módulo 4, evaluación y cierre (7:54, sin locutar)
   riskmann-sala-de-control/  video de marketing de la plataforma (68 s)
 ```
 
@@ -54,6 +56,10 @@ Todos los videos terminados están en la carpeta compartida de Drive:
 | 07b | `Ruta Segura - Modulo 1 - Narrado (version liviana para compartir)` | El mismo 07, comprimido a 19 MB | `videos/ruta-segura-m1/` |
 | 08 | `Ruta Segura - Modulo 2 Bicicleta lista - Narrado (7m20)` | Inspección preoperacional, clasificación de la bicicleta, protección y visibilidad | `videos/ruta-segura-m2/` |
 | 08b | `Ruta Segura - Modulo 2 - Narrado (version liviana para compartir)` | El mismo 08, comprimido a 12 MB | `videos/ruta-segura-m2/` |
+
+Los módulos **3** (misión segura) y **4** (evaluación final y cierre) están compuestos y validados,
+pendientes solo de locución: la clave de ElevenLabs caducó. Con una clave nueva son dos comandos
+y un render — ver el `DIRECCION.md` de cada uno.
 
 Los archivos 01–03 empiezan por `NN - Seguridad Vial para Pasajeros - Modulo 1 Actor Vial - …` y
 los 04 por `NN - RiskMann - …`; el número es el orden sugerido para verlos. Los nombres coinciden con los

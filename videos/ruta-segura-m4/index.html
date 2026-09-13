@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #101B33; }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #101B33; }
+      .escena { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .chrome { position: absolute; inset: 0; pointer-events: none; }
+      /* sello de marca: archivo oficial sobre pastilla blanca, legible sobre el azul noche */
+      .sello { position: absolute; right: 118px; bottom: 24px; width: 186px; height: 62px;
+                border-radius: 34px; background: #FFFFFF; }
+      .sello img { position: absolute; left: 20px; top: 9px; width: 120px; height: 45px; }
+      /* barra de avance del módulo: se llena a lo largo de los 7.9 minutos */
+      .barra { position: absolute; left: 120px; bottom: 44px; width: 1520px; height: 5px;
+                border-radius: 3px; background: rgba(174,188,214,0.22); overflow: hidden; }
+      .barra-fill { position: absolute; inset: 0; background: #AC841D;
+                     transform: scaleX(0); transform-origin: 0 50%; }
+      .marca { position: absolute; bottom: 38px; width: 2px; height: 17px;
+                border-radius: 1px; background: rgba(174,188,214,0.45); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="474.5"
+         data-width="1920" data-height="1080">
+      <div id="el-e26" class="escena" data-composition-id="e26-evaluacion-1"
+           data-composition-src="compositions/e26-evaluacion-1.html"
+           data-start="0" data-duration="53.5" data-track-index="1"></div>
+      <div id="el-e27" class="escena" data-composition-id="e27-evaluacion-2"
+           data-composition-src="compositions/e27-evaluacion-2.html"
+           data-start="53.5" data-duration="53" data-track-index="1"></div>
+      <div id="el-e28" class="escena" data-composition-id="e28-evaluacion-3"
+           data-composition-src="compositions/e28-evaluacion-3.html"
+           data-start="106.5" data-duration="53" data-track-index="1"></div>
+      <div id="el-e29" class="escena" data-composition-id="e29-peligros"
+           data-composition-src="compositions/e29-peligros.html"
+           data-start="159.5" data-duration="54.5" data-track-index="1"></div>
+      <div id="el-e30" class="escena" data-composition-id="e30-compromiso"
+           data-composition-src="compositions/e30-compromiso.html"
+           data-start="214" data-duration="59" data-track-index="1"></div>
+      <div id="el-e31" class="escena" data-composition-id="e31-clave"
+           data-composition-src="compositions/e31-clave.html"
+           data-start="273" data-duration="65.5" data-track-index="1"></div>
+      <div id="el-e32" class="escena" data-composition-id="e32-cierre"
+           data-composition-src="compositions/e32-cierre.html"
+           data-start="338.5" data-duration="66" data-track-index="1"></div>
+      <div id="el-e33" class="escena" data-composition-id="e33-fuentes"
+           data-composition-src="compositions/e33-fuentes.html"
+           data-start="404.5" data-duration="60" data-track-index="1"></div>
+      <div id="el-e34" class="escena" data-composition-id="e34-fin"
+           data-composition-src="compositions/e34-fin.html"
+           data-start="464.5" data-duration="10" data-track-index="1"></div>
+      <div id="chrome" class="clip chrome" data-start="0" data-duration="474.5" data-track-index="6">
+        <div class="barra"><div class="barra-fill" id="barra-fill"></div></div>
+        <div class="marca" style="left: 291.4px"></div>
+        <div class="marca" style="left: 461.2px"></div>
+        <div class="marca" style="left: 630.9px"></div>
+        <div class="marca" style="left: 805.5px"></div>
+        <div class="marca" style="left: 994.5px"></div>
+        <div class="marca" style="left: 1204.3px"></div>
+        <div class="marca" style="left: 1415.8px"></div>
+        <div class="marca" style="left: 1608.0px"></div>
+        <div class="sello" id="sello"><img src="assets/marca/riskmann_logo_color.png" alt="RiskMann by SOFU" /></div>
+      </div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      /* la barra avanza sin pausa: da al espectador la medida del módulo */
+      tl.fromTo("#barra-fill", { scaleX: 0.00000 }, { scaleX: 1.00000, duration: 474.5, ease: "none" }, 0);
+      tl.to(".barra, .marca", { opacity: 0, duration: 0.8, ease: "power1.in" }, 473.6);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
