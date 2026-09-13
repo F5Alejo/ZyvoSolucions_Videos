@@ -1,0 +1,172 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden;
+             font-family: "Montserrat", sans-serif; background: #101B33;
+             color: #FFFFFF; }
+    .capa { position: absolute; inset: 0; }
+    .fondo { background: radial-gradient(1400px 900px at 50% 34%, #1E2C4E 0%, #101B33 72%); }
+    .marco { position: absolute; left: 96px; top: 78px; width: 1728px; height: 924px;
+              border: 1.5px solid rgba(174,188,214,0.16); border-radius: 4px; }
+    .ceja { position: absolute; left: 128px; top: 112px; font-size: 24px; font-weight: 800;
+             letter-spacing: 0.22em; color: #D4A62B; }
+    .lamina { position: absolute; right: 128px; top: 106px; font-size: 30px; font-weight: 800;
+               letter-spacing: 0.1em; color: rgba(174,188,214,0.55); }
+    .titulo { position: absolute; left: 128px; top: 150px; width: 1450px; font-size: 50px;
+               font-weight: 800; line-height: 1.12; color: #FFFFFF; }
+    .regla { position: absolute; left: 128px; top: 272px; width: 220px; height: 5px;
+              background: #AC841D; transform-origin: 0 50%; }
+    .fuente { position: absolute; left: 128px; top: 946px; font-size: 21px; font-weight: 600;
+               letter-spacing: 0.04em; color: rgba(174,188,214,0.80); }
+    /* aviso de pausa: el único elemento que pide al espectador hacer algo */
+    .pausa { position: absolute; right: 128px; bottom: 108px; height: 58px; padding: 0 30px;
+              display: flex; align-items: center; gap: 16px; border-radius: 29px;
+              background: rgba(0,200,212,0.12); border: 1.5px solid #00C8D4;
+              font-size: 24px; font-weight: 700; letter-spacing: 0.04em; color: #00C8D4; opacity: 0; }
+    .pausa-icono { width: 16px; height: 20px; border-left: 5px solid #00C8D4; border-right: 5px solid #00C8D4; }
+
+
+    .e-lead { position: absolute; left: 128px; top: 300px; width: 1664px; font-size: 27px;
+              font-weight: 600; color: #AEBCD6; opacity: 0; }
+
+    .e-banda { position: absolute; left: 128px; width: 1664px; height: 154px; opacity: 0; }
+    .e-n { position: absolute; left: 0; top: 4px; width: 48px; height: 48px;
+           border-radius: 24px; background: rgba(172,132,29,0.28); }
+    .e-n span { position: absolute; left: 0; top: 10px; width: 48px; text-align: center;
+                font-size: 25px; font-weight: 900; color: #D4A62B; }
+    .e-preg { position: absolute; left: 68px; right: 0; top: 8px; font-size: 30px;
+              font-weight: 800; color: #FFFFFF; }
+    .e-op { position: absolute; top: 64px; width: 528px; height: 86px; border-radius: 8px;
+            background: rgba(174,188,214,0.09); border: 1.5px solid rgba(174,188,214,0.26);
+            opacity: 0; will-change: transform, opacity; }
+    .e-op-l { position: absolute; left: 18px; top: 14px; width: 38px; height: 38px;
+              border-radius: 19px; background: rgba(0,200,212,0.18); }
+    .e-op-l span { position: absolute; left: 0; top: 7px; width: 38px; text-align: center;
+                   font-size: 21px; font-weight: 900; color: #7FE5EC; }
+    .e-op-t { position: absolute; left: 70px; right: 18px; top: 14px; font-size: 23px;
+              font-weight: 600; line-height: 1.3; color: #DCE4F2; }
+
+    .e-aviso { position: absolute; left: 128px; top: 838px; width: 1240px; font-size: 28px;
+               font-weight: 800; color: #D4A62B; opacity: 0; }
+    .e-nota { position: absolute; left: 128px; top: 890px; width: 1240px; font-size: 24px;
+              font-weight: 600; color: #AEBCD6; opacity: 0; }
+
+  </style>
+
+  <div id="root" data-composition-id="e26-evaluacion-1" data-start="0" data-duration="53.5" data-width="1920" data-height="1080">
+    <div class="clip capa fondo" data-start="0" data-duration="53.5" data-track-index="0"></div>
+    <div id="ch" class="clip capa" data-start="0" data-duration="53.5" data-track-index="2">
+      <div class="marco" id="ch-marco" data-layout-ignore></div>
+      <div class="ceja" id="ch-ceja">EVALUACIÓN FINAL</div>
+      <div class="lamina" id="ch-lamina">26</div>
+      <div class="titulo" id="ch-titulo">1/4 · Selección múltiple · <b style="color:#D4A62B">preguntas 1 a 3</b></div>
+      <div class="regla" id="ch-regla" data-layout-ignore></div>
+      <div class="fuente" id="ch-fuente">Documento fuente: Ruta Segura, sep. 2026</div>
+    </div>
+
+    <div class="clip capa" data-start="0" data-duration="53.5" data-track-index="3">
+      <div class="e-lead" id="e-lead">Tres preguntas. Lee todas las alternativas antes de elegir.</div>
+      <div class="e-banda" id="e-b1" style="top: 348px">
+        <div class="e-n" data-layout-ignore><span>1</span></div>
+        <div class="e-preg">De noche, el mínimo de visibilidad incluye…</div>
+        <div class="e-op" id="e-o11" style="left: 0px">
+          <div class="e-op-l" data-layout-ignore><span>A</span></div>
+          <div class="e-op-t">Solo reflectivo trasero.</div>
+        </div>
+        <div class="e-op" id="e-o12" style="left: 570px">
+          <div class="e-op-l" data-layout-ignore><span>B</span></div>
+          <div class="e-op-t">Luz blanca adelante, roja atrás y prenda reflectiva aplicable.</div>
+        </div>
+        <div class="e-op" id="e-o13" style="left: 1140px">
+          <div class="e-op-l" data-layout-ignore><span>C</span></div>
+          <div class="e-op-t">La linterna del celular.</div>
+        </div>
+      </div>
+      <div class="e-banda" id="e-b2" style="top: 508px">
+        <div class="e-n" data-layout-ignore><span>2</span></div>
+        <div class="e-preg">¿Puede circular por el andén para evitar congestión?</div>
+        <div class="e-op" id="e-o21" style="left: 0px">
+          <div class="e-op-l" data-layout-ignore><span>A</span></div>
+          <div class="e-op-t">Sí, tocando el timbre.</div>
+        </div>
+        <div class="e-op" id="e-o22" style="left: 570px">
+          <div class="e-op-l" data-layout-ignore><span>B</span></div>
+          <div class="e-op-t">No, salvo espacio autorizado o diseñado localmente.</div>
+        </div>
+        <div class="e-op" id="e-o23" style="left: 1140px">
+          <div class="e-op-l" data-layout-ignore><span>C</span></div>
+          <div class="e-op-t">Sí, si lleva casco.</div>
+        </div>
+      </div>
+      <div class="e-banda" id="e-b3" style="top: 668px">
+        <div class="e-n" data-layout-ignore><span>3</span></div>
+        <div class="e-preg">Si un freno no funciona…</div>
+        <div class="e-op" id="e-o31" style="left: 0px">
+          <div class="e-op-l" data-layout-ignore><span>A</span></div>
+          <div class="e-op-t">Salir despacio.</div>
+        </div>
+        <div class="e-op" id="e-o32" style="left: 570px">
+          <div class="e-op-l" data-layout-ignore><span>B</span></div>
+          <div class="e-op-t">Declararla no apta y reportar.</div>
+        </div>
+        <div class="e-op" id="e-o33" style="left: 1140px">
+          <div class="e-op-l" data-layout-ignore><span>C</span></div>
+          <div class="e-op-t">Usar solo la ciclorruta.</div>
+        </div>
+      </div>
+      <div class="e-aviso" id="e-aviso">Registra una respuesta y una razón breve para cada una.</div>
+      <div class="e-nota" id="e-nota">La explicación completa aparece al terminar las cuatro partes de la evaluación.</div>
+    </div>
+
+      <div class="pausa" id="pausa"><span class="pausa-icono" data-layout-ignore></span>PAUSA EL VIDEO Y RESPONDE</div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      /* cabecera: entra siempre igual, en los primeros 1.2 s */
+      tl.fromTo("#ch-ceja", { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0);
+      tl.fromTo("#ch-lamina", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out" }, 0.1);
+      tl.fromTo("#ch-titulo", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.62, ease: "power3.out" }, 0.18);
+      tl.fromTo("#ch-regla", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power2.out" }, 0.42);
+      tl.fromTo("#ch-marco", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power1.out" }, 0);
+      tl.fromTo("#ch-fuente", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power1.out" }, 0.7);
+      tl.fromTo("#e-lead", { opacity: 0, x: -26 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 0.55);
+
+      tl.fromTo("#e-b1", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 5.94);
+      tl.fromTo("#e-o11", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 9.16);
+      tl.fromTo("#e-o12", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 10.26);
+      tl.fromTo("#e-o13", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 11.36);
+
+      tl.fromTo("#e-b2", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 17.41);
+      tl.fromTo("#e-o21", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 20.22);
+      tl.fromTo("#e-o22", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 21.32);
+      tl.fromTo("#e-o23", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 22.42);
+
+      tl.fromTo("#e-b3", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 25.76);
+      tl.fromTo("#e-o31", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 27.6);
+      tl.fromTo("#e-o32", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 28.7);
+      tl.fromTo("#e-o33", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 29.8);
+
+      tl.fromTo("#e-aviso", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 31.69);
+      tl.fromTo("#pausa", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 34.78);
+      tl.fromTo("#e-nota", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 45.78);
+      /* salida: el corte a la lámina siguiente ocurre sobre el fondo limpio */
+      tl.to(".capa:not(.fondo)", { opacity: 0, duration: 0.55, ease: "power1.in" }, 52.85);
+
+      window.__timelines["e26-evaluacion-1"] = tl;
+    })();
+  </script>
+</template>

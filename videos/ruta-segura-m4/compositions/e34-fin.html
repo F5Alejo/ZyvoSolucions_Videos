@@ -1,0 +1,86 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden;
+             font-family: "Montserrat", sans-serif; background: #101B33;
+             color: #FFFFFF; }
+    .capa { position: absolute; inset: 0; }
+    .fondo { background: radial-gradient(1400px 900px at 50% 34%, #1E2C4E 0%, #101B33 72%); }
+    .marco { position: absolute; left: 96px; top: 78px; width: 1728px; height: 924px;
+              border: 1.5px solid rgba(174,188,214,0.16); border-radius: 4px; }
+    .ceja { position: absolute; left: 128px; top: 112px; font-size: 24px; font-weight: 800;
+             letter-spacing: 0.22em; color: #D4A62B; }
+    .lamina { position: absolute; right: 128px; top: 106px; font-size: 30px; font-weight: 800;
+               letter-spacing: 0.1em; color: rgba(174,188,214,0.55); }
+    .titulo { position: absolute; left: 128px; top: 150px; width: 1450px; font-size: 50px;
+               font-weight: 800; line-height: 1.12; color: #FFFFFF; }
+    .regla { position: absolute; left: 128px; top: 272px; width: 220px; height: 5px;
+              background: #AC841D; transform-origin: 0 50%; }
+    .fuente { position: absolute; left: 128px; top: 946px; font-size: 21px; font-weight: 600;
+               letter-spacing: 0.04em; color: rgba(174,188,214,0.80); }
+    /* aviso de pausa: el único elemento que pide al espectador hacer algo */
+    .pausa { position: absolute; right: 128px; bottom: 108px; height: 58px; padding: 0 30px;
+              display: flex; align-items: center; gap: 16px; border-radius: 29px;
+              background: rgba(0,200,212,0.12); border: 1.5px solid #00C8D4;
+              font-size: 24px; font-weight: 700; letter-spacing: 0.04em; color: #00C8D4; opacity: 0; }
+    .pausa-icono { width: 16px; height: 20px; border-left: 5px solid #00C8D4; border-right: 5px solid #00C8D4; }
+
+
+    .z-fondo { position: absolute; inset: 0;
+               background: radial-gradient(1200px 800px at 50% 46%, #1E2C4E 0%, #101B33 74%); }
+    .z-ceja { position: absolute; left: 0; top: 372px; width: 1920px; text-align: center;
+              font-size: 26px; font-weight: 800; letter-spacing: 0.26em; color: #D4A62B; opacity: 0; }
+    .z-tit { position: absolute; left: 0; top: 420px; width: 1920px; text-align: center;
+             font-size: 104px; font-weight: 900; line-height: 1; color: #FFFFFF; opacity: 0; }
+    .z-raya { position: absolute; left: 850px; top: 556px; width: 220px; height: 5px;
+              background: #00C8D4; transform: scaleX(0); transform-origin: 50% 50%; }
+    .z-sub { position: absolute; left: 0; top: 596px; width: 1920px; text-align: center;
+             font-size: 40px; font-weight: 700; color: #AEBCD6; opacity: 0; }
+    .z-sub b { color: #00C8D4; font-weight: 800; }
+    .z-nota { position: absolute; left: 0; top: 680px; width: 1920px; text-align: center;
+              font-size: 25px; font-weight: 600; color: #AEBCD6; opacity: 0; }
+
+  </style>
+
+  <div id="root" data-composition-id="e34-fin" data-start="0" data-duration="10" data-width="1920" data-height="1080">
+    <div class="clip capa fondo" data-start="0" data-duration="10" data-track-index="0"></div>
+    <div class="clip capa z-fondo" data-start="0" data-duration="10" data-track-index="1"></div>
+
+    <div class="clip capa" data-start="0" data-duration="10" data-track-index="2">
+      <div class="z-ceja" id="z-ceja">RUTA SEGURA</div>
+      <div class="z-tit" id="z-tit">Cada pedaleo cuenta</div>
+      <div class="z-raya" id="z-raya" data-layout-ignore></div>
+      <div class="z-sub" id="z-sub">Fin de la capacitación · <b>cuatro módulos</b></div>
+      <div class="z-nota" id="z-nota">Capacitar no reemplaza la gestión material del riesgo.</div>
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      tl.fromTo("#z-ceja", { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.20);
+      tl.fromTo("#z-tit", { opacity: 0, y: 36, scale: 0.94 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: "power3.out" }, 0.40);
+      tl.fromTo("#z-raya", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power2.out" }, 1.05);
+      tl.fromTo("#z-sub", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 1.40);
+      tl.fromTo("#z-nota", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 2.30);
+      tl.to(["#z-ceja", "#z-tit", "#z-raya", "#z-sub", "#z-nota"],
+        { opacity: 0, duration: 0.8, ease: "power1.in" }, 8.90);
+
+      window.__timelines["e34-fin"] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,166 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden;
+             font-family: "Montserrat", sans-serif; background: #101B33;
+             color: #FFFFFF; }
+    .capa { position: absolute; inset: 0; }
+    .fondo { background: radial-gradient(1400px 900px at 50% 34%, #1E2C4E 0%, #101B33 72%); }
+    .marco { position: absolute; left: 96px; top: 78px; width: 1728px; height: 924px;
+              border: 1.5px solid rgba(174,188,214,0.16); border-radius: 4px; }
+    .ceja { position: absolute; left: 128px; top: 112px; font-size: 24px; font-weight: 800;
+             letter-spacing: 0.22em; color: #D4A62B; }
+    .lamina { position: absolute; right: 128px; top: 106px; font-size: 30px; font-weight: 800;
+               letter-spacing: 0.1em; color: rgba(174,188,214,0.55); }
+    .titulo { position: absolute; left: 128px; top: 150px; width: 1450px; font-size: 50px;
+               font-weight: 800; line-height: 1.12; color: #FFFFFF; }
+    .regla { position: absolute; left: 128px; top: 272px; width: 220px; height: 5px;
+              background: #AC841D; transform-origin: 0 50%; }
+    .fuente { position: absolute; left: 128px; top: 946px; font-size: 21px; font-weight: 600;
+               letter-spacing: 0.04em; color: rgba(174,188,214,0.80); }
+    /* aviso de pausa: el único elemento que pide al espectador hacer algo */
+    .pausa { position: absolute; right: 128px; bottom: 108px; height: 58px; padding: 0 30px;
+              display: flex; align-items: center; gap: 16px; border-radius: 29px;
+              background: rgba(0,200,212,0.12); border: 1.5px solid #00C8D4;
+              font-size: 24px; font-weight: 700; letter-spacing: 0.04em; color: #00C8D4; opacity: 0; }
+    .pausa-icono { width: 16px; height: 20px; border-left: 5px solid #00C8D4; border-right: 5px solid #00C8D4; }
+
+
+    .m-paso { position: absolute; top: 336px; width: 320px; height: 236px; border-radius: 10px;
+              background: rgba(174,188,214,0.09); border: 1.5px solid rgba(174,188,214,0.26);
+              opacity: 0; will-change: transform, opacity; }
+    .m-n { position: absolute; left: -1px; top: -1px; width: 54px; height: 44px;
+           border-radius: 10px 0 10px 0; background: #AC841D; }
+    .m-n span { position: absolute; left: 0; top: 8px; width: 54px; text-align: center;
+                font-size: 23px; font-weight: 900; color: #101B33; }
+    .m-t { position: absolute; left: 70px; right: 18px; top: 10px; font-size: 27px;
+           font-weight: 900; letter-spacing: 0.03em; color: #D4A62B; }
+    .m-d { position: absolute; left: 22px; right: 18px; top: 70px; font-size: 23px;
+           font-weight: 500; line-height: 1.34; color: #DCE4F2; }
+    /* la flecha entre pasos: la secuencia es una cadena, no una lista */
+    .m-flecha { position: absolute; top: 448px; width: 22px; height: 3px; background: #AC841D;
+                transform: scaleX(0); transform-origin: 0 50%; }
+
+    .m-nota { position: absolute; left: 116px; top: 610px; width: 1688px; font-size: 26px;
+              font-weight: 600; line-height: 1.3; color: #AEBCD6; opacity: 0; }
+
+    .m-clima { position: absolute; left: 116px; top: 686px; width: 1688px; height: 92px;
+               border-radius: 10px; background: rgba(0,200,212,0.10); border-left: 6px solid #00C8D4;
+               opacity: 0; }
+    .m-clima span { position: absolute; left: 26px; right: 22px; top: 18px; font-size: 26px;
+                    font-weight: 600; line-height: 1.3; color: #DCE4F2; }
+    .m-clima b { color: #7FE5EC; font-weight: 800; }
+
+    .m-prisa { position: absolute; left: 116px; top: 802px; width: 1688px; font-size: 30px;
+               font-weight: 800; color: #D4A62B; opacity: 0; }
+    .m-habito { position: absolute; left: 116px; top: 864px; width: 1688px; font-size: 30px;
+                font-weight: 800; color: #00C8D4; opacity: 0; }
+
+  </style>
+
+  <div id="root" data-composition-id="e20-cinco-pasos" data-start="0" data-duration="58.5" data-width="1920" data-height="1080">
+    <div class="clip capa fondo" data-start="0" data-duration="58.5" data-track-index="0"></div>
+    <div id="ch" class="clip capa" data-start="0" data-duration="58.5" data-track-index="2">
+      <div class="marco" id="ch-marco" data-layout-ignore></div>
+      <div class="ceja" id="ch-ceja">MÓDULO 3</div>
+      <div class="lamina" id="ch-lamina">20</div>
+      <div class="titulo" id="ch-titulo">Una maniobra segura <b style="color:#D4A62B">se construye en cinco pasos</b></div>
+      <div class="regla" id="ch-regla" data-layout-ignore></div>
+      <div class="fuente" id="ch-fuente">Documento fuente: Ruta Segura, sep. 2026</div>
+    </div>
+
+    <div class="clip capa" data-start="0" data-duration="58.5" data-track-index="3">
+      <div class="m-paso" id="m-p1" style="left: 116px">
+        <div class="m-n" data-layout-ignore><span>1</span></div>
+        <div class="m-t">OBSERVAR</div>
+        <div class="m-d">Frente, laterales, superficie y accesos.</div>
+      </div>
+      <div class="m-paso" id="m-p2" style="left: 458px">
+        <div class="m-n" data-layout-ignore><span>2</span></div>
+        <div class="m-t">ANTICIPAR</div>
+        <div class="m-d">Puertas, giros, cruces y cambios de velocidad.</div>
+      </div>
+      <div class="m-paso" id="m-p3" style="left: 800px">
+        <div class="m-n" data-layout-ignore><span>3</span></div>
+        <div class="m-t">SEÑALIZAR</div>
+        <div class="m-d">Sin perder el control del manubrio.</div>
+      </div>
+      <div class="m-paso" id="m-p4" style="left: 1142px">
+        <div class="m-n" data-layout-ignore><span>4</span></div>
+        <div class="m-t">VERIFICAR</div>
+        <div class="m-d">Mi señal no obliga a los demás a cederme el paso.</div>
+      </div>
+      <div class="m-paso" id="m-p5" style="left: 1484px">
+        <div class="m-n" data-layout-ignore><span>5</span></div>
+        <div class="m-t">EJECUTAR</div>
+        <div class="m-d">Trayectoria estable, sin movimientos bruscos.</div>
+      </div>
+      <div class="m-flecha" id="m-fl1" style="left: 436px" data-layout-ignore></div>
+      <div class="m-flecha" id="m-fl2" style="left: 778px" data-layout-ignore></div>
+      <div class="m-flecha" id="m-fl3" style="left: 1120px" data-layout-ignore></div>
+      <div class="m-flecha" id="m-fl4" style="left: 1462px" data-layout-ignore></div>
+
+      <div class="m-nota" id="m-nota">Junto a vehículos estacionados mantengo una separación prudente:
+        una puerta puede abrirse sin aviso.</div>
+
+      <div class="m-clima" id="m-clima"><span>En lluvia, pintura húmeda, arena o material suelto:
+        <b>más distancia, frenado progresivo y ninguna maniobra brusca</b>.</span></div>
+
+      <div class="m-prisa" id="m-prisa">La prisa suele eliminar el paso de verificación.</div>
+      <div class="m-habito" id="m-habito">Observar · anticipar · señalizar · verificar · ejecutar.</div>
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      /* cabecera: entra siempre igual, en los primeros 1.2 s */
+      tl.fromTo("#ch-ceja", { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0);
+      tl.fromTo("#ch-lamina", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out" }, 0.1);
+      tl.fromTo("#ch-titulo", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.62, ease: "power3.out" }, 0.18);
+      tl.fromTo("#ch-regla", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power2.out" }, 0.42);
+      tl.fromTo("#ch-marco", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power1.out" }, 0);
+      tl.fromTo("#ch-fuente", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power1.out" }, 0.7);
+      tl.fromTo("#m-p1", { opacity: 0, y: 40, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power3.out" }, 3.5);
+      tl.fromTo("#m-p2", { opacity: 0, y: 40, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power3.out" }, 8.62);
+      tl.fromTo("#m-p3", { opacity: 0, y: 40, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power3.out" }, 13.28);
+      tl.fromTo("#m-p4", { opacity: 0, y: 40, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power3.out" }, 17.18);
+      tl.fromTo("#m-p5", { opacity: 0, y: 40, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power3.out" }, 23.2);
+      tl.fromTo("#m-fl1", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power2.out" }, 8.3);
+      tl.fromTo("#m-fl2", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power2.out" }, 12.95);
+      tl.fromTo("#m-fl3", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power2.out" }, 16.9);
+      tl.fromTo("#m-fl4", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power2.out" }, 22.9);
+
+      /* 28.10 · la puerta que se abre */
+      tl.fromTo("#m-nota", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 28.2);
+
+      /* 35.33 · lluvia, pintura húmeda, arena o material suelto */
+      tl.fromTo("#m-clima", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 35.45);
+
+      /* 46.02 · «la prisa elimina el paso de verificación» */
+      tl.fromTo("#m-prisa", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 46.12);
+
+      /* 53.14 · la secuencia repetida como hábito, con un pulso sobre los cinco pasos */
+      tl.fromTo("#m-habito", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 53.24);
+      tl.to(".m-paso", { y: -12, duration: 0.2, ease: "power2.out", stagger: 0.09 }, 53.4);
+      tl.to(".m-paso", { y: 0, duration: 0.32, ease: "power2.inOut", stagger: 0.09 }, 53.62);
+      /* salida: el corte a la lámina siguiente ocurre sobre el fondo limpio */
+      tl.to(".capa:not(.fondo)", { opacity: 0, duration: 0.55, ease: "power1.in" }, 57.85);
+
+      window.__timelines["e20-cinco-pasos"] = tl;
+    })();
+  </script>
+</template>

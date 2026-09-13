@@ -1,0 +1,165 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden;
+             font-family: "Montserrat", sans-serif; background: #101B33;
+             color: #FFFFFF; }
+    .capa { position: absolute; inset: 0; }
+    .fondo { background: radial-gradient(1400px 900px at 50% 34%, #1E2C4E 0%, #101B33 72%); }
+    .marco { position: absolute; left: 96px; top: 78px; width: 1728px; height: 924px;
+              border: 1.5px solid rgba(174,188,214,0.16); border-radius: 4px; }
+    .ceja { position: absolute; left: 128px; top: 112px; font-size: 24px; font-weight: 800;
+             letter-spacing: 0.22em; color: #D4A62B; }
+    .lamina { position: absolute; right: 128px; top: 106px; font-size: 30px; font-weight: 800;
+               letter-spacing: 0.1em; color: rgba(174,188,214,0.55); }
+    .titulo { position: absolute; left: 128px; top: 150px; width: 1450px; font-size: 50px;
+               font-weight: 800; line-height: 1.12; color: #FFFFFF; }
+    .regla { position: absolute; left: 128px; top: 272px; width: 220px; height: 5px;
+              background: #AC841D; transform-origin: 0 50%; }
+    .fuente { position: absolute; left: 128px; top: 946px; font-size: 21px; font-weight: 600;
+               letter-spacing: 0.04em; color: rgba(174,188,214,0.80); }
+    /* aviso de pausa: el único elemento que pide al espectador hacer algo */
+    .pausa { position: absolute; right: 128px; bottom: 108px; height: 58px; padding: 0 30px;
+              display: flex; align-items: center; gap: 16px; border-radius: 29px;
+              background: rgba(0,200,212,0.12); border: 1.5px solid #00C8D4;
+              font-size: 24px; font-weight: 700; letter-spacing: 0.04em; color: #00C8D4; opacity: 0; }
+    .pausa-icono { width: 16px; height: 20px; border-left: 5px solid #00C8D4; border-right: 5px solid #00C8D4; }
+
+
+    .r-lead { position: absolute; left: 128px; top: 300px; width: 1664px; font-size: 28px;
+              font-weight: 600; color: #AEBCD6; opacity: 0; }
+
+    /* --- columna izquierda: la matriz de ruta --- */
+    .r-cap { position: absolute; left: 128px; top: 358px; font-size: 24px; font-weight: 900;
+             letter-spacing: 0.16em; color: #D4A62B; opacity: 0; }
+    .r-chip { position: absolute; height: 58px; padding: 0 22px; display: flex; align-items: center;
+              border-radius: 8px; background: rgba(174,188,214,0.10); border-left: 5px solid #AC841D;
+              font-size: 24px; font-weight: 700; color: #FFFFFF; opacity: 0; white-space: nowrap; }
+    .r-corta { position: absolute; left: 128px; top: 678px; width: 840px; font-size: 30px;
+               font-weight: 800; line-height: 1.26; color: #00C8D4; opacity: 0; }
+
+    /* --- columna derecha: el semáforo de aptitud --- */
+    .r-scap { position: absolute; left: 1060px; top: 358px; font-size: 24px; font-weight: 900;
+              letter-spacing: 0.16em; color: #D4A62B; opacity: 0; }
+    .r-estado { position: absolute; left: 1060px; width: 736px; height: 104px; border-radius: 10px;
+                background: rgba(174,188,214,0.09); border: 1.5px solid rgba(174,188,214,0.26);
+                opacity: 0; will-change: transform, opacity; }
+    .r-luz { position: absolute; left: 24px; top: 30px; width: 36px; height: 36px; border-radius: 18px; }
+    .r-e-t { position: absolute; left: 78px; top: 16px; font-size: 26px; font-weight: 900;
+             letter-spacing: 0.06em; color: #FFFFFF; }
+    .r-e-d { position: absolute; left: 78px; right: 20px; top: 50px; font-size: 22px;
+             font-weight: 500; line-height: 1.26; color: #AEBCD6; }
+
+    .r-nota { position: absolute; left: 128px; top: 794px; width: 1664px; font-size: 26px;
+              font-weight: 600; line-height: 1.3; color: #DCE4F2; opacity: 0; }
+    .r-nota b { color: #7FE5EC; font-weight: 800; }
+    .r-cierre { position: absolute; left: 128px; top: 872px; width: 1664px; font-size: 30px;
+                font-weight: 800; color: #D4A62B; opacity: 0; }
+
+  </style>
+
+  <div id="root" data-composition-id="e21-ruta-estado" data-start="0" data-duration="59.0" data-width="1920" data-height="1080">
+    <div class="clip capa fondo" data-start="0" data-duration="59.0" data-track-index="0"></div>
+    <div id="ch" class="clip capa" data-start="0" data-duration="59.0" data-track-index="2">
+      <div class="marco" id="ch-marco" data-layout-ignore></div>
+      <div class="ceja" id="ch-ceja">MÓDULO 3</div>
+      <div class="lamina" id="ch-lamina">21</div>
+      <div class="titulo" id="ch-titulo">La ruta y tu estado <b style="color:#D4A62B">también se inspeccionan</b></div>
+      <div class="regla" id="ch-regla" data-layout-ignore></div>
+      <div class="fuente" id="ch-fuente">Documento fuente: Ruta Segura, sep. 2026</div>
+    </div>
+
+    <div class="clip capa" data-start="0" data-duration="59.0" data-track-index="3">
+      <div class="r-lead" id="r-lead">No solo inspecciono la bicicleta: también la ruta y mi estado personal.</div>
+
+      <div class="r-cap" id="r-cap">MATRIZ DE RUTA</div>
+      <div class="r-chip" id="r-c1" style="left: 128px; top: 402px">Cruces</div>
+      <div class="r-chip" id="r-c2" style="left: 350px; top: 402px">Tráfico pesado</div>
+      <div class="r-chip" id="r-c3" style="left: 610px; top: 402px">Iluminación</div>
+      <div class="r-chip" id="r-c4" style="left: 128px; top: 470px">Clima</div>
+      <div class="r-chip" id="r-c5" style="left: 310px; top: 470px">Obras</div>
+      <div class="r-chip" id="r-c6" style="left: 470px; top: 470px">Seguridad pública</div>
+      <div class="r-chip" id="r-c7" style="left: 128px; top: 538px">Alternativa definida</div>
+      <div class="r-chip" id="r-c8" style="left: 400px; top: 538px">Criterio de suspensión</div>
+      <div class="r-corta" id="r-corta">La ruta más segura no siempre es la más corta.</div>
+
+      <div class="r-scap" id="r-scap">SEMÁFORO DE APTITUD</div>
+      <div class="r-estado" id="r-e1" style="top: 402px">
+        <div class="r-luz" style="background: #2FBF71" data-layout-ignore></div>
+        <div class="r-e-t">VERDE</div>
+        <div class="r-e-d">Alerta, equipado y con condiciones controladas.</div>
+      </div>
+      <div class="r-estado" id="r-e2" style="top: 518px">
+        <div class="r-luz" style="background: #E3A81B" data-layout-ignore></div>
+        <div class="r-e-t">AMARILLO</div>
+        <div class="r-e-d">Detenerme, aplicar controles y volver a decidir.</div>
+      </div>
+      <div class="r-estado" id="r-e3" style="top: 634px">
+        <div class="r-luz" style="background: #DE4D4D" data-layout-ignore></div>
+        <div class="r-e-t">ROJO</div>
+        <div class="r-e-d">Somnolencia, mareo, alcohol o sustancias, efecto sedante, alteración visual o dolor incapacitante.</div>
+      </div>
+
+      <div class="r-nota" id="r-nota">Mapa o teléfono: <b>solo antes de iniciar, o detenido en un lugar seguro</b>.</div>
+      <div class="r-cierre" id="r-cierre">Ninguna urgencia operativa convierte una condición roja en aceptable.</div>
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      /* cabecera: entra siempre igual, en los primeros 1.2 s */
+      tl.fromTo("#ch-ceja", { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0);
+      tl.fromTo("#ch-lamina", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out" }, 0.1);
+      tl.fromTo("#ch-titulo", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.62, ease: "power3.out" }, 0.18);
+      tl.fromTo("#ch-regla", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power2.out" }, 0.42);
+      tl.fromTo("#ch-marco", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power1.out" }, 0);
+      tl.fromTo("#ch-fuente", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power1.out" }, 0.7);
+      /* 0.00 · «también inspecciono la ruta y mi estado» */
+      tl.fromTo("#r-lead", { opacity: 0, x: -26 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 0.55);
+
+      /* 6.01 · la matriz de ruta, punto por punto */
+      tl.fromTo("#r-cap", { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 6.1);
+      tl.fromTo("#r-c1", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.42, ease: "power2.out" }, 7);
+      tl.fromTo("#r-c2", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.42, ease: "power2.out" }, 8.1);
+      tl.fromTo("#r-c3", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.42, ease: "power2.out" }, 9.2);
+      tl.fromTo("#r-c4", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.42, ease: "power2.out" }, 10.3);
+      tl.fromTo("#r-c5", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.42, ease: "power2.out" }, 11.4);
+      tl.fromTo("#r-c6", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.42, ease: "power2.out" }, 12.5);
+      tl.fromTo("#r-c7", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.42, ease: "power2.out" }, 13.8);
+      tl.fromTo("#r-c8", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.42, ease: "power2.out" }, 15.1);
+
+      /* 17.31 · «la ruta más segura no siempre es la más corta» */
+      tl.fromTo("#r-corta", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 17.4);
+
+      /* 20.80 · el semáforo de aptitud / 23.75 · 29.08 · 34.41 · los tres estados */
+      tl.fromTo("#r-scap", { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 20.9);
+      tl.fromTo("#r-e1", { opacity: 0, x: 44 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 23.85);
+      tl.fromTo("#r-e2", { opacity: 0, x: 44 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 29.18);
+      tl.fromTo("#r-e3", { opacity: 0, x: 44 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 34.51);
+
+      /* 44.79 · el mapa y el teléfono */
+      tl.fromTo("#r-nota", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 44.9);
+
+      /* 52.90 · «ninguna urgencia convierte una condición roja en aceptable» */
+      tl.fromTo("#r-cierre", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 53);
+      /* salida: el corte a la lámina siguiente ocurre sobre el fondo limpio */
+      tl.to(".capa:not(.fondo)", { opacity: 0, duration: 0.55, ease: "power1.in" }, 58.35);
+
+      window.__timelines["e21-ruta-estado"] = tl;
+    })();
+  </script>
+</template>
