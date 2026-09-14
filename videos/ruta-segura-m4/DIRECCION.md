@@ -4,19 +4,21 @@ Cuarto y último video del curso. Cubre las láminas 26 a 33 del PPTX: evaluaci�
 final en cuatro partes, compromiso individual, clave de respuestas, cierre y
 fuentes.
 
-- **Formato:** 1920×1080 · **7:54** (estimado) · locución **pendiente**.
+- **Formato:** 1920×1080 · **7:54** · con locución.
 - **Identidad, encuadre y reglas:** las del módulo 1
   ([`../ruta-segura-m1/DIRECCION.md`](../ruta-segura-m1/DIRECCION.md)).
 - **Procedimiento:** §14 de `../../PRODUCCION-VIDEOS.md`.
 
-## Estado: entregado sin voz
+## La locución
 
-Igual que el módulo 3: las láminas se compusieron contra la estimación de
-`tools/estimar.py` porque la clave de ElevenLabs expiró, y el MP4 se entregó
-mudo a petición del cliente.
+Voz colombiana de ElevenLabs: «Carlos» (`4PN5DHmrfIgZksvIrawS`), modelo
+`eleven_v3`. Las láminas se compusieron primero contra una estimación
+(`tools/estimar.py`, ajustada sobre las frases ya locutadas de los módulos 1 y 2)
+y después `tools/cronometro.py` recolocó todas las marcas sobre los tiempos
+reales, exacto en cada frontera de frase. No hubo que tocar ningún `eNN.py`.
 
-**Ese MP4 está atado a la estimación.** Cuando se locute hay que reconstruir y
-volver a renderizar; no sirve pegarle la pista encima.
+Para regrabar con una persona: `GUION-VOZ.md` trae la ventana de cada lámina. Se
+vuelve a renderizar, pero no se toca ninguna animación.
 
 ## Las ocho láminas
 

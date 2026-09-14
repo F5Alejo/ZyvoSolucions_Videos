@@ -28,10 +28,10 @@ videos/
   sofu-comercial/        comercial de SOFU BIC S.A.S. (68 s, 16:9)
   sofu-comercial-v2/     el comercial rehecho con gancho, golpe inicial y cierre (52 s, 16:9)
   sofu-comercial-v2-vertical/  la versión v2 en 9:16 para redes
-  ruta-segura-m1/        curso «Ruta Segura» · apertura + módulo 1 (11:35, con locución)
-  ruta-segura-m2/        curso «Ruta Segura» · módulo 2, bicicleta lista (7:20)
-  ruta-segura-m3/        curso «Ruta Segura» · módulo 3, misión segura (7:08, sin voz)
-  ruta-segura-m4/        curso «Ruta Segura» · módulo 4, evaluación y cierre (7:54, sin voz)
+  ruta-segura-m1/        curso «Ruta Segura» · apertura + módulo 1 (10:57)
+  ruta-segura-m2/        curso «Ruta Segura» · módulo 2, bicicleta lista (6:52)
+  ruta-segura-m3/        curso «Ruta Segura» · módulo 3, misión segura (6:48)
+  ruta-segura-m4/        curso «Ruta Segura» · módulo 4, evaluación y cierre (7:41)
   riskmann-sala-de-control/  video de marketing de la plataforma (68 s)
 ```
 
@@ -52,19 +52,15 @@ Todos los videos terminados están en la carpeta compartida de Drive:
 | 05 | `SOFU BIC SAS - Presentacion comercial de la empresa (1m08)` | Comercial de la casa matriz SOFU, a partir de su guion | `videos/sofu-comercial/` |
 | 06 | `SOFU BIC SAS - Comercial dinamico (52s)` | El comercial rehecho: gancho, golpe inicial y cierre | `videos/sofu-comercial-v2/` |
 | 06b | `SOFU BIC SAS - Comercial dinamico vertical para redes (52s)` | El mismo 06 en 9:16 | `videos/sofu-comercial-v2-vertical/` |
-| 07 | `Ruta Segura - Modulo 1 Actor vial y Sistema Seguro - Narrado (11m35)` | Curso de ciclistas: apertura + módulo 1, con locución sintética — el libreto para regrabarla con una persona es [`GUION-VOZ.md`](videos/ruta-segura-m1/GUION-VOZ.md) | `videos/ruta-segura-m1/` |
-| 07b | `Ruta Segura - Modulo 1 - Narrado (version liviana para compartir)` | El mismo 07, comprimido a 19 MB | `videos/ruta-segura-m1/` |
-| 08 | `Ruta Segura - Modulo 2 Bicicleta lista - Narrado (7m20)` | Inspección preoperacional, clasificación de la bicicleta, protección y visibilidad | `videos/ruta-segura-m2/` |
-| 08b | `Ruta Segura - Modulo 2 - Narrado (version liviana para compartir)` | El mismo 08, comprimido a 12 MB | `videos/ruta-segura-m2/` |
-| 09 | `Ruta Segura - Modulo 3 Mision segura - SIN VOZ (7m08)` | Anticipación, maniobra en cinco pasos, inspección de ruta y estado, respuesta ante siniestro | `videos/ruta-segura-m3/` |
-| 09b | `Ruta Segura - Modulo 3 - SIN VOZ (version liviana para compartir)` | El mismo 09, comprimido a 6 MB | `videos/ruta-segura-m3/` |
-| 10 | `Ruta Segura - Modulo 4 Evaluacion final y cierre - SIN VOZ (7m54)` | Evaluación en cuatro partes, compromiso, clave, cierre y fuentes | `videos/ruta-segura-m4/` |
-| 10b | `Ruta Segura - Modulo 4 - SIN VOZ (version liviana para compartir)` | El mismo 10, comprimido a 7 MB | `videos/ruta-segura-m4/` |
+| 07 | `Ruta Segura - Modulo 1 Actor vial y Sistema Seguro - Narrado (10m57)` | Curso de ciclistas: apertura + módulo 1 | `videos/ruta-segura-m1/` |
+| 08 | `Ruta Segura - Modulo 2 Bicicleta lista - Narrado (6m52)` | Inspección, clasificación, protección y visibilidad | `videos/ruta-segura-m2/` |
+| 09 | `Ruta Segura - Modulo 3 Mision segura - Narrado (6m48)` | Anticipación, maniobra, ruta y estado, respuesta | `videos/ruta-segura-m3/` |
+| 10 | `Ruta Segura - Modulo 4 Evaluacion final y cierre - Narrado (7m41)` | Evaluación, compromiso, clave, cierre y fuentes | `videos/ruta-segura-m4/` |
+| — | `Ruta Segura - CURSO COMPLETO NARRADO (32m18)` | Los cuatro seguidos, unidos sin recodificar | `tools/unir-curso.py` |
 
-Los módulos **3** y **4** se entregan **sin locución**: la clave de ElevenLabs caducó a mitad del
-trabajo y su montaje está hecho sobre una estimación de tiempos (`tools/estimar.py`, ajustada sobre
-las 187 frases ya locutadas de los módulos 1 y 2). Cuando se locuten hay que **reconstruir y volver
-a renderizar** — `cronometro.py` recoloca las marcas solo, pero el MP4 actual quedaría desfasado.
+El curso completo va con **locución sintética en voz colombiana** (ElevenLabs, «Carlos»,
+`eleven_v3`). Cada módulo trae su copia liviana (`Nb`) y su `GUION-VOZ-modulo-N.md` con la
+ventana de tiempo de cada lámina, por si se regraba con una persona.
 
 Los archivos 01–03 empiezan por `NN - Seguridad Vial para Pasajeros - Modulo 1 Actor Vial - …` y
 los 04 por `NN - RiskMann - …`; el número es el orden sugerido para verlos. Los nombres coinciden con los
@@ -97,5 +93,6 @@ python tools/descargar-voz.py     # una vez: baja la voz aprobada (60 MB, fuera 
 | `tools/ritmo.py` | Pista rítmica sintetizada (bombo, platillos, palmas, bajo, acordes) a un BPM dado, para videos sin voz |
 | `tools/mezcla.py` | Mezcla voz, pistas, cama y efectos desde un JSON; normaliza a −16 LUFS y verifica que el audio llegó |
 | `tools/unir-curso.py` | Une los módulos de un curso en un máster continuo, sin recodificar; avisa de los que van mudos |
+| `tools/render-partes.py` | Renderiza las partes que faltan y salta las hechas: hace el lote reanudable en máquinas con poca RAM |
 | `videos/ruta-segura-m1/tools/voz-eleven.py` | Locución con ElevenLabs (`eleven_v3`) pidiendo timestamps por carácter |
 | `videos/ruta-segura-m1/tools/cronometro.py` | Traduce los tiempos de una locución a los de otra y recoloca todo el montaje |

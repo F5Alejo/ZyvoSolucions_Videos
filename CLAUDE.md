@@ -67,6 +67,17 @@ python tools/guion.py                              # GUION-VOZ.md con ventanas a
 cambiar de voz —o grabarla con una persona— no obliga a tocar ninguna marca de
 tiempo. Sin `tiempos-voz.json` el video se construye igual, mudo.
 
+La voz del curso «Ruta Segura» es **«Carlos»** de ElevenLabs
+(`4PN5DHmrfIgZksvIrawS`), colombiana, modelo `eleven_v3`. La clave con permiso
+`voices_read` permite buscar en la biblioteca: hay ~30 voces colombianas.
+
+En una máquina con poca RAM el render va por partes y **reanudable**:
+
+```bash
+python tools/render-partes.py videos/<proyecto> [...]   # salta las partes ya hechas
+python tools/unir-curso.py <carpeta-de-entrega> <salida.mp4>
+```
+
 ## Empezar un video de marketing nuevo
 
 ```bash

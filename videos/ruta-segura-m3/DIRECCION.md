@@ -4,35 +4,21 @@ Tercer video del curso **«Ruta Segura · cada pedaleo cuenta»**. Cubre el **m�
 3** del PPTX de origen (láminas 19 a 25): anticipación, maniobra, inspección de
 ruta y estado personal, y respuesta ante un siniestro.
 
-- **Formato:** 1920×1080 · **7:08** (estimado) · locución **pendiente**.
+- **Formato:** 1920×1080 · **7:08** · con locución.
 - **Identidad, encuadre y reglas:** las del módulo 1
   ([`../ruta-segura-m1/DIRECCION.md`](../ruta-segura-m1/DIRECCION.md)).
 - **Procedimiento:** §14 de `../../PRODUCCION-VIDEOS.md`.
 
-## Estado: entregado sin voz
+## La locución
 
-La clave de ElevenLabs expiró antes de poder generar la voz de este módulo, así
-que las láminas se compusieron contra una **estimación** (`tools/estimar.py`),
-ajustada sobre las 187 frases ya locutadas de los módulos 1 y 2 con esta misma
-voz:
+Voz colombiana de ElevenLabs: «Carlos» (`4PN5DHmrfIgZksvIrawS`), modelo
+`eleven_v3`. Las láminas se compusieron primero contra una estimación
+(`tools/estimar.py`, ajustada sobre las frases ya locutadas de los módulos 1 y 2)
+y después `tools/cronometro.py` recolocó todas las marcas sobre los tiempos
+reales, exacto en cada frontera de frase. No hubo que tocar ningún `eNN.py`.
 
-    duración = 0.06786 x caracteres + 0.374 s      error medio 0.49 s
-
-**Ese error no llega al video final.** Con una clave nueva:
-
-```bash
-set ELEVENLABS_API_KEY=...
-python tools/voz-eleven.py nPczCjzI2devNBz1zQrb eleven_v3
-python tools/construir.py --sin-audio --partes 2
-```
-
-`tools/cronometro.py` traduce cada marca de tiempo de la estimación a la
-locución real —exacto en cada frontera de frase— y recoloca las láminas solas.
-No hay que tocar ningún `eNN.py`.
-
-**El MP4 entregado es mudo y está atado a la estimación.** Cuando se locute hay
-que reconstruir y volver a renderizar: los tiempos cambiarán y el archivo actual
-quedaría desfasado. No sirve pegarle la pista encima.
+Para regrabar con una persona: `GUION-VOZ.md` trae la ventana de cada lámina. Se
+vuelve a renderizar, pero no se toca ninguna animación.
 
 ## Las siete láminas
 

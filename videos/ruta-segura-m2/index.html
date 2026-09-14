@@ -14,7 +14,7 @@
       .sello { position: absolute; right: 118px; bottom: 24px; width: 186px; height: 62px;
                 border-radius: 34px; background: #FFFFFF; }
       .sello img { position: absolute; left: 20px; top: 9px; width: 120px; height: 45px; }
-      /* barra de avance del módulo: se llena a lo largo de los 7.3 minutos */
+      /* barra de avance del módulo: se llena a lo largo de los 6.9 minutos */
       .barra { position: absolute; left: 120px; bottom: 44px; width: 1520px; height: 5px;
                 border-radius: 3px; background: rgba(174,188,214,0.22); overflow: hidden; }
       .barra-fill { position: absolute; inset: 0; background: #AC841D;
@@ -24,41 +24,41 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="440.5"
+    <div id="root" data-composition-id="main" data-start="0" data-duration="412.0"
          data-width="1920" data-height="1080">
       <div id="el-e12" class="escena" data-composition-id="e12-apertura"
            data-composition-src="compositions/e12-apertura.html"
-           data-start="0" data-duration="61" data-track-index="1"></div>
+           data-start="0" data-duration="53.5" data-track-index="1"></div>
       <div id="el-e13" class="escena" data-composition-id="e13-ocho-puntos"
            data-composition-src="compositions/e13-ocho-puntos.html"
-           data-start="61" data-duration="65.5" data-track-index="1"></div>
+           data-start="53.5" data-duration="63" data-track-index="1"></div>
       <div id="el-e14" class="escena" data-composition-id="e14-decision"
            data-composition-src="compositions/e14-decision.html"
-           data-start="126.5" data-duration="63" data-track-index="1"></div>
+           data-start="116.5" data-duration="60.5" data-track-index="1"></div>
       <div id="el-e15" class="escena" data-composition-id="e15-visible"
            data-composition-src="compositions/e15-visible.html"
-           data-start="189.5" data-duration="64" data-track-index="1"></div>
+           data-start="177" data-duration="59" data-track-index="1"></div>
       <div id="el-e16" class="escena" data-composition-id="e16-reto"
            data-composition-src="compositions/e16-reto.html"
-           data-start="253.5" data-duration="50" data-track-index="1"></div>
+           data-start="236" data-duration="46" data-track-index="1"></div>
       <div id="el-e17" class="escena" data-composition-id="e17-retro"
            data-composition-src="compositions/e17-retro.html"
-           data-start="303.5" data-duration="58" data-track-index="1"></div>
+           data-start="282" data-duration="55.5" data-track-index="1"></div>
       <div id="el-e18" class="escena" data-composition-id="e18-repaso"
            data-composition-src="compositions/e18-repaso.html"
-           data-start="361.5" data-duration="72" data-track-index="1"></div>
+           data-start="337.5" data-duration="67.5" data-track-index="1"></div>
       <div id="el-e19" class="escena" data-composition-id="e19-cierre"
            data-composition-src="compositions/e19-cierre.html"
-           data-start="433.5" data-duration="7" data-track-index="1"></div>
-      <div id="chrome" class="clip chrome" data-start="0" data-duration="440.5" data-track-index="6">
+           data-start="405" data-duration="7" data-track-index="1"></div>
+      <div id="chrome" class="clip chrome" data-start="0" data-duration="412.0" data-track-index="6">
         <div class="barra"><div class="barra-fill" id="barra-fill"></div></div>
-        <div class="marca" style="left: 330.5px"></div>
-        <div class="marca" style="left: 556.5px"></div>
-        <div class="marca" style="left: 773.9px"></div>
-        <div class="marca" style="left: 994.7px"></div>
-        <div class="marca" style="left: 1167.3px"></div>
-        <div class="marca" style="left: 1367.4px"></div>
-        <div class="marca" style="left: 1615.8px"></div>
+        <div class="marca" style="left: 317.4px"></div>
+        <div class="marca" style="left: 549.8px"></div>
+        <div class="marca" style="left: 773.0px"></div>
+        <div class="marca" style="left: 990.7px"></div>
+        <div class="marca" style="left: 1160.4px"></div>
+        <div class="marca" style="left: 1365.1px"></div>
+        <div class="marca" style="left: 1614.2px"></div>
         <div class="sello" id="sello"><img src="assets/marca/riskmann_logo_color.png" alt="RiskMann by SOFU" /></div>
       </div>
     </div>
@@ -66,8 +66,8 @@
       window.__timelines = window.__timelines || {};
       var tl = gsap.timeline({ paused: true });
       /* la barra avanza sin pausa: da al espectador la medida del módulo */
-      tl.fromTo("#barra-fill", { scaleX: 0.00000 }, { scaleX: 1.00000, duration: 440.5, ease: "none" }, 0);
-      tl.to(".barra, .marca", { opacity: 0, duration: 0.8, ease: "power1.in" }, 439.6);
+      tl.fromTo("#barra-fill", { scaleX: 0.00000 }, { scaleX: 1.00000, duration: 412, ease: "none" }, 0);
+      tl.to(".barra, .marca", { opacity: 0, duration: 0.8, ease: "power1.in" }, 411.1);
       window.__timelines["main"] = tl;
     </script>
   </body>

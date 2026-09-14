@@ -62,9 +62,9 @@
 
   </style>
 
-  <div id="root" data-composition-id="e33-fuentes" data-start="0" data-duration="60.0" data-width="1920" data-height="1080">
-    <div class="clip capa fondo" data-start="0" data-duration="60.0" data-track-index="0"></div>
-    <div id="ch" class="clip capa" data-start="0" data-duration="60.0" data-track-index="2">
+  <div id="root" data-composition-id="e33-fuentes" data-start="0" data-duration="67.5" data-width="1920" data-height="1080">
+    <div class="clip capa fondo" data-start="0" data-duration="67.5" data-track-index="0"></div>
+    <div id="ch" class="clip capa" data-start="0" data-duration="67.5" data-track-index="2">
       <div class="marco" id="ch-marco" data-layout-ignore></div>
       <div class="ceja" id="ch-ceja">FUENTES</div>
       <div class="lamina" id="ch-lamina">33</div>
@@ -73,7 +73,7 @@
       <div class="fuente" id="ch-fuente">Documento base: programa integral «Ruta Segura», versión septiembre de 2026</div>
     </div>
 
-    <div class="clip capa" data-start="0" data-duration="60.0" data-track-index="3">
+    <div class="clip capa" data-start="0" data-duration="67.5" data-track-index="3">
       <div class="n-lead" id="n-lead">Tránsito, ciclistas, PESV y Sistema de Gestión de SST.</div>
       <div class="n-grupo" id="n-g1" style="left: 128px">
         <div class="n-g-t">TRÁNSITO Y CICLISTAS</div>
@@ -125,23 +125,23 @@
       tl.fromTo("#ch-marco", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power1.out" }, 0);
       tl.fromTo("#ch-fuente", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power1.out" }, 0.7);
       /* 0.00 · «finalizo indicando las fuentes» */
-      tl.fromTo("#n-lead", { opacity: 0, x: -26 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 0.55);
+      tl.fromTo("#n-lead", { opacity: 0, x: -26 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 0.46);
 
       /* 4.31 · la enumeración: un grupo por tercio de la frase larga */
-      tl.fromTo("#n-g1", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 5.4);
-      tl.fromTo("#n-g2", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 13.6);
-      tl.fromTo("#n-g3", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 21.8);
+      tl.fromTo("#n-g1", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 4.98);
+      tl.fromTo("#n-g2", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 15.12);
+      tl.fromTo("#n-g3", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 25.27);
 
       /* 30.13 · «no las leo como una lista para memorizar» */
-      tl.fromTo("#n-trazable", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 30.23);
+      tl.fromTo("#n-trazable", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 35.67);
 
       /* 37.77 · lo que cada empresa debe verificar antes de adoptar */
-      tl.fromTo("#n-antes", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 37.87);
+      tl.fromTo("#n-antes", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 43.16);
 
       /* 53.61 · «con esto concluyo la capacitación» / 57.11 · «cada pedaleo cuenta» */
-      tl.fromTo("#n-fin", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 53.71);
+      tl.fromTo("#n-fin", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 61);
       /* salida: el corte a la lámina siguiente ocurre sobre el fondo limpio */
-      tl.to(".capa:not(.fondo)", { opacity: 0, duration: 0.55, ease: "power1.in" }, 59.35);
+      tl.to(".capa:not(.fondo)", { opacity: 0, duration: 0.55, ease: "power1.in" }, 66.85);
 
       window.__timelines["e33-fuentes"] = tl;
     })();
