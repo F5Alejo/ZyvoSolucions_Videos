@@ -9,7 +9,7 @@ ruta y estado personal, y respuesta ante un siniestro.
   ([`../ruta-segura-m1/DIRECCION.md`](../ruta-segura-m1/DIRECCION.md)).
 - **Procedimiento:** §14 de `../../PRODUCCION-VIDEOS.md`.
 
-## Estado: compuesto, sin locutar
+## Estado: entregado sin voz
 
 La clave de ElevenLabs expiró antes de poder generar la voz de este módulo, así
 que las láminas se compusieron contra una **estimación** (`tools/estimar.py`),
@@ -27,9 +27,12 @@ python tools/construir.py --sin-audio --partes 2
 ```
 
 `tools/cronometro.py` traduce cada marca de tiempo de la estimación a la
-locución real —exacto en cada frontera de frase— y recoloca las ocho láminas
-solas. No hay que tocar ningún `eNN.py`. **No se renderiza antes de eso:** el
-render quedaría atado a unos tiempos que van a cambiar.
+locución real —exacto en cada frontera de frase— y recoloca las láminas solas.
+No hay que tocar ningún `eNN.py`.
+
+**El MP4 entregado es mudo y está atado a la estimación.** Cuando se locute hay
+que reconstruir y volver a renderizar: los tiempos cambiarán y el archivo actual
+quedaría desfasado. No sirve pegarle la pista encima.
 
 ## Las siete láminas
 

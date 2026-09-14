@@ -9,11 +9,14 @@ fuentes.
   ([`../ruta-segura-m1/DIRECCION.md`](../ruta-segura-m1/DIRECCION.md)).
 - **Procedimiento:** §14 de `../../PRODUCCION-VIDEOS.md`.
 
-## Estado: compuesto, sin locutar
+## Estado: entregado sin voz
 
 Igual que el módulo 3: las láminas se compusieron contra la estimación de
-`tools/estimar.py` porque la clave de ElevenLabs expiró. Con una clave nueva,
-`voz-eleven.py` + `construir.py` recolocan todo. **No renderizar antes.**
+`tools/estimar.py` porque la clave de ElevenLabs expiró, y el MP4 se entregó
+mudo a petición del cliente.
+
+**Ese MP4 está atado a la estimación.** Cuando se locute hay que reconstruir y
+volver a renderizar; no sirve pegarle la pista encima.
 
 ## Las ocho láminas
 

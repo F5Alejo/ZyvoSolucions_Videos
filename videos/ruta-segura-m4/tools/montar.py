@@ -75,6 +75,17 @@ def main():
             raise SystemExit("no hay render en renders/")
         mudo = max(sueltos, key=os.path.getmtime)
 
+    if not os.path.exists(PISTA):
+        # entrega muda a propósito: se unen las partes y se acaba ahí. El módulo
+        # queda listo para que la locución se pegue encima sin volver a renderizar
+        # solo si los tiempos no cambian; si cambian, hay que reconstruir.
+        final = FINAL.replace("-narrado.mp4", "-mudo.mp4")
+        os.replace(mudo, final)
+        print("")
+        print("%s  %.1f MB  %.2f s  (sin locución)"
+              % (os.path.relpath(final, RAIZ), os.path.getsize(final) / 1e6, duracion(final)))
+        return
+
     dv, da = duracion(mudo), duracion(PISTA)
     print("video %.2f s  ·  pista %.2f s  ·  máster %.2f s" % (dv, da, total))
     if abs(dv - da) > 0.5:
