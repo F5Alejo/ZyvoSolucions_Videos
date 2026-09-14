@@ -92,5 +92,6 @@ python tools/descargar-voz.py     # una vez: baja la voz aprobada (60 MB, fuera 
 | `tools/voz.py` | Locución con la voz aprobada desde un guion JSON; avisa si una frase no cabe en su plano |
 | `tools/ritmo.py` | Pista rítmica sintetizada (bombo, platillos, palmas, bajo, acordes) a un BPM dado, para videos sin voz |
 | `tools/mezcla.py` | Mezcla voz, pistas, cama y efectos desde un JSON; normaliza a −16 LUFS y verifica que el audio llegó |
+| `tools/unir-curso.py` | Une los módulos de un curso en un máster continuo, sin recodificar; avisa de los que van mudos |
 | `videos/ruta-segura-m1/tools/voz-eleven.py` | Locución con ElevenLabs (`eleven_v3`) pidiendo timestamps por carácter |
 | `videos/ruta-segura-m1/tools/cronometro.py` | Traduce los tiempos de una locución a los de otra y recoloca todo el montaje |
