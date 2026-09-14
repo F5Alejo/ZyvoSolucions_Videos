@@ -53,6 +53,16 @@ def unir(partes, destino):
     os.remove(lista)
 
 
+def limpiar_parciales():
+    """Borra los index-parte-N.html en cuanto dejan de hacer falta.
+
+    `lint` los ve como raíces alternativas del proyecto y falla con
+    `multiple_root_compositions`. Son insumos del render, no del proyecto.
+    """
+    for p in glob.glob(os.path.join(RAIZ, "index-parte-*.html")):
+        os.remove(p)
+
+
 def main():
     _, total = construir.plan()
 
@@ -86,6 +96,7 @@ def main():
                            "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart",
                            "-shortest", FINAL])
 
+    limpiar_parciales()
     print("")
     print("%s  %.1f MB  %.2f s  pistas: %s"
           % (os.path.relpath(FINAL, RAIZ), os.path.getsize(FINAL) / 1e6,

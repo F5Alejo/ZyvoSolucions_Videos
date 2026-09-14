@@ -5,7 +5,7 @@ ciclistas). Cubre la **apertura + el módulo 1** del PPTX de origen
 (`diapositiva/actor ciclista ..pptx`, láminas 1 a 11).
 
 - **Formato:** 1920×1080 · **11:35** · con locución.
-- **Voz:** sintética (ElevenLabs, `eleven_v3`). El libreto con la ventana de cada
+- **Voz:** sintética colombiana — ElevenLabs «Carlos» `4PN5DHmrfIgZksvIrawS`, modelo `eleven_v3`. El libreto con la ventana de cada
   lámina está en [`GUION-VOZ.md`](GUION-VOZ.md): sirve para volver a grabarla con
   una persona sin tocar el montaje.
 - **Resto del curso:** láminas 12-33 en tres videos más (módulos 2 y 3 y cierre).

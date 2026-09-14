@@ -862,8 +862,24 @@ parte muere se repite esa parte (≈10 min), no cuarenta minutos de trabajo. Los
 en frontera de escena, donde la lámina saliente ya está apagada (§14.4), así que la unión no
 se ve.
 
+**El lote tiene que ser reanudable.** Un bucle corrido de diez partes pierde, con cada
+muerte, todo lo que venía detrás. `tools/render-partes.py` comprueba qué partes ya existen
+con la duración correcta, salta esas y renderiza solo las que faltan; se vuelve a invocar
+hasta que termina. Además mata los huérfanos antes de cada parte:
+
+```bash
+python tools/render-partes.py videos/curso-m1 videos/curso-m2 videos/curso-m3 videos/curso-m4
+```
+
 > Cuando un render muere por memoria **deja un `ffmpeg` huérfano de ~650 MB**. Hay que
 > matarlo antes de reintentar o el siguiente intento arranca con menos margen que el anterior.
+
+> **Los `index-parte-N.html` rompen el `check`.** `lint` los ve como raíces alternativas y
+> falla con `multiple_root_compositions`. Se valida con la raíz limpia y se generan las
+> partes después; `montar.py` las borra al terminar.
+
+**Unir los módulos en un máster continuo:** `tools/unir-curso.py <carpeta> <salida.mp4>`.
+Concatena sin recodificar y avisa si algún módulo va mudo.
 
 ### 14.5 Producir el módulo siguiente
 

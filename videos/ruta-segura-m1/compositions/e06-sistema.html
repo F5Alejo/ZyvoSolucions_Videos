@@ -62,9 +62,9 @@
 
   </style>
 
-  <div id="root" data-composition-id="e06-sistema" data-start="0" data-duration="63.5" data-width="1920" data-height="1080">
-    <div class="clip capa fondo" data-start="0" data-duration="63.5" data-track-index="0"></div>
-    <div id="ch" class="clip capa" data-start="0" data-duration="63.5" data-track-index="2">
+  <div id="root" data-composition-id="e06-sistema" data-start="0" data-duration="58.5" data-width="1920" data-height="1080">
+    <div class="clip capa fondo" data-start="0" data-duration="58.5" data-track-index="0"></div>
+    <div id="ch" class="clip capa" data-start="0" data-duration="58.5" data-track-index="2">
       <div class="marco" id="ch-marco" data-layout-ignore></div>
       <div class="ceja" id="ch-ceja">MÓDULO 1</div>
       <div class="lamina" id="ch-lamina">06</div>
@@ -73,7 +73,7 @@
       <div class="fuente" id="ch-fuente">Documento fuente: Ruta Segura, sep. 2026</div>
     </div>
 
-    <div class="clip capa" data-start="0" data-duration="63.5" data-track-index="3">
+    <div class="clip capa" data-start="0" data-duration="58.5" data-track-index="3">
       <div class="c-hecho" id="c-h1" style="left: 128px"><span>Las personas pueden cometer errores.</span></div>
       <div class="c-hecho" id="c-h2" style="left: 972px"><span>El cuerpo humano tiene una tolerancia limitada al impacto.</span></div>
       <div class="c-barrera" id="c-barrera">Por eso la prevención no puede depender de una única barrera.</div>
@@ -110,30 +110,30 @@
       tl.fromTo("#ch-marco", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power1.out" }, 0);
       tl.fromTo("#ch-fuente", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power1.out" }, 0.7);
       /* 2.60 · «Parto de dos hechos» / 4.00 · los dos hechos */
-      tl.fromTo("#c-h1", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 4.57);
-      tl.fromTo("#c-h2", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 6.84);
+      tl.fromTo("#c-h1", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 3.82);
+      tl.fromTo("#c-h2", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 5.91);
 
       /* 9.63 · «la prevención no puede depender de una única barrera» */
-      tl.fromTo("#c-barrera", { opacity: 0, x: -26 }, { opacity: 1, x: 0, duration: 0.55, ease: "power2.out" }, 10.7);
+      tl.fromTo("#c-barrera", { opacity: 0, x: -26 }, { opacity: 1, x: 0, duration: 0.55, ease: "power2.out" }, 9.45);
 
-      tl.fromTo("#c-c1", { opacity: 0, x: -70 }, { opacity: 1, x: 0, duration: 0.55, ease: "power3.out" }, 14.6);
-      tl.fromTo("#c-c2", { opacity: 0, x: -70 }, { opacity: 1, x: 0, duration: 0.55, ease: "power3.out" }, 19.22);
-      tl.fromTo("#c-c3", { opacity: 0, x: -70 }, { opacity: 1, x: 0, duration: 0.55, ease: "power3.out" }, 24.44);
-      tl.fromTo("#c-c4", { opacity: 0, x: -70 }, { opacity: 1, x: 0, duration: 0.55, ease: "power3.out" }, 29.62);
-      tl.fromTo("#c-c5", { opacity: 0, x: -70 }, { opacity: 1, x: 0, duration: 0.55, ease: "power3.out" }, 37.21);
+      tl.fromTo("#c-c1", { opacity: 0, x: -70 }, { opacity: 1, x: 0, duration: 0.55, ease: "power3.out" }, 13.06);
+      tl.fromTo("#c-c2", { opacity: 0, x: -70 }, { opacity: 1, x: 0, duration: 0.55, ease: "power3.out" }, 17.11);
+      tl.fromTo("#c-c3", { opacity: 0, x: -70 }, { opacity: 1, x: 0, duration: 0.55, ease: "power3.out" }, 22.09);
+      tl.fromTo("#c-c4", { opacity: 0, x: -70 }, { opacity: 1, x: 0, duration: 0.55, ease: "power3.out" }, 26.34);
+      tl.fromTo("#c-c5", { opacity: 0, x: -70 }, { opacity: 1, x: 0, duration: 0.55, ease: "power3.out" }, 32.47);
 
       /* 38.86 · «un error no tiene que terminar en muerte o lesión grave» */
-      tl.fromTo("#c-claim", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 41.59);
+      tl.fromTo("#c-claim", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 36.91);
 
       /* 51.06 · «si una capa falla, las demás deben seguir protegiendo» — pulso sobre las capas */
-      tl.to(".c-capa", { x: 16, duration: 0.22, ease: "power2.out", stagger: 0.07 }, 54.65);
-      tl.to(".c-capa", { x: 0, duration: 0.34, ease: "power2.inOut", stagger: 0.07 }, 55);
+      tl.to(".c-capa", { x: 16, duration: 0.22, ease: "power2.out", stagger: 0.07 }, 50.35);
+      tl.to(".c-capa", { x: 0, duration: 0.34, ease: "power2.inOut", stagger: 0.07 }, 50.71);
 
       /* 54.52 · «la diferencia entre culpar y gestionar el riesgo» */
-      tl.to("#c-claim", { opacity: 0, duration: 0.4, ease: "power1.in" }, 58.3);
-      tl.fromTo("#c-cierre", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 58.88);
+      tl.to("#c-claim", { opacity: 0, duration: 0.4, ease: "power1.in" }, 54.02);
+      tl.fromTo("#c-cierre", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 54.56);
       /* salida: el corte a la lámina siguiente ocurre sobre el fondo limpio */
-      tl.to(".capa:not(.fondo)", { opacity: 0, duration: 0.55, ease: "power1.in" }, 62.85);
+      tl.to(".capa:not(.fondo)", { opacity: 0, duration: 0.55, ease: "power1.in" }, 57.85);
 
       window.__timelines["e06-sistema"] = tl;
     })();
