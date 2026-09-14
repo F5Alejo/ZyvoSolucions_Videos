@@ -13,13 +13,13 @@ RAIZ = os.path.dirname(AQUI)
 
 import construir, cronometro
 
-TITULOS = {12: "Apertura · ¿qué defecto obliga a no salir?",
-           13: "Los ocho puntos de inspección",
-           14: "La inspección termina en una decisión",
-           15: "Actividad · visible a 360°",
-           16: "Reto RiskMann · dos decisiones críticas",
-           17: "Retroalimentación · la falla crítica",
-           18: "Repaso · tres preguntas"}
+TITULOS = {19: "Apertura · ver, ser visto y confirmar",
+           20: "Una maniobra en cinco pasos",
+           21: "La ruta y tu estado se inspeccionan",
+           22: "Caso integrador · cuatro señales de alerta",
+           23: "Reto RiskMann · anticipar antes de exponerse",
+           24: "Retroalimentación · la cadena de respuesta",
+           25: "Repaso · tres preguntas"}
 
 
 def tc(s):
@@ -31,12 +31,14 @@ def main():
     laminas = {x["n"]: x for x in json.load(io.open(os.path.join(AQUI, "narracion.json"), encoding="utf-8"))}
     voz = cronometro.VOZ is not None
 
-    out = ["# Guion de voz · Ruta Segura · Módulo 2",
+    out = ["# Guion de voz · Ruta Segura · Módulo 3",
            "",
-           "Video: `ruta-segura-m2` · 1920×1080 · **%d:%02d**." % (int(total // 60), int(round(total % 60))),
+           "Video: `ruta-segura-m3` · 1920×1080 · **%d:%02d**." % (int(total // 60), int(round(total % 60))),
            "",
            ("La locución de esta versión es sintética (ElevenLabs, modelo `eleven_v3`)."
-            if voz else "Esta versión se entrega **sin voz**."),
+            if voz else "Esta versión se entrega **sin voz**. Los tiempos de abajo son una "
+                        "**estimación** (ver tools/estimar.py): con la locución real, "
+                        "`tools/cronometro.py` los recoloca."),
            "",
            "El montaje está atado a estos tiempos: cada aparición en pantalla cae sobre la",
            "frase que la nombra. Para volver a grabar el módulo con una persona, respeta la",
@@ -59,7 +61,7 @@ def main():
                    % (n, TITULOS[n], tc(e["inicio"]), tc(e["inicio"] + e["dura"]), hab, e["dura"] - hab))
 
     cierre = escenas[-1]
-    out += ["", "Cierre sin voz: **%s → %s** (rótulo «Fin del módulo 2»)."
+    out += ["", "Cierre sin voz: **%s → %s** (rótulo de cierre)."
             % (tc(cierre["inicio"]), tc(cierre["inicio"] + cierre["dura"])), "", "---", ""]
 
     for e in escenas:
