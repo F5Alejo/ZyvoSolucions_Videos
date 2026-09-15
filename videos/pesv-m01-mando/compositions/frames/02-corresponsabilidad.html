@@ -1,0 +1,385 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* Montserrat — real variable files shipped in assets/fonts (same faces as 01). */
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    #root {
+      position: relative; width: 1920px; height: 1080px; overflow: hidden; container-type: size;
+      color: #F2F7FF; font-family: "Montserrat", sans-serif; -webkit-font-smoothing: antialiased;
+    }
+    .f02-layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; }
+    .f02-ground { background: #051427; }
+
+    /* ================= PERSISTENT CHROME — 01-apertura at t = 16s, static ================= */
+    .f02-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(to right, rgba(142, 143, 196, 0.14) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(142, 143, 196, 0.14) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    /* reserve occluder, frozen in 01's BUG state (x -102.75, y -11.5, sx 349/1627.5, sy 167.333/777) */
+    .f02-occ {
+      position: absolute; left: 98.75px; top: 7.5px; width: 1755.5px; height: 905px;
+      border-radius: 264px; background: #051427; filter: blur(18px); transform-origin: 64px 64px;
+      transform: translate(-102.75px, -11.5px) scale(0.2144393, 0.2153582);
+    }
+    .f02-atmo {
+      background:
+        radial-gradient(ellipse 58% 62% at 50% 44%, rgba(5, 20, 39, 0) 0%, rgba(5, 20, 39, 0.45) 64%, rgba(3, 12, 24, 0.82) 100%),
+        radial-gradient(1100px 700px at 960px 470px, rgba(15, 57, 107, 0.34) 0%, rgba(15, 57, 107, 0) 72%);
+    }
+    .f02-br { position: absolute; width: 130px; height: 130px; opacity: 0.6; }
+    .f02-br svg { display: block; width: 130px; height: 130px; overflow: visible; }
+    .f02-br path { fill: none; stroke: #8E8FC4; stroke-width: 2; stroke-linecap: square; }
+    .f02-br-tl { left: 56px; top: 56px; }
+    .f02-br-tr { left: 1734px; top: 56px; }
+    .f02-br-bl { left: 56px; top: 894px; }
+    .f02-br-br { left: 1734px; top: 894px; }
+    .f02-ruler {
+      position: absolute; top: 480px; width: 16px; height: 361px;
+      background-image:
+        repeating-linear-gradient(to bottom, rgba(142, 143, 196, 0.55) 0 1px, transparent 1px 120px),
+        repeating-linear-gradient(to bottom, rgba(142, 143, 196, 0.32) 0 1px, transparent 1px 30px);
+      background-size: 16px 100%, 8px 100%; background-repeat: no-repeat;
+    }
+    .f02-ruler-l { left: 84px; background-position: left top, left top; }
+    .f02-ruler-r { left: 1820px; background-position: right top, right top; }
+    /* telemetry under the bug — 01's final transforms, frozen */
+    .f02-rule {
+      position: absolute; left: 930px; top: 862px; width: 60px; height: 3px; border-radius: 2px; background: #E6423C;
+      transform-origin: 50% 50%; transform: translate(-838px, -630.6px) scale(0.6);
+    }
+    .f02-label {
+      position: absolute; left: 960px; top: 874px; white-space: nowrap; perspective: 600px;
+      font-size: 22px; font-weight: 600; line-height: 1; letter-spacing: 0.18em; color: #8E8FC4;
+      transform-origin: 0% 0%; transform: translate(-856px, -632px) scale(0.6);
+    }
+    .f02-ch { position: relative; display: inline-block; transform-origin: 50% 100%; transform-style: preserve-3d; }
+    /* section tag: same face/size as the label (22px x 0.6), ink right edge at x 1816, cap top ~104 */
+    .f02-tag {
+      position: absolute; right: 101.62px; top: 102px; white-space: nowrap;
+      font-size: 22px; font-weight: 600; line-height: 1; letter-spacing: 0.18em; color: #8E8FC4;
+      transform-origin: 100% 0%; transform: scale(0.6);
+    }
+    /* the official lockup, frozen at bug scale: box (92.333, 95), 280px wide */
+    .f02-lock {
+      position: absolute; left: 0; top: 0; width: 1260px; height: 420px;
+      transform-origin: 0 0; transform: translate(92.33333px, 95px) scale(0.2222222); will-change: transform, opacity;
+    }
+    .f02-logo { display: block; width: 1260px; height: 420px; clip-path: inset(0% 0% 0% 0%); }
+
+    /* ================= CONTENT ================= */
+    .f02-world { transform-origin: 960px 508px; }
+
+    /* ---- text column (left). Masks are inline-blocks: they size to the REAL
+       text (measured: 80px lines 471 / 609 / 638 px; 34px lines 478 / 457 px)
+       plus padding for ascenders, descenders and the negative tracking. ---- */
+    .f02-line { position: absolute; left: 140px; white-space: nowrap; }
+    .f02-mask { display: inline-block; overflow: hidden; vertical-align: top; padding: 0.1em 0.14em 0.2em 0.1em; }
+    .f02-in { display: inline-block; position: relative; }
+    .f02-h { font-size: 80px; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; color: #F2F7FF; }
+    .f02-h1 { top: 300px; }
+    .f02-h2 { top: 388px; }
+    .f02-h3 { top: 476px; }
+    .f02-sep { position: absolute; left: 148px; top: 622px; width: 56px; height: 2px; background: #8E8FC4; opacity: 0.7; transform-origin: 0% 50%; }
+    .f02-s { font-size: 34px; font-weight: 700; line-height: 1.25; letter-spacing: -0.005em; color: #A7BCCC; }
+    .f02-s1 { top: 644px; }
+    .f02-s2 { top: 687px; }
+    .f02-emph { position: relative; display: inline-block; }
+    .f02-uline {
+      position: absolute; left: 0.04em; right: 0.1em; bottom: -0.1em; height: 3px; border-radius: 2px;
+      background: #A7BCCC; opacity: 0.75; transform-origin: 0% 50%;
+    }
+
+    /* ---- the monitor (right): 942 x 624, panel #0C2B53, 1.5px lavender
+       outline, 14px inner frame ---- */
+    .f02-mon {
+      position: absolute; left: 842px; top: 196px; width: 942px; height: 624px;
+      background: #0C2B53; border-radius: 6px; box-shadow: inset 0 0 0 1.5px rgba(142, 143, 196, 0.28);
+    }
+    .f02-tick { position: absolute; width: 18px; height: 18px; border-color: #8E8FC4; border-style: solid; border-width: 0; opacity: 0.6; }
+    .f02-tick-tl { left: -10px; top: -10px; border-left-width: 2px; border-top-width: 2px; }
+    .f02-tick-tr { right: -10px; top: -10px; border-right-width: 2px; border-top-width: 2px; }
+    .f02-tick-bl { left: -10px; bottom: -10px; border-left-width: 2px; border-bottom-width: 2px; }
+    .f02-tick-br { right: -10px; bottom: -10px; border-right-width: 2px; border-bottom-width: 2px; }
+    .f02-screen {
+      position: absolute; left: 14px; top: 14px; width: 914px; height: 596px; overflow: hidden;
+      border-radius: 2px; background: #051427; clip-path: inset(0% 0% 0% 0%);
+    }
+    /* scene = everything that lives "in" the picture; the push-in scales it
+       about the lock-target centre (524, 306.5), so the box stays put. */
+    .f02-scene { position: absolute; left: 0; top: 0; width: 914px; height: 596px; transform-origin: 524px 306.5px; }
+    /* 1280x853 source at s = 0.8516: shows source x 105..1178, y 0..700 —
+       the driver's hand (source y > 710) stays below the screen edge. */
+    .f02-photo {
+      position: absolute; left: -89px; top: 0; width: 1090px; height: 726.4px; max-width: none;
+      filter: brightness(0.78) contrast(1.14) saturate(0.45) hue-rotate(-6deg);
+    }
+    .f02-tint { position: absolute; inset: 0; background: #0C2B53; mix-blend-mode: multiply; opacity: 0.4; }
+    .f02-vig { position: absolute; inset: 0; background: radial-gradient(ellipse 75% 80% at 50% 50%, rgba(5, 20, 39, 0) 60%, rgba(5, 20, 39, 0.34) 100%); }
+    .f02-scan {
+      position: absolute; left: 0; top: 0; width: 914px; height: 60px; opacity: 0;
+      background:
+        linear-gradient(to right, rgba(142, 143, 196, 0) 0%, rgba(142, 143, 196, 0.8) 50%, rgba(142, 143, 196, 0) 100%) 0 58px / 100% 2px no-repeat,
+        linear-gradient(to bottom, rgba(142, 143, 196, 0) 0%, rgba(142, 143, 196, 0.12) 100%) 0 0 / 100% 58px no-repeat;
+    }
+
+    /* targeting guides: lavender hairlines through the lock centre */
+    .f02-guide { position: absolute; background: #8E8FC4; opacity: 0; }
+    .f02-guide-h { left: 0; top: 306px; width: 914px; height: 1px; transform-origin: 524px 50%; }
+    .f02-guide-v { left: 524px; top: 0; width: 1px; height: 596px; transform-origin: 50% 306.5px; }
+
+    /* detection box, authored at its LOCK pose (371,145) 306 x 323; the search
+       moves each corner independently, so the 3px stroke never scales */
+    .f02-det { position: absolute; left: 371px; top: 145px; width: 306px; height: 323px; }
+    .f02-c { position: absolute; width: 38px; height: 38px; opacity: 0; }
+    .f02-c svg { display: block; width: 38px; height: 38px; overflow: visible; }
+    .f02-c path { fill: none; stroke: #E6423C; stroke-width: 3; stroke-linecap: square; }
+    .f02-c-tl { left: 0; top: 0; }
+    .f02-c-tr { left: 268px; top: 0; }
+    .f02-c-bl { left: 0; top: 285px; }
+    .f02-c-br { left: 268px; top: 285px; }
+    .f02-xh { position: absolute; left: 141px; top: 149.5px; width: 24px; height: 24px; opacity: 0; }
+    .f02-xh::before, .f02-xh::after { content: ""; position: absolute; background: #E6423C; }
+    .f02-xh::before { left: 11px; top: 0; width: 2px; height: 24px; }
+    .f02-xh::after { left: 0; top: 11px; width: 24px; height: 2px; }
+
+    /* lock label — on a navy plate so it reads over the picture */
+    .f02-tagplate {
+      position: absolute; left: 371px; top: 96px; height: 38px; padding: 0 16px 0 18px; white-space: nowrap;
+      display: flex; align-items: center; background: rgba(5, 20, 39, 0.86); transform-origin: 0% 50%;
+    }
+    .f02-tagplate::before { content: ""; position: absolute; left: 0; top: 0; width: 4px; height: 38px; background: #E6423C; }
+    .f02-tagtext { font-size: 18px; font-weight: 700; line-height: 1.2; letter-spacing: 0.16em; color: #F2F7FF; padding: 0.12em 0.1em 0.16em 0.1em; }
+    .f02-state {
+      position: absolute; left: 371px; top: 480px; height: 30px; padding: 0 12px 0 10px; white-space: nowrap;
+      background: rgba(5, 20, 39, 0.86); font-size: 15px; font-weight: 700; line-height: 30px; letter-spacing: 0.2em; color: #F2F7FF;
+    }
+    .f02-dot { display: inline-block; width: 8px; height: 8px; margin-right: 10px; border-radius: 50%; background: #E6423C; vertical-align: 1px; }
+    .f02-sch { position: relative; display: inline-block; }
+    .f02-sch-f { position: absolute; left: 0; top: 0; color: #A7BCCC; }
+  </style>
+
+  <div id="root" data-composition-id="02-corresponsabilidad" data-start="0" data-duration="20" data-width="1920" data-height="1080">
+    <!-- 0 · full-bleed navy ground -->
+    <div id="f02-ground-layer" class="clip f02-layer f02-ground" data-start="0" data-duration="20" data-track-index="0"></div>
+    <!-- 1 · HUD grid (fully open, as 01 leaves it) -->
+    <div id="f02-grid-layer" class="clip f02-layer" data-start="0" data-duration="20" data-track-index="1">
+      <div class="f02-grid"></div>
+    </div>
+    <!-- 2 · reserve occluder around the brand bug -->
+    <div id="f02-occ-layer" class="clip f02-layer" data-start="0" data-duration="20" data-track-index="2">
+      <div class="f02-occ"></div>
+    </div>
+    <!-- 3 · static atmosphere -->
+    <div id="f02-atmo-layer" class="clip f02-layer f02-atmo" data-start="0" data-duration="20" data-track-index="3"></div>
+    <!-- 4 · HUD chrome (static) -->
+    <div id="f02-hud-layer" class="clip f02-layer" data-start="0" data-duration="20" data-track-index="4">
+      <div class="f02-ruler f02-ruler-l"></div>
+      <div class="f02-ruler f02-ruler-r"></div>
+      <div class="f02-br f02-br-tl"><svg viewBox="0 0 130 130"><path d="M 1 129 L 1 1 L 129 1" /></svg></div>
+      <div class="f02-br f02-br-tr"><svg viewBox="0 0 130 130"><path d="M 1 1 L 129 1 L 129 129" /></svg></div>
+      <div class="f02-br f02-br-bl"><svg viewBox="0 0 130 130"><path d="M 129 129 L 1 129 L 1 1" /></svg></div>
+      <div class="f02-br f02-br-br"><svg viewBox="0 0 130 130"><path d="M 129 1 L 129 129 L 1 129" /></svg></div>
+      <div class="f02-rule"></div>
+      <div class="f02-label" id="f02-label" data-text="CAPACITACIÓN PESV · MÓDULO 01 · ACTOR VIAL" aria-label="CAPACITACIÓN PESV · MÓDULO 01 · ACTOR VIAL"></div>
+      <div class="f02-tag">02 · CORRESPONSABILIDAD</div>
+    </div>
+
+    <!-- 5 · CONTENT: text column + the monitor, inside one slow camera push -->
+    <div id="f02-world" class="clip f02-layer f02-world" data-start="0" data-duration="20" data-track-index="5">
+      <div class="f02-line f02-h f02-h1"><span class="f02-mask"><span class="f02-in" id="f02-h1">No manejar</span></span></div>
+      <div class="f02-line f02-h f02-h2"><span class="f02-mask"><span class="f02-in" id="f02-h2">no significa ser</span></span></div>
+      <div class="f02-line f02-h f02-h3"><span class="f02-mask"><span class="f02-in" id="f02-h3">un actor pasivo.</span></span></div>
+      <div class="f02-sep" id="f02-sep"></div>
+      <div class="f02-line f02-s f02-s1"><span class="f02-mask"><span class="f02-in" id="f02-s1">La seguridad también viaja</span></span></div>
+      <div class="f02-line f02-s f02-s2"><span class="f02-mask"><span class="f02-in" id="f02-s2">en el <span class="f02-emph">asiento del pasajero.<i class="f02-uline" id="f02-uline"></i></span></span></span></div>
+
+      <div class="f02-mon" id="f02-mon">
+        <i class="f02-tick f02-tick-tl"></i><i class="f02-tick f02-tick-tr"></i><i class="f02-tick f02-tick-bl"></i><i class="f02-tick f02-tick-br"></i>
+        <div class="f02-screen" id="f02-screen">
+          <div class="f02-scene" id="f02-scene">
+            <img class="f02-photo" src="assets/fotos/02-asiento-pasajero.jpg" alt="Vista desde el asiento del pasajero" />
+            <div class="f02-tint"></div>
+            <div class="f02-vig"></div>
+            <i class="f02-guide f02-guide-h" id="f02-guide-h"></i>
+            <i class="f02-guide f02-guide-v" id="f02-guide-v"></i>
+            <div class="f02-det" id="f02-det" data-layout-allow-overlap>
+              <div class="f02-c f02-c-tl" id="f02-c0"><svg viewBox="0 0 38 38"><path d="M 1.5 36.5 L 1.5 1.5 L 36.5 1.5" /></svg></div>
+              <div class="f02-c f02-c-tr" id="f02-c1"><svg viewBox="0 0 38 38"><path d="M 1.5 1.5 L 36.5 1.5 L 36.5 36.5" /></svg></div>
+              <div class="f02-c f02-c-bl" id="f02-c2"><svg viewBox="0 0 38 38"><path d="M 36.5 36.5 L 1.5 36.5 L 1.5 1.5" /></svg></div>
+              <div class="f02-c f02-c-br" id="f02-c3"><svg viewBox="0 0 38 38"><path d="M 36.5 1.5 L 36.5 36.5 L 1.5 36.5" /></svg></div>
+              <div class="f02-xh" id="f02-xh"></div>
+            </div>
+            <div class="f02-tagplate" id="f02-tagplate" data-layout-allow-overlap>
+              <span class="f02-mask f02-tagtext"><span class="f02-in" id="f02-tagtext">ASIENTO DEL PASAJERO</span></span>
+            </div>
+            <div class="f02-state" id="f02-state" data-layout-allow-overlap aria-label="ACTOR ACTIVO"><i class="f02-dot" id="f02-dot"></i><span id="f02-state-txt" data-text="ACTOR ACTIVO"></span></div>
+            <div class="f02-scan" id="f02-scan"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 · the official RiskMann bug — TOPMOST, static, nothing over it -->
+    <div id="f02-lock-layer" class="clip f02-layer" data-start="0" data-duration="20" data-track-index="6">
+      <div class="f02-lock">
+        <img class="f02-logo" src="assets/marca/riskmann_logo_blanco.png" alt="RiskMann by SOFU" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      /* ---- static chrome: telemetry label rebuilt exactly as 01 leaves it
+         (per-char inline-blocks, nbsp for spaces, rotateX 0, opacity 1) ---- */
+      var labelEl = document.getElementById("f02-label");
+      var TXT = labelEl.getAttribute("data-text");
+      for (var c = 0; c < TXT.length; c++) {
+        var ch = TXT.charAt(c);
+        var outer = document.createElement("span");
+        outer.className = "f02-ch";
+        outer.setAttribute("data-layout-allow-overlap", "");
+        outer.style.transform = "rotateX(0deg)";
+        outer.textContent = ch === " " ? " " : ch;
+        labelEl.appendChild(outer);
+      }
+
+      /* ---- camera: one slow push under the whole shot -------------------- */
+      tl.fromTo("#f02-world", { scale: 0.972 }, { scale: 1, duration: 19.6, ease: "power3.inOut" }, 0);
+
+      /* ---- 0.0-1.4s · the monitor boots ---------------------------------- */
+      tl.fromTo("#f02-mon", { y: 28, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }, 0.05);
+      tl.fromTo("#f02-screen", { clipPath: "inset(50% 0% 50% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.85, ease: "power3.inOut" }, 0.15);
+      tl.fromTo("#f02-scene", { scale: 1.06 }, { scale: 1, duration: 1.6, ease: "power3.out" }, 0.15);
+
+      /* ---- 1.5-4.0s · «No manejar / no significa ser / un actor pasivo.» ---
+         VO 02 starts at 1.5s; first sentence ends ~4.0s. Mask + yPercent. */
+      tl.fromTo("#f02-h1", { yPercent: 115 }, { yPercent: 0, duration: 0.7, ease: "power3.out" }, 1.45);
+      tl.fromTo("#f02-h2", { yPercent: 115 }, { yPercent: 0, duration: 0.7, ease: "power3.out" }, 2.2);
+      tl.fromTo("#f02-h3", { yPercent: 115 }, { yPercent: 0, duration: 0.7, ease: "power3.out" }, 3.05);
+
+      /* ---- 4.1-8.8s · «La seguridad también viaja en el asiento del pasajero.» */
+      tl.fromTo("#f02-sep", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 4.05);
+      tl.fromTo("#f02-s1", { yPercent: 115 }, { yPercent: 0, duration: 0.65, ease: "power3.out" }, 4.2);
+      tl.fromTo("#f02-s2", { yPercent: 115 }, { yPercent: 0, duration: 0.65, ease: "power3.out" }, 6.2);
+
+      /* ---- 1.2-7.3s · the detection box SEARCHES, then LOCKS ---------------
+         Poses are (centre x, centre y, w, h) in screen px. Each corner is
+         moved on its own so the stroke never scales. Chained fromTo segments:
+         seek-safe, no repeat / yoyo. Lock lands on «en el asiento» (~6.9s). */
+      var LOCK = [524, 306.5, 306, 323];
+      var CS = 38;
+      var corners = [0, 1, 2, 3].map(function (k) { return document.getElementById("f02-c" + k); });
+      function cornerXY(p, k) {
+        var l = p[0] - p[2] / 2, t = p[1] - p[3] / 2, r = p[0] + p[2] / 2, b = p[1] + p[3] / 2;
+        var L0 = LOCK[0] - LOCK[2] / 2, T0 = LOCK[1] - LOCK[3] / 2, R0 = LOCK[0] + LOCK[2] / 2, B0 = LOCK[1] + LOCK[3] / 2;
+        if (k === 0) return { x: l - L0, y: t - T0 };
+        if (k === 1) return { x: r - R0, y: t - T0 };
+        if (k === 2) return { x: l - L0, y: b - B0 };
+        return { x: r - R0, y: b - B0 };
+      }
+      function xhXY(p) { return { x: p[0] - LOCK[0], y: p[1] - LOCK[1] }; }
+      var POSES = [
+        [712, 214, 372, 268],   // windscreen / wiper
+        [236, 322, 214, 262],   // side window
+        [760, 452, 250, 226],   // wheel
+        [548, 292, 408, 380],   // close: too wide
+        [524, 306.5, 330, 347], // lock + 12px, then tightens
+        LOCK
+      ];
+      var MOVES = [ // [from pose, to pose, at, dur, ease]
+        [0, 1, 1.95, 0.55, "power3.inOut"],
+        [1, 2, 3.05, 0.55, "power3.inOut"],
+        [2, 3, 4.35, 0.6, "power3.inOut"],
+        [3, 4, 6.35, 0.5, "power3.inOut"],
+        [4, 5, 6.9, 0.35, "power3.out"]
+      ];
+      for (var k = 0; k < 4; k++) {
+        var p0 = cornerXY(POSES[0], k);
+        tl.fromTo(corners[k], { x: p0.x, y: p0.y, opacity: 0 }, { x: p0.x, y: p0.y, opacity: 0.8, duration: 0.25, ease: "power2.out" }, 1.2);
+        for (var m = 0; m < MOVES.length; m++) {
+          var a = cornerXY(POSES[MOVES[m][0]], k), b2 = cornerXY(POSES[MOVES[m][1]], k);
+          tl.fromTo(corners[k], { x: a.x, y: a.y }, { x: b2.x, y: b2.y, duration: MOVES[m][3], ease: MOVES[m][4], immediateRender: false }, MOVES[m][2]);
+        }
+        tl.fromTo(corners[k], { opacity: 0.8 }, { opacity: 1, duration: 0.2, ease: "power2.out", immediateRender: false }, 6.9);
+      }
+      var x0 = xhXY(POSES[0]);
+      tl.fromTo("#f02-xh", { x: x0.x, y: x0.y, opacity: 0 }, { x: x0.x, y: x0.y, opacity: 0.85, duration: 0.25, ease: "power2.out" }, 1.2);
+      for (var n = 0; n < MOVES.length; n++) {
+        var xa = xhXY(POSES[MOVES[n][0]]), xb = xhXY(POSES[MOVES[n][1]]);
+        tl.fromTo("#f02-xh", { x: xa.x, y: xa.y }, { x: xb.x, y: xb.y, duration: MOVES[n][3], ease: MOVES[n][4], immediateRender: false }, MOVES[n][2]);
+      }
+      tl.fromTo("#f02-xh", { opacity: 0.85, scale: 1 }, { opacity: 0, scale: 0.4, duration: 0.3, ease: "power2.in", immediateRender: false }, 7.05);
+
+      /* ---- 7.2s · ASIENTO DEL PASAJERO — plate wipes, text by mask -------- */
+      tl.fromTo("#f02-tagplate", { scaleX: 0 }, { scaleX: 1, duration: 0.42, ease: "power3.out" }, 7.2);
+      tl.fromTo("#f02-tagtext", { yPercent: 115 }, { yPercent: 0, duration: 0.55, ease: "power3.out" }, 7.38);
+
+      /* ---- 9.0-10.1s · ACTOR ACTIVO decodes (after the VO lands) ----------
+         Seeded glyph flicker per cell; the hidden TARGET glyph holds each
+         cell's width, so the row never reflows. Opacity only, never visibility. */
+      var stEl = document.getElementById("f02-state-txt");
+      var ST = stEl.getAttribute("data-text");
+      var GLY = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+<>/";
+      function pseudoGlyph(seed) { var h = ((seed * 9301 + 49297) % 233280) / 233280; return GLY.charAt(Math.floor(h * GLY.length)); }
+      tl.fromTo("#f02-state", { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.35, ease: "power3.out" }, 8.95);
+      tl.fromTo("#f02-dot", { scale: 0 }, { scale: 1, duration: 0.35, ease: "power3.out" }, 9.0);
+      function addDecode(tgt, flk, idx, at) {
+        var st = { p: 0 };
+        tl.fromTo(st, { p: 0 }, {
+          p: 1, duration: 0.5, ease: "none",
+          onUpdate: function () {
+            if (st.p < 0.7) {
+              tgt.style.opacity = "0";
+              flk.textContent = st.p > 0 ? pseudoGlyph(idx * 1000 + Math.floor(st.p * 10)) : "";
+            } else {
+              tgt.style.opacity = "1";
+              flk.textContent = "";
+            }
+          }
+        }, at);
+      }
+      for (var s = 0, si = 0; s < ST.length; s++) {
+        var sc = ST.charAt(s);
+        var cell = document.createElement("span"); cell.className = "f02-sch"; cell.setAttribute("data-layout-allow-overlap", "");
+        var tg = document.createElement("span"); tg.setAttribute("data-layout-allow-overlap", ""); tg.textContent = sc === " " ? " " : sc;
+        var fk = document.createElement("span"); fk.className = "f02-sch-f"; fk.setAttribute("aria-hidden", "true");
+        cell.appendChild(tg); cell.appendChild(fk); stEl.appendChild(cell);
+        tg.style.opacity = "0";
+        if (sc !== " ") { addDecode(tg, fk, si++, 9.15 + s * 0.045); } else { tg.style.opacity = "1"; }
+      }
+
+      /* ---- 10.4-11.8s · one lavender scan pass over the picture ---------- */
+      tl.fromTo("#f02-scan", { y: -60 }, { y: 600, duration: 1.4, ease: "power1.inOut" }, 10.4);
+      tl.fromTo("#f02-scan", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "none" }, 10.4);
+      tl.fromTo("#f02-scan", { opacity: 1 }, { opacity: 0, duration: 0.25, ease: "power1.in", immediateRender: false }, 11.55);
+
+      /* ---- 11.0-19.6s · slow push-in on the lock (about its centre) ------- */
+      tl.fromTo("#f02-scene", { scale: 1 }, { scale: 1.08, duration: 8.6, ease: "power3.inOut", immediateRender: false }, 11.0);
+
+      /* ---- 12.4s · «asiento del pasajero.» underlined (secondary colour) -- */
+      tl.fromTo("#f02-uline", { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "power3.inOut" }, 12.4);
+
+      /* ---- 13.6s · targeting guides settle through the lock centre ------- */
+      tl.fromTo("#f02-guide-h", { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 0.32, duration: 0.9, ease: "power3.out" }, 13.6);
+      tl.fromTo("#f02-guide-v", { scaleY: 0, opacity: 0 }, { scaleY: 1, opacity: 0.32, duration: 0.9, ease: "power3.out" }, 13.75);
+
+      /* 14.7-20s · hold; only the camera finishes its push. */
+      window.__timelines["02-corresponsabilidad"] = tl;
+    })();
+  </script>
+</template>

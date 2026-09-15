@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #F5F8FC; }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #F5F8FC; }
+      .scene { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .chrome { position: absolute; inset: 0; pointer-events: none; }
+      /* brand bug: official color logo on a white pill, legible on paper and on navy */
+      .bug { position: absolute; left: 48px; top: 978px; width: 214px; height: 70px; border-radius: 35px; background: #FFFFFF;
+             box-shadow: 0 0 0 1.5px rgba(11, 47, 107, 0.14); }
+      .bug img { position: absolute; left: 22px; top: 9px; width: 138px; height: 52px; }
+      /* rhythm progress bar — fills over the full 60 s, a tick at every scene border */
+      .bar { position: absolute; left: 300px; top: 1010px; width: 1572px; height: 6px; border-radius: 3px; background: rgba(90, 167, 232, 0.28); overflow: hidden; }
+      .bar-fill { position: absolute; inset: 0; background: #1565C0; transform: scaleX(0); transform-origin: 0 50%; }
+      .tick { position: absolute; top: 1002px; width: 3px; height: 22px; border-radius: 2px; background: rgba(90, 167, 232, 0.55); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="60" data-width="1920" data-height="1080">
+      <div id="el-s01" class="scene" data-composition-id="s01-gancho"
+           data-composition-src="compositions/s01-gancho.html"
+           data-start="0" data-duration="8" data-track-index="1"></div>
+      <div id="el-s02" class="scene" data-composition-id="s02-corresponsable"
+           data-composition-src="compositions/s02-corresponsable.html"
+           data-start="8" data-duration="8" data-track-index="1"></div>
+      <div id="el-s03" class="scene" data-composition-id="s03-roles"
+           data-composition-src="compositions/s03-roles.html"
+           data-start="16" data-duration="10" data-track-index="1"></div>
+      <div id="el-s04" class="scene" data-composition-id="s04-deberes"
+           data-composition-src="compositions/s04-deberes.html"
+           data-start="26" data-duration="12" data-track-index="1"></div>
+      <div id="el-s05" class="scene" data-composition-id="s05-principio"
+           data-composition-src="compositions/s05-principio.html"
+           data-start="38" data-duration="8" data-track-index="1"></div>
+      <div id="el-s06" class="scene" data-composition-id="s06-ruta"
+           data-composition-src="compositions/s06-ruta.html"
+           data-start="46" data-duration="8" data-track-index="1"></div>
+      <div id="el-s07" class="scene" data-composition-id="s07-cierre"
+           data-composition-src="compositions/s07-cierre.html"
+           data-start="54" data-duration="6" data-track-index="1"></div>
+      <div id="chrome" class="clip chrome" data-start="0" data-duration="60" data-track-index="5">
+        <div class="bar"><div class="bar-fill" id="bar-fill"></div></div>
+        <!-- scene borders on the 60 s map: 8 · 16 · 26 · 38 · 46 · 54 -->
+        <div class="tick" style="left: 509.6px"></div>
+        <div class="tick" style="left: 719.2px"></div>
+        <div class="tick" style="left: 981.2px"></div>
+        <div class="tick" style="left: 1295.6px"></div>
+        <div class="tick" style="left: 1505.2px"></div>
+        <div class="tick" style="left: 1714.8px"></div>
+        <div class="bug" id="bug"><img src="assets/marca/riskmann_logo_color.png" alt="RiskMann by SOFU" /></div>
+      </div>
+
+      <audio id="mezcla" class="clip" src="assets/mezcla-video.wav"
+             data-start="0" data-duration="60" data-track-index="10"></audio>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      /* the progress bar fills across the whole piece */
+      tl.fromTo("#bar-fill", { scaleX: 0 }, { scaleX: 1, duration: 60, ease: "none" }, 0);
+      /* the bug steps aside when the closing lockup takes the frame; the bar leaves with the final fade */
+      tl.to("#bug", { opacity: 0, y: 20, duration: 0.3, ease: "power2.in" }, 54);
+      tl.to(".bar, .tick", { opacity: 0, duration: 0.8, ease: "power1.in" }, 59.2);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

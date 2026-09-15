@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js" integrity="sha384-sG0Hv1tP1lZCk9KQmrIbY/XNwi+OY84GQqhMscbnsoBFqAz8KNCil1kvfL3Hbbk2" crossorigin="anonymous"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #000;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #051427;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="68"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div
+        id="el-01-el-papel-manda"
+        class="scene"
+        data-composition-id="01-el-papel-manda"
+        data-composition-src="compositions/frames/01-el-papel-manda.html"
+        data-start="0"
+        data-duration="7.5"
+        data-track-index="0"
+      ></div>
+
+      <div
+        id="el-02-sepultado-en-formatos"
+        class="scene"
+        data-composition-id="02-sepultado-en-formatos"
+        data-composition-src="compositions/frames/02-sepultado-en-formatos.html"
+        data-start="7"
+        data-duration="8.4"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-03-centro-de-mando"
+        class="scene"
+        data-composition-id="03-centro-de-mando"
+        data-composition-src="compositions/frames/03-centro-de-mando.html"
+        data-start="15"
+        data-duration="7.5"
+        data-track-index="0"
+      ></div>
+
+      <div
+        id="el-04-cuatro-tableros"
+        class="scene"
+        data-composition-id="04-cuatro-tableros"
+        data-composition-src="compositions/frames/04-cuatro-tableros.html"
+        data-start="22"
+        data-duration="8.5"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-05-control-de-personal"
+        class="scene"
+        data-composition-id="05-control-de-personal"
+        data-composition-src="compositions/frames/05-control-de-personal.html"
+        data-start="30"
+        data-duration="7.5"
+        data-track-index="0"
+      ></div>
+
+      <div
+        id="el-06-dato-vivo"
+        class="scene"
+        data-composition-id="06-dato-vivo"
+        data-composition-src="compositions/frames/06-dato-vivo.html"
+        data-start="37"
+        data-duration="8.4"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-07-pesv-estaciones"
+        class="scene"
+        data-composition-id="07-pesv-estaciones"
+        data-composition-src="compositions/frames/07-pesv-estaciones.html"
+        data-start="45"
+        data-duration="8.5"
+        data-track-index="0"
+      ></div>
+
+      <div
+        id="el-08-lo-que-cambia"
+        class="scene"
+        data-composition-id="08-lo-que-cambia"
+        data-composition-src="compositions/frames/08-lo-que-cambia.html"
+        data-start="53"
+        data-duration="7.5"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-09-cierre-riskmann"
+        class="scene"
+        data-composition-id="09-cierre-riskmann"
+        data-composition-src="compositions/frames/09-cierre-riskmann.html"
+        data-start="60"
+        data-duration="8"
+        data-track-index="0"
+      ></div>
+
+      <!-- ═══ Los tres videos reales del plano 06 (arranca en 37s) ═══
+           La convención de ensamblaje pide que los medios vivan en el root del
+           host, no dentro de la sub-composición, así que los <video> se montan
+           aquí, encima de las pantallas en reposo que dibuja
+           compositions/frames/06-dato-vivo.html, en sus coordenadas exactas.
+           Sus ventanas cierran antes de que la escena 3 del plano mueva el
+           marco central, de modo que ningún video tiene que seguir un panel
+           en movimiento. Tiempos = 37s (inicio del plano) + tiempo local. -->
+      <video
+        id="v-graficas"
+        class="clip"
+        src="assets/graficas.mp4"
+        data-start="37.42"
+        data-duration="3.2"
+        data-track-index="7"
+        style="position: absolute; left: 528px; top: 192px; width: 864px; height: 472px; object-fit: cover; border-radius: 8px"
+        preload="auto"
+        muted
+        playsinline
+      ></video>
+
+      <video
+        id="v-estadisticas"
+        class="clip"
+        src="assets/estadisticas.mp4"
+        data-start="38.98"
+        data-duration="1.54"
+        data-track-index="8"
+        style="position: absolute; left: 84px; top: 312px; width: 356px; height: 212px; object-fit: cover; border-radius: 6px"
+        preload="auto"
+        muted
+        playsinline
+      ></video>
+
+      <video
+        id="v-lista"
+        class="clip"
+        src="assets/lista.mp4"
+        data-start="39.16"
+        data-duration="1.36"
+        data-track-index="9"
+        style="position: absolute; left: 1480px; top: 312px; width: 356px; height: 212px; object-fit: cover; border-radius: 6px"
+        preload="auto"
+        muted
+        playsinline
+      ></video>
+
+
+      <!-- ═══ Narración ═══
+           Pista única de 68s generada con Piper (voz es_ES-davefx-medium, local
+           y sin cuenta), normalizada a -16 LUFS. Cada línea está colocada dentro
+           de su plano en assets/vo/NN.wav; assets/narracion.wav es la mezcla ya
+           posicionada, así que ningún plano tuvo que re-cronometrarse y la
+           coreografía original queda intacta.
+           El guion sale solo de copia aprobada de RiskMann y de texto que ya
+           está en pantalla — no afirma nada que el material no respalde. -->
+      <audio
+        id="vo-narracion"
+        class="clip"
+        src="assets/narracion.wav"
+        data-start="0"
+        data-duration="68"
+        data-track-index="10"
+      ></audio>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+      // ── frame transitions (injected by transitions.mjs) ──
+      (function () { var tl = window.__timelines["main"];
+        tl.to("#el-01-el-papel-manda", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 7);
+        tl.fromTo("#el-02-sepultado-en-formatos", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 7);
+        tl.to("#el-02-sepultado-en-formatos", { scale: 2.5, opacity: 0, filter: "blur(8px)", duration: 0.4, ease: "power3.in" }, 15);
+        tl.fromTo("#el-03-centro-de-mando", { scale: 0.5, opacity: 0, filter: "blur(8px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.4, ease: "power3.out" }, 15);
+        tl.to("#el-03-centro-de-mando", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 22);
+        tl.fromTo("#el-04-cuatro-tableros", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 22);
+        tl.to("#el-04-cuatro-tableros", { x: -1920, duration: 0.5, ease: "power3.inOut" }, 30);
+        tl.fromTo("#el-05-control-de-personal", { x: 1920, opacity: 1 }, { x: 0, duration: 0.5, ease: "power3.inOut" }, 30);
+        tl.to("#el-05-control-de-personal", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 37);
+        tl.fromTo("#el-06-dato-vivo", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 37);
+        tl.to("#el-06-dato-vivo", { scale: 2.5, opacity: 0, filter: "blur(8px)", duration: 0.4, ease: "power3.in" }, 45);
+        tl.fromTo("#el-07-pesv-estaciones", { scale: 0.5, opacity: 0, filter: "blur(8px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.4, ease: "power3.out" }, 45);
+        tl.to("#el-07-pesv-estaciones", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 53);
+        tl.fromTo("#el-08-lo-que-cambia", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 53);
+        tl.to("#el-08-lo-que-cambia", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 60);
+        tl.fromTo("#el-09-cierre-riskmann", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 60);
+        tl.to({}, { duration: 68 }, 0); // full-span anchor — main.duration() == composition total (Studio master duration)
+      })();
+    </script>
+  </body>
+</html>

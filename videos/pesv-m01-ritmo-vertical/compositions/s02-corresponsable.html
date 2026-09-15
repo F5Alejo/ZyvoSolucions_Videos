@@ -1,0 +1,149 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Montserrat", sans-serif; }
+    .s2-layer { position: absolute; inset: 0; }
+    .s2-ground { background: radial-gradient(900px 1100px at 35% 30%, #123C82 0%, #0B2F6B 62%, #08244F 100%); }
+    .s2-ribbon {
+      position: absolute; left: 0; top: 1420px; font-size: 190px; font-weight: 900; line-height: 1; white-space: nowrap;
+      color: transparent; -webkit-text-stroke: 2px rgba(183, 211, 239, 0.16); letter-spacing: -0.01em;
+    }
+
+    .s2-world { transform-origin: 540px 860px; }
+
+    .s2-lines { position: absolute; left: 90px; top: 300px; }
+    .s2-line { font-size: 84px; font-weight: 800; line-height: 1.18; color: #FFFFFF; white-space: nowrap; }
+    .s2-w { display: inline-block; opacity: 0; will-change: transform; }
+    .s2-sp { display: inline-block; width: 0.26em; }
+    .s2-mark { position: relative; display: inline-block; }
+    .s2-mark-bar {
+      position: absolute; left: -10px; right: -12px; top: 18%; bottom: 6%; background: #5AA7E8; opacity: 0.55;
+      transform: scaleX(0); transform-origin: left center; border-radius: 6px; z-index: 0;
+    }
+    .s2-mark .s2-w { position: relative; z-index: 1; }
+
+    /* the card sits under the statement: portrait needs stacking, not a side-by-side */
+    .s2-card {
+      position: absolute; left: 90px; top: 700px; width: 900px; height: 600px; border-radius: 32px;
+      background: #FFFFFF; overflow: hidden; transform-origin: 50% 50%; will-change: transform;
+    }
+    .s2-card-dot { position: absolute; inset: 0; background: #5AA7E8; }
+    .s2-card-photo { position: absolute; inset: 0; opacity: 0; }
+    .s2-card-photo img { width: 100%; height: 100%; object-fit: cover; display: block; transform-origin: 50% 45%; filter: saturate(0.85) contrast(1.05); }
+    .s2-card-tag {
+      position: absolute; left: 26px; bottom: 24px; padding: 12px 20px; border-radius: 999px; background: #FFFFFF;
+      font-size: 26px; font-weight: 800; letter-spacing: 0.08em; color: #0B2F6B; opacity: 0;
+    }
+
+    .s2-caption { position: absolute; left: 90px; top: 1370px; font-size: 50px; font-weight: 600; line-height: 1.3; color: #D9E8F7; white-space: nowrap; }
+    .s2-c { display: inline-block; opacity: 0; will-change: transform, opacity; }
+    .s2-under { position: relative; display: inline-block; color: #FFFFFF; font-weight: 800; }
+    .s2-under svg { position: absolute; left: -6px; top: 58px; width: 560px; height: 26px; overflow: visible; }
+    .s2-under path { fill: none; stroke: #E6423C; stroke-width: 7; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+
+    .s2-block { position: absolute; top: 0; width: 135px; height: 1920px; background: #F5F8FC; transform: scaleY(0); }
+  </style>
+
+  <div id="root" data-composition-id="s02-corresponsable" data-start="0" data-duration="8" data-width="1080" data-height="1920">
+    <div id="s2-ground" class="clip s2-layer s2-ground" data-start="0" data-duration="8" data-track-index="0">
+      <div class="s2-ribbon" id="s2-ribbon" aria-hidden="true" data-layout-ignore>PASAJERO · PASAJERO · PASAJERO · PASAJERO</div>
+    </div>
+
+    <div id="s2-world" class="clip s2-layer s2-world" data-start="0" data-duration="8" data-track-index="1">
+      <div class="s2-lines">
+        <div class="s2-line"><span class="s2-w" id="s2-w1">No</span><span class="s2-sp"></span><span class="s2-w" id="s2-w2">manejar</span></div>
+        <div class="s2-line"><span class="s2-w" id="s2-w3">no</span><span class="s2-sp"></span><span class="s2-w" id="s2-w4">significa</span><span class="s2-sp"></span><span class="s2-w" id="s2-w5">ser</span></div>
+        <div class="s2-line"><span class="s2-w" id="s2-w6">un</span><span class="s2-sp"></span><span class="s2-w" id="s2-w7">actor</span><span class="s2-sp"></span><span class="s2-mark"><span class="s2-mark-bar" id="s2-mark-bar" aria-hidden="true" data-layout-ignore></span><span class="s2-w" id="s2-w8a">pas</span><span class="s2-w" id="s2-w8b">ivo</span></span><span class="s2-w" id="s2-w9">.</span></div>
+      </div>
+
+      <div class="s2-card" id="s2-card">
+        <div class="s2-card-dot" id="s2-card-dot"></div>
+        <div class="s2-card-photo" id="s2-card-photo"><img id="s2-photo" src="assets/fotos/02-asiento-pasajero.jpg" alt="Cinturón cruzado visto desde el asiento del pasajero" /></div>
+        <div class="s2-card-tag" id="s2-card-tag">ASIENTO DEL PASAJERO</div>
+      </div>
+
+      <div class="s2-caption" id="s2-caption">
+        <div><span class="s2-c">La</span> <span class="s2-c">seguridad</span> <span class="s2-c">también</span> <span class="s2-c">viaja</span></div>
+        <div><span class="s2-c">en</span> <span class="s2-c">el</span> <span class="s2-under"><span class="s2-c">asiento</span> <span class="s2-c">del</span> <span class="s2-c">pasajero.</span>
+          <svg viewBox="0 0 560 26" aria-hidden="true" data-layout-ignore><path id="s2-scribble" pathLength="1" d="M 4 14 Q 32 4 60 14 Q 88 24 116 14 Q 144 4 172 14 Q 200 24 228 14 Q 256 4 284 14 Q 312 24 340 14 Q 368 4 396 14 Q 424 24 452 14 Q 480 4 508 14 Q 530 20 556 12" /></svg>
+        </span></div>
+      </div>
+    </div>
+
+    <div id="s2-exit" class="clip s2-layer" data-start="0" data-duration="8" data-track-index="2">
+      <div class="s2-block" style="left: 0px; transform-origin: 50% 0%" aria-hidden="true" data-layout-ignore></div>
+      <div class="s2-block" style="left: 135px; transform-origin: 50% 100%" aria-hidden="true" data-layout-ignore></div>
+      <div class="s2-block" style="left: 270px; transform-origin: 50% 0%" aria-hidden="true" data-layout-ignore></div>
+      <div class="s2-block" style="left: 405px; transform-origin: 50% 100%" aria-hidden="true" data-layout-ignore></div>
+      <div class="s2-block" style="left: 540px; transform-origin: 50% 0%" aria-hidden="true" data-layout-ignore></div>
+      <div class="s2-block" style="left: 675px; transform-origin: 50% 100%" aria-hidden="true" data-layout-ignore></div>
+      <div class="s2-block" style="left: 810px; transform-origin: 50% 0%" aria-hidden="true" data-layout-ignore></div>
+      <div class="s2-block" style="left: 945px; transform-origin: 50% 100%" aria-hidden="true" data-layout-ignore></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var P = 0.5;
+      function B(n) { return n * P; }
+      var F = 1 / 30;
+
+      tl.fromTo("#s2-ribbon", { x: 0 }, { x: -1100, duration: 8, ease: "none" }, 0);
+      tl.fromTo("#s2-world", { scale: 1 }, { scale: 1.03, duration: 8, ease: "none" }, 0);
+
+      /* beat 1 · waterfall */
+      var cascade = [
+        ["#s2-w1", 80, 0.20], ["#s2-w2", 60, 0.18], ["#s2-w3", 46, 0.15], ["#s2-w4", 50, 0.16],
+        ["#s2-w5", 44, 0.14], ["#s2-w6", 44, 0.14], ["#s2-w7", 50, 0.15], ["#s2-w8a", 74, 0.16],
+        ["#s2-w8b", 74, 0.15], ["#s2-w9", 48, 0.12]
+      ];
+      var t = B(1);
+      for (var i = 0; i < cascade.length; i++) {
+        var c = cascade[i];
+        tl.set(c[0], { opacity: 1, y: c[1] }, t);
+        tl.to(c[0], { y: 0, duration: c[2], ease: "power4.out" }, t);
+        t = t + c[2] - (i < 4 ? 0 : F);
+      }
+
+      tl.to("#s2-mark-bar", { scaleX: 1, duration: 0.45, ease: "power2.out" }, B(4));
+
+      /* beats 3-5 · the dot becomes the photo card */
+      tl.fromTo("#s2-card", { scale: 0, borderRadius: 300 }, { scale: 0.2, borderRadius: 300, duration: 0.35, ease: "power4.out" }, B(3));
+      var MORPH = 0.9;
+      tl.to("#s2-card", { scale: 1, borderRadius: 32, duration: MORPH, ease: "power2.inOut" }, B(5));
+      tl.to("#s2-card-dot", { opacity: 0, duration: MORPH * 0.4, ease: "power1.in" }, B(5) + MORPH * 0.35);
+      tl.to("#s2-card-photo", { opacity: 1, duration: MORPH * 0.4, ease: "power1.out" }, B(5) + MORPH * 0.6);
+      tl.fromTo("#s2-photo", { scale: 1.14 }, { scale: 1, duration: 8 - B(5), ease: "none" }, B(5));
+      tl.set("#s2-card-tag", { opacity: 1 }, B(7));
+      tl.fromTo("#s2-card-tag", { y: 70 }, { y: 0, duration: 0.35, ease: "expo.out" }, B(7));
+
+      /* beat 8 · caption rises word by word */
+      var words = gsap.utils.toArray("#s2-caption .s2-c");
+      for (var k = 0; k < words.length; k++) {
+        tl.fromTo(words[k], { y: 30, opacity: 0, filter: "blur(8px)" },
+          { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.4, ease: "power3.out" }, B(8) + k * 0.06);
+      }
+      tl.to("#s2-scribble", { strokeDashoffset: 0, duration: 0.7, ease: "power1.inOut" }, B(10));
+
+      /* beats 15-16 · exit: paper blocks close the frame */
+      var blocks = gsap.utils.toArray("#s2-exit .s2-block");
+      for (var q = 0; q < blocks.length; q++) {
+        tl.fromTo(blocks[q], { scaleY: 0 }, { scaleY: 1, duration: 0.32, ease: "power3.in" }, B(15) - 0.1 + q * 0.04);
+      }
+
+      window.__timelines["s02-corresponsable"] = tl;
+    })();
+  </script>
+</template>

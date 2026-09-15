@@ -1,0 +1,657 @@
+<template>
+  <style>
+
+    /* Montserrat — la familia normativa de frame.md. Los .woff2 viven en
+       assets/fonts/, así que la familia se declara con archivo real: sin esto
+       el render en Chrome headless caería a una genérica y la tipografía
+       de toda la pieza sería otra. Es un archivo variable (100-900). */
+    @font-face {
+      font-family: "Montserrat";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
+    @font-face {
+      font-family: "Montserrat";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      color: #F2F7FF;
+      font-family: "Montserrat", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .cdp-layer {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+    }
+
+    /* ── ground ───────────────────────────────────────────────── */
+    .cdp-ground {
+      background:
+        radial-gradient(1180px 760px at 1300px 470px, rgba(15, 57, 107, 0.50) 0%, rgba(5, 20, 39, 0) 74%),
+        #051427;
+    }
+
+    /* ── HUD (static, full duration — matches frames 03/04/08) ── */
+    .cdp-hud-grid {
+      background-image:
+        linear-gradient(to right, rgba(142, 143, 196, 0.14) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(142, 143, 196, 0.14) 1px, transparent 1px);
+      background-size: 60px 60px;
+      background-position: 0px 0px;
+    }
+    .cdp-bracket {
+      position: absolute;
+      width: 128px;
+      height: 128px;
+      opacity: 0.6;
+    }
+    .cdp-bracket::before,
+    .cdp-bracket::after {
+      content: "";
+      position: absolute;
+      background: #8E8FC4;
+    }
+    .cdp-bracket::before { width: 128px; height: 2px; }
+    .cdp-bracket::after  { width: 2px; height: 128px; }
+    .cdp-br-tl { top: 56px;  left: 56px;  }
+    .cdp-br-tl::before { top: 0; left: 0; }
+    .cdp-br-tl::after  { top: 0; left: 0; }
+    .cdp-br-tr { top: 56px;  right: 56px; }
+    .cdp-br-tr::before { top: 0; right: 0; }
+    .cdp-br-tr::after  { top: 0; right: 0; }
+    .cdp-br-bl { bottom: 56px; left: 56px; }
+    .cdp-br-bl::before { bottom: 0; left: 0; }
+    .cdp-br-bl::after  { bottom: 0; left: 0; }
+    .cdp-br-br { bottom: 56px; right: 56px; }
+    .cdp-br-br::before { bottom: 0; right: 0; }
+    .cdp-br-br::after  { bottom: 0; right: 0; }
+
+    /* ── surface panel (middle layer of the right third) ──────── */
+    .cdp-panel {
+      position: absolute;
+      left: 1180px;
+      top: 130px;
+      width: 580px;
+      height: 700px;
+      border-radius: 14px;
+      border: 1.5px solid rgba(142, 143, 196, 0.28);
+      background: rgba(226, 236, 248, 0.05);
+      overflow: hidden;
+    }
+    /* navy field matched to the photograph own ground (#22396A) so the
+       captured shot dissolves into the frame instead of sitting on a card */
+    .cdp-panel-field {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 340px 400px at 50% 50%,
+        #22396A 0%,
+        #22396A 78%,
+        rgba(34, 57, 106, 0) 100%);
+    }
+    .cdp-panel-tick {
+      position: absolute;
+      left: 22px;
+      top: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(142, 143, 196, 0.85);
+    }
+
+    /* ── the device photograph (already framed — no mockup drawn) ── */
+    .cdp-device {
+      position: absolute;
+      left: 1247px;
+      top: 183px;
+      width: 445px;
+      height: 594px;
+    }
+    .cdp-device img {
+      display: block;
+      width: 445px;
+      height: 594px;
+    }
+
+    /* ── scan flash over the phone screen ─────────────────────── */
+    .cdp-scan-surface {
+      position: absolute;
+      left: 1356px;
+      top: 228px;
+      width: 233px;
+      height: 483px;
+      overflow: hidden;
+    }
+    .cdp-scan-band {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 233px;
+      height: 118px;
+      opacity: 0;
+      background: linear-gradient(to bottom,
+        rgba(230, 66, 60, 0) 0%,
+        rgba(230, 66, 60, 0.30) 52%,
+        rgba(255, 232, 228, 0.95) 78%,
+        rgba(255, 232, 228, 0.95) 82%,
+        rgba(230, 66, 60, 0) 100%);
+    }
+
+    /* ── red focus halo on the QR ─────────────────────────────── */
+    .cdp-qr-glow {
+      position: absolute;
+      left: 1282px;
+      top: 500px;
+      width: 380px;
+      height: 380px;
+      opacity: 0;
+      border-radius: 50%;
+      background: radial-gradient(closest-side,
+        rgba(230, 66, 60, 0.62) 0%,
+        rgba(230, 66, 60, 0.26) 46%,
+        rgba(230, 66, 60, 0) 100%);
+    }
+
+    /* ── ai-tracking-box, recoloured to primary ───────────────── */
+    .cdp-track-box {
+      position: absolute;
+      left: 1397px;
+      top: 637px;
+      width: 150px;
+      height: 110px;
+      opacity: 0;
+      pointer-events: none;
+      will-change: transform, width, height;
+    }
+    .cdp-corner {
+      position: absolute;
+      width: 34px;
+      height: 34px;
+    }
+    .cdp-corner.tl { top: -6px; left: -6px;  border-top: 4px solid #E6423C; border-left: 4px solid #E6423C; }
+    .cdp-corner.tr { top: -6px; right: -6px; border-top: 4px solid #E6423C; border-right: 4px solid #E6423C; }
+    .cdp-corner.bl { bottom: -6px; left: -6px;  border-bottom: 4px solid #E6423C; border-left: 4px solid #E6423C; }
+    .cdp-corner.br { bottom: -6px; right: -6px; border-bottom: 4px solid #E6423C; border-right: 4px solid #E6423C; }
+    .cdp-track-label {
+      position: absolute;
+      top: -44px;
+      left: -6px;
+      padding: 6px 12px;
+      border-radius: 100px;
+      background: #E6423C;
+      color: #051427;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+    }
+
+    /* ── left column ──────────────────────────────────────────── */
+    .cdp-rule {
+      position: absolute;
+      left: 180px;
+      top: 152px;
+      width: 60px;
+      height: 4px;
+      border-radius: 2px;
+      background: #E6423C;
+      transform-origin: 0% 50%;
+    }
+    .cdp-eyebrow {
+      position: absolute;
+      left: 180px;
+      top: 182px;
+      font-size: 21px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #E6423C;
+      opacity: 0;
+    }
+    .cdp-headline {
+      position: absolute;
+      left: 180px;
+      top: 240px;
+      width: 900px;
+    }
+    .cdp-hl-line {
+      display: block;
+      font-size: 74px;
+      font-weight: 700;
+      line-height: 1.14;
+      letter-spacing: -0.02em;
+      color: #F2F7FF;
+      white-space: nowrap;
+      min-height: 85px;
+      min-width: 560px;
+    }
+    .cdp-hl-line.cdp-hl-3 { color: #A7BCCC; }
+
+    /* ── submodule pills ──────────────────────────────────────── */
+    .cdp-burst-wrap {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+    }
+    .cdp-pill {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 460px;
+      height: 92px;
+      box-sizing: border-box;
+      padding: 0 20px 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border-radius: 14px;
+      background: rgba(226, 236, 248, 0.05);
+      border: 1.5px solid rgba(142, 143, 196, 0.28);
+      opacity: 0;
+    }
+    .cdp-pill-icon {
+      flex: 0 0 auto;
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      background: rgba(230, 66, 60, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cdp-pill-icon img {
+      display: block;
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
+    .cdp-pill-body {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+    .cdp-pill-label {
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: #F2F7FF;
+      white-space: nowrap;
+    }
+    .cdp-pill-meta {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: #8E8FC4;
+      white-space: nowrap;
+    }
+    .cdp-pill-mark {
+      flex: 0 0 auto;
+      width: 48px;
+      height: 48px;
+    }
+
+    /* ── hairlines tying the pills to the device ──────────────── */
+    .cdp-link {
+      fill: none;
+      stroke: #8E8FC4;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.85;
+    }
+    .cdp-dot {
+      fill: #8E8FC4;
+      opacity: 0;
+    }
+  </style>
+
+  <div
+    id="root"
+    data-composition-id="05-control-de-personal"
+    data-start="0"
+    data-duration="7.5"
+    data-width="1920"
+    data-height="1080"
+  >
+    <!-- layer 1 · full-bleed ground -->
+    <div class="clip cdp-layer cdp-ground" data-start="0" data-duration="7.5" data-track-index="0"></div>
+
+    <!-- layer 1b · HUD grid + corner brackets, static from t=0 -->
+    <div class="clip cdp-layer" data-start="0" data-duration="7.5" data-track-index="1">
+      <div class="cdp-layer cdp-hud-grid"></div>
+      <div class="cdp-bracket cdp-br-tl"></div>
+      <div class="cdp-bracket cdp-br-tr"></div>
+      <div class="cdp-bracket cdp-br-bl"></div>
+      <div class="cdp-bracket cdp-br-br"></div>
+    </div>
+
+    <!-- layer 2 · surface panel -->
+    <div class="clip cdp-layer" data-start="0" data-duration="7.5" data-track-index="2">
+      <div class="cdp-panel" id="cdp-panel">
+        <div class="cdp-panel-field"></div>
+        <div class="cdp-panel-tick">Carnet digital</div>
+      </div>
+    </div>
+
+    <!-- layer 3 · the device photograph (hero) -->
+    <div class="clip cdp-layer" data-start="0" data-duration="7.5" data-track-index="3">
+      <div class="cdp-device" id="cdp-device">
+        <img src="assets/screenshot1.png" alt="" />
+      </div>
+    </div>
+
+    <!-- scan flash + red focus halo + detection bracket -->
+    <div class="clip cdp-layer" data-start="0" data-duration="7.5" data-track-index="4">
+      <div class="cdp-qr-glow" id="cdp-qr-glow"></div>
+      <div class="cdp-scan-surface">
+        <div class="cdp-scan-band" id="cdp-scan-band"></div>
+      </div>
+      <div class="cdp-track-box" id="cdp-track-box">
+        <div class="cdp-corner tl"></div>
+        <div class="cdp-corner tr"></div>
+        <div class="cdp-corner bl"></div>
+        <div class="cdp-corner br"></div>
+        <div class="cdp-track-label">REGISTRO OK</div>
+      </div>
+    </div>
+
+    <!-- hairlines -->
+    <div class="clip cdp-layer" data-start="0" data-duration="7.5" data-track-index="5">
+      <svg class="cdp-layer" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+        <path class="cdp-link" id="cdp-link-0" d="M 640 591 L 860 591 L 860 380 L 1180 380" />
+        <path class="cdp-link" id="cdp-link-1" d="M 640 707 L 900 707 L 900 520 L 1180 520" />
+        <path class="cdp-link" id="cdp-link-2" d="M 640 823 L 940 823 L 940 660 L 1180 660" />
+        <circle class="cdp-dot" id="cdp-dot-0" cx="1180" cy="380" r="5" />
+        <circle class="cdp-dot" id="cdp-dot-1" cx="1180" cy="520" r="5" />
+        <circle class="cdp-dot" id="cdp-dot-2" cx="1180" cy="660" r="5" />
+      </svg>
+    </div>
+
+    <!-- submodule pills -->
+    <div class="clip cdp-layer" data-start="0" data-duration="7.5" data-track-index="6">
+      <div class="cdp-burst-wrap">
+        <div class="cdp-pill" id="cdp-pill-0" data-target-x="-550" data-target-y="51">
+          <div class="cdp-pill-icon"><img src="assets/control_personal_icono_lector_qr.webp" alt="" /></div>
+          <div class="cdp-pill-body">
+            <span class="cdp-pill-label">Lector QR</span>
+            <span class="cdp-pill-meta">Ingreso por escaneo</span>
+          </div>
+          <svg class="cdp-pill-mark" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 6 16 L 6 6 L 16 6" fill="none" stroke="#8E8FC4" stroke-width="2.4" stroke-linecap="round" />
+            <path d="M 32 6 L 42 6 L 42 16" fill="none" stroke="#8E8FC4" stroke-width="2.4" stroke-linecap="round" />
+            <path d="M 42 32 L 42 42 L 32 42" fill="none" stroke="#8E8FC4" stroke-width="2.4" stroke-linecap="round" />
+            <path d="M 16 42 L 6 42 L 6 32" fill="none" stroke="#8E8FC4" stroke-width="2.4" stroke-linecap="round" />
+            <line id="cdp-mark-scan" x1="11" y1="24" x2="37" y2="24"
+                  stroke="#E6423C" stroke-width="2.6" stroke-linecap="round"
+                  stroke-dasharray="7 6" />
+            <circle id="cdp-mark-dot" cx="24" cy="24" r="3.2" fill="#E6423C" opacity="0.9" />
+          </svg>
+        </div>
+
+        <div class="cdp-pill" id="cdp-pill-1" data-target-x="-550" data-target-y="167">
+          <div class="cdp-pill-icon"><img src="assets/control_personal_icono_historial_diario.webp" alt="" /></div>
+          <div class="cdp-pill-body">
+            <span class="cdp-pill-label">Historial diario</span>
+            <span class="cdp-pill-meta">Jornada por jornada</span>
+          </div>
+        </div>
+
+        <div class="cdp-pill" id="cdp-pill-2" data-target-x="-550" data-target-y="283">
+          <div class="cdp-pill-icon"><img src="assets/control_personal_icono_ausentismo_laboral.webp" alt="" /></div>
+          <div class="cdp-pill-body">
+            <span class="cdp-pill-label">Ausentismo laboral</span>
+            <span class="cdp-pill-meta">Novedades al dia</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- left column copy -->
+    <div class="clip cdp-layer" data-start="0" data-duration="7.5" data-track-index="7">
+      <div class="cdp-rule" id="cdp-rule"></div>
+      <div class="cdp-eyebrow" id="cdp-eyebrow">Control de personal</div>
+      <div class="cdp-headline">
+        <span class="cdp-hl-line cdp-hl-1" id="cdp-hl-1"></span>
+        <span class="cdp-hl-line cdp-hl-2" id="cdp-hl-2"></span>
+        <span class="cdp-hl-line cdp-hl-3" id="cdp-hl-3"></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      /* ══ Scene 1 (0.0–1.5s) ═══════════════════════════════════
+         The captured phone slides in from the right edge and SETTLES on a
+         nudge-curve: power3.in ramp (10% dist / 21% time) → linear burst
+         (65% / 18%) → power4.out tail (25% / 61%). Total travel 520px. */
+      gsap.set("#cdp-device", { x: 520 });
+      tl.to("#cdp-device", { x: 468, duration: 0.25, ease: "power3.in" }, 0.00);
+      tl.to("#cdp-device", { x: 130, duration: 0.22, ease: "none" }, 0.25);
+      tl.to("#cdp-device", { x: 0, duration: 0.73, ease: "power4.out" }, 0.47);
+
+      /* the surface panel resolves behind it as one beat */
+      tl.fromTo(
+        "#cdp-panel",
+        { opacity: 0, scaleY: 0.88 },
+        { opacity: 1, scaleY: 1, duration: 0.85, ease: "power3.out" },
+        0.05
+      );
+
+      /* ══ Scene 2 (1.5–3.2s) ═══════════════════════════════════
+         Headline revealed WORD BY WORD — discrete-text-sequence: sparse
+         {t,text} states per line, reverse-searched on every frame. */
+      tl.fromTo("#cdp-rule", { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.42, ease: "power3.out" }, 1.35);
+      tl.fromTo("#cdp-eyebrow", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.42, ease: "power2.out" }, 1.45);
+
+      var SEQ_1 = [
+        { t: 0.00, text: "" },
+        { t: 1.58, text: "La" },
+        { t: 1.74, text: "La gente" },
+        { t: 1.94, text: "La gente entra" }
+      ];
+      var SEQ_2 = [
+        { t: 0.00, text: "" },
+        { t: 2.18, text: "con" },
+        { t: 2.33, text: "con su" },
+        { t: 2.52, text: "con su cara," }
+      ];
+      var SEQ_3 = [
+        { t: 0.00, text: "" },
+        { t: 2.76, text: "no" },
+        { t: 2.89, text: "no con" },
+        { t: 3.02, text: "no con una" },
+        { t: 3.16, text: "no con una firma." }
+      ];
+
+      function textAt(seq, time) {
+        for (var i = seq.length - 1; i >= 0; i--) {
+          if (time >= seq[i].t) return seq[i].text;
+        }
+        return "";
+      }
+
+      var hl1 = document.getElementById("cdp-hl-1");
+      var hl2 = document.getElementById("cdp-hl-2");
+      var hl3 = document.getElementById("cdp-hl-3");
+      var scriptDriver = { t: 0 };
+      tl.to(
+        scriptDriver,
+        {
+          t: 7,
+          duration: 7,
+          ease: "none",
+          onUpdate: function () {
+            hl1.textContent = textAt(SEQ_1, scriptDriver.t);
+            hl2.textContent = textAt(SEQ_2, scriptDriver.t);
+            hl3.textContent = textAt(SEQ_3, scriptDriver.t);
+          }
+        },
+        0
+      );
+
+      /* ══ Scene 3 (3.2–5.0s) ═══════════════════════════════════
+         ambient-glow-bloom, Form B (traveling sweep): one finite pass of a
+         soft band down the phone screen, off-surface at both ends. */
+      tl.fromTo(
+        "#cdp-scan-band",
+        { y: -140, opacity: 0 },
+        { y: 300, opacity: 0.42, duration: 0.62, ease: "none" },
+        3.25
+      );
+      tl.to("#cdp-scan-band", { y: 500, opacity: 0, duration: 0.42, ease: "power1.in" }, 3.87);
+
+      /* the one red focus halo of the shot — blooms on the QR (Form A) */
+      tl.fromTo(
+        "#cdp-qr-glow",
+        { opacity: 0, scale: 0.84 },
+        { opacity: 0.30, scale: 1, duration: 0.72, ease: "power2.out" },
+        4.02
+      );
+
+      /* ai-tracking-box — locks on, then the box is derived from the target
+         every frame by ONE ease:"none" driver (never tweened on its own). */
+      tl.fromTo(
+        "#cdp-track-box",
+        { opacity: 0, scale: 0.68 },
+        { opacity: 1, scale: 1, duration: 0.42, ease: "back.out(1.9)" },
+        4.18
+      );
+
+      var box = document.getElementById("cdp-track-box");
+      var TARGET_X = 1472; /* centre of the QR icon on the card icon rail */
+      var TARGET_Y = 692;
+      var SIZE_W = 150, SIZE_H = 110, SIZE_VAR = 8, SIZE_FREQ_MULT = 2.3;
+      var tracking = { p: 0 };
+      tl.to(
+        tracking,
+        {
+          p: Math.PI * 2,
+          duration: 1.6,
+          ease: "none",
+          onUpdate: function () {
+            /* target first (the QR is fixed on the captured card, so it only
+               micro-settles), box derived from it in the same pass */
+            var mx = TARGET_X + Math.cos(tracking.p) * 2;
+            var my = TARGET_Y + Math.sin(tracking.p) * 2;
+            var w = SIZE_W + Math.sin(tracking.p * SIZE_FREQ_MULT) * SIZE_VAR;
+            var h = SIZE_H + Math.sin(tracking.p * SIZE_FREQ_MULT + Math.PI / 2) * SIZE_VAR;
+            box.style.width = w + "px";
+            box.style.height = h + "px";
+            box.style.left = (mx - w / 2) + "px";
+            box.style.top = (my - h / 2) + "px";
+          }
+        },
+        4.60
+      );
+
+      /* ══ Scene 4 (5.0–6.2s) ═══════════════════════════════════
+         center-outward-expansion with the DEVICE as the shared origin: the
+         three submodule pills start clustered on the phone and radiate out
+         to the left column, each tied back by a lavender hairline
+         (svg-path-draw, measured getTotalLength). */
+      var pills = document.querySelectorAll(".cdp-pill");
+      for (var i = 0; i < pills.length; i++) {
+        tl.fromTo(
+          pills[i],
+          { xPercent: -50, yPercent: -50, x: 510, y: -60, scale: 0.55, opacity: 0 },
+          {
+            x: Number(pills[i].dataset.targetX),
+            y: Number(pills[i].dataset.targetY),
+            scale: 1,
+            opacity: 1,
+            duration: 0.85,
+            ease: "power3.out"
+          },
+          5.00 + i * 0.17
+        );
+      }
+
+      var links = document.querySelectorAll(".cdp-link");
+      for (var L = 0; L < links.length; L++) {
+        var len = links[L].getTotalLength();
+        links[L].style.strokeDasharray = String(len);
+        links[L].style.strokeDashoffset = String(len);
+        tl.to(links[L], { strokeDashoffset: 0, duration: 0.60, ease: "power2.out" }, 5.22 + L * 0.17);
+        tl.to("#cdp-dot-" + L, { opacity: 0.9, duration: 0.26, ease: "power1.out" }, 5.70 + L * 0.17);
+      }
+
+      /* ══ Scene 5 (6.2–7.0s) ═══════════════════════════════════
+         Held. Everything still except the internals of the QR-reader mark
+         (svg-icon-enrichment: dash flow + centred pulse, both written via
+         the SVG transform / stroke attributes, never CSS transform-origin). */
+      var markScan = document.getElementById("cdp-mark-scan");
+      var markDot = document.getElementById("cdp-mark-dot");
+
+      var flow = { offset: 0 };
+      tl.to(
+        flow,
+        {
+          offset: -39, /* 3 x the 13px dash period → no phase jump at the end */
+          duration: 0.80,
+          ease: "none",
+          onUpdate: function () {
+            markScan.style.strokeDashoffset = String(flow.offset);
+          }
+        },
+        6.20
+      );
+
+      var travel = { y: 13 };
+      tl.to(
+        travel,
+        {
+          y: 35,
+          duration: 0.80,
+          ease: "none",
+          onUpdate: function () {
+            markScan.setAttribute("y1", String(travel.y));
+            markScan.setAttribute("y2", String(travel.y));
+          }
+        },
+        6.20
+      );
+
+      var pulse = { p: 0 };
+      tl.to(
+        pulse,
+        {
+          p: Math.PI * 2,
+          duration: 0.80,
+          ease: "none",
+          onUpdate: function () {
+            var s = 1 + Math.sin(pulse.p) * 0.16;
+            markDot.setAttribute("transform", "translate(24 24) scale(" + s + ") translate(-24 -24)");
+          }
+        },
+        6.20
+      );
+      /* holds to 7.0s — no exit tween (this is not the final frame) */
+
+      window.__timelines["05-control-de-personal"] = tl;
+    })();
+  </script>
+</template>

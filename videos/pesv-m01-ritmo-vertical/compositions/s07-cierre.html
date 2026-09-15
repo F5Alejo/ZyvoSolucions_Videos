@@ -1,0 +1,75 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Montserrat", sans-serif; }
+    .s7-layer { position: absolute; inset: 0; }
+    .s7-ground { background: radial-gradient(900px 900px at 50% 42%, #FFFFFF 0%, #F5F8FC 65%, #EAF2FB 100%); }
+
+    /* official color lockup (849×320), uniform scale only */
+    .s7-logo { position: absolute; left: 160px; top: 620px; width: 760px; height: 286.4px; transform-origin: 50% 50%; }
+    .s7-logo img { display: block; width: 760px; height: 286.4px; }
+
+    .s7-title { position: absolute; left: 0; width: 1080px; top: 1000px; text-align: center; font-size: 86px; font-weight: 900; color: #0B2F6B; line-height: 1.05; white-space: nowrap; }
+    .s7-title span { display: inline-block; opacity: 0; }
+    .s7-sub { position: absolute; left: 0; width: 1080px; top: 1120px; text-align: center; font-size: 40px; font-weight: 600; color: #1565C0; line-height: 1.2; white-space: nowrap; }
+    .s7-sub span { display: inline-block; opacity: 0; }
+    .s7-rule { position: absolute; left: 510px; top: 1210px; width: 60px; height: 5px; border-radius: 3px; background: #E6423C; transform: scaleX(0); }
+    .s7-legal { position: absolute; left: 0; width: 1080px; text-align: center; font-size: 24px; font-weight: 500; color: #4A5B70; line-height: 1.4; white-space: nowrap; opacity: 0; }
+  </style>
+
+  <div id="root" data-composition-id="s07-cierre" data-start="0" data-duration="6" data-width="1080" data-height="1920">
+    <div id="s7-ground" class="clip s7-layer s7-ground" data-start="0" data-duration="6" data-track-index="0"></div>
+
+    <div id="s7-stage" class="clip s7-layer" data-start="0" data-duration="6" data-track-index="1">
+      <div class="s7-logo" id="s7-logo"><img src="assets/marca/riskmann_logo_color.png" alt="RiskMann by SOFU" /></div>
+
+      <div class="s7-title" id="s7-title"><span id="s7-t1">Pasajero</span> <span id="s7-t2">seguro</span></div>
+      <div class="s7-sub" id="s7-sub"><span>Decidir</span> <span>bien</span> <span>también</span> <span>es</span> <span>conducir</span> <span>la</span> <span>seguridad.</span></div>
+      <div class="s7-rule" id="s7-rule"></div>
+      <div class="s7-legal" id="s7-legal-1" style="top: 1270px">Contenido basado en el documento suministrado.</div>
+      <div class="s7-legal" id="s7-legal-2" style="top: 1310px">Valide vigencia y aplicación normativa con el responsable PESV.</div>
+      <div class="s7-legal" id="s7-legal-3" style="top: 1350px">Marco base: Resolución 20223040040595 de 2022.</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var P = 0.5;
+      function B(n) { return n * P; }
+
+      /* beat 1 · the isotype arrives alone (whole file, clipped); beat 2 · the name wipes open */
+      tl.fromTo("#s7-logo", { clipPath: "inset(0 100% 0 0)", scale: 1.1 }, { clipPath: "inset(0 72.9% 0 0)", scale: 1.04, duration: 0.45, ease: "expo.out" }, B(1));
+      tl.to("#s7-logo", { clipPath: "inset(0 0% 0 0)", scale: 1, duration: 0.6, ease: "power3.out" }, B(2));
+
+      tl.set("#s7-t1", { opacity: 1 }, B(3));
+      tl.fromTo("#s7-t1", { scale: 1.8, filter: "blur(14px)" }, { scale: 1, filter: "blur(0px)", duration: 0.45, ease: "power4.out" }, B(3));
+      tl.set("#s7-t2", { opacity: 1 }, B(4) - 0.25);
+      tl.fromTo("#s7-t2", { x: 220 }, { x: 0, duration: 0.4, ease: "expo.out" }, B(4) - 0.25);
+
+      var sub = gsap.utils.toArray("#s7-sub span");
+      for (var i = 0; i < sub.length; i++) {
+        tl.set(sub[i], { opacity: 1 }, B(4) + i * 0.06);
+        tl.fromTo(sub[i], { y: 40 }, { y: 0, duration: 0.3, ease: "power4.out" }, B(4) + i * 0.06);
+      }
+      tl.to("#s7-rule", { scaleX: 1, duration: 0.35, ease: "power2.out" }, B(6));
+      tl.to(["#s7-legal-1", "#s7-legal-2", "#s7-legal-3"], { opacity: 1, duration: 0.4, ease: "power1.out" }, B(6) + 0.25);
+
+      /* final 0.8 s · the only fade-out of the piece */
+      tl.to("#s7-stage", { opacity: 0, duration: 0.8, ease: "power1.in" }, 5.2);
+
+      window.__timelines["s07-cierre"] = tl;
+    })();
+  </script>
+</template>

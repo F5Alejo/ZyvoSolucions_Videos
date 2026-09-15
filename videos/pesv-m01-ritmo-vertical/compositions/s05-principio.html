@@ -1,0 +1,95 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Montserrat", sans-serif; }
+    .s5-layer { position: absolute; inset: 0; }
+    .s5-ground { background: radial-gradient(900px 1000px at 50% 48%, #FFFFFF 0%, #F5F8FC 65%, #E9F1FA 100%); }
+
+    .s5-lead { position: absolute; left: 0; width: 1080px; text-align: center; font-size: 62px; font-weight: 700; color: #0B2F6B; white-space: nowrap; line-height: 1.15; }
+    .s5-lead span { display: inline-block; opacity: 0; }
+
+    .s5-window { position: absolute; left: 60px; top: 800px; width: 960px; height: 200px; border-radius: 32px; background: #0B2F6B;
+      overflow: hidden; transform-origin: 480px 100px; will-change: transform; }
+    .s5-reel { position: absolute; left: 0; top: 0; width: 960px; }
+    .s5-item { height: 200px; display: flex; align-items: center; justify-content: center; font-size: 104px; font-weight: 900; color: #FFFFFF; letter-spacing: -0.01em; white-space: nowrap; }
+    .s5-item.s5-down { color: #9CCBF3; }
+    .s5-item.s5-final { font-size: 68px; }
+    .s5-item.s5-final i { font-style: normal; font-weight: 600; color: #9CCBF3; padding: 0 0.35em; font-size: 56px; }
+
+    .s5-tail { position: absolute; left: 0; width: 1080px; top: 1090px; text-align: center; font-size: 62px; font-weight: 700; color: #0B2F6B; white-space: nowrap; line-height: 1.15; }
+    .s5-risk { position: relative; display: inline-block; }
+    .s5-risk-bar { position: absolute; left: -10px; right: -10px; bottom: 4px; height: 20px; background: #E6423C; opacity: 0.85; transform: scaleX(0); transform-origin: 0 50%; border-radius: 4px; z-index: 0; }
+    .s5-risk b { position: relative; z-index: 1; font-weight: 900; }
+  </style>
+
+  <div id="root" data-composition-id="s05-principio" data-start="0" data-duration="8" data-width="1080" data-height="1920">
+    <div id="s5-ground" class="clip s5-layer s5-ground" data-start="0" data-duration="8" data-track-index="0"></div>
+
+    <div id="s5-stage" class="clip s5-layer" data-start="0" data-duration="8" data-track-index="1">
+      <div class="s5-lead" id="s5-lead" style="top: 520px"><span>Cada</span> <span>decisión</span> <span>del</span> <span>pasajero</span></div>
+      <div class="s5-lead" id="s5-lead2" style="top: 620px"><span>puede</span></div>
+
+      <div class="s5-window" id="s5-window">
+        <div class="s5-reel" id="s5-reel">
+          <div class="s5-item">AUMENTAR</div>
+          <div class="s5-item s5-down">REDUCIR</div>
+          <div class="s5-item">AUMENTAR</div>
+          <div class="s5-item s5-down">REDUCIR</div>
+          <div class="s5-item s5-final">AUMENTAR<i>o</i>REDUCIR</div>
+        </div>
+      </div>
+
+      <div class="s5-tail" id="s5-tail"><span id="s5-tail-in">la exposición al <span class="s5-risk"><span class="s5-risk-bar" id="s5-risk-bar" aria-hidden="true" data-layout-ignore></span><b>riesgo.</b></span></span></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var P = 0.5;
+      function B(n) { return n * P; }
+
+      /* beat 1 · the lead lines drop word by word */
+      var lead = gsap.utils.toArray("#s5-lead span, #s5-lead2 span");
+      for (var i = 0; i < lead.length; i++) {
+        tl.set(lead[i], { opacity: 1 }, B(1) + i * 0.08);
+        tl.fromTo(lead[i], { y: -50 }, { y: 0, duration: 0.3, ease: "power4.out" }, B(1) + i * 0.08);
+      }
+
+      tl.fromTo("#s5-window", { scaleY: 0.02, scaleX: 0.3 }, { scaleY: 1, scaleX: 1, duration: 0.5, ease: "expo.out" }, B(2));
+
+      /* beats 4-8 · slot machine: one click per beat, the last one lands the whole idea */
+      var H = 200;
+      var AT = [B(4), B(5), B(6), B(8)];
+      var BOUNCE = [1.6, 1.6, 1.6, 2.4];
+      var items = gsap.utils.toArray("#s5-reel .s5-item");
+      tl.set(items.slice(1), { opacity: 0 }, 0);
+      for (var j = 0; j < AT.length; j++) {
+        tl.set(items[j + 1], { opacity: 1 }, AT[j]);
+        tl.fromTo("#s5-reel", { y: -j * H }, { y: -(j + 1) * H, duration: 0.45, ease: "back.out(" + BOUNCE[j] + ")", immediateRender: j === 0 }, AT[j]);
+        tl.set(items[j], { opacity: 0 }, AT[j] + 0.45);
+      }
+
+      tl.fromTo("#s5-tail-in", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.55, ease: "power3.out" }, B(10));
+      tl.to("#s5-risk-bar", { scaleX: 1, duration: 0.4, ease: "power2.out" }, B(11));
+
+      /* beats 14-16 · exit: the window swells until its navy is the whole frame */
+      tl.to("#s5-reel", { opacity: 0, duration: 0.2, ease: "power1.in" }, B(14));
+      tl.to(["#s5-lead", "#s5-lead2", "#s5-tail"], { opacity: 0, duration: 0.25, ease: "power1.in" }, B(14));
+      tl.to("#s5-window", { scale: 11, borderRadius: 0, duration: 0.8, ease: "power3.in" }, B(14) + 0.1);
+
+      window.__timelines["s05-principio"] = tl;
+    })();
+  </script>
+</template>

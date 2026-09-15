@@ -1,0 +1,246 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* Montserrat — real variable files shipped in assets/fonts. */
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    #root {
+      position: relative; width: 1920px; height: 1080px; overflow: hidden; container-type: size;
+      color: #F2F7FF; font-family: "Montserrat", sans-serif; -webkit-font-smoothing: antialiased;
+    }
+    .f08-layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; }
+    .f08-ground { background: #051427; }
+
+    /* HUD grid: 60px pitch, lavender 14% — full at t=0 (frame 01 end state) */
+    .f08-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(to right, rgba(142, 143, 196, 0.14) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(142, 143, 196, 0.14) 1px, transparent 1px);
+      background-size: 60px 60px;
+      clip-path: inset(0px 0px 0px 0px round 0px);
+    }
+    /* RESERVE OCCLUDER — identical geometry to frame 01 (core at scale 1:
+       162.75,71.5 -> 1790.25,848.5, r 200; 64px feather pad, blur 18px). */
+    .f08-occ {
+      position: absolute; left: 98.75px; top: 7.5px; width: 1755.5px; height: 905px;
+      border-radius: 264px; background: #051427; filter: blur(18px); transform-origin: 64px 64px;
+    }
+    .f08-atmo {
+      background:
+        radial-gradient(ellipse 58% 62% at 50% 44%, rgba(5, 20, 39, 0) 0%, rgba(5, 20, 39, 0.45) 64%, rgba(3, 12, 24, 0.82) 100%),
+        radial-gradient(1100px 700px at 960px 470px, rgba(15, 57, 107, 0.34) 0%, rgba(15, 57, 107, 0) 72%);
+    }
+    /* corner brackets: drawn, #8E8FC4 @ .6, inset 56 (frame 01 end state) */
+    .f08-br { position: absolute; width: 130px; height: 130px; opacity: 0.6; }
+    .f08-br svg { display: block; width: 130px; height: 130px; overflow: visible; }
+    .f08-br path { fill: none; stroke: #8E8FC4; stroke-width: 2; stroke-linecap: square; stroke-dasharray: 258; stroke-dashoffset: 0; }
+    .f08-br-tl { left: 56px; top: 56px; }
+    .f08-br-tr { left: 1734px; top: 56px; }
+    .f08-br-bl { left: 56px; top: 894px; }
+    .f08-br-br { left: 1734px; top: 894px; }
+    /* edge rulers, y 480-840 */
+    .f08-ruler {
+      position: absolute; top: 480px; width: 16px; height: 361px; transform-origin: 50% 50%;
+      background-image:
+        repeating-linear-gradient(to bottom, rgba(142, 143, 196, 0.55) 0 1px, transparent 1px 120px),
+        repeating-linear-gradient(to bottom, rgba(142, 143, 196, 0.32) 0 1px, transparent 1px 30px);
+      background-size: 16px 100%, 8px 100%; background-repeat: no-repeat;
+    }
+    .f08-ruler-l { left: 84px; background-position: left top, left top; }
+    .f08-ruler-r { left: 1820px; background-position: right top, right top; }
+
+    /* chrome telemetry under the bug — frame 01's rule + label at t=16 */
+    .f08-bugrule { position: absolute; left: 930px; top: 862px; width: 60px; height: 3px; border-radius: 2px; background: #E6423C; transform-origin: 50% 50%; }
+    /* mask wrapper = the label's own box (max-content), scaled 0.6 like frame 01;
+       left/top compensate the padding so the text box starts at (104, 242). */
+    .f08-bugtag {
+      position: absolute; left: 99.2px; top: 238.4px; padding: 6px 8px; overflow: hidden; white-space: nowrap;
+      transform: scale(0.6); transform-origin: 0 0;
+      font-size: 22px; font-weight: 600; line-height: 1; letter-spacing: 0.18em; color: #8E8FC4;
+    }
+    .f08-bugtag-in { display: block; }
+    .f08-ch { position: relative; display: inline-block; }
+    /* section label, top right, right edge x 1816, y 104 */
+    .f08-sec {
+      position: absolute; right: 98px; top: 98px; padding: 6px; overflow: hidden; white-space: nowrap;
+      font-size: 13.2px; font-weight: 600; line-height: 1; letter-spacing: 0.18em; color: #8E8FC4;
+    }
+    .f08-sec-in { display: block; margin-right: -0.18em; }
+
+    /* the official lockup: ONE asset, uniform scale + translation only */
+    .f08-lock { position: absolute; left: 0; top: 0; width: 1260px; height: 420px; transform-origin: 0 0; will-change: transform, opacity; }
+    .f08-logo { display: block; width: 1260px; height: 420px; }
+
+    /* closing copy — every mask is max-content wide (= its real text + padding),
+       centred with auto margins; nothing sits above y 664.33 (reserve bottom). */
+    .f08-mask { position: absolute; left: 0; right: 0; margin: 0 auto; width: max-content; overflow: hidden; white-space: nowrap; }
+    .f08-w { display: inline-block; }
+    .f08-head { top: 666px; padding: 6px 0.3em; font-size: 62px; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; color: #F2F7FF; }
+    .f08-tag { top: 756px; padding: 3px 0.3em; font-size: 30px; font-weight: 600; line-height: 1.3; color: #F2F7FF; }
+    .f08-rule { position: absolute; left: 930px; top: 820px; width: 60px; height: 3px; border-radius: 2px; background: #E6423C; transform-origin: 50% 50%; }
+    .f08-legal { padding: 2px 0.3em; font-size: 20px; font-weight: 500; line-height: 1.3; letter-spacing: 0.01em; color: #A7BCCC; }
+    .f08-legal-1 { top: 836px; }
+    .f08-legal-2 { top: 866px; }
+    .f08-legal-in { display: block; }
+  </style>
+
+  <div id="root" data-composition-id="08-cierre" data-start="0" data-duration="12" data-width="1920" data-height="1080">
+    <!-- 0 · full-bleed navy ground -->
+    <div id="f08-ground-layer" class="clip f08-layer f08-ground" data-start="0" data-duration="12" data-track-index="0"></div>
+    <!-- 1 · HUD grid -->
+    <div id="f08-grid-layer" class="clip f08-layer" data-start="0" data-duration="12" data-track-index="1">
+      <div class="f08-grid" id="f08-grid"></div>
+    </div>
+    <!-- 2 · reserve occluder: the clear zone that follows the logo -->
+    <div id="f08-occ-layer" class="clip f08-layer" data-start="0" data-duration="12" data-track-index="2">
+      <div class="f08-occ" id="f08-occ"></div>
+    </div>
+    <!-- 3 · static atmosphere -->
+    <div id="f08-atmo-layer" class="clip f08-layer f08-atmo" data-start="0" data-duration="12" data-track-index="3"></div>
+    <!-- 4 · HUD chrome -->
+    <div id="f08-hud-layer" class="clip f08-layer" data-start="0" data-duration="12" data-track-index="4">
+      <div class="f08-ruler f08-ruler-l" id="f08-ruler-l"></div>
+      <div class="f08-ruler f08-ruler-r" id="f08-ruler-r"></div>
+      <div class="f08-br f08-br-tl" id="f08-br-0"><svg viewBox="0 0 130 130"><path d="M 1 129 L 1 1 L 129 1" /></svg></div>
+      <div class="f08-br f08-br-tr" id="f08-br-1"><svg viewBox="0 0 130 130"><path d="M 1 1 L 129 1 L 129 129" /></svg></div>
+      <div class="f08-br f08-br-bl" id="f08-br-2"><svg viewBox="0 0 130 130"><path d="M 129 129 L 1 129 L 1 1" /></svg></div>
+      <div class="f08-br f08-br-br" id="f08-br-3"><svg viewBox="0 0 130 130"><path d="M 129 1 L 129 129 L 1 129" /></svg></div>
+    </div>
+    <!-- 5 · chrome telemetry: bug rule + label, section label -->
+    <div id="f08-tele-layer" class="clip f08-layer" data-start="0" data-duration="12" data-track-index="5">
+      <div class="f08-bugrule" id="f08-bugrule"></div>
+      <div class="f08-bugtag" aria-label="CAPACITACIÓN PESV · MÓDULO 01 · ACTOR VIAL">
+        <span class="f08-bugtag-in" id="f08-bugtag-in" data-text="CAPACITACIÓN PESV · MÓDULO 01 · ACTOR VIAL"></span>
+      </div>
+      <div class="f08-sec"><span class="f08-sec-in" id="f08-sec-in">08 · CIERRE</span></div>
+    </div>
+    <!-- 6 · closing copy (below the reserve) -->
+    <div id="f08-copy-layer" class="clip f08-layer" data-start="0" data-duration="12" data-track-index="6">
+      <div class="f08-mask f08-head" id="f08-head"><span class="f08-w">Pasajero</span> <span class="f08-w">seguro</span></div>
+      <div class="f08-mask f08-tag" id="f08-tag"><span class="f08-w">Decidir</span> <span class="f08-w">bien</span> <span class="f08-w">también</span> <span class="f08-w">es</span> <span class="f08-w">conducir</span> <span class="f08-w">la</span> <span class="f08-w">seguridad.</span></div>
+      <div class="f08-rule" id="f08-rule"></div>
+      <div class="f08-mask f08-legal f08-legal-1"><span class="f08-legal-in" id="f08-legal-1">Contenido basado en el documento suministrado. Valide vigencia y aplicación normativa con el responsable PESV.</span></div>
+      <div class="f08-mask f08-legal f08-legal-2"><span class="f08-legal-in" id="f08-legal-2">Marco base: Resolución 20223040040595 de 2022.</span></div>
+    </div>
+    <!-- 7 · the official RiskMann lockup — TOPMOST layer: nothing renders over it -->
+    <div id="f08-lock-layer" class="clip f08-layer" data-start="0" data-duration="12" data-track-index="7">
+      <div class="f08-lock" id="f08-lock">
+        <img class="f08-logo" id="f08-logo" src="assets/marca/riskmann_logo_blanco.png" alt="RiskMann by SOFU" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      /* LOGO GEOMETRY (PNG alpha, 840x280): full ink x35-818 y27-265.
+         Wrapper = 1260x420 (hero x1.5), origin 0 0; x/y = box top-left.
+         BUG (frame 01 t=16): scale 280/1260, box (92.333, 95) -> ink (104,104)-(365,183.33)
+         END lockup: 1060px wide (PNG x1.261905), ink 988.1 x 300.33, ink centred on
+         x 960, ink top y 184 -> box (421.786, 149.929), scale 1060/1260.
+         RESERVE (end) = ink + 180px (>= half the displayed box height 353.3):
+         L 285.95  T 4  R 1634.05  B 664.33 — inside the canvas, and every
+         piece of copy starts at y >= 666. */
+      var BUG_S = 280 / 1260, END_S = 1060 / 1260;
+      var BUG = { x: 104 - 52.5 * BUG_S, y: 104 - 40.5 * BUG_S, scale: BUG_S };
+      var END = { x: 960 - 639.75 * END_S, y: 184 - 40.5 * END_S, scale: END_S };
+      var lock = document.getElementById("f08-lock");
+      gsap.set(lock, { x: BUG.x, y: BUG.y, scale: BUG.scale, transformOrigin: "0px 0px" });
+
+      /* Occluder states (core rect = visible ink + margin; same math as frame 01) */
+      var occ = document.getElementById("f08-occ");
+      var OCC_BUG = { x: -102.75, y: -11.5, scaleX: 349 / 1627.5, scaleY: 167.3333 / 777 };
+      var OCC_END = { x: 285.95 - 162.75, y: 4 - 71.5, scaleX: 1348.1 / 1627.5, scaleY: 660.33 / 777 };
+      gsap.set(occ, { x: OCC_BUG.x, y: OCC_BUG.y, scaleX: OCC_BUG.scaleX, scaleY: OCC_BUG.scaleY, transformOrigin: "64px 64px" });
+
+      /* chrome telemetry: rebuild frame 01's per-char label (inline-block cells) */
+      var tagIn = document.getElementById("f08-bugtag-in");
+      var TXT = tagIn.getAttribute("data-text");
+      for (var c = 0; c < TXT.length; c++) {
+        var ch = document.createElement("span");
+        ch.className = "f08-ch";
+        ch.setAttribute("data-layout-allow-overlap", "");
+        ch.textContent = TXT.charAt(c) === " " ? " " : TXT.charAt(c);
+        tagIn.appendChild(ch);
+      }
+      var bugRule = document.getElementById("f08-bugrule");
+      gsap.set(bugRule, { x: -838, y: -630.6, scale: 0.6 });
+
+      /* ---- 0.0-0.95s · THE CHROME STANDS DOWN, outside-in -----------------
+         Section label + bug telemetry mask out first (clear of the bug's path),
+         then the corner brackets (outermost) undraw inward, then the rulers. */
+      tl.fromTo("#f08-sec-in", { yPercent: 0 }, { yPercent: -140, duration: 0.4, ease: "power3.in" }, 0.15);
+      tl.fromTo("#f08-bugtag-in", { yPercent: 0 }, { yPercent: -140, duration: 0.4, ease: "power3.in" }, 0.15);
+      tl.fromTo(bugRule, { scaleX: 0.6 }, { scaleX: 0, duration: 0.36, ease: "power3.in" }, 0.18);
+
+      var BR_DX = [48, -48, 48, -48], BR_DY = [36, 36, -36, -36];
+      for (var b = 0; b < 4; b++) {
+        var at = 0.25 + b * 0.08;
+        tl.fromTo("#f08-br-" + b, { x: 0, y: 0, opacity: 0.6 }, { x: BR_DX[b], y: BR_DY[b], opacity: 0, duration: 0.5, ease: "power3.in" }, at);
+        tl.fromTo("#f08-br-" + b + " path", { strokeDashoffset: 0 }, { strokeDashoffset: 258, duration: 0.46, ease: "power2.in" }, at);
+      }
+      tl.fromTo("#f08-ruler-l", { scaleY: 1 }, { scaleY: 0, duration: 0.5, ease: "power3.in" }, 0.45);
+      tl.fromTo("#f08-ruler-r", { scaleY: 1 }, { scaleY: 0, duration: 0.5, ease: "power3.in" }, 0.5);
+
+      /* ---- 0.35-2.1s · THE GRID CLOSES IN onto the reserve, which grows with
+         the logo. Its clip ends as a rounded rect INSIDE the occluder's opaque
+         core (round 220 > core radius), then it fades out and is clamped off:
+         at rest the reserve holds nothing but ground. */
+      tl.fromTo("#f08-grid",
+        { clipPath: "inset(0px 0px 0px 0px round 0px)" },
+        { clipPath: "inset(4px 285.95px 415.67px 285.95px round 220px)", duration: 1.75, ease: "power3.inOut" }, 0.35);
+      tl.fromTo("#f08-grid", { opacity: 1 }, { opacity: 0, duration: 0.5, ease: "power1.in", immediateRender: false }, 1.6);
+      tl.set("#f08-grid-layer", { opacity: 0 }, 2.12);
+
+      /* ---- 0.5-2.1s · THE BUG COMES HOME — frame 01's 7.9s move, mirrored.
+         Wrapper x/y + uniform scale on one window and ease (power3.inOut): the
+         box corners travel linearly in progress. Occluder rides the same
+         window/ease so the clear zone tracks the ink the whole way. */
+      var HOME_AT = 0.5, HOME_DUR = 1.6, HE = "power3.inOut";
+      tl.fromTo(lock, { x: BUG.x, y: BUG.y, scale: BUG.scale },
+        { x: END.x, y: END.y, scale: END.scale, duration: HOME_DUR, ease: HE, immediateRender: false }, HOME_AT);
+      tl.fromTo(occ, { x: OCC_BUG.x, y: OCC_BUG.y, scaleX: OCC_BUG.scaleX, scaleY: OCC_BUG.scaleY },
+        { x: OCC_END.x, y: OCC_END.y, scaleX: OCC_END.scaleX, scaleY: OCC_END.scaleY, duration: HOME_DUR, ease: HE, immediateRender: false }, HOME_AT);
+
+      /* ---- 1.5-6.9s · THE CLOSE, word by word on the voice ----------------
+         VO (frame time): «Pasajero» 1.5 · «seguro» 1.95 ·
+         «Decidir» 2.5 · «bien» 3.25 · «también» 3.7 · «es» 4.2 ·
+         «conducir» 4.5 · «la» 5.05 · «seguridad.» 5.15 — ends ~6.45. */
+      /* mask-hidden words sit below their line until revealed; rest state verified clean (146 s) */
+      gsap.utils.toArray("#f08-head, #f08-tag, .f08-w").forEach(function (el) { el.setAttribute("data-layout-allow-overlap", ""); });
+      var headW = gsap.utils.toArray("#f08-head .f08-w");
+      var HEAD_AT = [1.5, 1.95];
+      for (var h = 0; h < headW.length; h++) {
+        tl.fromTo(headW[h], { yPercent: 120 }, { yPercent: 0, duration: 0.7, ease: "power3.out" }, HEAD_AT[h]);
+      }
+      var tagW = gsap.utils.toArray("#f08-tag .f08-w");
+      var TAG_AT = [2.48, 3.22, 3.66, 4.14, 4.46, 5.0, 5.1];
+      for (var w = 0; w < tagW.length; w++) {
+        tl.fromTo(tagW[w], { yPercent: 125 }, { yPercent: 0, duration: 0.6, ease: "power3.out" }, TAG_AT[w]);
+      }
+      /* the frame's single red accent: the rule, frame 01's telemetry rule echoed */
+      tl.fromTo("#f08-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.inOut" }, 5.75);
+      /* legal lines — required, legible, held ~5s before the fade */
+      tl.fromTo("#f08-legal-1", { yPercent: 125 }, { yPercent: 0, duration: 0.7, ease: "power3.out" }, 6.1);
+      tl.fromTo("#f08-legal-2", { yPercent: 125 }, { yPercent: 0, duration: 0.7, ease: "power3.out" }, 6.3);
+
+      /* ---- 7.0-11.2s · hold. Nothing moves. ----------------------------------
+         ---- 11.2-12.0s · the only exit in the video: the whole frame fades. */
+      var layers = gsap.utils.toArray("#f08-ground-layer, #f08-occ-layer, #f08-atmo-layer, #f08-hud-layer, #f08-tele-layer, #f08-copy-layer, #f08-lock-layer");
+      tl.fromTo(layers, { opacity: 1 }, { opacity: 0, duration: 0.8, ease: "power2.inOut", immediateRender: false }, 11.2);
+
+      window.__timelines["08-cierre"] = tl;
+    })();
+  </script>
+</template>

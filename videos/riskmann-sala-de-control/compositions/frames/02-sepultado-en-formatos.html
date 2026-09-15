@@ -1,0 +1,672 @@
+<template>
+  <style>
+
+    /* Montserrat — la familia normativa de frame.md. Los .woff2 viven en
+       assets/fonts/, así que la familia se declara con archivo real: sin esto
+       el render en Chrome headless caería a una genérica y la tipografía
+       de toda la pieza sería otra. Es un archivo variable (100-900). */
+    @font-face {
+      font-family: "Montserrat";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
+    @font-face {
+      font-family: "Montserrat";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      container-type: size;
+      overflow: hidden;
+      perspective: 1500px;
+      font-family: "Montserrat", sans-serif;
+    }
+
+    /* ---------- capa 0 · campo sólido ---------- */
+    .f02-bg {
+      position: absolute;
+      inset: 0;
+      background: #051427;
+    }
+
+    /* ---------- capa 1 · viñeta de borde ---------- */
+    .f02-vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        ellipse 80% 68% at 50% 44%,
+        rgba(5, 20, 39, 0) 0%,
+        rgba(5, 20, 39, 0.5) 60%,
+        rgba(3, 12, 24, 0.94) 100%
+      );
+    }
+
+    /* ---------- mundo (núcleo + cerco) ---------- */
+    .f02-world {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+    }
+
+    /* ---------- ficha de papel (base compartida) ---------- */
+    .f02-paper {
+      background: #eef3fa;
+      border: 1.5px solid rgba(142, 143, 196, 0.4);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    /* ---------- tile de icono ---------- */
+    .f02-tile {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      padding: 26px;
+      border-radius: 22px;
+      will-change: transform, filter, opacity;
+    }
+
+    .f02-tile img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* núcleo — la tarjeta que se transforma */
+    #f02-morph {
+      left: 50%;
+      margin-left: -210px;
+      top: 230px;
+      width: 420px;
+      height: 420px;
+      transform-origin: 50% 50%;
+      z-index: 6;
+    }
+
+    .f02-content {
+      position: absolute;
+      inset: 22px;
+      display: grid;
+      place-items: center;
+    }
+
+    #f02-content-new {
+      opacity: 0;
+    }
+
+    .f02-core-disc {
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle at 50% 45%,
+        rgba(230, 66, 60, 0.42) 0%,
+        rgba(230, 66, 60, 0.14) 52%,
+        rgba(230, 66, 60, 0) 78%
+      );
+    }
+
+    /* iconos de apoyo — planos fuera de foco */
+    .f02-ctx {
+      --dof: 0px;
+      filter: blur(var(--dof));
+      z-index: 3;
+    }
+
+    #f02-ctx-1 {
+      left: 310px;
+      top: 230px;
+      width: 240px;
+      height: 240px;
+    }
+
+    #f02-ctx-2 {
+      left: 1410px;
+      top: 190px;
+      width: 220px;
+      height: 220px;
+    }
+
+    #f02-ctx-3 {
+      left: 1365px;
+      top: 595px;
+      width: 210px;
+      height: 210px;
+    }
+
+    /* ---------- etiquetas ---------- */
+    .f02-cap {
+      position: absolute;
+      text-align: center;
+      font-size: 0.82cqw;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #8e8fc4;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    #f02-cap-1 {
+      left: 310px;
+      top: 492px;
+      width: 240px;
+    }
+
+    #f02-cap-2 {
+      left: 1390px;
+      top: 428px;
+      width: 260px;
+    }
+
+    #f02-cap-3 {
+      left: 1345px;
+      top: 823px;
+      width: 250px;
+    }
+
+    /* etiqueta central — píldora cromada */
+    .f02-slot {
+      position: absolute;
+      left: 50%;
+      margin-left: -320px;
+      top: 700px;
+      width: 640px;
+      display: grid;
+      place-items: center;
+      z-index: 7;
+    }
+
+    #f02-pill {
+      padding: 12px 34px;
+      border-radius: 100px;
+      background: rgba(230, 66, 60, 0.12);
+      font-size: 1.05cqw;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #e6423c;
+      opacity: 0;
+      white-space: nowrap;
+      will-change: transform, opacity;
+    }
+
+    #f02-verdict {
+      position: absolute;
+      left: 0;
+      right: 0;
+      text-align: center;
+      top: 4px;
+      font-size: 1.75cqw;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: #f2f7ff;
+      opacity: 0;
+      white-space: nowrap;
+      will-change: transform, opacity;
+    }
+
+    /* ---------- silueta de fichas ---------- */
+    .f02-silhouette {
+      position: absolute;
+      left: 50%;
+      top: 440px;
+      width: 0;
+      height: 0;
+      transform-style: preserve-3d;
+      z-index: 5;
+    }
+
+    .f02-frag {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    .f02-frag-line {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      height: 4px;
+      border-radius: 3px;
+      background: rgba(93, 119, 147, 0.45);
+    }
+
+    /* halo del sujeto en foco */
+    #f02-glow {
+      position: absolute;
+      left: 50%;
+      margin-left: -330px;
+      top: 130px;
+      width: 660px;
+      height: 660px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle at 50% 50%,
+        rgba(230, 66, 60, 0.35) 0%,
+        rgba(230, 66, 60, 0.12) 45%,
+        rgba(230, 66, 60, 0) 72%
+      );
+      opacity: 0;
+      z-index: 4;
+    }
+
+    /* ---------- cerco de fichas ---------- */
+    .f02-swarm {
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+    }
+
+    .f02-chit {
+      position: absolute;
+      left: 50%;
+      top: 440px;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    .f02-chit-tab {
+      position: absolute;
+      left: 12px;
+      top: 11px;
+      width: 26px;
+      height: 5px;
+      border-radius: 3px;
+      background: rgba(230, 66, 60, 0.55);
+    }
+  </style>
+
+  <div
+    id="root"
+    data-composition-id="02-sepultado-en-formatos"
+    data-start="0"
+    data-duration="8.4"
+    data-width="1920"
+    data-height="1080"
+  >
+    <div class="clip f02-bg" data-start="0" data-duration="8.4" data-track-index="0"></div>
+
+    <div class="clip f02-vignette" data-start="0" data-duration="8.4" data-track-index="1"></div>
+
+    <!-- iconos de apoyo (llegan hacia el centro en la escena 2) -->
+    <div class="clip" data-start="0" data-duration="8.4" data-track-index="2">
+      <div id="f02-ctx-1" class="f02-tile f02-paper f02-ctx" data-depth="1">
+        <img src="assets/seguridad_vial_icono_inspecciones.webp" alt="inspecciones" />
+      </div>
+      <div id="f02-cap-1" class="f02-cap">Inspecciones</div>
+
+      <div id="f02-ctx-2" class="f02-tile f02-paper f02-ctx" data-depth="2">
+        <img src="assets/control_personal_icono_registro_manual.webp" alt="registro manual" />
+      </div>
+      <div id="f02-cap-2" class="f02-cap">Registro manual</div>
+
+      <div id="f02-ctx-3" class="f02-tile f02-paper f02-ctx" data-depth="3">
+        <img src="assets/capacitaciones_icono_evaluacion_final.webp" alt="evaluación" />
+      </div>
+      <div id="f02-cap-3" class="f02-cap">Evaluaciones</div>
+    </div>
+
+    <!-- el mundo: halo · silueta · tarjeta morph · cerco -->
+    <div id="f02-world" class="clip f02-world" data-start="0" data-duration="8.4" data-track-index="3">
+      <div id="f02-glow"></div>
+
+      <!-- ancla del siguiente plano: la silueta hecha de fichas (bajo la tarjeta) -->
+      <div id="f02-silhouette" class="f02-silhouette"></div>
+
+      <!-- la tarjeta que se transforma (icono de formatos) -->
+      <div id="f02-morph" class="f02-tile f02-paper">
+        <div id="f02-content-old" class="f02-content">
+          <img src="assets/seguridad_vial_icono_formatos.webp" alt="formatos" />
+        </div>
+        <div id="f02-content-new" class="f02-content">
+          <div class="f02-core-disc"></div>
+        </div>
+      </div>
+
+      <div class="f02-slot">
+        <div id="f02-pill">Formatos</div>
+        <div id="f02-verdict">Un sistema entero</div>
+      </div>
+
+      <div id="f02-swarm" class="f02-swarm"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const ID = "02-sepultado-en-formatos";
+      const tl = gsap.timeline({ paused: true });
+
+      /* =========================================================
+         Construcción determinista del DOM generado
+         ========================================================= */
+
+      // --- silueta: 14 fichas de papel que forman una persona ---
+      const FRAGS = [
+        [0, -180, 92, 92, 26],
+        [-108, -78, 104, 58, 12],
+        [0, -80, 112, 60, 12],
+        [108, -78, 104, 58, 12],
+        [-96, -6, 108, 64, 12],
+        [4, -6, 116, 64, 12],
+        [104, -6, 108, 64, 12],
+        [-88, 66, 104, 64, 12],
+        [4, 66, 116, 64, 12],
+        [96, 66, 104, 64, 12],
+        [-58, 136, 108, 64, 12],
+        [58, 136, 108, 64, 12],
+        [-56, 208, 96, 62, 12],
+        [56, 208, 96, 62, 12],
+      ];
+
+      const silhouette = document.getElementById("f02-silhouette");
+      FRAGS.forEach(function (f, i) {
+        const el = document.createElement("div");
+        el.className = "f02-frag f02-paper";
+        el.style.width = f[2] + "px";
+        el.style.height = f[3] + "px";
+        el.style.borderRadius = f[4] + "px";
+        el.dataset.targetX = f[0];
+        el.dataset.targetY = f[1];
+        if (i > 0) {
+          const l1 = document.createElement("div");
+          l1.className = "f02-frag-line";
+          l1.style.top = "18px";
+          el.appendChild(l1);
+          const l2 = document.createElement("div");
+          l2.className = "f02-frag-line";
+          l2.style.top = "32px";
+          l2.style.right = f[2] * 0.38 + "px";
+          el.appendChild(l2);
+        }
+        silhouette.appendChild(el);
+      });
+
+      // --- cerco: 30 fichas de trámite en 5 capas de densidad ---
+      const CHIT_COUNT = 30;
+      const WAVES = 5;
+      const RX = 780;
+      const RY = 390;
+      const swarm = document.getElementById("f02-swarm");
+      const chits = [];
+
+      for (let i = 0; i < CHIT_COUNT; i++) {
+        const wave = i % WAVES; // 0 = capa cercana … 4 = capa lejana
+        const a = i * 2.39996323; // ángulo áureo — reparto sin apelmazamiento
+        const r = 0.62 + 0.38 * (((i * 7) % 5) / 4);
+
+        let px = Math.cos(a) * RX * r;
+        let py = Math.sin(a) * RY * r;
+        // empuja fuera cualquier ficha que caería encima de la silueta
+        if (Math.abs(px) < 300 && Math.abs(py) < 300) {
+          px *= 1.75;
+          py *= 1.75;
+        }
+        px = Math.max(-800, Math.min(800, px));
+        py = Math.max(-378, Math.min(378, py));
+
+        const depth = 1 - wave * 0.16; // escala por capa
+        const w = Math.round(126 * depth);
+        const h = Math.round(84 * depth);
+        const rot = ((i % 7) - 3) * 3.2;
+
+        const el = document.createElement("div");
+        el.className = "f02-chit f02-paper";
+        el.style.width = w + "px";
+        el.style.height = h + "px";
+        el.style.borderRadius = "10px";
+        el.style.background = wave < 2 ? "#eef3fa" : "#dfe7f2";
+
+        if (i % 4 === 0) {
+          const tab = document.createElement("div");
+          tab.className = "f02-chit-tab";
+          el.appendChild(tab);
+        }
+        for (let k = 0; k < 3; k++) {
+          const ln = document.createElement("div");
+          ln.className = "f02-frag-line";
+          ln.style.top = 26 + k * 15 + "px";
+          if (k === 2) ln.style.right = w * 0.42 + "px";
+          el.appendChild(ln);
+        }
+
+        swarm.appendChild(el);
+        chits.push({ el: el, x: px, y: py, wave: wave, rot: rot, op: 1 - wave * 0.1 });
+      }
+
+      /* =========================================================
+         ESCENA 1 (0.0–1.8s) — el icono de formatos, grande y solo
+         spring-pop-entrance · registro suave (power3.out, sin rebote)
+         ========================================================= */
+
+      tl.fromTo(
+        "#f02-morph",
+        { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.62, ease: "power3.out" },
+        0.05
+      );
+
+      tl.fromTo(
+        "#f02-pill",
+        { opacity: 0, y: 20, scale: 0.94 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: "power3.out" },
+        0.5
+      );
+
+      /* =========================================================
+         ESCENA 2 (1.8–3.6s) — los otros tres llegan desde fuera
+         center-outward-expansion en forma INVERSA: parten de
+         target × 2.4 (fuera de cuadro) y viajan hacia el centro
+         ========================================================= */
+
+      const CTX = [
+        { sel: "#f02-ctx-1", cap: "#f02-cap-1", tx: -530, ty: -190, at: 1.85 },
+        { sel: "#f02-ctx-2", cap: "#f02-cap-2", tx: 560, ty: -240, at: 2.15 },
+        { sel: "#f02-ctx-3", cap: "#f02-cap-3", tx: 510, ty: 160, at: 2.45 },
+      ];
+
+      CTX.forEach(function (c) {
+        tl.fromTo(
+          c.sel,
+          { x: c.tx * 2.4, y: c.ty * 2.4, scale: 0.62, opacity: 0 },
+          { x: 0, y: 0, scale: 1, opacity: 1, duration: 0.95, ease: "power3.out" },
+          c.at
+        );
+        tl.fromTo(
+          c.cap,
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
+          c.at + 0.42
+        );
+      });
+
+      // el racimo se desequilibra 60/40: el mundo se corre a la izquierda
+      tl.to("#f02-world", { x: -70, duration: 1.3, ease: "power2.inOut" }, 2.0);
+
+      // desenfoque selectivo (depth-of-field-blur · tirón focal):
+      // los que llegan se van fuera de foco, el centro se queda nítido
+      gsap.utils.toArray(".f02-ctx").forEach(function (el) {
+        const depth = Number(el.dataset.depth) || 1;
+        tl.to(
+          el,
+          {
+            "--dof": 2.2 * depth + "px",
+            opacity: 0.6,
+            duration: 0.8,
+            ease: "power2.inOut",
+          },
+          3.05
+        );
+        tl.to(el, { opacity: 0.42, duration: 0.7, ease: "power2.inOut" }, 5.5);
+      });
+
+      tl.to("#f02-cap-1, #f02-cap-2, #f02-cap-3", { opacity: 0.45, duration: 0.8 }, 3.05);
+
+      /* =========================================================
+         ESCENA 3 (3.6–5.4s) — MOVIMIENTO FIRMA: el centro se transforma
+         card-morph-anchor (escala uniforme + canales de pintura) sobre
+         depth-scatter-assemble (las fichas que forman la silueta)
+         ========================================================= */
+
+      const MORPH_START = 3.65;
+      const MORPH_DUR = 1.0;
+      const END_SCALE = 0.86;
+
+      // 1) parkeo de las fichas de la silueta en la nube 3D ANTES de tweenear
+      const frags = gsap.utils.toArray("#f02-silhouette .f02-frag");
+      const n = frags.length;
+      const GOLDEN = Math.PI * (3 - Math.sqrt(5));
+      const RADIUS = 300;
+      const Z_NEAR = 320;
+      const Z_FAR = -260;
+      const TUMBLE = 62;
+
+      frags.forEach(function (el, i) {
+        const a = i * GOLDEN;
+        const depthT = n > 1 ? i / (n - 1) : 0;
+        gsap.set(el, {
+          xPercent: -50,
+          yPercent: -50,
+          x: Math.cos(a) * RADIUS,
+          y: Math.sin(a) * RADIUS,
+          z: Z_NEAR - depthT * (Z_NEAR - Z_FAR),
+          rotationX: Math.sin(a) * TUMBLE,
+          rotationY: Math.cos(a) * TUMBLE,
+          opacity: 0,
+        });
+      });
+
+      // 2) un tween: escala uniforme + radio + fondo (canales de pintura)
+      tl.to(
+        "#f02-morph",
+        {
+          scale: END_SCALE,
+          borderRadius: 210 / END_SCALE + "px",
+          backgroundColor: "#0f396b",
+          borderColor: "rgba(142, 143, 196, 0.6)",
+          duration: MORPH_DUR,
+          ease: "power2.inOut",
+        },
+        MORPH_START
+      );
+
+      tl.to(
+        "#f02-content-old",
+        { opacity: 0, duration: MORPH_DUR * 0.4, ease: "power1.in" },
+        MORPH_START
+      );
+      tl.to(
+        "#f02-content-new",
+        { opacity: 1, duration: MORPH_DUR * 0.4, ease: "power1.out" },
+        MORPH_START + MORPH_DUR * 0.6
+      );
+
+      // el halo del sujeto en foco crece bajo la tarjeta
+      tl.fromTo(
+        "#f02-glow",
+        { opacity: 0, scale: 0.7 },
+        { opacity: 1, scale: 1, duration: 1.1, ease: "power2.out" },
+        MORPH_START + 0.5
+      );
+
+      // 3) la nube gira mientras se ensambla, y resuelve plana
+      tl.fromTo(
+        "#f02-silhouette",
+        { rotationY: -20 },
+        { rotationY: 0, duration: 1.5, ease: "power1.out" },
+        4.25
+      );
+
+      // 4) ENSAMBLE: nube → silueta plana (la persona hecha de fichas)
+      frags.forEach(function (el, i) {
+        tl.to(
+          el,
+          {
+            x: Number(el.dataset.targetX),
+            y: Number(el.dataset.targetY),
+            z: 0,
+            rotationX: 0,
+            rotationY: 0,
+            opacity: 1,
+            duration: 0.9,
+            ease: "power3.out",
+          },
+          4.4 + i * 0.04
+        );
+      });
+
+      // 5) traspaso: la tarjeta se disuelve sobre la silueta ya presente
+      tl.to(
+        "#f02-morph",
+        { opacity: 0, duration: 0.5, ease: "power1.in", immediateRender: false },
+        4.62
+      );
+
+      /* =========================================================
+         ESCENA 4 (5.4–8.0s) — el cerco: decenas de fichas cierran
+         desde los cuatro bordes (center-outward-expansion invertido,
+         entrada radial escalonada en 5 oleadas). La silueta NO se mueve.
+         ========================================================= */
+
+      // relevo de la etiqueta central: la píldora cede el sitio al veredicto
+      tl.to("#f02-pill", { opacity: 0, y: -14, duration: 0.35, ease: "power2.in" }, 5.45);
+      tl.fromTo(
+        "#f02-verdict",
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
+        5.62
+      );
+
+      const SWARM_START = 5.4;
+      const WAVE_GAP = 0.4;
+      const IN_WAVE_STAGGER = 0.018; // tope ≈ 0.11s por oleada
+
+      chits.forEach(function (c, i) {
+        const idxInWave = Math.floor(i / WAVES);
+        const at = SWARM_START + c.wave * WAVE_GAP + idxInWave * IN_WAVE_STAGGER;
+        tl.fromTo(
+          c.el,
+          {
+            xPercent: -50,
+            yPercent: -50,
+            x: c.x * 2.5,
+            y: c.y * 2.5,
+            rotation: c.rot * 3,
+            scale: 0.85,
+            opacity: 0,
+          },
+          {
+            x: c.x,
+            y: c.y,
+            rotation: c.rot,
+            scale: 1,
+            opacity: c.op,
+            duration: 0.85,
+            ease: "power3.out",
+          },
+          at
+        );
+      });
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

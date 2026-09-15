@@ -1,0 +1,23 @@
+{
+  "duracion": 16,
+  "salida": "assets/mezcla-muestra.wav",
+  "pasa_altos": 90,
+  "pistas": [ { "archivo": "assets/ritmo-muestra.wav", "en": 0, "ganancia": 0.85 } ],
+  "efectos": [
+    { "efecto": "impact-bass-2",    "en": 0.5,  "ganancia": 0.20 },
+    { "efecto": "whoosh-short",     "en": 1.0,  "ganancia": 0.30 },
+    { "efecto": "impact-bass-1",    "en": 1.5,  "ganancia": 0.16 },
+    { "efecto": "click",            "en": 2.5,  "ganancia": 0.30 },
+    { "efecto": "click",            "en": 3.0,  "ganancia": 0.30 },
+    { "efecto": "whoosh",           "en": 3.5,  "ganancia": 0.25 },
+    { "efecto": "impact-bass-2",    "en": 4.0,  "ganancia": 0.22 },
+    { "efecto": "whoosh-short",     "en": 4.5,  "ganancia": 0.40 },
+    { "efecto": "sparkle",          "en": 5.5,  "ganancia": 0.20 },
+    { "efecto": "whoosh-cinematic", "en": 7.0,  "ganancia": 0.35 },
+    { "efecto": "impact-bass-1",    "en": 8.0,  "ganancia": 0.20 },
+    { "efecto": "key-press",        "en": 8.5,  "ganancia": 0.25 },
+    { "efecto": "pop",              "en": 9.5,  "ganancia": 0.30 },
+    { "efecto": "whoosh",           "en": 10.5, "ganancia": 0.30 },
+    { "efecto": "ping",             "en": 13.0, "ganancia": 0.22 }
+  ]
+}

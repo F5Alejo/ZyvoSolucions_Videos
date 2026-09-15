@@ -1,0 +1,83 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Montserrat", sans-serif; background: #07203F; }
+    .s0-layer { position: absolute; inset: 0; }
+    .s0-shake { position: absolute; inset: -60px; will-change: transform; }
+
+    /* hard cut cards: each one owns the frame for two frames and is gone */
+    .s0-card { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; }
+    .s0-navy { background: #07203F; }
+    .s0-red { background: #E6423C; }
+    .s0-paper { background: #F5F8FC; }
+    .s0-word { font-size: 300px; font-weight: 900; line-height: 1; letter-spacing: -0.03em; white-space: nowrap; }
+    .s0-on-navy { color: #FFFFFF; }
+    .s0-on-red { color: #FFFFFF; }
+    .s0-on-paper { color: #0B2F6B; }
+
+    /* speed bars: three red slabs that rake across the frame on the hits */
+    .s0-bar { position: absolute; left: -20%; width: 140%; height: 26px; background: #E6423C; transform: scaleX(0); transform-origin: 0 50%; }
+    .s0-flash { position: absolute; inset: 0; background: #FFFFFF; opacity: 0; }
+  </style>
+
+  <div id="root" data-composition-id="s00-impacto" data-start="0" data-duration="1" data-width="1920" data-height="1080">
+    <div id="s0-stage" class="clip s0-layer" data-start="0" data-duration="1" data-track-index="1">
+      <div class="s0-shake" id="s0-shake">
+        <div class="s0-card s0-navy" id="s0-c1"><div class="s0-word s0-on-navy">ACTOR</div></div>
+        <div class="s0-card s0-red" id="s0-c2"><div class="s0-word s0-on-red">VIAL</div></div>
+        <div class="s0-card s0-paper" id="s0-c3"><div class="s0-word s0-on-paper">01</div></div>
+        <div class="s0-bar" id="s0-bar-1" style="top: 300px"></div>
+        <div class="s0-bar" id="s0-bar-2" style="top: 700px"></div>
+      </div>
+      <div class="s0-flash" id="s0-flash" aria-hidden="true" data-layout-ignore></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var F = 1 / 30;
+
+      /* 0.00 · first hit: the frame is already full — no fade-in anywhere */
+      tl.set("#s0-c1", { opacity: 1 }, 0);
+      tl.fromTo("#s0-c1 .s0-word", { scale: 1.35 }, { scale: 1, duration: 0.24, ease: "expo.out" }, 0);
+      tl.fromTo("#s0-bar-1", { scaleX: 0 }, { scaleX: 1, duration: 0.18, ease: "expo.out" }, 0.02);
+
+      /* 0.25 · hard cut to red */
+      tl.set("#s0-c1", { opacity: 0 }, 0.25);
+      tl.set("#s0-c2", { opacity: 1 }, 0.25);
+      tl.fromTo("#s0-c2 .s0-word", { scale: 0.8, rotation: -3 }, { scale: 1, rotation: 0, duration: 0.22, ease: "expo.out" }, 0.25);
+      tl.fromTo("#s0-bar-2", { scaleX: 0 }, { scaleX: 1, duration: 0.18, ease: "expo.out", immediateRender: false }, 0.27);
+
+      /* 0.50 · two-frame white flash, then the module number lands on paper */
+      tl.set("#s0-flash", { opacity: 1 }, 0.5);
+      tl.set("#s0-flash", { opacity: 0 }, 0.5 + 2 * F);
+      tl.set("#s0-c2", { opacity: 0 }, 0.5);
+      tl.set("#s0-c3", { opacity: 1 }, 0.5);
+      tl.fromTo("#s0-c3 .s0-word", { scale: 2.4 }, { scale: 1, duration: 0.3, ease: "expo.out" }, 0.5);
+
+      /* 0.82 · the paper card blows past the camera and hands over to the particle field */
+      tl.to("#s0-c3 .s0-word", { scale: 6, opacity: 0, duration: 0.18, ease: "power3.in" }, 0.82);
+
+      /* camera shake on every hit — two frames each, always back to zero */
+      [0, 0.25, 0.5].forEach(function (t, i) {
+        var d = i % 2 === 0 ? 16 : -16;
+        tl.fromTo("#s0-shake", { x: 0, y: 0 }, { x: d, y: -d * 0.6, duration: 2 * F, ease: "none", immediateRender: false }, t);
+        tl.to("#s0-shake", { x: 0, y: 0, duration: 3 * F, ease: "power2.out" }, t + 2 * F);
+      });
+
+      window.__timelines["s00-impacto"] = tl;
+    })();
+  </script>
+</template>

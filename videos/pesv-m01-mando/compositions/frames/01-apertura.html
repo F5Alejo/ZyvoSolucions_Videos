@@ -1,0 +1,383 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    /* Montserrat — real variable files shipped in assets/fonts. */
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    #root {
+      position: relative; width: 1920px; height: 1080px; overflow: hidden; container-type: size;
+      color: #F2F7FF; font-family: "Montserrat", sans-serif; -webkit-font-smoothing: antialiased;
+    }
+    .f01-layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; }
+    .f01-ground { background: #051427; }
+
+    /* HUD grid: 60px pitch, lavender 14% */
+    .f01-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(to right, rgba(142, 143, 196, 0.14) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(142, 143, 196, 0.14) 1px, transparent 1px);
+      background-size: 60px 60px;
+      clip-path: circle(0px at 960px 470px);
+    }
+    /* ignition scan line — lives UNDER the occluder */
+    .f01-scan {
+      position: absolute; left: 0; top: 0; width: 1920px; height: 82px; opacity: 0;
+      background:
+        linear-gradient(to right, rgba(142, 143, 196, 0) 0%, rgba(142, 143, 196, 0.85) 50%, rgba(142, 143, 196, 0) 100%) 0 80px / 100% 2px no-repeat,
+        linear-gradient(to bottom, rgba(142, 143, 196, 0) 0%, rgba(142, 143, 196, 0.10) 100%) 0 0 / 100% 80px no-repeat;
+    }
+    /* RESERVE OCCLUDER — navy (= ground) rounded rect over grid + scan, under
+       everything else. Opaque core at scale 1: 162.75,71.5 -> 1790.25,848.5
+       (1627.5 x 777, r 200); 64px feather pad, blur 18px (core >99.9% opaque). */
+    .f01-occ {
+      position: absolute; left: 98.75px; top: 7.5px; width: 1755.5px; height: 905px;
+      border-radius: 264px; background: #051427; filter: blur(18px); transform-origin: 64px 64px;
+    }
+    .f01-atmo {
+      background:
+        radial-gradient(ellipse 58% 62% at 50% 44%, rgba(5, 20, 39, 0) 0%, rgba(5, 20, 39, 0.45) 64%, rgba(3, 12, 24, 0.82) 100%),
+        radial-gradient(1100px 700px at 960px 470px, rgba(15, 57, 107, 0.34) 0%, rgba(15, 57, 107, 0) 72%);
+    }
+    /* corner brackets: 128px arms, 2px, #8E8FC4 @ .6, inset 56 */
+    .f01-br { position: absolute; width: 130px; height: 130px; opacity: 0; }
+    .f01-br svg { display: block; width: 130px; height: 130px; overflow: visible; }
+    .f01-br path { fill: none; stroke: #8E8FC4; stroke-width: 2; stroke-linecap: square; stroke-dasharray: 258; stroke-dashoffset: 258; }
+    .f01-br-tl { left: 56px; top: 56px; }
+    .f01-br-tr { left: 1734px; top: 56px; }
+    .f01-br-bl { left: 56px; top: 894px; }
+    .f01-br-br { left: 1734px; top: 894px; }
+    /* edge rulers, y 480-840: outside every reserve state incl. the shrink */
+    .f01-ruler {
+      position: absolute; top: 480px; width: 16px; height: 361px; transform-origin: 50% 50%;
+      background-image:
+        repeating-linear-gradient(to bottom, rgba(142, 143, 196, 0.55) 0 1px, transparent 1px 120px),
+        repeating-linear-gradient(to bottom, rgba(142, 143, 196, 0.32) 0 1px, transparent 1px 30px);
+      background-size: 16px 100%, 8px 100%; background-repeat: no-repeat;
+    }
+    .f01-ruler-l { left: 84px; background-position: left top, left top; }
+    .f01-ruler-r { left: 1820px; background-position: right top, right top; }
+    /* swarm */
+    .f01-swarm { perspective: 1200px; perspective-origin: 960px 470px; }
+    .f01-p { position: absolute; left: 960px; top: 470px; opacity: 0; backface-visibility: hidden; will-change: transform, opacity; }
+    /* ring pulse */
+    .f01-ring-svg { position: absolute; left: 0; top: 0; overflow: visible; }
+    .f01-ring { fill: none; stroke: #E6423C; stroke-width: 2; opacity: 0; }
+    /* the official lockup: ONE asset, clip-path reveal only */
+    .f01-lock { position: absolute; left: 0; top: 0; width: 1260px; height: 420px; opacity: 0; transform-origin: 0 0; will-change: transform, opacity; }
+    .f01-logo { display: block; width: 1260px; height: 420px; clip-path: inset(0% 73.9% 0% 0%); }
+    /* telemetry */
+    .f01-rule { position: absolute; left: 930px; top: 862px; width: 60px; height: 3px; border-radius: 2px; background: #E6423C; transform-origin: 50% 50%; }
+    .f01-label {
+      position: absolute; left: 960px; top: 874px; white-space: nowrap; perspective: 600px;
+      font-size: 22px; font-weight: 600; line-height: 1; letter-spacing: 0.18em; color: #8E8FC4;
+    }
+    .f01-ch { position: relative; display: inline-block; transform-origin: 50% 100%; transform-style: preserve-3d; }
+    .f01-ch-f { position: absolute; left: 0; top: 0; color: #8E8FC4; }
+    /* the hook */
+    .f01-line {
+      position: absolute; left: 120px; padding: 0 48px 0 40px; overflow: hidden; white-space: nowrap;
+      font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; color: #F2F7FF;
+    }
+    .f01-line1 { top: 350px; font-size: 150px; }
+    .f01-line2 { top: 540px; font-size: 170px; }
+    .f01-slam { position: relative; will-change: transform; }
+    .f01-sw { position: relative; display: inline-block; }
+    .f01-strike { position: absolute; left: 0; right: 0; top: 58%; height: 6px; margin-top: -3px; background: #E6423C; transform-origin: 0% 50%; }
+    .f01-gstack { display: grid; }
+    .f01-gbase, .f01-gcopy { grid-area: 1 / 1; }
+    .f01-gbase { z-index: 2; color: #F2F7FF; }
+    .f01-red { color: #E6423C; }
+    .f01-gcopy { z-index: 1; opacity: 0; mix-blend-mode: screen; will-change: transform; }
+    .f01-warm { color: #E6423C; }
+    .f01-cool { color: #8E8FC4; }
+  </style>
+
+  <div id="root" data-composition-id="01-apertura" data-start="0" data-duration="16" data-width="1920" data-height="1080">
+    <!-- 0 · full-bleed navy ground -->
+    <div id="f01-ground-layer" class="clip f01-layer f01-ground" data-start="0" data-duration="16" data-track-index="0"></div>
+    <!-- 1 · HUD grid -->
+    <div id="f01-grid-layer" class="clip f01-layer" data-start="0" data-duration="16" data-track-index="1">
+      <div class="f01-grid" id="f01-grid"></div>
+    </div>
+    <!-- 2 · scan line (under the occluder, so it vanishes around the logo) -->
+    <div id="f01-scan-layer" class="clip f01-layer" data-start="0" data-duration="16" data-track-index="2">
+      <div class="f01-scan" id="f01-scan"></div>
+    </div>
+    <!-- 3 · reserve occluder: the clear zone that follows the logo -->
+    <div id="f01-occ-layer" class="clip f01-layer" data-start="0" data-duration="16" data-track-index="3">
+      <div class="f01-occ" id="f01-occ"></div>
+    </div>
+    <!-- 4 · static atmosphere -->
+    <div id="f01-atmo-layer" class="clip f01-layer f01-atmo" data-start="0" data-duration="16" data-track-index="4"></div>
+    <!-- 5 · HUD chrome -->
+    <div id="f01-hud-layer" class="clip f01-layer" data-start="0" data-duration="16" data-track-index="5">
+      <div class="f01-ruler f01-ruler-l" id="f01-ruler-l"></div>
+      <div class="f01-ruler f01-ruler-r" id="f01-ruler-r"></div>
+      <div class="f01-br f01-br-tl" id="f01-br-0"><svg viewBox="0 0 130 130"><path d="M 1 129 L 1 1 L 129 1" /></svg></div>
+      <div class="f01-br f01-br-tr" id="f01-br-1"><svg viewBox="0 0 130 130"><path d="M 1 1 L 129 1 L 129 129" /></svg></div>
+      <div class="f01-br f01-br-bl" id="f01-br-2"><svg viewBox="0 0 130 130"><path d="M 129 129 L 1 129 L 1 1" /></svg></div>
+      <div class="f01-br f01-br-br" id="f01-br-3"><svg viewBox="0 0 130 130"><path d="M 129 1 L 129 129 L 1 129" /></svg></div>
+    </div>
+    <!-- 6 · the swarm (built by script, index-derived) -->
+    <div id="f01-swarm" class="clip f01-layer f01-swarm" data-start="0" data-duration="16" data-track-index="6"></div>
+    <!-- 7 · red ring pulse (always outside the reserve) -->
+    <div id="f01-ring-layer" class="clip f01-layer" data-start="0" data-duration="16" data-track-index="7">
+      <svg class="f01-ring-svg" width="1920" height="1080" viewBox="0 0 1920 1080" aria-hidden="true">
+        <circle class="f01-ring" id="f01-ring" cx="960" cy="470" r="414" />
+      </svg>
+    </div>
+    <!-- 8 · telemetry -->
+    <div id="f01-tele-layer" class="clip f01-layer" data-start="0" data-duration="16" data-track-index="8">
+      <div class="f01-rule" id="f01-rule"></div>
+      <div class="f01-label" id="f01-label" data-text="CAPACITACIÓN PESV · MÓDULO 01 · ACTOR VIAL" aria-label="CAPACITACIÓN PESV · MÓDULO 01 · ACTOR VIAL"></div>
+    </div>
+    <!-- 9 · the hook -->
+    <div id="f01-hook-layer" class="clip f01-layer" data-start="0" data-duration="16" data-track-index="9">
+      <svg width="0" height="0" aria-hidden="true" style="position: absolute">
+        <filter id="f01-vblur-1" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur id="f01-vblur-1-node" in="SourceGraphic" stdDeviation="0 0" /></filter>
+        <filter id="f01-vblur-2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur id="f01-vblur-2-node" in="SourceGraphic" stdDeviation="0 0" /></filter>
+      </svg>
+      <div class="f01-line f01-line1">
+        <div class="f01-slam" id="f01-l1" data-layout-allow-overlap>Tú no <span class="f01-sw"><span id="f01-cond">conduces.</span><i class="f01-strike" id="f01-strike"></i></span></div>
+      </div>
+      <div class="f01-line f01-line2">
+        <div class="f01-slam" id="f01-l2" data-layout-allow-overlap>
+          <div class="f01-gstack" id="f01-gstack">
+            <span class="f01-gcopy f01-warm" aria-hidden="true">Pero decides.</span>
+            <span class="f01-gcopy f01-cool" aria-hidden="true">Pero decides.</span>
+            <span class="f01-gbase" data-layout-allow-overlap>Pero <span class="f01-red" data-layout-allow-overlap>decides.</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 10 · the official RiskMann lockup — TOPMOST layer: nothing renders over it -->
+    <div id="f01-lock-layer" class="clip f01-layer" data-start="0" data-duration="16" data-track-index="10">
+      <div class="f01-lock" id="f01-lock">
+        <img class="f01-logo" id="f01-logo" src="assets/marca/riskmann_logo_blanco.png" alt="RiskMann by SOFU" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var CX = 960, CY = 470;
+      var GOLDEN = Math.PI * (3 - Math.sqrt(5));
+      function hash(n) { var x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
+
+      /* LOGO GEOMETRY (PNG alpha, 840x280): isotype ink x35-215 y27-219,
+         wordmark ink x236-818 y86-265. Hero = 1260x420 (x1.5). Wrapper origin
+         0 0; x/y = box top-left; scale relative to hero.
+         isotype centred (960,470): local centre (187.5,184.5) -> box (772.5,285.5)
+         full ink centred (960,460): local centre (639.75,219) -> box (320.25,241)
+         bug 280px (s 0.2222), ink top-left (104,104) -> box (92.333,95) */
+      var BUG_S = 280 / 1260;
+
+      /* ---- 0.0-1.8s · THE SWARM ----------------------------------------
+         40 particles: golden-angle ray from the isotype point, projected onto
+         the frame edge, stepped depth + tumble (depth-scatter-assemble),
+         power2.in. motion-blur-streak Path B: 2 ghosts on the same path + ease,
+         lagged in time -> they string out only at peak speed (arrival). */
+      var swarm = document.getElementById("f01-swarm");
+      var N = 64, PERSP = 1200, GHOST_LAG = 0.03;
+      var GHOST_OP = [1.0, 0.42, 0.2];
+      var allParticles = [];
+      for (var i = 0; i < N; i++) {
+        var a = i * GOLDEN + 0.35, dx = Math.cos(a), dy = Math.sin(a);
+        var tx = dx > 0 ? (1945 - CX) / dx : dx < 0 ? (-25 - CX) / dx : 1e9;
+        var ty = dy > 0 ? (1105 - CY) / dy : dy < 0 ? (-25 - CY) / dy : 1e9;
+        var reach = Math.min(tx, ty) * (0.84 + 0.2 * hash(i + 1));
+        var z = 320 - (i / (N - 1)) * 640;
+        var comp = (PERSP - z) / PERSP; // keep the PROJECTED start on the frame edge
+        var sx = dx * reach * comp, sy = dy * reach * comp;
+        var size = 7 + Math.floor(hash(i * 3 + 2) * 7); // 7..13px
+        var isRed = i % 7 === 3;
+        var baseOp = 1;
+        var from = { x: sx, y: sy, z: z, rotationX: Math.sin(a) * 70, rotationY: Math.cos(a) * 70, rotation: (hash(i * 11 + 4) * 2 - 1) * 180 };
+        var start = (i % 10) * 0.04;                 // 0 .. 0.36
+        var arrive = 1.54 + ((i * 7) % 9) * 0.02;    // 1.54 .. 1.70
+        for (var g = 0; g < 3; g++) {
+          var el = document.createElement("div");
+          el.className = "f01-p";
+          el.style.width = size + "px";
+          el.style.height = size + "px";
+          el.style.marginLeft = -size / 2 + "px";
+          el.style.marginTop = -size / 2 + "px";
+          el.style.background = isRed ? "#E6423C" : "#8E8FC4";
+          el.style.borderRadius = hash(i * 5 + 1) < 0.4 ? "50%" : "0";
+          swarm.appendChild(el);
+          allParticles.push(el);
+          var lag = g * GHOST_LAG, op = baseOp * GHOST_OP[g];
+          tl.fromTo(el, from, { x: 0, y: 0, z: 0, rotationX: 0, rotationY: 0, rotation: 0, duration: arrive - start, ease: "power2.in" }, start + lag);
+          tl.fromTo(el, { opacity: 0 }, { opacity: op, duration: 0.22, ease: "power1.out" }, start + lag);
+          /* collapse INTO the point and vanish: scale 0 + opacity 0, all done by 1.84s */
+          tl.fromTo(el, { opacity: op, scale: 1 },
+            { opacity: 0, scale: 0, duration: g === 0 ? 0.18 : 0.16, ease: "power1.in", immediateRender: false },
+            g === 0 ? arrive - 0.04 : arrive - 0.1);
+        }
+      }
+      tl.set(allParticles, { opacity: 0, scale: 0 }, 1.9); // hard clamp: none remains
+
+      /* ---- 1.8-3.0s · THE MARK -----------------------------------------
+         Clipped to isotype only. Uniform scale 0.86 -> 1 about the isotype
+         centre (x/y linear in scale, same ease) + opacity, power3.out. */
+      var lock = document.getElementById("f01-lock");
+      tl.fromTo(lock,
+        { x: CX - 187.5 * 0.86, y: CY - 184.5 * 0.86, scale: 0.86, opacity: 0, transformOrigin: "0px 0px" },
+        { x: 772.5, y: 285.5, scale: 1, opacity: 1, duration: 1.2, ease: "power3.out" }, 1.8);
+
+      /* Ring pulse, 2px. Reserve = isotype ink + 210px; all isotype ink lies
+         within 197.3px of (960,470), so the reserve is inside r 407.3. Ring
+         starts at r 414 (inner edge 413) and only grows; gone before 4.5s. */
+      tl.fromTo("#f01-ring", { opacity: 0 }, { opacity: 0.95, duration: 0.08, ease: "none" }, 2.05);
+      tl.fromTo("#f01-ring", { attr: { r: 414 } }, { attr: { r: 900 }, duration: 1.0, ease: "power2.out" }, 2.05);
+      tl.fromTo("#f01-ring", { opacity: 0.95 }, { opacity: 0, duration: 0.92, ease: "power2.in", immediateRender: false }, 2.13);
+
+      /* RESERVE OCCLUDER states (core rect = visible ink + margin).
+         ISO : L 615 T 116 R 1311.36 (clip edge + 210) B 893 (full ink bottom + 210)
+         HERO: L 162.75 T 71.5 R 1790.25 B 848.5
+         BUG : ink (104,104)-(365,183.33) + 44 -> L 60 T 60 R 409 B 227.33 */
+      var occ = document.getElementById("f01-occ");
+      var OCC_ISO = { x: 452.25, y: 44.5, scaleX: 696.36 / 1627.5, scaleY: 1 };
+      var OCC_HERO = { x: 0, y: 0, scaleX: 1, scaleY: 1 };
+      var OCC_BUG = { x: -102.75, y: -11.5, scaleX: 349 / 1627.5, scaleY: 167.3333 / 777 };
+      gsap.set(occ, { x: OCC_ISO.x, y: OCC_ISO.y, scaleX: OCC_ISO.scaleX, scaleY: OCC_ISO.scaleY, transformOrigin: "64px 64px" });
+      function occTo(fromS, toS, dur, ease) {
+        return [occ, { x: fromS.x, y: fromS.y, scaleX: fromS.scaleX, scaleY: fromS.scaleY },
+          { x: toS.x, y: toS.y, scaleX: toS.scaleX, scaleY: toS.scaleY, duration: dur, ease: ease, immediateRender: false }];
+      }
+
+      /* ---- 3.0-4.5s · THE HUD IGNITES ------------------------------------ */
+      tl.fromTo("#f01-grid", { clipPath: "circle(0px at 960px 470px)" },
+        { clipPath: "circle(1300px at 960px 470px)", duration: 1.3, ease: "power2.out" }, 3.0);
+      tl.fromTo("#f01-scan", { y: -82 }, { y: 900, duration: 1.2, ease: "power1.inOut" }, 3.05);
+      tl.fromTo("#f01-scan", { opacity: 0 }, { opacity: 1, duration: 0.12, ease: "none" }, 3.05);
+      tl.fromTo("#f01-scan", { opacity: 1 }, { opacity: 0, duration: 0.2, ease: "power1.in", immediateRender: false }, 4.05);
+      tl.fromTo("#f01-ruler-l", { scaleY: 0 }, { scaleY: 1, duration: 0.7, ease: "power3.out" }, 3.35);
+      tl.fromTo("#f01-ruler-r", { scaleY: 0 }, { scaleY: 1, duration: 0.7, ease: "power3.out" }, 3.47);
+      var BR_DX = [48, -48, 48, -48], BR_DY = [36, 36, -36, -36], BR_AT = [3.55, 3.7, 3.85, 4.0];
+      for (var b = 0; b < 4; b++) {
+        tl.fromTo("#f01-br-" + b, { x: BR_DX[b], y: BR_DY[b], opacity: 0 }, { x: 0, y: 0, opacity: 0.6, duration: 0.5, ease: "power3.out" }, BR_AT[b]);
+        tl.fromTo("#f01-br-" + b + " path", { strokeDashoffset: 258 }, { strokeDashoffset: 0, duration: 0.46, ease: "power2.out" }, BR_AT[b] + 0.04);
+      }
+
+      /* ---- 4.5-6.3s · THE WORDMARK UNFURLS — one continuous power3.inOut --
+         Wrapper glide + clip open + occluder share window and ease. Every
+         reserve edge is linear in progress here, so the occluder core tracks
+         it exactly (right edge = clip edge + 210: the grid retreats in step). */
+      var GLIDE_AT = 4.5, GLIDE_DUR = 1.8, GE = "power3.inOut";
+      tl.fromTo(lock, { x: 772.5, y: 285.5 }, { x: 320.25, y: 241, duration: GLIDE_DUR, ease: GE, immediateRender: false }, GLIDE_AT);
+      tl.fromTo("#f01-logo", { clipPath: "inset(0% 73.9% 0% 0%)" },
+        { clipPath: "inset(0% 0% 0% 0%)", duration: GLIDE_DUR, ease: GE, immediateRender: false }, GLIDE_AT);
+      var og = occTo(OCC_ISO, OCC_HERO, GLIDE_DUR, GE);
+      tl.fromTo(og[0], og[1], og[2], GLIDE_AT);
+
+      /* ---- 6.3-7.9s · TELEMETRY (reserve bottom = 848.5; rule 862, label 874)
+         hacker-flip decode: per-char rotateX 90 -> 0 hinged at baseline, seeded
+         glyph flicker, target clicks in at 60%. The hidden TARGET glyph holds
+         each cell's width, so the centred row never reflows. */
+      tl.fromTo("#f01-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.36, ease: "power2.out" }, 6.3);
+      var labelEl = document.getElementById("f01-label");
+      var TXT = labelEl.getAttribute("data-text");
+      var GLY = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+<>/";
+      function pseudoGlyph(seed) { var h = ((seed * 9301 + 49297) % 233280) / 233280; return GLY.charAt(Math.floor(h * GLY.length)); }
+      gsap.set(labelEl, { xPercent: -50, transformOrigin: "0% 0%" });
+      function addFlip(o, t, f, idx, at) {
+        var st = { p: 0 };
+        tl.fromTo(st, { p: 0 }, {
+          p: 1, duration: 0.5, ease: "power3.out",
+          onUpdate: function () {
+            if (st.p < 0.6) {
+              t.style.visibility = "hidden";
+              f.textContent = st.p > 0 ? pseudoGlyph(idx * 1000 + Math.floor(st.p * 9)) : "";
+            } else {
+              /* "inherit", never "visible": an explicit visible on a child punches
+                 through the hidden scene host and leaks the glyph into later frames */
+              t.style.visibility = "inherit";
+              f.textContent = "";
+            }
+            o.style.transform = "rotateX(" + (90 - st.p * 90).toFixed(2) + "deg)";
+            o.style.opacity = String(Math.min(1, st.p * 2));
+          }
+        }, at);
+      }
+      for (var c = 0, ci = 0; c < TXT.length; c++) {
+        var chTxt = TXT.charAt(c);
+        var outer = document.createElement("span"); outer.className = "f01-ch"; outer.setAttribute("data-layout-allow-overlap", "");
+        var tgt = document.createElement("span"); tgt.setAttribute("data-layout-allow-overlap", ""); tgt.textContent = chTxt === " " ? " " : chTxt;
+        var flk = document.createElement("span"); flk.className = "f01-ch-f"; flk.setAttribute("aria-hidden", "true");
+        outer.appendChild(tgt); outer.appendChild(flk); labelEl.appendChild(outer);
+        outer.style.opacity = "0"; outer.style.transform = "rotateX(90deg)"; tgt.style.visibility = "hidden";
+        if (chTxt !== " ") { addFlip(outer, tgt, flk, ci++, 6.45 + c * 0.022); }
+      }
+
+      /* ---- 7.9-9.4s · THE MARK BECOMES A BRAND BUG ----------------------
+         Lockup -> 280px, ink top-left (104,104): 44px clear on every side,
+         which also clears the top-left bracket arms (x/y <= 58). Rule + label
+         shrink with it (0.6) to y 232/242, below the bug's clear space
+         (ends 227.3). Occluder closes on the same window + ease, so the grid
+         fills in where the hero mark was. */
+      var BUG_AT = 7.9, BUG_DUR = 1.5, BE = "power3.inOut";
+      tl.fromTo(lock, { x: 320.25, y: 241, scale: 1 },
+        { x: 104 - 52.5 * BUG_S, y: 104 - 40.5 * BUG_S, scale: BUG_S, duration: BUG_DUR, ease: BE, immediateRender: false }, BUG_AT);
+      var ob = occTo(OCC_HERO, OCC_BUG, BUG_DUR, BE);
+      tl.fromTo(ob[0], ob[1], ob[2], BUG_AT);
+      tl.fromTo("#f01-rule", { x: 0, y: 0, scaleX: 1, scaleY: 1 },
+        { x: -838, y: -630.6, scaleX: 0.6, scaleY: 0.6, duration: BUG_DUR, ease: BE, immediateRender: false }, BUG_AT);
+      tl.fromTo(labelEl, { x: 0, y: 0, xPercent: -50, scale: 1 },
+        { x: -856, y: -632, xPercent: 0, scale: 0.6, duration: BUG_DUR, ease: BE, immediateRender: false }, BUG_AT);
+
+      /* ---- 9.4-16s · THE HOOK -------------------------------------------
+         Mask slams (overflow hidden + yPercent) with a vertical motion-blur
+         streak on the same ease/window; strike; bigger second line with a
+         quantised-hash chromatic glitch on landing; still from 13.2s. */
+      var SLAM_DUR = 0.55, PEAK_BLUR = 16;
+      function slam(sel, filterId, at) {
+        var node = document.getElementById(filterId + "-node");
+        var proxy = { v: 0 };
+        var write = function () { node.setAttribute("stdDeviation", "0 " + proxy.v.toFixed(2)); };
+        write();
+        tl.fromTo(sel, { yPercent: 112 }, { yPercent: 0, duration: SLAM_DUR, ease: "power4.out" }, at);
+        tl.set(sel, { filter: "url(#" + filterId + ")" }, at);
+        tl.fromTo(proxy, { v: PEAK_BLUR }, { v: 0, duration: SLAM_DUR, ease: "power4.out", onUpdate: write }, at);
+        tl.set(sel, { filter: "none" }, at + SLAM_DUR + 0.02);
+      }
+      slam("#f01-l1", "f01-vblur-1", 9.6);                       // «Tú no conduces.»
+      tl.fromTo("#f01-strike", { scaleX: 0 }, { scaleX: 1, duration: 0.42, ease: "power3.inOut" }, 11.8);
+      tl.fromTo("#f01-cond", { opacity: 1 }, { opacity: 0.42, duration: 0.4, ease: "power2.out", immediateRender: false }, 12.0);
+      slam("#f01-l2", "f01-vblur-2", 12.6);                      // «Pero decides.»
+
+      var copies = gsap.utils.toArray("#f01-gstack .f01-gcopy");
+      var GLITCH_AT = 12.74, GLITCH_DUR = 0.26, JITTER_STEP = 1 / 24, MAX_SPLIT = 12;
+      var amp = { a: 0 };
+      tl.set(amp, { a: 1 }, GLITCH_AT);
+      tl.set(copies, { opacity: 0.75 }, GLITCH_AT);
+      tl.fromTo(amp, { a: 1 }, {
+        a: 0, duration: GLITCH_DUR, ease: "power3.in", immediateRender: false,
+        onUpdate: function () {
+          var step = Math.floor(tl.time() / JITTER_STEP);
+          for (var L = 0; L < copies.length; L++) {
+            gsap.set(copies[L], {
+              x: (hash(step * 13 + L * 7) * 2 - 1) * MAX_SPLIT * amp.a,
+              y: (hash(step * 29 + L * 11) * 2 - 1) * MAX_SPLIT * 0.35 * amp.a
+            });
+          }
+        }
+      }, GLITCH_AT);
+      tl.set(copies, { x: 0, y: 0, opacity: 0 }, GLITCH_AT + GLITCH_DUR); // clean resolve, bit-exact
+
+      /* 13.2-16s · hold. Nothing moves. */
+      window.__timelines["01-apertura"] = tl;
+    })();
+  </script>
+</template>

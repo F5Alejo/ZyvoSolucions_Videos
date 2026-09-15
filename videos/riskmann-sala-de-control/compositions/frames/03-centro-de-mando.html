@@ -1,0 +1,593 @@
+<template>
+  <style>
+
+    /* Montserrat — la familia normativa de frame.md. Los .woff2 viven en
+       assets/fonts/, así que la familia se declara con archivo real: sin esto
+       el render en Chrome headless caería a una genérica y la tipografía
+       de toda la pieza sería otra. Es un archivo variable (100-900). */
+    @font-face {
+      font-family: "Montserrat";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
+    @font-face {
+      font-family: "Montserrat";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      color: #F2F7FF;
+      font-family: "Montserrat", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .f03-layer {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+    }
+
+    /* ---- ground ---- */
+    .f03-ground {
+      background:
+        radial-gradient(1180px 760px at 960px 470px, rgba(15, 57, 107, 0.52) 0%, rgba(5, 20, 39, 0) 70%),
+        #051427;
+    }
+    .f03-vignette {
+      background: radial-gradient(
+        ellipse 78% 66% at 50% 44%,
+        rgba(5, 20, 39, 0) 0%,
+        rgba(5, 20, 39, 0.50) 62%,
+        rgba(3, 12, 24, 0.90) 100%
+      );
+    }
+
+    /* ---- HUD grid: 60px pitch, lavender 14% (continuity with 04 / 08) ---- */
+    .f03-grid {
+      background-image:
+        linear-gradient(to right, rgba(142, 143, 196, 0.14) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(142, 143, 196, 0.14) 1px, transparent 1px);
+      background-size: 60px 60px;
+      background-position: 0px 0px;
+      clip-path: circle(0px at 960px 470px);
+    }
+
+    /* ---- HUD corner brackets: 128px arms, 2px, #8E8FC4 @ .6, inset 56 ---- */
+    .f03-bracket {
+      position: absolute;
+      width: 130px;
+      height: 130px;
+      opacity: 0;
+    }
+    .f03-bracket svg {
+      display: block;
+      width: 130px;
+      height: 130px;
+      overflow: visible;
+    }
+    .f03-bracket path {
+      fill: none;
+      stroke: #8E8FC4;
+      stroke-width: 2;
+      stroke-linecap: square;
+      stroke-linejoin: miter;
+    }
+    .f03-br-tl { left: 56px;  top: 56px; }
+    .f03-br-tr { right: 56px; top: 56px; }
+    .f03-br-bl { left: 56px;  bottom: 56px; }
+    .f03-br-br { right: 56px; bottom: 56px; }
+
+    /* ---- depth-scatter cloud (the paper tiles) ---- */
+    .f03-blurwrap { position: absolute; inset: 0; }
+    .f03-scene {
+      position: absolute;
+      inset: 0;
+      perspective: 1400px;
+    }
+    .f03-cloud {
+      position: absolute;
+      left: 960px;
+      top: 470px;
+      width: 0;
+      height: 0;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    .f03-frag {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 74px;
+      height: 94px;
+      border-radius: 5px;
+      background: linear-gradient(160deg, #EEF2F7 0%, #D2DBE6 100%);
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      will-change: transform, opacity;
+      opacity: 0;
+      overflow: hidden;
+    }
+    .f03-frag::before {
+      content: "";
+      position: absolute;
+      left: 11px;
+      right: 11px;
+      top: 18px;
+      height: 46px;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        rgba(5, 20, 39, 0.34) 0 3px,
+        transparent 3px 12px
+      );
+    }
+    .f03-frag::after {
+      content: "";
+      position: absolute;
+      left: 11px;
+      width: 30px;
+      top: 74px;
+      height: 3px;
+      background: rgba(230, 66, 60, 0.55);
+    }
+
+    /* ---- halo (ambient-glow-bloom, peak <= 0.45) ---- */
+    .f03-halo {
+      position: absolute;
+      left: 960px;
+      top: 470px;
+      width: 980px;
+      height: 700px;
+      margin-left: -490px;
+      margin-top: -350px;
+      border-radius: 50%;
+      background: radial-gradient(
+        closest-side,
+        rgba(230, 66, 60, 0.55) 0%,
+        rgba(230, 66, 60, 0.20) 46%,
+        rgba(230, 66, 60, 0) 100%
+      );
+      opacity: 0;
+      will-change: opacity, transform;
+    }
+
+    /* ---- lockup ---- */
+    .f03-lockup {
+      position: absolute;
+      left: 960px;
+      top: 470px;
+      width: 0;
+      height: 0;
+      will-change: transform;
+    }
+    .f03-mark {
+      position: absolute;
+      left: -100px;
+      top: -120px;
+      width: 200px;
+      height: 240px;
+    }
+    .f03-mark-draw {
+      position: absolute;
+      inset: 0;
+      width: 200px;
+      height: 240px;
+      overflow: visible;
+    }
+    .f03-mark-draw path,
+    .f03-mark-draw circle {
+      fill: none;
+      stroke: #F2F7FF;
+      stroke-width: 7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .f03-mark-img {
+      position: absolute;
+      inset: 0;
+      width: 200px;
+      height: 240px;
+      object-fit: contain;
+      opacity: 0;
+    }
+
+    .f03-wordmark {
+      position: absolute;
+      left: -140px;
+      top: -58px;
+      white-space: nowrap;
+      font-size: 104px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: #F2F7FF;
+    }
+    .f03-ltr {
+      display: inline-block;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    .f03-tag {
+      position: absolute;
+      left: -380px;
+      top: 84px;
+      width: 780px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #8E8FC4;
+      clip-path: inset(0 100% 0 0);
+    }
+    .f03-tag-rule {
+      position: absolute;
+      left: -30px;
+      top: 62px;
+      width: 60px;
+      height: 3px;
+      border-radius: 2px;
+      background: #E6423C;
+      opacity: 0;
+      transform-origin: 50% 50%;
+    }
+  </style>
+
+  <div
+    id="root"
+    data-composition-id="03-centro-de-mando"
+    data-start="0"
+    data-duration="7.5"
+    data-width="1920"
+    data-height="1080"
+  >
+    <!-- full-bleed ground -->
+    <div class="clip f03-layer f03-ground" data-start="0" data-duration="7.5" data-track-index="0"></div>
+    <div class="clip f03-layer f03-vignette" data-start="0" data-duration="7.5" data-track-index="1"></div>
+
+    <!-- HUD grid: ignites from the centre outward in Scene 3 -->
+    <div class="clip f03-layer" data-start="0" data-duration="7.5" data-track-index="2">
+      <div class="f03-layer f03-grid" id="f03-grid"></div>
+    </div>
+
+    <!-- HUD corner brackets: drawn one after another -->
+    <div class="clip f03-layer" data-start="0" data-duration="7.5" data-track-index="3">
+      <div class="f03-bracket f03-br-tl" id="f03-br-0">
+        <svg viewBox="0 0 130 130"><path d="M 1 129 L 1 1 L 129 1" /></svg>
+      </div>
+      <div class="f03-bracket f03-br-tr" id="f03-br-1">
+        <svg viewBox="0 0 130 130"><path d="M 129 129 L 129 1 L 1 1" /></svg>
+      </div>
+      <div class="f03-bracket f03-br-bl" id="f03-br-2">
+        <svg viewBox="0 0 130 130"><path d="M 1 1 L 1 129 L 129 129" /></svg>
+      </div>
+      <div class="f03-bracket f03-br-br" id="f03-br-3">
+        <svg viewBox="0 0 130 130"><path d="M 129 1 L 129 129 L 1 129" /></svg>
+      </div>
+    </div>
+
+    <!-- red focus halo, behind the mark -->
+    <div class="clip f03-layer" data-start="0" data-duration="7.5" data-track-index="4">
+      <div class="f03-halo" id="f03-halo"></div>
+    </div>
+
+    <!-- the paper tiles: 3D depth cloud that collapses into the mark -->
+    <div class="clip f03-layer" data-start="0" data-duration="7.5" data-track-index="5">
+      <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+        <filter id="f03-streak" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur id="f03-streak-blur" in="SourceGraphic" stdDeviation="0 0" />
+        </filter>
+      </svg>
+      <div class="f03-blurwrap" id="f03-blurwrap" style="filter: url(#f03-streak)">
+        <div class="f03-scene">
+          <div class="f03-cloud" id="f03-cloud">
+            <div class="f03-frag" data-target-x="-62" data-target-y="-84"></div>
+            <div class="f03-frag" data-target-x="10"  data-target-y="-88"></div>
+            <div class="f03-frag" data-target-x="76"  data-target-y="-60"></div>
+            <div class="f03-frag" data-target-x="-70" data-target-y="-6"></div>
+            <div class="f03-frag" data-target-x="6"   data-target-y="-6"></div>
+            <div class="f03-frag" data-target-x="72"  data-target-y="-2"></div>
+            <div class="f03-frag" data-target-x="-58" data-target-y="74"></div>
+            <div class="f03-frag" data-target-x="14"  data-target-y="80"></div>
+            <div class="f03-frag" data-target-x="70"  data-target-y="60"></div>
+            <div class="f03-frag" data-target-x="-4"  data-target-y="142"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- the lockup -->
+    <div class="clip f03-layer" data-start="0" data-duration="7.5" data-track-index="6">
+      <div class="f03-lockup" id="f03-lockup">
+        <div class="f03-mark" id="f03-mark">
+          <svg class="f03-mark-draw" id="f03-mark-draw" viewBox="0 0 291 350">
+            <circle id="f03-seg-0" cx="185" cy="133" r="80" />
+            <path id="f03-seg-1" d="M 78 148 L 156 176 L 132 216" />
+            <path id="f03-seg-2" d="M 42 170 A 44 44 0 0 0 22 252" />
+            <path id="f03-seg-3" d="M 78 288 A 48 48 0 0 0 154 286" />
+          </svg>
+          <img class="f03-mark-img" id="f03-mark-img" src="assets/riskmann_icono_blanco.png" alt="" />
+        </div>
+
+        <div class="f03-wordmark" id="f03-wordmark"><span class="f03-ltr" id="f03-l0">R</span><span class="f03-ltr" id="f03-l1">i</span><span class="f03-ltr" id="f03-l2">s</span><span class="f03-ltr" id="f03-l3">k</span><span class="f03-ltr" id="f03-l4">M</span><span class="f03-ltr" id="f03-l5">a</span><span class="f03-ltr" id="f03-l6">n</span><span class="f03-ltr" id="f03-l7">n</span></div>
+
+        <div class="f03-tag-rule" id="f03-tag-rule"></div>
+        <div class="f03-tag" id="f03-tag">Centro de control &middot; SG-SST &middot; PESV</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      /* ==========================================================
+         Scene 1 (0.0-1.4s) - depth-scatter-assemble
+         The paper tiles from the previous shot break into a 3D
+         swarm and wheel toward the centre, smeared by a
+         motion-blur-streak envelope riding the same ease.
+         ========================================================== */
+      var frags = Array.prototype.slice.call(document.querySelectorAll(".f03-frag"));
+      var n = frags.length;
+      var GOLDEN = Math.PI * (3 - Math.sqrt(5));
+      var RADIUS = 520;
+      var Z_NEAR = 420;
+      var Z_FAR = -380;
+      var TUMBLE = 75;
+      var ASSEMBLE_DUR = 1.05;
+      var STAGGER = 0.055;
+
+      var scatter = frags.map(function (el, i) {
+        var a = i * GOLDEN;
+        var depthT = n > 1 ? i / (n - 1) : 0;
+        return {
+          x: Math.cos(a) * RADIUS,
+          y: Math.sin(a) * RADIUS,
+          z: Z_NEAR - depthT * (Z_NEAR - Z_FAR),
+          rotationX: Math.sin(a) * TUMBLE,
+          rotationY: Math.cos(a) * TUMBLE,
+          rotationZ: Math.cos(a * 1.7) * 26
+        };
+      });
+
+      /* park the cloud BEFORE any tween so frame 0 shows the swarm, not the layout */
+      frags.forEach(function (el, i) {
+        gsap.set(el, {
+          xPercent: -50,
+          yPercent: -50,
+          x: scatter[i].x,
+          y: scatter[i].y,
+          z: scatter[i].z,
+          rotationX: scatter[i].rotationX,
+          rotationY: scatter[i].rotationY,
+          rotation: scatter[i].rotationZ,
+          opacity: 0
+        });
+      });
+
+      /* the cloud itself wheels so the scatter has life while it collapses */
+      tl.fromTo(
+        "#f03-cloud",
+        { rotationY: -24 },
+        { rotationY: 20, duration: 1.7, ease: "power1.out" },
+        0
+      );
+
+      /* fast reveal so the hero material is on screen well before 0.5s */
+      frags.forEach(function (el, i) {
+        tl.to(el, { opacity: 1, duration: 0.26, ease: "power1.out" }, 0.02 + i * 0.028);
+      });
+
+      /* cloud point -> flat target */
+      frags.forEach(function (el, i) {
+        tl.to(
+          el,
+          {
+            x: Number(el.dataset.targetX),
+            y: Number(el.dataset.targetY),
+            z: 0,
+            rotationX: 0,
+            rotationY: 0,
+            rotation: 0,
+            duration: ASSEMBLE_DUR,
+            ease: "power3.out"
+          },
+          0.05 + i * STAGGER
+        );
+      });
+
+      /* motion-blur-streak (Path A): directional smear on the wrapper ABOVE
+         the perspective stage; peak blur on peak speed, sharp at the settle. */
+      var blurNode = document.getElementById("f03-streak-blur");
+      var blurProxy = { v: 16 };
+      function writeBlur() {
+        blurNode.setAttribute(
+          "stdDeviation",
+          blurProxy.v.toFixed(2) + " " + (blurProxy.v * 0.55).toFixed(2)
+        );
+      }
+      writeBlur();
+      tl.to(blurProxy, { v: 0, duration: 1.2, ease: "power3.out", onUpdate: writeBlur }, 0.05);
+
+      /* ==========================================================
+         Scene 2 (1.4-2.8s) - the swarm flattens and RESOLVES into
+         the isotype; the mark's stroke draws itself (svg-path-draw)
+         and the solid mark fills behind it.
+         ========================================================== */
+      frags.forEach(function (el, i) {
+        tl.to(
+          el,
+          {
+            x: Number(el.dataset.targetX) * 0.22,
+            y: Number(el.dataset.targetY) * 0.22,
+            scale: 0.34,
+            opacity: 0,
+            duration: 0.52,
+            ease: "power2.inOut"
+          },
+          1.84 + i * 0.026
+        );
+      });
+
+      /* measured dash setup - real geometry, never a magic number */
+      var segs = ["#f03-seg-0", "#f03-seg-1", "#f03-seg-2", "#f03-seg-3"];
+      segs.forEach(function (sel) {
+        var p = document.querySelector(sel);
+        var len = p.getTotalLength() * 1.02;
+        p.style.strokeDasharray = String(len);
+        p.style.strokeDashoffset = String(len);
+      });
+      var SEG_AT = [1.95, 2.25, 2.48, 2.66];
+      var SEG_DUR = [0.42, 0.4, 0.34, 0.3];
+      segs.forEach(function (sel, i) {
+        tl.to(sel, { strokeDashoffset: 0, duration: SEG_DUR[i], ease: "power2.out" }, SEG_AT[i]);
+      });
+
+      /* draw -> fill: the solid isotype seats as the last stroke lands */
+      tl.fromTo(
+        "#f03-mark-img",
+        { opacity: 0, scale: 0.94 },
+        { opacity: 1, scale: 1, duration: 0.46, ease: "power2.out" },
+        2.8
+      );
+      tl.to("#f03-mark-draw", { opacity: 0, duration: 0.45, ease: "power1.out" }, 3.02);
+
+      /* ==========================================================
+         Scene 3 (2.8-4.4s) - THE HUD IGNITES.
+         Grid drawn from the centre outward + the four lavender
+         corner brackets entering one after another
+         (svg-path-draw + center-outward-expansion); the ambient
+         halo blooms behind the mark (peak 0.42).
+         ========================================================== */
+      tl.fromTo(
+        "#f03-grid",
+        { clipPath: "circle(0px at 960px 470px)" },
+        { clipPath: "circle(1420px at 960px 470px)", duration: 1.15, ease: "power2.out" },
+        2.86
+      );
+
+      tl.fromTo(
+        "#f03-halo",
+        { opacity: 0, scale: 0.82 },
+        { opacity: 0.42, scale: 1, duration: 0.95, ease: "power2.out" },
+        2.95
+      );
+      var haloEl = document.getElementById("f03-halo");
+      var haloPhase = { p: 0 };
+      tl.to(
+        haloPhase,
+        {
+          p: Math.PI * 2 * 1.1,
+          duration: 3.1,
+          ease: "none",
+          onUpdate: function () {
+            var s = Math.sin(haloPhase.p);
+            haloEl.style.opacity = String(0.42 + s * 0.035);
+          }
+        },
+        3.9
+      );
+
+      /* brackets: each starts pulled toward the centre (center-outward-expansion,
+         run outward to its inset) while its L-path strokes on. */
+      var BR_DX = [96, -96, 96, -96];
+      var BR_DY = [72, 72, -72, -72];
+      var BR_AT = [3.3, 3.52, 3.74, 3.96];
+      for (var b = 0; b < 4; b++) {
+        var brId = "#f03-br-" + b;
+        var brPath = document.querySelector(brId + " path");
+        var blen = brPath.getTotalLength() * 1.02;
+        brPath.style.strokeDasharray = String(blen);
+        brPath.style.strokeDashoffset = String(blen);
+
+        tl.fromTo(
+          brId,
+          { x: BR_DX[b] * 0.55, y: BR_DY[b] * 0.55, opacity: 0 },
+          { x: 0, y: 0, opacity: 0.6, duration: 0.52, ease: "power3.out" },
+          BR_AT[b]
+        );
+        tl.to(
+          brId + " path",
+          { strokeDashoffset: 0, duration: 0.48, ease: "power2.out" },
+          BR_AT[b] + 0.04
+        );
+      }
+
+      /* ==========================================================
+         Scene 4 (4.4-5.8s) - the lockup completes: the mark slides
+         left, the wordmark CASCADES in letter by letter
+         (waterfall-entry), and the chrome tag wipes in below.
+         ========================================================== */
+      tl.to("#f03-mark", { x: -268, duration: 0.6, ease: "power3.out" }, 4.42);
+      tl.to("#f03-halo", { x: -120, duration: 0.6, ease: "power3.out" }, 4.42);
+
+      /* waterfall-entry: binary opacity via tl.set, one direction, overlapping */
+      var F = 1 / 60;
+      var LTR_Y = [78, 44, 46, 52, 74, 44, 46, 50];
+      var LTR_D = [0.18, 0.13, 0.13, 0.14, 0.17, 0.13, 0.13, 0.14];
+      var tCur = 4.6;
+      for (var L = 0; L < 8; L++) {
+        tl.set("#f03-l" + L, { opacity: 1, y: LTR_Y[L] }, tCur);
+        tl.to("#f03-l" + L, { y: 0, duration: LTR_D[L], ease: "power4.out" }, tCur);
+        tCur = tCur + LTR_D[L] - F;
+      }
+
+      /* chrome tag: mask sweep left -> right, plus the 60x3 accent rule */
+      tl.fromTo(
+        "#f03-tag-rule",
+        { opacity: 0, scaleX: 0 },
+        { opacity: 1, scaleX: 1, duration: 0.36, ease: "power2.out" },
+        5.34
+      );
+      tl.fromTo(
+        "#f03-tag",
+        { clipPath: "inset(0 100% 0 0)" },
+        { clipPath: "inset(0 0% 0 0)", duration: 0.62, ease: "power2.out" },
+        5.46
+      );
+
+      /* ==========================================================
+         Scene 5 (5.8-7.0s) - deliberate HOLD. Everything still;
+         only a low-amplitude sine jitter on the lockup
+         (sine-wave-loop, low end, settle-and-fade envelope).
+         ========================================================== */
+      var lockEl = document.getElementById("f03-lockup");
+      var idle = { p: 0 };
+      var IDLE_CYCLES = 0.46;
+      tl.to(
+        idle,
+        {
+          p: Math.PI * 2 * IDLE_CYCLES,
+          duration: 1.1,
+          ease: "none",
+          onUpdate: function () {
+            var prog = idle.p / (Math.PI * 2 * IDLE_CYCLES);
+            var env = prog < 0.8 ? 1 : (1 - prog) / 0.2;
+            var s = Math.sin(idle.p);
+            lockEl.style.transform =
+              "translateY(" + (s * 2.6 * env).toFixed(3) + "px) scale(" +
+              (1 + s * 0.006 * env).toFixed(5) + ")";
+          }
+        },
+        5.9
+      );
+
+      window.__timelines["03-centro-de-mando"] = tl;
+    })();
+  </script>
+</template>

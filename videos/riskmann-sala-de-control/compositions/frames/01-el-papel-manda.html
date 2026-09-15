@@ -1,0 +1,376 @@
+<template>
+  <style>
+
+    /* Montserrat — la familia normativa de frame.md. Los .woff2 viven en
+       assets/fonts/, así que la familia se declara con archivo real: sin esto
+       el render en Chrome headless caería a una genérica y la tipografía
+       de toda la pieza sería otra. Es un archivo variable (100-900). */
+    @font-face {
+      font-family: "Montserrat";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
+    @font-face {
+      font-family: "Montserrat";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      container-type: size;
+      overflow: hidden;
+      font-family: "Montserrat", sans-serif;
+    }
+
+    /* ---- capa 1 · campo sólido ---- */
+    .f01-bg {
+      position: absolute;
+      inset: 0;
+      background: #051427;
+    }
+
+    /* ---- capa 2 · retícula tenue ---- */
+    .f01-grid {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      background-image:
+        repeating-linear-gradient(
+          to right,
+          rgba(142, 143, 196, 0.14) 0 1px,
+          transparent 1px 96px
+        ),
+        repeating-linear-gradient(
+          to bottom,
+          rgba(142, 143, 196, 0.14) 0 1px,
+          transparent 1px 96px
+        );
+    }
+
+    /* ---- capa 3 · viñeta de borde ---- */
+    .f01-vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        ellipse 78% 66% at 50% 44%,
+        rgba(5, 20, 39, 0) 0%,
+        rgba(5, 20, 39, 0.55) 62%,
+        rgba(3, 12, 24, 0.92) 100%
+      );
+    }
+
+    /* ---- la línea fija ---- */
+    .f01-type {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 330px;
+      text-align: center;
+    }
+
+    .f01-rule {
+      width: 60px;
+      height: 4px;
+      margin: 0 auto;
+      border-radius: 2px;
+      background: #e6423c;
+      transform: scaleX(0);
+      transform-origin: center center;
+    }
+
+    .f01-line1 {
+      margin-top: 46px;
+      font-size: 2.35cqw;
+      font-weight: 400;
+      line-height: 1.2;
+      letter-spacing: 0.02em;
+      color: #a7bccc;
+    }
+
+    .f01-l1wrap {
+      position: relative;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .f01-word {
+      display: inline-block;
+      opacity: 0;
+    }
+
+    .f01-slot-box {
+      margin-top: 30px;
+      height: 148px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .f01-slotwrap {
+      position: relative;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .f01-slot-text {
+      position: relative;
+      display: inline-block;
+      z-index: 2;
+      font-size: 5cqw;
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: #e6423c;
+    }
+
+    /* ---- tachado (css-marker-patterns · modo strike) ---- */
+    .f01-strike {
+      position: absolute;
+      left: -14px;
+      right: -14px;
+      top: 50%;
+      height: 7px;
+      margin-top: -3.5px;
+      border-radius: 4px;
+      background: #e6423c;
+      transform: scaleX(0);
+      transform-origin: left center;
+      z-index: 3;
+    }
+
+    .f01-strike-thin {
+      height: 4px;
+      margin-top: -2px;
+      left: -8px;
+      right: -8px;
+    }
+  </style>
+
+  <div
+    id="root"
+    data-composition-id="01-el-papel-manda"
+    data-start="0"
+    data-duration="7.5"
+    data-width="1920"
+    data-height="1080"
+  >
+    <div
+      class="clip f01-bg"
+      data-start="0"
+      data-duration="7.5"
+      data-track-index="0"
+    ></div>
+
+    <div
+      id="f01-grid"
+      class="clip f01-grid"
+      data-start="0"
+      data-duration="7.5"
+      data-track-index="1"
+    ></div>
+
+    <div
+      class="clip f01-vignette"
+      data-start="0"
+      data-duration="7.5"
+      data-track-index="2"
+    ></div>
+
+    <div
+      id="f01-type"
+      class="clip f01-type"
+      data-start="0"
+      data-duration="7.5"
+      data-track-index="3"
+    >
+      <div id="f01-rule" class="f01-rule"></div>
+
+      <div class="f01-line1">
+        <span id="f01-l1wrap" class="f01-l1wrap"
+          ><span class="f01-word">Este</span>
+          <span class="f01-word">mes</span>
+          <span class="f01-word">toca</span>
+          <span id="f01-strike-1" class="f01-strike f01-strike-thin"></span
+        ></span>
+      </div>
+
+      <div class="f01-slot-box">
+        <span class="f01-slotwrap"
+          ><span id="f01-slot-text" class="f01-slot-text">actualizar la matriz.</span
+          ><span id="f01-strike-2" class="f01-strike"></span
+        ></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const ID = "01-el-papel-manda";
+      const tl = gsap.timeline({ paused: true });
+
+      const typeEl = document.getElementById("f01-type");
+      const slotEl = document.getElementById("f01-slot-text");
+
+      /* =========================================================
+         Escena 1 (0.0–1.6s) — la línea fija entra
+         revelado escalonado por palabra + asiento de cola larga
+         ========================================================= */
+
+      // retícula: aún apagada, sube muy despacio
+      tl.fromTo(
+        "#f01-grid",
+        { opacity: 0 },
+        { opacity: 0.9, duration: 1.5, ease: "power2.out" },
+        0.1
+      );
+
+      // regla de acento (frame.md · accent-line 60×4)
+      tl.fromTo(
+        "#f01-rule",
+        { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.7, ease: "power3.out" },
+        0.05
+      );
+
+      // palabras de la parte fija — stagger corto, cola larga
+      tl.fromTo(
+        "#f01-type .f01-word",
+        { opacity: 0, y: 26, filter: "blur(9px)" },
+        {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          duration: 0.75,
+          ease: "power3.out",
+          stagger: 0.13,
+        },
+        0.22
+      );
+
+      // el hueco variable (primary) aterriza al cierre de la escena 1
+      tl.fromTo(
+        "#f01-slot-text",
+        { opacity: 0, y: 34, filter: "blur(12px)" },
+        {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          duration: 0.8,
+          ease: "power3.out",
+        },
+        0.8
+      );
+
+      /* =========================================================
+         Escena 2 (1.6–4.4s) — sólo el hueco cambia, por corte duro
+         (discrete-text-sequence · un trámite por beat, ~0.7s)
+         Escena 3 (4.4s) — el hueco se detiene en «volver a empezar»
+         ========================================================= */
+
+      const SEQUENCE = [
+        { t: 0.0, text: "actualizar la matriz." },
+        { t: 2.3, text: "pasar la lista." },
+        { t: 3.0, text: "firmar la inspección." },
+        { t: 3.7, text: "archivar el certificado." },
+        { t: 4.4, text: "volver a empezar." },
+      ];
+
+      function textAt(time) {
+        for (let i = SEQUENCE.length - 1; i >= 0; i--) {
+          if (time >= SEQUENCE[i].t) return SEQUENCE[i].text;
+        }
+        return SEQUENCE[0].text;
+      }
+
+      const driver = { t: 0 };
+      let lastText = SEQUENCE[0].text;
+
+      tl.to(
+        driver,
+        {
+          t: 7,
+          duration: 7,
+          ease: "none",
+          onUpdate: function () {
+            const next = textAt(driver.t);
+            if (next !== lastText) {
+              slotEl.textContent = next;
+              lastText = next;
+            }
+          },
+        },
+        0
+      );
+
+      // el último corte asienta con un micro-golpe (sin rebote)
+      tl.fromTo(
+        "#f01-slot-text",
+        { scale: 1.045 },
+        { scale: 1, duration: 0.4, ease: "power3.out" },
+        4.4
+      );
+
+      /* =========================================================
+         Escena 3 (4.4–5.8s) — el tachado se dibuja izquierda→derecha
+         (css-marker-patterns · modo strike, en primary)
+         ========================================================= */
+
+      tl.fromTo(
+        "#f01-strike-1",
+        { scaleX: 0 },
+        { scaleX: 1, duration: 0.42, ease: "power2.out" },
+        4.75
+      );
+
+      tl.fromTo(
+        "#f01-strike-2",
+        { scaleX: 0 },
+        { scaleX: 1, duration: 0.62, ease: "power2.out" },
+        4.95
+      );
+
+      /* =========================================================
+         Escena 4 (5.8–7.0s) — sostiene quieto sobre la frase tachada;
+         sólo jitter senoidal de baja amplitud (registro bajo)
+         ========================================================= */
+
+      const IDLE_START = 5.75;
+      const IDLE_DUR = 1.25;
+      const CYCLES = 0.6;
+      const Y_AMP = 2.5;
+      const SCALE_AMP = 0.006;
+      const FADE_FRAC = 0.25;
+
+      const phase = { p: 0 };
+      tl.to(
+        phase,
+        {
+          p: Math.PI * 2 * CYCLES,
+          duration: IDLE_DUR,
+          ease: "none",
+          onUpdate: function () {
+            const t = phase.p / (Math.PI * 2 * CYCLES);
+            const env = t < 1 - FADE_FRAC ? 1 : Math.max(0, (1 - t) / FADE_FRAC);
+            const s = Math.sin(phase.p) * env;
+            typeEl.style.transform =
+              "translateY(" + s * Y_AMP + "px) scale(" + (1 + s * SCALE_AMP) + ")";
+          },
+        },
+        IDLE_START
+      );
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

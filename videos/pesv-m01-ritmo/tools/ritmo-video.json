@@ -1,0 +1,12 @@
+{
+  "bpm": 120, "duracion": 60, "salida": "assets/ritmo-video.wav",
+  "secciones": [
+    { "desde": 0,  "hasta": 4,  "bombo": true, "platillo": true },
+    { "desde": 4,  "hasta": 8,  "bombo": true, "platillo": true, "palmas": true, "bajo": true },
+    { "desde": 8,  "hasta": 38, "bombo": true, "platillo": true, "palmas": true, "bajo": true, "acordes": true },
+    { "desde": 38, "hasta": 40, "platillo": true, "bajo": true, "acordes": true },
+    { "desde": 40, "hasta": 54, "bombo": true, "platillo": true, "palmas": true, "bajo": true, "acordes": true },
+    { "desde": 54, "hasta": 58, "bajo": true, "acordes": true }
+  ],
+  "subidas": [8.0, 16.0, 26.0, 38.0, 46.0, 54.0]
+}

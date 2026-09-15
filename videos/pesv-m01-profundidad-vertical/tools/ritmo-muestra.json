@@ -1,0 +1,9 @@
+{
+  "bpm": 120, "duracion": 16, "salida": "assets/ritmo-muestra.wav",
+  "secciones": [
+    { "desde": 0, "hasta": 4,  "bombo": true, "platillo": true },
+    { "desde": 4, "hasta": 8,  "bombo": true, "platillo": true, "palmas": true, "bajo": true },
+    { "desde": 8, "hasta": 16, "bombo": true, "platillo": true, "palmas": true, "bajo": true, "acordes": true }
+  ],
+  "subidas": [8.0]
+}

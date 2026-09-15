@@ -1,0 +1,16 @@
+{
+  "voz": "es_ES-davefx-medium",
+  "velocidad": 1.0,
+  "fuente": "Estructura - SEGURIDAD VIAL PASAJEROS (PDF entregado por RiskMann), Módulo 01",
+  "lineas": [
+    { "id": "h1", "plano": "01", "texto": "Tú no conduces.", "maximo": 3.0 },
+    { "id": "h2", "plano": "01", "texto": "Pero decides.", "maximo": 3.0 },
+    { "id": "02", "plano": "02", "texto": "No manejar no significa ser un actor pasivo. La seguridad también viaja en el asiento del pasajero.", "maximo": 17.0 },
+    { "id": "03", "plano": "03", "texto": "Esto aplica a todos los colaboradores, sin importar su cargo. Y a cada rol: peatón, ciclista, motociclista, conductor o pasajero.", "maximo": 17.0 },
+    { "id": "04", "plano": "04", "texto": "Tres deberes. Exigir condiciones seguras, sin confrontar. Cumplir cinturón, postura y protocolos. Advertir, solicitar corrección y reportar.", "maximo": 18.0 },
+    { "id": "05", "plano": "05", "texto": "Cada decisión del pasajero puede aumentar o reducir la exposición al riesgo.", "maximo": 13.0 },
+    { "id": "06", "plano": "06", "texto": "Es el primero de una ruta de ocho módulos para convertir intención en conducta.", "maximo": 15.0 },
+    { "id": "07", "plano": "07", "texto": "Piense, converse y responda. ¿Por qué el pasajero es corresponsable de la seguridad vial? Mencione un derecho y un deber del pasajero. ¿Cómo puede intervenir sin aumentar el riesgo? Pause el video y responda con sus propias palabras.", "maximo": 20.0 },
+    { "id": "08", "plano": "08", "texto": "Pasajero seguro. Decidir bien también es conducir la seguridad.", "maximo": 8.0 }
+  ]
+}

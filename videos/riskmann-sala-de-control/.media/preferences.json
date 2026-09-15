@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "preferences": {
+    "aspect": {
+      "value": "16:9",
+      "confirmed_in": [
+        "riskmann-sala-de-control"
+      ],
+      "updated_at": "2026-09-08T14:50:29.226Z"
+    },
+    "language": {
+      "value": "es",
+      "confirmed_in": [
+        "riskmann-sala-de-control"
+      ],
+      "updated_at": "2026-09-08T14:50:29.438Z"
+    },
+    "destination": {
+      "value": "web",
+      "confirmed_in": [
+        "riskmann-sala-de-control"
+      ],
+      "updated_at": "2026-09-08T14:50:29.659Z"
+    },
+    "style_preset.product-launch-video": {
+      "value": "blue-professional",
+      "confirmed_in": [
+        "riskmann-sala-de-control"
+      ],
+      "updated_at": "2026-09-08T14:52:04.548Z"
+    }
+  },
+  "sightings": {}
+}

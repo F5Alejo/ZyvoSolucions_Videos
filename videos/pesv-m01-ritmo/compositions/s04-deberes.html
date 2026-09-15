@@ -1,0 +1,133 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Montserrat", sans-serif; }
+    .s4-layer { position: absolute; inset: 0; }
+    .s4-ground { background: radial-gradient(1400px 900px at 50% 40%, #123C82 0%, #0B2F6B 60%, #08244F 100%); }
+    .s4-ghost { position: absolute; left: 1180px; top: -120px; font-size: 1100px; font-weight: 900; line-height: 1;
+      color: transparent; -webkit-text-stroke: 3px rgba(183, 211, 239, 0.12); }
+
+    .s4-world { will-change: transform; }
+    .s4-title { position: absolute; left: 0; width: 1920px; top: 110px; text-align: center; white-space: nowrap;
+      font-size: 84px; font-weight: 900; color: #FFFFFF; line-height: 1.05; }
+    .s4-title span { display: inline-block; opacity: 0; }
+
+    /* ---- three flip cards ---- */
+    .s4-row { position: absolute; left: 180px; top: 270px; width: 1560px; height: 560px; perspective: 1600px; }
+    .s4-slot { position: absolute; top: 0; width: 480px; height: 560px; transform-style: preserve-3d; will-change: transform, opacity; }
+    .s4-card { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
+    .s4-face { position: absolute; inset: 0; border-radius: 28px; backface-visibility: hidden; -webkit-backface-visibility: hidden; overflow: hidden; }
+    .s4-front { background: linear-gradient(160deg, #1A4A94 0%, #123C82 100%); box-shadow: inset 0 0 0 2px rgba(183, 211, 239, 0.3); }
+    .s4-num { position: absolute; left: 44px; top: 34px; font-size: 190px; font-weight: 900; line-height: 1; color: #5AA7E8; letter-spacing: -0.03em; }
+    .s4-verb { position: absolute; left: 44px; bottom: 58px; font-size: 64px; font-weight: 900; line-height: 1; color: #FFFFFF; }
+    .s4-hint { position: absolute; left: 44px; bottom: 134px; font-size: 22px; font-weight: 800; letter-spacing: 0.14em; color: #B7D3EF; }
+    .s4-back { background: #FFFFFF; transform: rotateY(180deg); opacity: 0; }
+    .s4-back-bar { position: absolute; left: 0; top: 0; width: 100%; height: 16px; background: #E6423C; }
+    .s4-back-tag { position: absolute; left: 44px; top: 66px; font-size: 22px; font-weight: 800; letter-spacing: 0.14em; color: #1565C0; }
+    .s4-back-verb { position: absolute; left: 44px; top: 112px; font-size: 60px; font-weight: 900; line-height: 1; color: #0B2F6B; }
+    .s4-back-text { position: absolute; left: 44px; right: 40px; top: 230px; font-size: 34px; font-weight: 600; line-height: 1.35; color: #2B2B2B; }
+
+    /* exit: a paper panel pushes in from the right (scene 05's ground) */
+    .s4-push { position: absolute; inset: 0; background: #F5F8FC; transform: translateX(1920px); }
+  </style>
+
+  <div id="root" data-composition-id="s04-deberes" data-start="0" data-duration="12" data-width="1920" data-height="1080">
+    <div id="s4-ground" class="clip s4-layer s4-ground" data-start="0" data-duration="12" data-track-index="0">
+      <div class="s4-ghost" id="s4-ghost" aria-hidden="true" data-layout-ignore>3</div>
+    </div>
+
+    <div id="s4-world" class="clip s4-layer s4-world" data-start="0" data-duration="12" data-track-index="1">
+      <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+        <filter id="s4-streak" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur id="s4-streak-blur" in="SourceGraphic" stdDeviation="0 0" />
+        </filter>
+      </svg>
+      <div class="s4-title"><span id="s4-t1">Tres</span> <span id="s4-t2">deberes.</span></div>
+
+      <div class="s4-row">
+        <div class="s4-slot" id="s4-slot-1" style="left: 0px">
+          <div class="s4-card" id="s4-card-1">
+            <div class="s4-face s4-front"><div class="s4-num">01</div><div class="s4-hint">DEBER</div><div class="s4-verb">EXIGIR</div></div>
+            <div class="s4-face s4-back"><div class="s4-back-bar"></div><div class="s4-back-tag">DEBER 01</div><div class="s4-back-verb">EXIGIR</div>
+              <div class="s4-back-text"><div>condiciones seguras,</div><div>sin confrontar.</div></div></div>
+          </div>
+        </div>
+        <div class="s4-slot" id="s4-slot-2" style="left: 540px">
+          <div class="s4-card" id="s4-card-2">
+            <div class="s4-face s4-front"><div class="s4-num">02</div><div class="s4-hint">DEBER</div><div class="s4-verb">CUMPLIR</div></div>
+            <div class="s4-face s4-back"><div class="s4-back-bar"></div><div class="s4-back-tag">DEBER 02</div><div class="s4-back-verb">CUMPLIR</div>
+              <div class="s4-back-text"><div>cinturón, postura</div><div>y protocolos.</div></div></div>
+          </div>
+        </div>
+        <div class="s4-slot" id="s4-slot-3" style="left: 1080px">
+          <div class="s4-card" id="s4-card-3">
+            <div class="s4-face s4-front"><div class="s4-num">03</div><div class="s4-hint">DEBER</div><div class="s4-verb">ADVERTIR</div></div>
+            <div class="s4-face s4-back"><div class="s4-back-bar"></div><div class="s4-back-tag">DEBER 03</div><div class="s4-back-verb">ADVERTIR</div>
+              <div class="s4-back-text"><div>solicitar corrección</div><div>y reportar.</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="s4-exit" class="clip s4-layer" data-start="0" data-duration="12" data-track-index="2">
+      <div class="s4-push" id="s4-push" aria-hidden="true" data-layout-ignore></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var P = 0.5;
+      function B(n) { return n * P; }
+
+      tl.fromTo("#s4-ghost", { x: 0, rotation: 0 }, { x: -160, rotation: -4, duration: 12, ease: "none" }, 0);
+
+      /* beats 1-2 · title: one slam, one snap */
+      tl.set("#s4-t1", { opacity: 1 }, B(1));
+      tl.fromTo("#s4-t1", { scale: 2, filter: "blur(16px)" }, { scale: 1, filter: "blur(0px)", duration: 0.45, ease: "power4.out" }, B(1));
+      tl.set("#s4-t2", { opacity: 1 }, B(2));
+      tl.fromTo("#s4-t2", { x: 420 }, { x: 0, duration: 0.4, ease: "expo.out" }, B(2));
+
+      /* beats 3-4 · the three cards rise out of the floor, tilted back, as one wave */
+      for (var i = 1; i <= 3; i++) {
+        tl.fromTo("#s4-slot-" + i, { y: 420, rotationX: -62, opacity: 0, transformOrigin: "50% 100%" },
+          { y: 0, rotationX: 0, opacity: 1, duration: 0.8, ease: "power4.out" }, B(3) + (i - 1) * 0.12);
+      }
+
+      /* beats 5 / 10 / 15 · each card lifts, flips, and hands the light to the next */
+      var FLIPS = [B(5), B(10), B(15)];
+      for (var c = 1; c <= 3; c++) {
+        var at = FLIPS[c - 1];
+        tl.to("#s4-slot-" + c, { scale: 1.06, z: 60, opacity: 1, duration: 0.3, ease: "power3.out" }, at);
+        tl.fromTo("#s4-card-" + c, { rotationY: 0 }, { rotationY: 180, duration: 0.7, ease: "power3.inOut" }, at + 0.1);
+        /* the hidden face is also made explicitly invisible at the half-turn (edge-on) */
+        tl.set("#s4-card-" + c + " .s4-front", { opacity: 0 }, at + 0.45);
+        tl.set("#s4-card-" + c + " .s4-back", { opacity: 1 }, at + 0.45);
+        for (var o = 1; o <= 3; o++) {
+          if (o !== c) tl.to("#s4-slot-" + o, { scale: 1, z: 0, opacity: 0.6, duration: 0.35, ease: "power2.out" }, at);
+        }
+      }
+      /* beat 19 · all three read together, calm */
+      tl.to(["#s4-slot-1", "#s4-slot-2", "#s4-slot-3"], { scale: 1, z: 0, opacity: 1, duration: 0.5, ease: "power2.inOut" }, B(19));
+
+      /* beats 22-23 · exit: whip left with a streak while paper pushes in from the right */
+      tl.set("#s4-world", { filter: "url(#s4-streak)" }, B(22) + 0.45);
+      tl.fromTo("#s4-world", { x: 0 }, { x: -1400, duration: 0.55, ease: "power3.in" }, B(22) + 0.45);
+      tl.fromTo("#s4-streak-blur", { attr: { stdDeviation: "0 0" } }, { attr: { stdDeviation: "22 0" }, duration: 0.55, ease: "power3.in", immediateRender: false }, B(22) + 0.45);
+      tl.fromTo("#s4-push", { x: 1920 }, { x: 0, duration: 0.55, ease: "power3.in" }, B(22) + 0.45);
+
+      window.__timelines["s04-deberes"] = tl;
+    })();
+  </script>
+</template>

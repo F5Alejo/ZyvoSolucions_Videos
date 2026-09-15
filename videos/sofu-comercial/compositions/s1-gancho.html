@@ -1,0 +1,125 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Montserrat", sans-serif; background: #E8EAE9; }
+    .g-layer { position: absolute; inset: 0; }
+    .g-shake { position: absolute; inset: -60px; will-change: transform; }
+
+    /* three hard cards: one per half beat, each in a different brand colour */
+    .g-card { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; }
+    .g-c-teal { background: #19484D; }
+    .g-c-yellow { background: #F9B410; }
+    .g-c-paper { background: #E8EAE9; }
+    .g-word { font-size: 240px; font-weight: 900; line-height: 1; letter-spacing: -0.03em; white-space: nowrap; }
+    .g-on-teal { color: #FFFFFF; }
+    .g-on-yellow { color: #19484D; }
+    .g-on-paper { color: #19484D; }
+    .g-bar { position: absolute; left: -20%; width: 140%; height: 24px; background: #F9B410; transform: scaleX(0); transform-origin: 0 50%; }
+    .g-bar-teal { background: #19484D; }
+
+    /* the question, three lines, key words in yellow on a teal slab */
+    .g-quest { position: absolute; left: 150px; top: 250px; width: 1620px; }
+    .g-line { font-size: 86px; font-weight: 800; line-height: 1.2; color: #19484D; white-space: nowrap; }
+    .g-w { display: inline-block; opacity: 0; will-change: transform, opacity; }
+    .g-hi { position: relative; display: inline-block; }
+    .g-hi-bar { position: absolute; left: -8px; right: -10px; top: 14%; bottom: 8%; background: #F9B410; transform: scaleX(0); transform-origin: 0 50%; border-radius: 4px; z-index: 0; }
+    .g-hi .g-w { position: relative; z-index: 1; }
+
+    .g-pain { position: absolute; left: 150px; top: 720px; font-size: 54px; font-weight: 600; color: #3C5A5C; white-space: nowrap; opacity: 0; }
+    .g-pain b { color: #19484D; font-weight: 900; }
+
+    .g-flash { position: absolute; inset: 0; background: #FFFFFF; opacity: 0; }
+    /* exit: the teal slab sweeps up and becomes scene 2's ground */
+    .g-wipe { position: absolute; inset: 0; background: #19484D; transform: translateY(1080px); }
+  </style>
+
+  <div id="root" data-composition-id="s1-gancho" data-start="0" data-duration="8" data-width="1920" data-height="1080">
+    <div id="g-ground" class="clip g-layer g-c-paper" data-start="0" data-duration="8" data-track-index="0"></div>
+
+    <div id="g-hits" class="clip g-layer" data-start="0" data-duration="8" data-track-index="1">
+      <div class="g-shake" id="g-shake">
+        <div class="g-card g-c-teal" id="g-c1"><div class="g-word g-on-teal">RIESGOS</div></div>
+        <div class="g-card g-c-yellow" id="g-c2"><div class="g-word g-on-yellow">PROCESOS</div></div>
+        <div class="g-card g-c-paper" id="g-c3"><div class="g-word g-on-paper">TECNOLOGÍA</div></div>
+        <div class="g-bar" id="g-bar-1" style="top: 300px"></div>
+        <div class="g-bar g-bar-teal" id="g-bar-2" style="top: 760px"></div>
+      </div>
+    </div>
+
+    <div id="g-stage" class="clip g-layer" data-start="0" data-duration="8" data-track-index="2">
+      <div class="g-quest">
+        <div class="g-line"><span class="g-w">¿Su</span> <span class="g-w">empresa</span> <span class="g-w">necesita</span> <span class="g-w">mejorar</span> <span class="g-w">la</span></div>
+        <div class="g-line"><span class="g-hi"><span class="g-hi-bar" id="g-hi-1" aria-hidden="true" data-layout-ignore></span><span class="g-w">gestión</span> <span class="g-w">de</span> <span class="g-w">sus</span> <span class="g-w">riesgos</span></span><span class="g-w">,</span> <span class="g-w">optimizar</span></div>
+        <div class="g-line"><span class="g-w">sus</span> <span class="g-hi"><span class="g-hi-bar" id="g-hi-2" aria-hidden="true" data-layout-ignore></span><span class="g-w">procesos</span></span> <span class="g-w">o</span> <span class="g-w">sumar</span> <span class="g-hi"><span class="g-hi-bar" id="g-hi-3" aria-hidden="true" data-layout-ignore></span><span class="g-w">tecnología</span></span><span class="g-w">?</span></div>
+      </div>
+      <div class="g-pain" id="g-pain">Gestionar la información <b>manualmente</b> cuesta tiempo.</div>
+    </div>
+
+    <div id="g-fx" class="clip g-layer" data-start="0" data-duration="8" data-track-index="3">
+      <div class="g-flash" id="g-flash" aria-hidden="true" data-layout-ignore></div>
+      <div class="g-wipe" id="g-wipe" aria-hidden="true" data-layout-ignore></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var F = 1 / 30;
+
+      /* 0.0 / 0.5 / 1.0 · three hard cuts, one per half beat, no fades anywhere */
+      tl.set("#g-c1", { opacity: 1 }, 0);
+      tl.fromTo("#g-c1 .g-word", { scale: 1.3 }, { scale: 1, duration: 0.24, ease: "expo.out" }, 0);
+      tl.fromTo("#g-bar-1", { scaleX: 0 }, { scaleX: 1, duration: 0.18, ease: "expo.out" }, 0.02);
+      tl.set("#g-c1", { opacity: 0 }, 0.5);
+
+      tl.set("#g-c2", { opacity: 1 }, 0.5);
+      tl.fromTo("#g-c2 .g-word", { scale: 0.82, rotation: -3 }, { scale: 1, rotation: 0, duration: 0.22, ease: "expo.out" }, 0.5);
+      tl.fromTo("#g-bar-2", { scaleX: 0 }, { scaleX: 1, duration: 0.18, ease: "expo.out", immediateRender: false }, 0.52);
+      tl.set("#g-c2", { opacity: 0 }, 1.0);
+
+      tl.set("#g-flash", { opacity: 1 }, 1.0);
+      tl.set("#g-flash", { opacity: 0 }, 1.0 + 2 * F);
+      tl.set("#g-c3", { opacity: 1 }, 1.0);
+      tl.fromTo("#g-c3 .g-word", { scale: 2.2 }, { scale: 1, duration: 0.3, ease: "expo.out" }, 1.0);
+      tl.to("#g-c3 .g-word", { scale: 5, opacity: 0, duration: 0.2, ease: "power3.in" }, 1.45);
+
+      /* shake on each hit, always back to zero */
+      [0, 0.5, 1.0].forEach(function (t, i) {
+        var d = i % 2 === 0 ? 16 : -16;
+        tl.fromTo("#g-shake", { x: 0, y: 0 }, { x: d, y: -d * 0.6, duration: 2 * F, ease: "none", immediateRender: false }, t);
+        tl.to("#g-shake", { x: 0, y: 0, duration: 3 * F, ease: "power2.out" }, t + 2 * F);
+      });
+
+      /* 1.75 · the question builds word by word, three lines */
+      var words = gsap.utils.toArray("#g-stage .g-w");
+      for (var i = 0; i < words.length; i++) {
+        tl.set(words[i], { opacity: 1 }, 1.75 + i * 0.055);
+        tl.fromTo(words[i], { y: 44, rotationX: -55, transformPerspective: 900, transformOrigin: "50% 100%" },
+          { y: 0, rotationX: 0, duration: 0.38, ease: "power4.out" }, 1.75 + i * 0.055);
+      }
+      /* 3.5 / 3.8 / 4.1 · the three key words get the yellow marker, one per half beat */
+      tl.to("#g-hi-1", { scaleX: 1, duration: 0.3, ease: "power2.out" }, 3.5);
+      tl.to("#g-hi-2", { scaleX: 1, duration: 0.3, ease: "power2.out" }, 3.8);
+      tl.to("#g-hi-3", { scaleX: 1, duration: 0.3, ease: "power2.out" }, 4.1);
+
+      /* 5.0 · the cost line lands under the question */
+      tl.fromTo("#g-pain", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 5.0);
+
+      /* 7.0 · the teal slab sweeps up: it is scene 2's ground */
+      tl.fromTo("#g-wipe", { y: 1080 }, { y: 0, duration: 0.8, ease: "power3.in" }, 7.0);
+
+      window.__timelines["s1-gancho"] = tl;
+    })();
+  </script>
+</template>

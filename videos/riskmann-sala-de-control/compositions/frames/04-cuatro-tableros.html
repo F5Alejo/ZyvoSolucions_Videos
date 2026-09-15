@@ -1,0 +1,520 @@
+<template>
+  <style>
+
+    /* Montserrat — la familia normativa de frame.md. Los .woff2 viven en
+       assets/fonts/, así que la familia se declara con archivo real: sin esto
+       el render en Chrome headless caería a una genérica y la tipografía
+       de toda la pieza sería otra. Es un archivo variable (100-900). */
+    @font-face {
+      font-family: "Montserrat";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
+    @font-face {
+      font-family: "Montserrat";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      color: #F2F7FF;
+      font-family: "Montserrat", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── layers ───────────────────────────────────────────────── */
+    .cuatro-layer {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+    }
+
+    /* ground */
+    .cuatro-ground {
+      background:
+        radial-gradient(1250px 780px at 960px 470px, rgba(15, 57, 107, 0.55) 0%, rgba(5, 20, 39, 0) 72%),
+        #051427;
+    }
+
+    /* HUD — static from t=0 */
+    .cuatro-hud-grid {
+      background-image:
+        linear-gradient(to right, rgba(142, 143, 196, 0.14) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(142, 143, 196, 0.14) 1px, transparent 1px);
+      background-size: 60px 60px;
+      background-position: 0px 0px;
+    }
+    .cuatro-bracket {
+      position: absolute;
+      width: 128px;
+      height: 128px;
+      opacity: 0.6;
+    }
+    .cuatro-bracket::before,
+    .cuatro-bracket::after {
+      content: "";
+      position: absolute;
+      background: #8E8FC4;
+    }
+    .cuatro-bracket::before { width: 128px; height: 2px; }
+    .cuatro-bracket::after  { width: 2px; height: 128px; }
+    .cuatro-br-tl { top: 56px;  left: 56px;  }
+    .cuatro-br-tl::before { top: 0; left: 0; }
+    .cuatro-br-tl::after  { top: 0; left: 0; }
+    .cuatro-br-tr { top: 56px;  right: 56px; }
+    .cuatro-br-tr::before { top: 0; right: 0; }
+    .cuatro-br-tr::after  { top: 0; right: 0; }
+    .cuatro-br-bl { bottom: 56px; left: 56px; }
+    .cuatro-br-bl::before { bottom: 0; left: 0; }
+    .cuatro-br-bl::after  { bottom: 0; left: 0; }
+    .cuatro-br-br { bottom: 56px; right: 56px; }
+    .cuatro-br-br::before { bottom: 0; right: 0; }
+    .cuatro-br-br::after  { bottom: 0; right: 0; }
+
+    /* headline */
+    .cuatro-headline {
+      position: absolute;
+      left: 180px;
+      top: 96px;
+      width: 1560px;
+    }
+    .cuatro-hl-line {
+      display: block;
+      font-size: 58px;
+      font-weight: 700;
+      line-height: 1.16;
+      letter-spacing: -0.02em;
+      color: #F2F7FF;
+      white-space: nowrap;
+      min-height: 68px;
+      min-width: 620px;
+    }
+    .cuatro-hl-line.cuatro-hl-2 { color: #A7BCCC; }
+    .cuatro-hl-rule {
+      position: absolute;
+      left: 0;
+      top: -24px;
+      width: 60px;
+      height: 4px;
+      border-radius: 2px;
+      background: #E6423C;
+      transform-origin: 0% 50%;
+    }
+
+    /* empty 2x2 slot outlines */
+    .cuatro-slot {
+      position: absolute;
+      width: 760px;
+      height: 286px;
+      border: 1.5px dashed rgba(142, 143, 196, 0.28);
+      border-radius: 14px;
+      opacity: 0;
+    }
+    .cuatro-slot-0 { left: 180px;  top: 268px; }
+    .cuatro-slot-1 { left: 980px;  top: 268px; }
+    .cuatro-slot-2 { left: 180px;  top: 594px; }
+    .cuatro-slot-3 { left: 980px;  top: 594px; }
+
+    /* red focus halo (sits behind the panels) */
+    .cuatro-glow-core {
+      position: absolute;
+      left: 950px;
+      top: 457px;
+      width: 820px;
+      height: 560px;
+      border-radius: 50%;
+      background: radial-gradient(closest-side, rgba(230, 66, 60, 0.62) 0%, rgba(230, 66, 60, 0.24) 48%, rgba(230, 66, 60, 0) 100%);
+      opacity: 0;
+    }
+
+    /* panels */
+    .cuatro-burst-wrap {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+    }
+    .cuatro-panel {
+      --dof: 0px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 760px;
+      height: 286px;
+      padding: 34px 36px;
+      display: flex;
+      align-items: flex-start;
+      gap: 28px;
+      background: rgba(226, 236, 248, 0.05);
+      border: 1.5px solid rgba(142, 143, 196, 0.28);
+      border-radius: 14px;
+      filter: blur(var(--dof));
+      will-change: transform, filter;
+      opacity: 0;
+      z-index: 2;
+    }
+    .cuatro-panel.cuatro-focal { z-index: 3; }
+
+    .cuatro-icon-tile {
+      flex: 0 0 auto;
+      width: 132px;
+      height: 132px;
+      border-radius: 12px;
+      background: rgba(242, 247, 255, 0.94);
+      border: 1.5px solid rgba(142, 143, 196, 0.28);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .cuatro-icon-tile img {
+      width: 104px;
+      height: 104px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .cuatro-panel-body {
+      flex: 1 1 auto;
+      min-width: 0;
+      padding-top: 4px;
+    }
+    .cuatro-index {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #8E8FC4;
+      margin-bottom: 12px;
+    }
+    .cuatro-label {
+      display: block;
+      font-size: 34px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: #F2F7FF;
+      white-space: nowrap;
+      clip-path: inset(0 100% 0 0);
+    }
+    .cuatro-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .cuatro-pill {
+      display: inline-block;
+      padding: 9px 20px;
+      border-radius: 100px;
+      background: rgba(142, 143, 196, 0.10);
+      border: 1px solid rgba(142, 143, 196, 0.28);
+      font-size: 17px;
+      font-weight: 500;
+      color: #A7BCCC;
+      white-space: nowrap;
+      opacity: 0;
+    }
+
+    /* traveling lavender sweep, clipped to the grid region */
+    .cuatro-sweep-surface {
+      position: absolute;
+      left: 180px;
+      top: 268px;
+      width: 1560px;
+      height: 612px;
+      overflow: hidden;
+      border-radius: 14px;
+      pointer-events: none;
+    }
+    .cuatro-sweep-band {
+      position: absolute;
+      left: 0;
+      top: -420px;
+      width: 300px;
+      height: 1450px;
+      opacity: 0;
+      background: linear-gradient(
+        to right,
+        rgba(142, 143, 196, 0) 0%,
+        rgba(142, 143, 196, 0.55) 50%,
+        rgba(142, 143, 196, 0) 100%
+      );
+    }
+  </style>
+
+  <div
+    id="root"
+    data-composition-id="04-cuatro-tableros"
+    data-start="0"
+    data-duration="8.5"
+    data-width="1920"
+    data-height="1080"
+  >
+    <!-- full-bleed ground -->
+    <div class="clip cuatro-layer cuatro-ground" data-start="0" data-duration="8.5" data-track-index="0"></div>
+
+    <!-- HUD: static lavender grid + four corner brackets, present from t=0 -->
+    <div class="clip cuatro-layer" data-start="0" data-duration="8.5" data-track-index="1">
+      <div class="cuatro-layer cuatro-hud-grid"></div>
+      <div class="cuatro-bracket cuatro-br-tl"></div>
+      <div class="cuatro-bracket cuatro-br-tr"></div>
+      <div class="cuatro-bracket cuatro-br-bl"></div>
+      <div class="cuatro-bracket cuatro-br-br"></div>
+    </div>
+
+    <!-- the empty 2x2 region -->
+    <div class="clip cuatro-layer" data-start="0" data-duration="8.5" data-track-index="2">
+      <div class="cuatro-slot cuatro-slot-0" id="cuatro-slot-0"></div>
+      <div class="cuatro-slot cuatro-slot-1" id="cuatro-slot-1"></div>
+      <div class="cuatro-slot cuatro-slot-2" id="cuatro-slot-2"></div>
+      <div class="cuatro-slot cuatro-slot-3" id="cuatro-slot-3"></div>
+    </div>
+
+    <!-- focus halo, behind the panels -->
+    <div class="clip cuatro-layer" data-start="0" data-duration="8.5" data-track-index="3">
+      <div class="cuatro-glow-core" id="cuatro-glow-core"></div>
+    </div>
+
+    <!-- the four boards -->
+    <div class="clip cuatro-layer" data-start="0" data-duration="8.5" data-track-index="4">
+      <div class="cuatro-burst-wrap">
+        <div class="cuatro-panel cuatro-ctx" id="cuatro-panel-0" data-depth="1" data-target-x="-400" data-target-y="-129">
+          <div class="cuatro-icon-tile"><img src="assets/inicio_icono_empresas.webp" alt="" /></div>
+          <div class="cuatro-panel-body">
+            <span class="cuatro-index">01</span>
+            <span class="cuatro-label" id="cuatro-label-0">Espacios de trabajo</span>
+            <div class="cuatro-pills">
+              <span class="cuatro-pill">Crear empresa</span>
+              <span class="cuatro-pill">Regionales</span>
+              <span class="cuatro-pill">Vinculaciones</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cuatro-panel cuatro-ctx" id="cuatro-panel-1" data-depth="2" data-target-x="400" data-target-y="-129">
+          <div class="cuatro-icon-tile"><img src="assets/inicio_icono_control_personal.webp" alt="" /></div>
+          <div class="cuatro-panel-body">
+            <span class="cuatro-index">02</span>
+            <span class="cuatro-label" id="cuatro-label-1">Control de personal</span>
+            <div class="cuatro-pills">
+              <span class="cuatro-pill">Lector QR</span>
+              <span class="cuatro-pill">Historial diario</span>
+              <span class="cuatro-pill">Ausentismo</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cuatro-panel cuatro-ctx" id="cuatro-panel-2" data-depth="2" data-target-x="-400" data-target-y="197">
+          <div class="cuatro-icon-tile"><img src="assets/inicio_icono_capacitaciones.webp" alt="" /></div>
+          <div class="cuatro-panel-body">
+            <span class="cuatro-index">03</span>
+            <span class="cuatro-label" id="cuatro-label-2">Campus</span>
+            <div class="cuatro-pills">
+              <span class="cuatro-pill">Capacitaciones</span>
+              <span class="cuatro-pill">Evaluación final</span>
+              <span class="cuatro-pill">Certificados</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cuatro-panel cuatro-focal" id="cuatro-panel-3" data-target-x="400" data-target-y="197">
+          <div class="cuatro-icon-tile"><img src="assets/inicio_icono_seguridad_vial.webp" alt="" /></div>
+          <div class="cuatro-panel-body">
+            <span class="cuatro-index">04</span>
+            <span class="cuatro-label" id="cuatro-label-3">Seguridad vial</span>
+            <div class="cuatro-pills">
+              <span class="cuatro-pill">Conductores</span>
+              <span class="cuatro-pill">Vehículos</span>
+              <span class="cuatro-pill">Inspecciones</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- one-pass lavender sweep across the assembled grid -->
+    <div class="clip cuatro-layer" data-start="0" data-duration="8.5" data-track-index="5">
+      <div class="cuatro-sweep-surface">
+        <div class="cuatro-sweep-band" id="cuatro-sweep"></div>
+      </div>
+    </div>
+
+    <!-- headline -->
+    <div class="clip cuatro-layer" data-start="0" data-duration="8.5" data-track-index="6">
+      <div class="cuatro-headline">
+        <div class="cuatro-hl-rule" id="cuatro-hl-rule"></div>
+        <span class="cuatro-hl-line cuatro-hl-1" id="cuatro-hl-1"></span>
+        <span class="cuatro-hl-line cuatro-hl-2" id="cuatro-hl-2"></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      /* ── Scene 1 (0.0–1.4s) — the HUD holds; the headline fills line by line.
+         discrete-text-sequence: sparse {t,text} states, reverse-searched every frame. */
+      var SEQ_1 = [
+        { t: 0.00, text: "" },
+        { t: 0.12, text: "Cuatro" },
+        { t: 0.28, text: "Cuatro tableros" },
+        { t: 0.44, text: "Cuatro tableros." }
+      ];
+      var SEQ_2 = [
+        { t: 0.00, text: "" },
+        { t: 0.72, text: "Un" },
+        { t: 0.86, text: "Un solo" },
+        { t: 1.02, text: "Un solo mando." }
+      ];
+      function stateAt(seq, time) {
+        for (var i = seq.length - 1; i >= 0; i--) {
+          if (time >= seq[i].t) return seq[i].text;
+        }
+        return "";
+      }
+      var hl1 = document.getElementById("cuatro-hl-1");
+      var hl2 = document.getElementById("cuatro-hl-2");
+      var driver = { t: 0 };
+      tl.to(
+        driver,
+        {
+          t: 1.4,
+          duration: 1.4,
+          ease: "none",
+          onUpdate: function () {
+            hl1.textContent = stateAt(SEQ_1, driver.t);
+            hl2.textContent = stateAt(SEQ_2, driver.t);
+          }
+        },
+        0
+      );
+      tl.fromTo(
+        "#cuatro-hl-rule",
+        { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.5, ease: "power3.out" },
+        0.04
+      );
+
+      /* the empty 2x2 grid region is established, outlines barely visible */
+      for (var s = 0; s < 4; s++) {
+        tl.fromTo(
+          "#cuatro-slot-" + s,
+          { opacity: 0 },
+          { opacity: 0.55, duration: 0.55, ease: "power2.out" },
+          0.30 + s * 0.09
+        );
+      }
+
+      /* ── Scene 2 (1.4–4.6s) — the four boards assemble in a staggered cascade.
+         center-outward-expansion, partially-spread / short-path-into-slot form. */
+      var PANEL_START = [1.40, 2.15, 2.90, 3.65];
+      var PANEL_DUR = 0.8;
+      var START_PROGRESS = 0.72; /* starts 28% of the way in toward the grid centre */
+      for (var p = 0; p < 4; p++) {
+        var el = document.getElementById("cuatro-panel-" + p);
+        var tx = Number(el.dataset.targetX);
+        var ty = Number(el.dataset.targetY);
+        tl.fromTo(
+          el,
+          {
+            xPercent: -50,
+            yPercent: -50,
+            x: tx * START_PROGRESS,
+            y: ty * START_PROGRESS,
+            scale: 0.94,
+            opacity: 0
+          },
+          {
+            x: tx,
+            y: ty,
+            scale: 1,
+            opacity: 1,
+            duration: PANEL_DUR,
+            ease: "power3.out"
+          },
+          PANEL_START[p]
+        );
+        /* the slot outline hands its place over to the panel that fills it */
+        tl.to(
+          "#cuatro-slot-" + p,
+          { opacity: 0.14, duration: 0.5, ease: "power2.out" },
+          PANEL_START[p] + 0.25
+        );
+        /* label mask-wipe, one beat after the panel lands */
+        tl.fromTo(
+          "#cuatro-label-" + p,
+          { clipPath: "inset(0 100% 0 0)" },
+          { clipPath: "inset(0 0% 0 0)", duration: 0.5, ease: "power2.out" },
+          PANEL_START[p] + 0.55
+        );
+      }
+
+      /* ── Scene 3 (4.6–6.4s) — submodule pills stagger in by index ── */
+      for (var q = 0; q < 4; q++) {
+        var pills = document.querySelectorAll("#cuatro-panel-" + q + " .cuatro-pill");
+        for (var r = 0; r < pills.length; r++) {
+          tl.fromTo(
+            pills[r],
+            { opacity: 0, y: 14, scale: 0.92 },
+            { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out" },
+            4.60 + q * 0.16 + r * 0.07
+          );
+        }
+      }
+
+      /* ambient-glow-bloom — Form B: one traveling lavender sweep, top-left to bottom-right */
+      tl.fromTo(
+        "#cuatro-sweep",
+        { x: -460, rotation: 18, opacity: 0 },
+        { x: 1900, rotation: 18, opacity: 0.22, duration: 1.3, ease: "none" },
+        5.0
+      );
+      tl.to("#cuatro-sweep", { opacity: 0, duration: 0.4, ease: "power1.in" }, 6.0);
+
+      /* ── Scene 4 (6.4–8.0s) — Seguridad vial comes to the front.
+         ambient-glow-bloom Form A (bloom-and-hold) + depth-of-field-blur focal pull. */
+      tl.fromTo(
+        "#cuatro-glow-core",
+        { opacity: 0, scale: 0.86 },
+        { opacity: 0.34, scale: 1, duration: 0.85, ease: "power2.out" },
+        6.4
+      );
+      tl.to("#cuatro-panel-3", { scale: 1.05, duration: 0.85, ease: "power2.out" }, 6.4);
+
+      var ctxLayers = document.querySelectorAll(".cuatro-ctx");
+      for (var c = 0; c < ctxLayers.length; c++) {
+        var depth = Number(ctxLayers[c].dataset.depth) || 1;
+        tl.to(
+          ctxLayers[c],
+          {
+            "--dof": 4 * depth + "px",
+            opacity: 0.55,
+            duration: 0.9,
+            ease: "power2.inOut"
+          },
+          6.4
+        );
+      }
+      /* holds to 8.0s — no exit tween (this is not the final frame) */
+
+      window.__timelines["04-cuatro-tableros"] = tl;
+    })();
+  </script>
+</template>
