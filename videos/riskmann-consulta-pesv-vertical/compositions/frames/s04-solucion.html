@@ -1,0 +1,113 @@
+<template>
+  <style>
+    @font-face { font-family: "Dubai"; font-weight: 400; src: url("assets/fonts/DUBAI-REGULAR.TTF") format("truetype"); }
+    @font-face { font-family: "Dubai"; font-weight: 500; src: url("assets/fonts/DUBAI-MEDIUM.TTF") format("truetype"); }
+    @font-face { font-family: "Dubai"; font-weight: 700; src: url("assets/fonts/DUBAI-BOLD.TTF") format("truetype"); }
+
+    #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Dubai", sans-serif; background: #020202; }
+    .s4-layer { position: absolute; inset: 0; }
+    /* el sangrado pasa de rojo a azul: el alivio se lee en el color */
+    .s4-ground { background:
+      radial-gradient(1100px 1000px at 50% 40%, rgba(38,54,125,0.68) 0%, rgba(2,2,2,0) 70%),
+      radial-gradient(800px 700px at 86% 84%, rgba(6,199,251,0.16) 0%, rgba(2,2,2,0) 70%),
+      #020202; }
+    .s4-halo { position: absolute; left: 50%; top: 760px; width: 1100px; height: 1100px; margin-left: -550px; margin-top: -550px;
+      background: radial-gradient(circle, rgba(255,255,255,0.16) 0%, rgba(2,2,2,0) 62%); opacity: 0; }
+
+    .s4-logo { position: absolute; left: 190px; top: 640px; width: 700px; height: auto; opacity: 0;
+      filter: drop-shadow(0 26px 60px rgba(0,0,0,0.6)); }
+    .s4-rule { position: absolute; left: 492px; top: 910px; width: 96px; height: 6px; border-radius: 3px; background: #c8951a;
+      transform: scaleX(0); box-shadow: 0 0 22px rgba(200,149,26,0.8); }
+
+    .s4-claim { position: absolute; left: 84px; top: 990px; width: 912px; text-align: center;
+      font-size: 78px; font-weight: 700; line-height: 1.35; color: #FFFFFF; letter-spacing: -0.025em; }
+    .s4-claim .w { display: inline-block; opacity: 0; }
+
+    .s4-chips { position: absolute; left: 84px; top: 1230px; width: 912px; display: flex; justify-content: space-between; }
+    .s4-chip { width: 288px; box-sizing: border-box; text-align: center; padding: 30px 16px; border-radius: 26px; opacity: 0;
+      background: linear-gradient(145deg, rgba(255,255,255,0.13), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow: 0 26px 70px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.24);
+      backdrop-filter: blur(20px); }
+    .s4-chip img { width: 60px; height: 60px; display: block; margin: 0 auto 16px; }
+    .s4-chip-text { font-size: 30px; font-weight: 500; color: #FFFFFF; line-height: 1.3; }
+
+    .s4-foot { position: absolute; left: 84px; top: 1470px; width: 912px; text-align: center; font-size: 44px; font-weight: 500; color: #06c7fb; opacity: 0; }
+  </style>
+
+  <div id="root" data-composition-id="s04-solucion" data-start="0" data-duration="6.5" data-width="1080" data-height="1920">
+    <div id="s4-ground" class="clip s4-layer s4-ground" data-start="0" data-duration="6.5" data-track-index="0"></div>
+    <div id="s4-halo" class="clip s4-halo" data-layout-allow-overflow data-start="0" data-duration="6.5" data-track-index="1"></div>
+
+    <div id="s4-stage" class="clip s4-layer" data-start="0" data-duration="6.5" data-track-index="2">
+      <img class="s4-logo" id="s4-logo" src="assets/riskmann_logo_blanco.png" alt="RiskMann" />
+      <div class="s4-rule" id="s4-rule"></div>
+
+      <div class="s4-claim" id="s4-claim"><span class="w">Automatiza</span> <span class="w">tu</span> <span class="w">PESV.</span></div>
+
+      <div class="s4-chips" id="s4-chips">
+        <div class="s4-chip" id="s4-chip-1">
+          <img src="assets/seguridad_vial_icono_conductores.webp" alt="" />
+          <div class="s4-chip-text">Conductores</div>
+        </div>
+        <div class="s4-chip" id="s4-chip-2">
+          <img src="assets/seguridad_vial_icono_vehiculos.webp" alt="" />
+          <div class="s4-chip-text">Vehículos</div>
+        </div>
+        <div class="s4-chip" id="s4-chip-3">
+          <img src="assets/seguridad_vial_icono_mantenimientos.webp" alt="" />
+          <div class="s4-chip-text">Mantenimientos</div>
+        </div>
+      </div>
+
+      <div class="s4-foot" id="s4-foot">en una sola plataforma</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      /* 0.00 · entrada atravesando la lente */
+      tl.fromTo("#s4-stage", { scale: 0.88 }, { scale: 1, duration: 0.75, ease: "expo.out" }, 0);
+      tl.fromTo("#s4-stage", { filter: "blur(7px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.28, ease: "power2.out" }, 0);
+
+      /* 0.15 · SPECTACLE — la marca florece con overshoot y halo (voz: "RiskMann automatiza tu PESV") */
+      tl.set("#s4-logo", { opacity: 1 }, 0.15);
+      tl.fromTo("#s4-logo", { scale: 0.58 }, { scale: 1, duration: 0.95, ease: "back.out(1.6)" }, 0.15);
+      tl.fromTo("#s4-logo", { filter: "blur(9px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.3, ease: "power2.out" }, 0.15);
+      tl.fromTo("#s4-halo", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.6, ease: "power4.out" }, 0.15);
+      tl.to("#s4-halo", { opacity: 0.5, duration: 0.7, ease: "power2.inOut" }, 0.75);
+
+      /* 0.85 · regla dorada y promesa en cascada */
+      tl.fromTo("#s4-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power4.out" }, 0.85);
+      tl.fromTo("#s4-claim .w", { opacity: 0, y: 46 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power4.out", stagger: 0.085 }, 1.05);
+      tl.fromTo("#s4-claim .w", { filter: "blur(5px)" },
+        { filter: "blur(0px)", immediateRender: false, duration: 0.24, ease: "power2.out", stagger: 0.085 }, 1.05);
+
+      /* 2.10 · los tres módulos, en cascada con overshoot (voz los nombra en 2.148) */
+      tl.fromTo(["#s4-chip-1", "#s4-chip-2", "#s4-chip-3"],
+        { opacity: 0, y: 70, scale: 0.9 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "back.out(1.7)", stagger: 0.16 }, 2.1);
+
+      /* 3.40 · el remate */
+      tl.fromTo("#s4-foot", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.55, ease: "power4.out" }, 3.4);
+
+      /* 3.70 · AMBIENT IDLE — cada chip flota a su propio ritmo */
+      tl.to("#s4-chip-1", { y: -18, duration: 1.8, ease: "sine.inOut" }, 3.7);
+      tl.to("#s4-chip-2", { y: -11, duration: 2.0, ease: "sine.inOut" }, 3.7);
+      tl.to("#s4-chip-3", { y: -22, duration: 1.7, ease: "sine.inOut" }, 3.7);
+      tl.to("#s4-logo", { scale: 1.022, duration: 1.8, ease: "sine.inOut" }, 3.7);
+      tl.to("#s4-halo", { opacity: 0.72, scale: 1.08, duration: 1.8, ease: "sine.inOut" }, 3.7);
+
+      /* 5.55 · salida */
+      tl.to(["#s4-logo", "#s4-rule", "#s4-claim", "#s4-chips", "#s4-foot"],
+        { scale: 1.45, opacity: 0, filter: "blur(9px)", duration: 0.95, ease: "expo.in", stagger: 0.04 }, 5.55);
+      tl.to("#s4-halo", { opacity: 0, duration: 0.8, ease: "power2.in" }, 5.7);
+
+      window.__timelines["s04-solucion"] = tl;
+    })();
+  </script>
+</template>

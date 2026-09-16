@@ -1,0 +1,126 @@
+<template>
+  <style>
+    @font-face { font-family: "Dubai"; font-weight: 400; src: url("assets/fonts/DUBAI-REGULAR.TTF") format("truetype"); }
+    @font-face { font-family: "Dubai"; font-weight: 500; src: url("assets/fonts/DUBAI-MEDIUM.TTF") format("truetype"); }
+    @font-face { font-family: "Dubai"; font-weight: 700; src: url("assets/fonts/DUBAI-BOLD.TTF") format("truetype"); }
+
+    #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Dubai", sans-serif; background: #020202; }
+    .s1-layer { position: absolute; inset: 0; }
+
+    /* suelo: negro del manual con sangrados difusos — nunca plano */
+    .s1-ground { background:
+      radial-gradient(1100px 900px at 22% 26%, rgba(38,54,125,0.55) 0%, rgba(2,2,2,0) 70%),
+      radial-gradient(900px 800px at 84% 76%, rgba(51,102,153,0.34) 0%, rgba(2,2,2,0) 72%),
+      #020202; }
+    .s1-grain { background: radial-gradient(1400px 1400px at 50% 44%, rgba(255,255,255,0.045) 0%, rgba(2,2,2,0) 66%); }
+
+    /* barrido de luz que cruza al abrir el plano */
+    .s1-sweep { position: absolute; top: -400px; left: -900px; width: 560px; height: 2800px;
+      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.13) 50%, rgba(255,255,255,0) 100%);
+      transform: rotate(18deg); }
+
+    .s1-stack { position: absolute; left: 84px; top: 620px; width: 912px; }
+    .s1-quote { transform-origin: 0% 50%; }
+    .s1-line { font-size: 96px; font-weight: 700; line-height: 1.58; color: #FFFFFF; letter-spacing: -0.025em; white-space: nowrap; }
+    .s1-line .w { display: inline-block; opacity: 0; }
+    .s1-strike-box { position: relative; display: inline-block; }
+    .s1-strike { position: absolute; left: -18px; top: 30px; width: 860px; height: 120px; overflow: visible; }
+    .s1-strike path { fill: none; stroke: #FF3333; stroke-width: 14; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+
+    /* el clímax */
+    .s1-hero { position: absolute; left: 0; top: 900px; width: 1080px; text-align: center; }
+    .s1-hero-glow { position: absolute; left: 50%; top: 110px; width: 1000px; height: 1000px; margin-left: -500px; margin-top: -500px;
+      background: radial-gradient(circle, rgba(255,51,51,0.42) 0%, rgba(2,2,2,0) 62%); opacity: 0; }
+    .s1-seguro { position: relative; display: inline-block; opacity: 0; font-size: 186px; font-weight: 700; color: #FF3333;
+      letter-spacing: -0.035em; line-height: 1.15; text-shadow: 0 18px 70px rgba(255,51,51,0.5); }
+
+    /* tarjeta glass */
+    .s1-card { position: absolute; left: 150px; top: 1250px; width: 780px; box-sizing: border-box;
+      padding: 44px 52px; border-radius: 30px; opacity: 0;
+      background: linear-gradient(145deg, rgba(255,255,255,0.11), rgba(255,255,255,0.035));
+      border: 1px solid rgba(255,255,255,0.16);
+      box-shadow: 0 34px 90px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.22);
+      backdrop-filter: blur(22px); }
+    .s1-card-text { font-size: 44px; font-weight: 500; line-height: 1.45; color: #FFFFFF; letter-spacing: -0.01em; text-align: center; }
+    .s1-card-text .w { display: inline-block; opacity: 0; }
+  </style>
+
+  <div id="root" data-composition-id="s01-gancho" data-start="0" data-duration="6.5" data-width="1080" data-height="1920">
+    <div id="s1-ground" class="clip s1-layer s1-ground" data-start="0" data-duration="6.5" data-track-index="0"></div>
+    <div id="s1-grain" class="clip s1-layer s1-grain" data-start="0" data-duration="6.5" data-track-index="1"></div>
+
+    <div id="s1-stage" class="clip s1-layer" data-start="0" data-duration="6.5" data-track-index="2">
+      <div class="s1-sweep" id="s1-sweep" aria-hidden="true" data-layout-ignore></div>
+
+      <div class="s1-stack" id="s1-stack">
+        <div class="s1-quote" id="s1-quote">
+          <div class="s1-line"><span class="w">«El</span> <span class="w">PESV</span></div>
+          <div class="s1-line">
+            <span class="s1-strike-box"><span class="w" id="s1-last">no me aplica.»</span>
+              <svg class="s1-strike" viewBox="0 0 860 120" aria-hidden="true" data-layout-ignore>
+                <path id="s1-strike-1" pathLength="1" d="M 12 86 C 230 60 520 76 848 28" />
+              </svg>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="s1-hero" id="s1-hero">
+        <div class="s1-hero-glow" id="s1-glow" aria-hidden="true" data-layout-ignore></div>
+        <span class="s1-seguro" id="s1-seguro">¿SEGURO?</span>
+      </div>
+
+      <div class="s1-card" id="s1-card">
+        <div class="s1-card-text" id="s1-card-text"><span class="w">Revisa</span> <span class="w">estos</span> <span class="w">dos</span> <span class="w">números.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      /* 0.00 · el barrido de luz abre el plano */
+      tl.fromTo("#s1-sweep", { x: 0 }, { x: 2200, duration: 1.25, ease: "expo.inOut" }, 0);
+
+      /* 0.10 · la objeción entra en cascada desde abajo, con desenfoque */
+      tl.fromTo(".s1-line .w", { opacity: 0, y: 70 },
+        { opacity: 1, y: 0, duration: 0.7, ease: "power4.out", stagger: 0.09 }, 0.1);
+      /* el enfoque se resuelve rápido: el desenfoque es un acento, no un estado */
+      tl.fromTo(".s1-line .w", { filter: "blur(7px)" },
+        { filter: "blur(0px)", immediateRender: false, duration: 0.26, ease: "power2.out", stagger: 0.09 }, 0.1);
+
+      /* 1.00 · el tachón se dibuja */
+      tl.to("#s1-strike-1", { strokeDashoffset: 0, duration: 0.34, ease: "power2.out" }, 1.0);
+
+      /* 1.40 · la frase retrocede en profundidad y cede el centro */
+      tl.to("#s1-quote", { scale: 0.52, y: -180, opacity: 0.32, duration: 0.7, ease: "expo.inOut" }, 1.4);
+
+      /* 1.80 · SPECTACLE — ¿SEGURO? aterriza con overshoot y destello */
+      tl.set("#s1-seguro", { opacity: 1 }, 1.8);
+      tl.fromTo("#s1-seguro", { scale: 0.42 }, { scale: 1, duration: 0.85, ease: "back.out(1.7)" }, 1.8);
+      tl.fromTo("#s1-seguro", { filter: "blur(9px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.3, ease: "power2.out" }, 1.8);
+      tl.fromTo("#s1-glow", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power4.out" }, 1.8);
+      tl.to("#s1-glow", { opacity: 0.55, duration: 0.6, ease: "power2.inOut" }, 2.3);
+
+      /* 2.60 · la tarjeta glass sube */
+      tl.fromTo("#s1-card", { opacity: 0, y: 70, scale: 0.94 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "back.out(1.3)" }, 2.6);
+      tl.to("#s1-card-text .w", { opacity: 1, duration: 0.4, ease: "power3.out", stagger: 0.08 }, 2.95);
+
+      /* 3.40 · AMBIENT IDLE — nada queda quieto (tweens finitos, seek-safe) */
+      tl.to("#s1-seguro", { scale: 1.022, duration: 2.1, ease: "sine.inOut" }, 3.4);
+      tl.to("#s1-card", { y: -14, duration: 2.4, ease: "sine.inOut" }, 3.45);
+      tl.to("#s1-glow", { opacity: 0.78, scale: 1.08, duration: 2.2, ease: "sine.inOut" }, 3.4);
+      tl.to("#s1-quote", { y: -210, duration: 2.4, ease: "sine.inOut" }, 3.4);
+
+      /* 5.55 · salida: todo atraviesa la lente */
+      tl.to(["#s1-hero", "#s1-card", "#s1-quote"],
+        { scale: 1.55, opacity: 0, filter: "blur(9px)", duration: 0.95, ease: "expo.in", stagger: 0.05 }, 5.55);
+      tl.to("#s1-grain", { opacity: 0, duration: 0.7, ease: "power2.in" }, 5.8);
+
+      window.__timelines["s01-gancho"] = tl;
+    })();
+  </script>
+</template>

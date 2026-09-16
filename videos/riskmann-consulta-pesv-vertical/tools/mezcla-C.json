@@ -1,0 +1,54 @@
+{
+ "duracion": 45,
+ "salida": "assets/mezcla-C.wav",
+ "pasa_altos": 90,
+ "cama": [
+  {
+   "hz": 146.83,
+   "inicio": 0,
+   "fin": 45,
+   "ganancia": 0.3,
+   "entrada": 1.5,
+   "salida": 4
+  },
+  {
+   "hz": 220.0,
+   "inicio": 0,
+   "fin": 45,
+   "ganancia": 0.22,
+   "entrada": 2.0,
+   "salida": 4
+  },
+  {
+   "hz": 293.66,
+   "inicio": 8,
+   "fin": 45,
+   "ganancia": 0.16,
+   "entrada": 2.0,
+   "salida": 4
+  },
+  {
+   "hz": 349.23,
+   "inicio": 23,
+   "fin": 45,
+   "ganancia": 0.12,
+   "entrada": 2.0,
+   "salida": 4
+  },
+  {
+   "hz": 440.0,
+   "inicio": 38,
+   "fin": 45,
+   "ganancia": 0.1,
+   "entrada": 1.5,
+   "salida": 3
+  }
+ ],
+ "efectos": [
+  {
+   "efecto": "whoosh-cinematic",
+   "en": 0.0,
+   "ganancia": 0.001
+  }
+ ]
+}

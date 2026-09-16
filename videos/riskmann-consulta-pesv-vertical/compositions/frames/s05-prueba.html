@@ -1,0 +1,102 @@
+<template>
+  <style>
+    @font-face { font-family: "Dubai"; font-weight: 400; src: url("assets/fonts/DUBAI-REGULAR.TTF") format("truetype"); }
+    @font-face { font-family: "Dubai"; font-weight: 500; src: url("assets/fonts/DUBAI-MEDIUM.TTF") format("truetype"); }
+    @font-face { font-family: "Dubai"; font-weight: 700; src: url("assets/fonts/DUBAI-BOLD.TTF") format("truetype"); }
+
+    #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Dubai", sans-serif; background: #020202; }
+    .s5-layer { position: absolute; inset: 0; }
+    .s5-ground { background:
+      radial-gradient(1000px 900px at 50% 34%, rgba(38,54,125,0.6) 0%, rgba(2,2,2,0) 70%),
+      radial-gradient(900px 800px at 50% 82%, rgba(6,199,251,0.2) 0%, rgba(2,2,2,0) 70%),
+      #020202; }
+    .s5-flash { position: absolute; left: 50%; top: 1200px; width: 1200px; height: 1200px; margin-left: -600px; margin-top: -600px;
+      background: radial-gradient(circle, rgba(6,199,251,0.32) 0%, rgba(2,2,2,0) 62%); opacity: 0; }
+
+    /* marco glass del producto — la grabación va recortada, sin marca ni encabezado */
+    .s5-card { position: absolute; left: 320px; top: 330px; width: 440px; height: 723px; box-sizing: border-box;
+      padding: 14px; border-radius: 30px; opacity: 0;
+      background: linear-gradient(145deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04));
+      border: 1px solid rgba(6,199,251,0.4);
+      box-shadow: 0 40px 100px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.24);
+      backdrop-filter: blur(20px); }
+    .s5-card-rest { position: absolute; left: 14px; top: 14px; width: 412px; height: 695px; border-radius: 18px;
+      background: radial-gradient(ellipse at 45% 22%, #1D2C66 0%, #070c1e 74%); }
+
+    .s5-num { position: absolute; left: 84px; top: 1130px; width: 912px; text-align: center; opacity: 0;
+      font-size: 216px; font-weight: 700; line-height: 1.16; color: #06c7fb; letter-spacing: -0.045em;
+      text-shadow: 0 20px 80px rgba(6,199,251,0.5); }
+
+    .s5-track { position: absolute; left: 190px; top: 1430px; width: 700px; height: 16px; border-radius: 10px;
+      background: rgba(255,255,255,0.12); overflow: hidden; opacity: 0;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.18); }
+    .s5-fill { width: 100%; height: 100%; border-radius: 10px; background: linear-gradient(90deg, #06c7fb, #5ADFFF);
+      transform: scaleX(0); transform-origin: left center; }
+
+    .s5-label { position: absolute; left: 84px; top: 1510px; width: 912px; text-align: center;
+      font-size: 44px; font-weight: 500; line-height: 1.45; color: #FFFFFF; letter-spacing: -0.01em; }
+    .s5-label .w { display: inline-block; opacity: 0; }
+  </style>
+
+  <div id="root" data-composition-id="s05-prueba" data-start="0" data-duration="5.5" data-width="1080" data-height="1920">
+    <div id="s5-ground" class="clip s5-layer s5-ground" data-start="0" data-duration="5.5" data-track-index="0"></div>
+    <div id="s5-flash" class="clip s5-flash" data-layout-allow-overflow data-start="0" data-duration="5.5" data-track-index="1"></div>
+
+    <div id="s5-stage" class="clip s5-layer" data-start="0" data-duration="5.5" data-track-index="2">
+      <div class="s5-card" id="s5-card">
+        <div class="s5-card-rest"></div>
+        <!-- approved frame video hoisted by assemble-index -->
+      </div>
+
+      <div class="s5-num" id="s5-num">70%</div>
+
+      <div class="s5-track" id="s5-track"><div class="s5-fill" id="s5-fill"></div></div>
+
+      <div class="s5-label" id="s5-label"><span class="w">menos</span> <span class="w">tiempo</span> <span class="w">en</span> <span class="w">gestión</span> <span class="w">documental</span></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      /* 0.00 · entrada atravesando la lente */
+      tl.fromTo("#s5-stage", { scale: 0.88 }, { scale: 1, duration: 0.75, ease: "expo.out" }, 0);
+      tl.fromTo("#s5-stage", { filter: "blur(7px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.28, ease: "power2.out" }, 0);
+
+      /* 0.10 · la tarjeta del producto sube con sombra profunda */
+      tl.fromTo("#s5-card", { opacity: 0, y: 90, scale: 0.9 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: "back.out(1.4)" }, 0.1);
+
+      /* 1.00 · SPECTACLE — la cifra aterriza con overshoot y destello cian */
+      tl.set("#s5-num", { opacity: 1 }, 1.0);
+      tl.fromTo("#s5-num", { scale: 0.4 }, { scale: 1, duration: 0.9, ease: "back.out(1.7)" }, 1.0);
+      tl.fromTo("#s5-num", { filter: "blur(9px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.3, ease: "power2.out" }, 1.0);
+      tl.fromTo("#s5-flash", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.45, ease: "power4.out" }, 1.0);
+      tl.to("#s5-flash", { opacity: 0.42, duration: 0.7, ease: "power2.inOut" }, 1.45);
+
+      /* 1.60 · la barra confirma la proporción */
+      tl.to("#s5-track", { opacity: 1, duration: 0.3, ease: "power3.out" }, 1.6);
+      tl.fromTo("#s5-fill", { scaleX: 0 }, { scaleX: 0.7, duration: 0.9, ease: "expo.out" }, 1.6);
+
+      /* 2.20 · la etiqueta, en cascada */
+      tl.fromTo("#s5-label .w", { opacity: 0, y: 34 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "power4.out", stagger: 0.07 }, 2.2);
+      tl.fromTo("#s5-label .w", { filter: "blur(4px)" },
+        { filter: "blur(0px)", immediateRender: false, duration: 0.22, ease: "power2.out", stagger: 0.07 }, 2.2);
+
+      /* 2.90 · AMBIENT IDLE */
+      tl.to("#s5-card", { y: -18, duration: 1.7, ease: "sine.inOut" }, 2.9);
+      tl.to("#s5-num", { scale: 1.026, duration: 1.6, ease: "sine.inOut" }, 2.9);
+      tl.to("#s5-flash", { opacity: 0.62, scale: 1.1, duration: 1.6, ease: "sine.inOut" }, 2.9);
+
+      /* 4.55 · salida */
+      tl.to(["#s5-card", "#s5-num", "#s5-track", "#s5-label"],
+        { scale: 1.45, opacity: 0, filter: "blur(9px)", duration: 0.95, ease: "expo.in", stagger: 0.04 }, 4.55);
+      tl.to("#s5-flash", { opacity: 0, duration: 0.8, ease: "power2.in" }, 4.7);
+
+      window.__timelines["s05-prueba"] = tl;
+    })();
+  </script>
+</template>
