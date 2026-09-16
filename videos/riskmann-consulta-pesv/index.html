@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js" integrity="sha384-sG0Hv1tP1lZCk9KQmrIbY/XNwi+OY84GQqhMscbnsoBFqAz8KNCil1kvfL3Hbbk2" crossorigin="anonymous"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #000;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #020202;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-i657" id="root" data-composition-id="main" data-start="0" data-duration="45" data-width="1920" data-height="1080">
+      <div data-hf-id="hf-jkqk" id="el-01-hook" class="scene" data-composition-id="01-hook" data-composition-src="compositions/frames/01-hook.html" data-start="0" data-duration="8.4" data-track-index="0"></div>
+      <audio data-hf-id="hf-ktqo" id="el-01-hook-voice" src="assets/voz/f01.mp3" data-start="0" data-duration="8" data-track-index="10" data-volume="1"></audio>
+
+      <div data-hf-id="hf-ernn" id="el-02-product-intro" class="scene" data-composition-id="02-product-intro" data-composition-src="compositions/frames/02-product-intro.html" data-start="8" data-duration="7.5" data-track-index="1"></div>
+      <audio data-hf-id="hf-9kbo" id="el-02-product-intro-voice" src="assets/voz/f02.mp3" data-start="8" data-duration="7" data-track-index="10" data-volume="1"></audio>
+
+      <div data-hf-id="hf-vy2g" id="el-03-automatizacion" class="scene" data-composition-id="03-automatizacion" data-composition-src="compositions/frames/03-automatizacion.html" data-start="15" data-duration="8.5" data-track-index="0"></div>
+      <audio data-hf-id="hf-o92z" id="el-03-automatizacion-voice" src="assets/voz/f03.mp3" data-start="15" data-duration="8" data-track-index="10" data-volume="1"></audio>
+
+      <div data-hf-id="hf-9tbx" id="el-04-ahorro-tiempo" class="scene" data-composition-id="04-ahorro-tiempo" data-composition-src="compositions/frames/04-ahorro-tiempo.html" data-start="23" data-duration="7.4" data-track-index="1"></div>
+      <audio data-hf-id="hf-a61d" id="el-04-ahorro-tiempo-voice" src="assets/voz/f04.mp3" data-start="23" data-duration="7" data-track-index="10" data-volume="1"></audio>
+
+      <div data-hf-id="hf-ms0t" id="el-05-beneficio" class="scene" data-composition-id="05-beneficio" data-composition-src="compositions/frames/05-beneficio.html" data-start="30" data-duration="8.5" data-track-index="0"></div>
+      <audio data-hf-id="hf-np7g" id="el-05-beneficio-voice" src="assets/voz/f05.mp3" data-start="30" data-duration="8" data-track-index="10" data-volume="1"></audio>
+
+      <div data-hf-id="hf-6f8o" id="el-06-branding" class="scene" data-composition-id="06-branding" data-composition-src="compositions/frames/06-branding.html" data-start="38" data-duration="7" data-track-index="1"></div>
+      <audio data-hf-id="hf-0egu" id="el-06-branding-voice" src="assets/voz/f06.mp3" data-start="38" data-duration="7" data-track-index="10" data-volume="1"></audio>
+
+      <video data-hf-id="hf-7lns" id="el-03-automatizacion-video-2" src="assets/graficas.mp4" muted playsinline loop class="clip" style="position:absolute;left:262px;top:152px;width:396px;height:723px;object-fit:cover" data-start="15.35" data-duration="7.4" data-track-index="3009"></video>
+
+      <video data-hf-id="hf-600g" id="el-04-ahorro-tiempo-video-3" src="assets/estadisticas.mp4" muted playsinline loop class="clip" style="position:absolute;left:242px;top:205px;width:374px;height:670px;object-fit:cover" data-start="23.25" data-duration="6.5" data-track-index="4009"></video>
+
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+      // ── frame transitions (injected by transitions.mjs) ──
+      (function () { var tl = window.__timelines["main"];
+        tl.to("#el-01-hook", { scale: 2.5, opacity: 0, filter: "blur(8px)", duration: 0.4, ease: "power3.in" }, 8);
+        tl.fromTo("#el-02-product-intro", { scale: 0.5, opacity: 0, filter: "blur(8px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.4, ease: "power3.out" }, 8);
+        tl.to("#el-02-product-intro", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 15);
+        tl.fromTo("#el-03-automatizacion", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 15);
+        tl.to("#el-03-automatizacion", { x: -1920, duration: 0.5, ease: "power3.inOut" }, 23);
+        tl.fromTo("#el-04-ahorro-tiempo", { x: 1920, opacity: 1 }, { x: 0, duration: 0.5, ease: "power3.inOut" }, 23);
+        tl.to("#el-04-ahorro-tiempo", { scale: 2.5, opacity: 0, filter: "blur(8px)", duration: 0.4, ease: "power3.in" }, 30);
+        tl.fromTo("#el-05-beneficio", { scale: 0.5, opacity: 0, filter: "blur(8px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.4, ease: "power3.out" }, 30);
+        tl.to("#el-05-beneficio", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 38);
+        tl.fromTo("#el-06-branding", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 38);
+        tl.to({}, { duration: 45 }, 0); // full-span anchor — main.duration() == composition total (Studio master duration)
+      })();
+    </script>
+  </body>
+</html>

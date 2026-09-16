@@ -1,0 +1,187 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Dubai";
+      font-weight: 400;
+      font-style: normal;
+      src: url("assets/fonts/DUBAI-REGULAR.TTF") format("truetype");
+    }
+    @font-face {
+      font-family: "Dubai";
+      font-weight: 500;
+      font-style: normal;
+      src: url("assets/fonts/DUBAI-MEDIUM.TTF") format("truetype");
+    }
+    @font-face {
+      font-family: "Dubai";
+      font-weight: 700;
+      font-style: normal;
+      src: url("assets/fonts/DUBAI-BOLD.TTF") format("truetype");
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      container-type: size;
+      overflow: hidden;
+      font-family: "Dubai", sans-serif;
+      background: #020202;
+    }
+
+    .f02-bg { position: absolute; inset: 0; background: #020202; }
+
+    /* halo institucional detrás de la marca — profundidad sin adorno */
+    .f02-glow {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 1500px;
+      height: 1500px;
+      margin-left: -750px;
+      margin-top: -750px;
+      background: radial-gradient(circle, rgba(38,54,125,0.55) 0%, rgba(51,51,102,0.22) 38%, rgba(2,2,2,0) 66%);
+      transform: scale(0.7);
+      opacity: 0;
+    }
+
+    .f02-frame {
+      position: absolute;
+      inset: 110px;
+      border: 1.5px solid rgba(51, 102, 153, 0.35);
+      border-radius: 14px;
+      opacity: 0;
+    }
+    .f02-corner {
+      position: absolute;
+      width: 56px;
+      height: 56px;
+      border: 2px solid rgba(51, 51, 102, 0.85);
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    .f02-corner-tl { top: -1.5px; left: -1.5px; border-right: none; border-bottom: none; transform-origin: top left; }
+    .f02-corner-tr { top: -1.5px; right: -1.5px; border-left: none; border-bottom: none; transform-origin: top right; }
+    .f02-corner-bl { bottom: -1.5px; left: -1.5px; border-right: none; border-top: none; transform-origin: bottom left; }
+    .f02-corner-br { bottom: -1.5px; right: -1.5px; border-left: none; border-top: none; transform-origin: bottom right; }
+
+    .f02-lockup {
+      position: absolute;
+      left: 50%;
+      top: 380px;
+      width: 900px;
+      margin-left: -450px;
+      text-align: center;
+    }
+    .f02-logo {
+      width: 620px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    .f02-rule {
+      width: 84px;
+      height: 4px;
+      margin: 54px auto 0;
+      border-radius: 2px;
+      background: #c8951a;
+      transform: scaleX(0);
+    }
+    .f02-claim {
+      margin-top: 34px;
+      font-size: 1.9cqw;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: -0.01em;
+      opacity: 0;
+    }
+
+    .f02-chips {
+      position: absolute;
+      left: 50%;
+      top: 730px;
+      width: 900px;
+      margin-left: -450px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    .f02-chip {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1.5px solid rgba(51, 102, 153, 0.35);
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 100px;
+      padding: 16px 30px;
+      font-size: 1.05cqw;
+      font-weight: 500;
+      color: #FFFFFF;
+      opacity: 0;
+    }
+    .f02-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #06c7fb;
+      flex-shrink: 0;
+    }
+    .f02-dot-red { background: #FF3333; }
+  </style>
+
+  <div data-hf-id="hf-olrk" id="root" data-composition-id="02-product-intro" data-start="0" data-duration="7.5" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-pp5k" id="f02-bg" class="clip f02-bg" data-start="0" data-duration="7.5" data-track-index="0"></div>
+    <div data-hf-id="hf-7dq8" id="f02-glow" class="clip f02-glow" data-layout-allow-overflow="" data-start="0" data-duration="7.5" data-track-index="1"></div>
+
+    <div data-hf-id="hf-524u" id="f02-frame" class="clip f02-frame" data-start="0" data-duration="7.5" data-track-index="2">
+      <div data-hf-id="hf-nb0y" id="f02-corner-tl" class="f02-corner f02-corner-tl"></div>
+      <div data-hf-id="hf-9yry" id="f02-corner-tr" class="f02-corner f02-corner-tr"></div>
+      <div data-hf-id="hf-z1sq" id="f02-corner-bl" class="f02-corner f02-corner-bl"></div>
+      <div data-hf-id="hf-eto6" id="f02-corner-br" class="f02-corner f02-corner-br"></div>
+    </div>
+
+    <div data-hf-id="hf-nwvj" id="f02-lockup" class="clip f02-lockup" data-start="0" data-duration="7.5" data-track-index="3">
+      <img data-hf-id="hf-m7kk" id="f02-logo" class="f02-logo" src="assets/riskmann_logo_blanco.png" alt="RiskMann">
+      <div data-hf-id="hf-oijm" id="f02-rule" class="f02-rule"></div>
+      <div data-hf-id="hf-djre" id="f02-claim" class="f02-claim">Te decimos si te aplica. Gratis, en un minuto.</div>
+    </div>
+
+    <div data-hf-id="hf-pa3g" id="f02-chips" class="clip f02-chips" data-start="0" data-duration="7.5" data-track-index="4">
+      <div data-hf-id="hf-4oi7" id="f02-chip-1" class="f02-chip"><span data-hf-id="hf-v20p" class="f02-dot"></span>100% confidencial</div>
+      <div data-hf-id="hf-lrqt" id="f02-chip-2" class="f02-chip"><span data-hf-id="hf-64wt" class="f02-dot f02-dot-red"></span>Respuesta inmediata</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const ID = "02-product-intro";
+      const tl = gsap.timeline({ paused: true });
+
+      /* Escena 1 (0.0–0.6s) — el halo abre y el marco se dibuja por las esquinas */
+      tl.to("#f02-glow", { opacity: 1, scale: 1, duration: 1.1, ease: "power3.out" }, 0.0);
+      tl.to("#f02-frame", { opacity: 1, duration: 0.3, ease: "power3.out" }, 0.05);
+      tl.fromTo("#f02-corner-tl", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out" }, 0.08);
+      tl.fromTo("#f02-corner-tr", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out" }, 0.16);
+      tl.fromTo("#f02-corner-bl", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out" }, 0.24);
+      tl.fromTo("#f02-corner-br", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out" }, 0.32);
+
+      /* Escena 2 (0.35–1.1s) — el lockup se ensambla desde el centro */
+      tl.fromTo("#f02-logo", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.75, ease: "power3.out" }, 0.35);
+
+      /* Escena 3 (1.05–1.8s) — regla dorada y promesa, al ritmo de la locución */
+      tl.fromTo("#f02-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 1.05);
+      tl.fromTo("#f02-claim", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 1.2);
+
+      /* Escena 4 (2.05–2.75s) — las dos garantías de la página entran escalonadas */
+      tl.fromTo("#f02-chip-1", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 2.05);
+      tl.fromTo("#f02-chip-2", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 2.3);
+
+      /* Escena 5 (2.8–7s) — sostiene el cierre de marca, quieto */
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

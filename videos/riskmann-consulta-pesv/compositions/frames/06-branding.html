@@ -1,0 +1,156 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Dubai";
+      font-weight: 400;
+      font-style: normal;
+      src: url("assets/fonts/DUBAI-REGULAR.TTF") format("truetype");
+    }
+    @font-face {
+      font-family: "Dubai";
+      font-weight: 500;
+      font-style: normal;
+      src: url("assets/fonts/DUBAI-MEDIUM.TTF") format("truetype");
+    }
+    @font-face {
+      font-family: "Dubai";
+      font-weight: 700;
+      font-style: normal;
+      src: url("assets/fonts/DUBAI-BOLD.TTF") format("truetype");
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      container-type: size;
+      overflow: hidden;
+      font-family: "Dubai", sans-serif;
+      background: #020202;
+    }
+
+    .f06-bg { position: absolute; inset: 0; background: #020202; }
+
+    .f06-photo-box { position: absolute; inset: 0; overflow: hidden; }
+    .f06-photo {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 1080px;
+      object-fit: cover;
+      filter: brightness(0.78) contrast(1.14) saturate(0.32);
+      transform: scale(1.1);
+    }
+    .f06-veil {
+      position: absolute;
+      inset: 0;
+      background: #26367D;
+      mix-blend-mode: multiply;
+      opacity: 0.46;
+    }
+    .f06-scrim {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 56% at 50% 46%, rgba(2,2,2,0.9) 0%, rgba(2,2,2,0.72) 54%, rgba(2,2,2,0.22) 100%);
+    }
+
+    .f06-center {
+      position: absolute;
+      left: 50%;
+      top: 300px;
+      width: 1200px;
+      margin-left: -600px;
+      text-align: center;
+    }
+
+    .f06-logo {
+      width: 520px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      opacity: 0;
+      transform: scale(0.86);
+    }
+    .f06-rule {
+      width: 84px;
+      height: 4px;
+      margin: 44px auto 0;
+      border-radius: 2px;
+      background: #c8951a;
+      transform: scaleX(0);
+    }
+    .f06-head {
+      margin-top: 36px;
+      font-size: 2.3cqw;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: -0.015em;
+      opacity: 0;
+    }
+    .f06-cta {
+      margin-top: 44px;
+      display: inline-block;
+      background: #FF3333;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 1.7cqw;
+      padding: 26px 66px;
+      border-radius: 100px;
+      opacity: 0;
+      transform: scale(0.88);
+    }
+    .f06-url {
+      margin-top: 30px;
+      font-size: 1.2cqw;
+      font-weight: 500;
+      color: #999999;
+      letter-spacing: 0.06em;
+      opacity: 0;
+    }
+  </style>
+
+  <div data-hf-id="hf-zspi" id="root" data-composition-id="06-branding" data-start="0" data-duration="7" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-oh5r" id="f06-bg" class="clip f06-bg" data-start="0" data-duration="7" data-track-index="0"></div>
+
+    <div data-hf-id="hf-o8dc" id="f06-photo-box" class="clip f06-photo-box" data-start="0" data-duration="7" data-track-index="1">
+      <img data-hf-id="hf-v0hm" id="f06-photo" class="f06-photo" data-layout-allow-overflow="" src="assets/fotos/via-aerea.jpg" alt="">
+      <div data-hf-id="hf-6ewt" class="f06-veil"></div>
+      <div data-hf-id="hf-auy9" class="f06-scrim"></div>
+    </div>
+
+    <div data-hf-id="hf-n07x" id="f06-center" class="clip f06-center" data-start="0" data-duration="7" data-track-index="2">
+      <img data-hf-id="hf-f7yc" id="f06-logo" class="f06-logo" src="assets/riskmann_logo_blanco.png" alt="RiskMann">
+      <div data-hf-id="hf-xbwy" id="f06-rule" class="f06-rule"></div>
+      <div data-hf-id="hf-ylgb" id="f06-head" class="f06-head">Consulta gratis si el PESV te aplica</div>
+      <div data-hf-id="hf-1oaw" id="f06-cta" class="f06-cta">Consultar ahora</div>
+      <div data-hf-id="hf-b507" id="f06-url" class="f06-url">riskmann.com/consulta-pesv</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const ID = "06-branding";
+      const tl = gsap.timeline({ paused: true });
+
+      /* cámara: el empuje se relaja hacia el cierre */
+      tl.fromTo("#f06-photo", { scale: 1.1 }, { scale: 1.0, duration: 7, ease: "none" }, 0);
+
+      /* Escena 1 (0.0–0.8s) — el lockup se ensambla */
+      tl.fromTo("#f06-logo", { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.75, ease: "power3.out" }, 0.0);
+      tl.fromTo("#f06-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 0.45);
+
+      /* Escena 2 (0.6s) — la invitación, al ritmo de la locución */
+      tl.fromTo("#f06-head", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 0.6);
+
+      /* Escena 3 (1.4s) — el botón, el único elemento sólido del sistema */
+      tl.fromTo("#f06-cta", { opacity: 0, scale: 0.88 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power3.out" }, 1.4);
+
+      /* Escena 4 (2.055s) — la dirección, cuando la voz cierra la marca */
+      tl.to("#f06-url", { opacity: 1, duration: 0.5, ease: "power3.out" }, 2.055);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

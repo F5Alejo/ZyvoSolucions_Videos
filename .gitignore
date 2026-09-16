@@ -173,3 +173,7 @@ tools/voces/
 
 # Indices parciales del render por partes (se regeneran con --partes N)
 videos/*/index-parte-*.html
+
+# Cache de miniaturas del Studio. Sus nombres superan el limite de ruta de
+# Windows y rompen `git add` entero; ademas se regenera solo.
+**/.thumbnails/

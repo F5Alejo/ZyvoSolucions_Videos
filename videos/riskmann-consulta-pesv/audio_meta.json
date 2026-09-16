@@ -1,0 +1,12 @@
+{
+  "bgm": null,
+  "voices": [
+    { "frame": 1, "path": "assets/voz/f01.mp3" },
+    { "frame": 2, "path": "assets/voz/f02.mp3" },
+    { "frame": 3, "path": "assets/voz/f03.mp3" },
+    { "frame": 4, "path": "assets/voz/f04.mp3" },
+    { "frame": 5, "path": "assets/voz/f05.mp3" },
+    { "frame": 6, "path": "assets/voz/f06.mp3" }
+  ],
+  "sfx": []
+}

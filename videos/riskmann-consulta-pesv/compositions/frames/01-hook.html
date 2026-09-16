@@ -1,0 +1,239 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Dubai";
+      font-weight: 400;
+      font-style: normal;
+      src: url("assets/fonts/DUBAI-REGULAR.TTF") format("truetype");
+    }
+    @font-face {
+      font-family: "Dubai";
+      font-weight: 500;
+      font-style: normal;
+      src: url("assets/fonts/DUBAI-MEDIUM.TTF") format("truetype");
+    }
+    @font-face {
+      font-family: "Dubai";
+      font-weight: 700;
+      font-style: normal;
+      src: url("assets/fonts/DUBAI-BOLD.TTF") format("truetype");
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      container-type: size;
+      overflow: hidden;
+      font-family: "Dubai", sans-serif;
+      background: #020202;
+    }
+
+    .f01-bg { position: absolute; inset: 0; background: #020202; }
+
+    /* capa foto — grado del manual de producción §10.4, recoloreado a la
+       paleta oficial: el velo multiply usa el azul institucional #26367D */
+    .f01-photo-box { position: absolute; inset: 0; overflow: hidden; }
+    .f01-photo {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 1920px;
+      height: 1080px;
+      margin-left: -960px;
+      margin-top: -540px;
+      object-fit: cover;
+      filter: brightness(0.66) contrast(1.16) saturate(0.4);
+      transform: scale(1.12);
+    }
+    .f01-veil {
+      position: absolute;
+      inset: 0;
+      background: #26367D;
+      mix-blend-mode: multiply;
+      opacity: 0.5;
+    }
+    /* scrim local: oscurece solo donde vive el texto, nunca un velo global */
+    .f01-scrim {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(2,2,2,0.92) 0%, rgba(2,2,2,0.8) 44%, rgba(2,2,2,0.22) 74%, rgba(2,2,2,0.06) 100%),
+        linear-gradient(0deg, rgba(2,2,2,0.7) 0%, rgba(2,2,2,0) 40%);
+    }
+
+    /* eyebrow de prestigio — el dorado del manual, con moderación */
+    .f01-eyebrow {
+      position: absolute;
+      left: 160px;
+      top: 150px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      opacity: 0;
+    }
+    .f01-eyebrow-rule {
+      width: 60px;
+      height: 4px;
+      border-radius: 2px;
+      background: #c8951a;
+      transform: scaleX(0);
+      transform-origin: left center;
+    }
+    .f01-eyebrow-text {
+      font-size: 0.95cqw;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #c8951a;
+    }
+
+    /* escenario único: las dos cifras y la frase que las resuelve ocupan
+       el mismo bloque, así el plano nunca queda con un hueco */
+    .f01-stage {
+      position: absolute;
+      left: 160px;
+      top: 330px;
+      width: 1320px;
+      height: 320px;
+    }
+    .f01-layer { position: absolute; left: 0; top: 0; width: 100%; opacity: 0; }
+
+    .f01-num {
+      font-size: 11cqw;
+      font-weight: 700;
+      line-height: 1.05;
+      color: #FF3333;
+      letter-spacing: -0.02em;
+    }
+    .f01-label {
+      margin-top: 34px;
+      font-size: 2.6cqw;
+      font-weight: 500;
+      color: #FFFFFF;
+      letter-spacing: -0.01em;
+    }
+
+    .f01-resolve-rule {
+      width: 84px;
+      height: 5px;
+      border-radius: 3px;
+      background: #FF3333;
+      transform: scaleX(0);
+      transform-origin: left center;
+    }
+    .f01-resolve-text {
+      margin-top: 44px;
+      font-size: 3.4cqw;
+      font-weight: 700;
+      line-height: 1.18;
+      color: #FFFFFF;
+      letter-spacing: -0.015em;
+    }
+
+    /* los dos umbrales quedan a la vista al resolver: quien llega tarde al
+       video sigue leyendo la condición completa */
+    .f01-chips {
+      position: absolute;
+      left: 160px;
+      top: 720px;
+      display: flex;
+      gap: 20px;
+    }
+    .f01-chip {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border: 1.5px solid rgba(51, 102, 153, 0.4);
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 100px;
+      padding: 16px 32px;
+      font-size: 1.15cqw;
+      font-weight: 500;
+      color: #FFFFFF;
+      opacity: 0;
+    }
+    .f01-chip b { color: #FF3333; font-weight: 700; }
+
+    .f01-sub {
+      position: absolute;
+      left: 160px;
+      top: 812px;
+      font-size: 1.1cqw;
+      font-weight: 400;
+      color: #999999;
+      opacity: 0;
+    }
+  </style>
+
+  <div data-hf-id="hf-mlj6" id="root" data-composition-id="01-hook" data-start="0" data-duration="8.4" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-8bk2" id="f01-bg" class="clip f01-bg" data-start="0" data-duration="8.4" data-track-index="0"></div>
+
+    <div data-hf-id="hf-uo1x" id="f01-photo-box" class="clip f01-photo-box" data-start="0" data-duration="8.4" data-track-index="1">
+      <img data-hf-id="hf-f8vs" id="f01-photo" class="f01-photo" data-layout-allow-overflow="" src="assets/fotos/flota-aerea.jpg" alt="">
+      <div data-hf-id="hf-z3s8" class="f01-veil"></div>
+      <div data-hf-id="hf-9id6" class="f01-scrim"></div>
+    </div>
+
+    <div data-hf-id="hf-lslm" id="f01-eyebrow" class="clip f01-eyebrow" data-start="0" data-duration="8.4" data-track-index="2">
+      <div data-hf-id="hf-3qy6" id="f01-eyebrow-rule" class="f01-eyebrow-rule"></div>
+      <div data-hf-id="hf-qcja" class="f01-eyebrow-text">PESV · Colombia</div>
+    </div>
+
+    <div data-hf-id="hf-8yxf" id="f01-stage" class="clip f01-stage" data-start="0" data-duration="8.4" data-track-index="3">
+      <div data-hf-id="hf-5opn" id="f01-beat-1" class="f01-layer" data-layout-allow-overlap="">
+        <div data-hf-id="hf-hgha" class="f01-num">11</div>
+        <div data-hf-id="hf-bsrc" class="f01-label">o más vehículos al servicio de tu empresa.</div>
+      </div>
+      <div data-hf-id="hf-x0ts" id="f01-beat-2" class="f01-layer" data-layout-allow-overlap="">
+        <div data-hf-id="hf-ogse" class="f01-num">2</div>
+        <div data-hf-id="hf-56n0" class="f01-label">o más conductores a cargo.</div>
+      </div>
+      <div data-hf-id="hf-yikb" id="f01-resolve" class="f01-layer" data-layout-allow-overlap="">
+        <div data-hf-id="hf-1d36" id="f01-resolve-rule" class="f01-resolve-rule"></div>
+        <div data-hf-id="hf-qomo" id="f01-resolve-text" class="f01-resolve-text">Entonces el PESV ya te aplica<br data-hf-id="hf-x5px">— lo sepas o no.</div>
+      </div>
+    </div>
+
+    <div data-hf-id="hf-6u3g" id="f01-chips" class="clip f01-chips" data-start="0" data-duration="8.4" data-track-index="4">
+      <div data-hf-id="hf-9a34" id="f01-chip-1" class="f01-chip"><b data-hf-id="hf-i9n8">11+</b> vehículos</div>
+      <div data-hf-id="hf-6pvo" id="f01-chip-2" class="f01-chip"><b data-hf-id="hf-64fu">2+</b> conductores</div>
+    </div>
+
+    <div data-hf-id="hf-81c3" id="f01-sub" class="clip f01-sub" data-start="0" data-duration="8.4" data-track-index="5">
+      Resolución 20223040040595 de 2022 · Ley 1503 de 2011, modificada por la Ley 2050 de 2020
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const ID = "01-hook";
+      const tl = gsap.timeline({ paused: true });
+
+      /* cámara: empuje continuo sobre la foto, toda la duración del plano */
+      tl.fromTo("#f01-photo", { scale: 1.12 }, { scale: 1.0, duration: 8.4, ease: "none" }, 0);
+
+      /* Escena 1 (0.0–1.8s) — eyebrow + primera cifra: "¿Tu empresa tiene once vehículos?" */
+      tl.to("#f01-eyebrow", { opacity: 1, duration: 0.4, ease: "power3.out" }, 0.0);
+      tl.fromTo("#f01-eyebrow-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f01-beat-1", { opacity: 0, y: 34 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.25);
+
+      /* Escena 2 (1.823s) — releva la cifra en el mismo lugar: "¿O dos conductores a cargo?" */
+      tl.to("#f01-beat-1", { opacity: 0, y: -26, duration: 0.42, ease: "power3.out" }, 1.823);
+      tl.fromTo("#f01-beat-2", { opacity: 0, y: 34 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 1.95);
+
+      /* Escena 3 (3.622s) — la cifra cede el mismo bloque a la frase que resuelve */
+      tl.to("#f01-beat-2", { opacity: 0, y: -26, duration: 0.42, ease: "power3.out" }, 3.622);
+      tl.fromTo("#f01-resolve", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 3.85);
+      tl.fromTo("#f01-resolve-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.55, ease: "power3.out" }, 3.9);
+
+      /* Escena 4 (4.5s→) — los dos umbrales quedan a la vista y el pie legal cierra */
+      tl.fromTo("#f01-chip-1", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 4.5);
+      tl.fromTo("#f01-chip-2", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 4.75);
+      tl.to("#f01-sub", { opacity: 1, duration: 0.5, ease: "power3.out" }, 5.2);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>
