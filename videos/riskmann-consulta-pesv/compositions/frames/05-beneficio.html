@@ -1,0 +1,156 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Dubai";
+      font-weight: 400;
+      font-style: normal;
+      src: url("assets/fonts/DUBAI-REGULAR.TTF") format("truetype");
+    }
+    @font-face {
+      font-family: "Dubai";
+      font-weight: 500;
+      font-style: normal;
+      src: url("assets/fonts/DUBAI-MEDIUM.TTF") format("truetype");
+    }
+    @font-face {
+      font-family: "Dubai";
+      font-weight: 700;
+      font-style: normal;
+      src: url("assets/fonts/DUBAI-BOLD.TTF") format("truetype");
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      container-type: size;
+      overflow: hidden;
+      font-family: "Dubai", sans-serif;
+      background: #020202;
+    }
+
+    .f05-bg { position: absolute; inset: 0; background: #020202; }
+
+    .f05-photo-box { position: absolute; inset: 0; overflow: hidden; }
+    .f05-photo {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 1080px;
+      object-fit: cover;
+      filter: brightness(0.72) contrast(1.14) saturate(0.34);
+      transform: scale(1.0);
+    }
+    .f05-veil {
+      position: absolute;
+      inset: 0;
+      background: #26367D;
+      mix-blend-mode: multiply;
+      opacity: 0.42;
+    }
+    .f05-scrim {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(2,2,2,0.93) 0%, rgba(2,2,2,0.8) 52%, rgba(2,2,2,0.2) 100%);
+    }
+
+    .f05-col {
+      position: absolute;
+      left: 160px;
+      top: 220px;
+      width: 1240px;
+    }
+
+    .f05-eyebrow { display: flex; align-items: center; gap: 18px; opacity: 0; }
+    .f05-eyebrow-rule {
+      width: 48px; height: 4px; border-radius: 2px; background: #c8951a;
+      transform: scaleX(0); transform-origin: left center;
+    }
+    .f05-eyebrow-text {
+      font-size: 0.95cqw; font-weight: 500; letter-spacing: 0.2em;
+      text-transform: uppercase; color: #c8951a;
+    }
+
+    .f05-cards { margin-top: 48px; display: flex; flex-direction: column; gap: 22px; }
+    .f05-card {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      border: 1.5px solid rgba(51, 102, 153, 0.35);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 30px 40px;
+      opacity: 0;
+      transform: translateY(26px);
+    }
+    .f05-num {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #FF3333;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 1.4cqw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .f05-text { font-size: 1.75cqw; font-weight: 500; color: #FFFFFF; letter-spacing: -0.01em; }
+    .f05-hot { color: #FF3333; font-weight: 700; }
+  </style>
+
+  <div data-hf-id="hf-ped6" id="root" data-composition-id="05-beneficio" data-start="0" data-duration="8.5" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-l3xb" id="f05-bg" class="clip f05-bg" data-start="0" data-duration="8.5" data-track-index="0"></div>
+
+    <div data-hf-id="hf-ag5q" id="f05-photo-box" class="clip f05-photo-box" data-start="0" data-duration="8.5" data-track-index="1">
+      <img data-hf-id="hf-zoxl" id="f05-photo" class="f05-photo" data-layout-allow-overflow="" src="assets/fotos/cinturon.jpg" alt="">
+      <div data-hf-id="hf-j00c" class="f05-veil"></div>
+      <div data-hf-id="hf-f7yu" class="f05-scrim"></div>
+    </div>
+
+    <div data-hf-id="hf-s9lj" id="f05-col" class="clip f05-col" data-start="0" data-duration="8.5" data-track-index="2">
+      <div data-hf-id="hf-6gas" id="f05-eyebrow" class="f05-eyebrow">
+        <div data-hf-id="hf-bf3i" id="f05-eyebrow-rule" class="f05-eyebrow-rule"></div>
+        <div data-hf-id="hf-frzq" class="f05-eyebrow-text">Con RiskMann</div>
+      </div>
+
+      <div data-hf-id="hf-43w1" class="f05-cards">
+        <div data-hf-id="hf-888g" id="f05-card-1" class="f05-card">
+          <div data-hf-id="hf-50m7" class="f05-num">1</div>
+          <div data-hf-id="hf-36pf" class="f05-text">Cumples los <span data-hf-id="hf-9ha2" class="f05-hot">24 pasos</span> del ciclo PESV</div>
+        </div>
+        <div data-hf-id="hf-j3q3" id="f05-card-2" class="f05-card">
+          <div data-hf-id="hf-4mb6" class="f05-num">2</div>
+          <div data-hf-id="hf-vp7w" class="f05-text">Mantienes tu auditoría anual al día</div>
+        </div>
+        <div data-hf-id="hf-f5m2" id="f05-card-3" class="f05-card">
+          <div data-hf-id="hf-4805" class="f05-num">3</div>
+          <div data-hf-id="hf-k3lt" class="f05-text">Evitas multas de hasta <span data-hf-id="hf-axew" class="f05-hot">500 SMMLV</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const ID = "05-beneficio";
+      const tl = gsap.timeline({ paused: true });
+
+      /* cámara: empuje lento sobre la foto durante todo el plano */
+      tl.fromTo("#f05-photo", { scale: 1.0 }, { scale: 1.08, duration: 8, ease: "none" }, 0);
+
+      tl.to("#f05-eyebrow", { opacity: 1, duration: 0.35, ease: "power3.out" }, 0.0);
+      tl.fromTo("#f05-eyebrow-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "power3.out" }, 0.05);
+
+      /* cada ficha entra justo cuando la voz la nombra (0.0 / 2.926 / 4.865) */
+      tl.fromTo("#f05-card-1", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 0.3);
+      tl.fromTo("#f05-card-2", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 2.926);
+      tl.fromTo("#f05-card-3", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 4.865);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

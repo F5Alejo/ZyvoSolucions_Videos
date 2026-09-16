@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "preferences": {
+    "destination": {
+      "value": "social",
+      "confirmed_in": [
+        "riskmann-consulta-pesv"
+      ],
+      "updated_at": "2026-09-16T12:16:57.810Z"
+    },
+    "aspect": {
+      "value": "16:9",
+      "confirmed_in": [
+        "riskmann-consulta-pesv"
+      ],
+      "updated_at": "2026-09-16T12:16:57.888Z"
+    },
+    "language": {
+      "value": "es",
+      "confirmed_in": [
+        "riskmann-consulta-pesv"
+      ],
+      "updated_at": "2026-09-16T12:16:57.961Z"
+    },
+    "flow": {
+      "value": "automation",
+      "confirmed_in": [
+        "riskmann-consulta-pesv"
+      ],
+      "updated_at": "2026-09-16T12:16:58.031Z"
+    },
+    "storyboard": {
+      "value": "yes",
+      "confirmed_in": [
+        "riskmann-consulta-pesv"
+      ],
+      "updated_at": "2026-09-16T12:16:58.097Z"
+    },
+    "style_preset.product-launch-video": {
+      "value": "riskmann-manual-oficial",
+      "confirmed_in": [
+        "riskmann-consulta-pesv"
+      ],
+      "updated_at": "2026-09-16T12:38:22.860Z"
+    }
+  },
+  "sightings": {}
+}

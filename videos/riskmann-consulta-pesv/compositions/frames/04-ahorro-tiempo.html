@@ -1,0 +1,187 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Dubai";
+      font-weight: 400;
+      font-style: normal;
+      src: url("assets/fonts/DUBAI-REGULAR.TTF") format("truetype");
+    }
+    @font-face {
+      font-family: "Dubai";
+      font-weight: 500;
+      font-style: normal;
+      src: url("assets/fonts/DUBAI-MEDIUM.TTF") format("truetype");
+    }
+    @font-face {
+      font-family: "Dubai";
+      font-weight: 700;
+      font-style: normal;
+      src: url("assets/fonts/DUBAI-BOLD.TTF") format("truetype");
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      container-type: size;
+      overflow: hidden;
+      font-family: "Dubai", sans-serif;
+      background: #020202;
+    }
+
+    .f04-bg { position: absolute; inset: 0; background: #020202; }
+    .f04-glow {
+      position: absolute;
+      left: 1180px;
+      top: 540px;
+      width: 1200px;
+      height: 1200px;
+      margin-left: -600px;
+      margin-top: -600px;
+      background: radial-gradient(circle, rgba(6,199,251,0.14) 0%, rgba(2,2,2,0) 62%);
+      opacity: 0;
+    }
+
+    /* el clip nativo mide 374×670: se muestra a tamaño real para que no pierda nitidez */
+    .f04-device {
+      position: absolute;
+      left: 230px;
+      top: 193px;
+      width: 398px;
+      height: 694px;
+      border: 1.5px solid rgba(51, 102, 153, 0.5);
+      border-radius: 24px;
+      background: #0a0a0a;
+      opacity: 0;
+    }
+    .f04-device-rest {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      width: 374px;
+      height: 670px;
+      border-radius: 14px;
+      background: radial-gradient(ellipse at 60% 25%, #16233b 0%, #0a0a0a 72%);
+    }
+
+    .f04-col {
+      position: absolute;
+      left: 760px;
+      top: 200px;
+      width: 1000px;
+    }
+
+    .f04-eyebrow { display: flex; align-items: center; gap: 18px; opacity: 0; }
+    .f04-eyebrow-rule {
+      width: 48px; height: 4px; border-radius: 2px; background: #c8951a;
+      transform: scaleX(0); transform-origin: left center;
+    }
+    .f04-eyebrow-text {
+      font-size: 0.95cqw; font-weight: 500; letter-spacing: 0.2em;
+      text-transform: uppercase; color: #c8951a;
+    }
+
+    .f04-num {
+      margin-top: 150px;
+      font-size: 10cqw;
+      font-weight: 700;
+      line-height: 1.05;
+      color: #06c7fb;
+      letter-spacing: -0.03em;
+      opacity: 0;
+    }
+
+    .f04-track {
+      margin-top: 110px;
+      width: 820px;
+      height: 10px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      opacity: 0;
+    }
+    .f04-fill {
+      width: 100%;
+      height: 100%;
+      border-radius: 6px;
+      background: #06c7fb;
+      transform: scaleX(0);
+      transform-origin: left center;
+    }
+
+    .f04-label {
+      margin-top: 40px;
+      font-size: 1.85cqw;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: -0.01em;
+      opacity: 0;
+    }
+    .f04-sub {
+      margin-top: 14px;
+      font-size: 1.15cqw;
+      font-weight: 400;
+      color: #999999;
+      opacity: 0;
+    }
+  </style>
+
+  <div data-hf-id="hf-9bo1" id="root" data-composition-id="04-ahorro-tiempo" data-start="0" data-duration="7.4" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-9ew9" id="f04-bg" class="clip f04-bg" data-start="0" data-duration="7.4" data-track-index="0"></div>
+    <div data-hf-id="hf-wqbx" id="f04-glow" class="clip f04-glow" data-layout-allow-overflow="" data-start="0" data-duration="7.4" data-track-index="1"></div>
+
+    <div data-hf-id="hf-rknf" id="f04-device" class="clip f04-device" data-start="0" data-duration="7.4" data-track-index="2">
+      <div data-hf-id="hf-1bbw" class="f04-device-rest"></div>
+      <!-- approved frame video hoisted by assemble-index -->
+    </div>
+
+    <div data-hf-id="hf-5i2c" id="f04-col" class="clip f04-col" data-start="0" data-duration="7.4" data-track-index="3">
+      <div data-hf-id="hf-pq46" id="f04-eyebrow" class="f04-eyebrow">
+        <div data-hf-id="hf-wrg2" id="f04-eyebrow-rule" class="f04-eyebrow-rule"></div>
+        <div data-hf-id="hf-p291" class="f04-eyebrow-text">Ahorra tiempo real</div>
+      </div>
+
+      <div data-hf-id="hf-5faf" id="f04-num" class="f04-num">0%</div>
+
+      <div data-hf-id="hf-96gy" id="f04-track" class="f04-track"><div data-hf-id="hf-qeqe" id="f04-fill" class="f04-fill"></div></div>
+
+      <div data-hf-id="hf-t5py" id="f04-label" class="f04-label">menos tiempo en gestión documental</div>
+      <div data-hf-id="hf-l3kb" id="f04-sub" class="f04-sub">y en los reportes que exige la auditoría de tu empresa.</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const ID = "04-ahorro-tiempo";
+      const tl = gsap.timeline({ paused: true });
+
+      /* Escena 1 (0.0–0.8s) — el dispositivo y el halo abren */
+      tl.to("#f04-glow", { opacity: 1, duration: 0.9, ease: "power3.out" }, 0.0);
+      tl.to("#f04-device", { opacity: 1, duration: 0.55, ease: "power3.out" }, 0.0);
+      tl.to("#f04-eyebrow", { opacity: 1, duration: 0.35, ease: "power3.out" }, 0.25);
+      tl.fromTo("#f04-eyebrow-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "power3.out" }, 0.3);
+
+      /* Escena 2 (0.9–2.6s) — el dispositivo cede peso y la cifra cuenta con la voz */
+      tl.to("#f04-device", { x: -46, duration: 0.7, ease: "power3.out" }, 0.9);
+      tl.to("#f04-num", { opacity: 1, duration: 0.3, ease: "power3.out" }, 1.0);
+      tl.to("#f04-track", { opacity: 1, duration: 0.3, ease: "power3.out" }, 1.0);
+
+      const counter = { v: 0 };
+      const numEl = document.getElementById("f04-num");
+      tl.to(counter, {
+        v: 70,
+        duration: 1.6,
+        ease: "power3.out",
+        onUpdate: function () { numEl.textContent = Math.round(counter.v) + "%"; },
+      }, 1.0);
+      tl.fromTo("#f04-fill", { scaleX: 0 }, { scaleX: 0.7, duration: 1.6, ease: "power3.out" }, 1.0);
+
+      /* Escena 3 (2.7s→) — la etiqueta aterriza y sostiene hasta el corte */
+      tl.fromTo("#f04-label", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 2.7);
+      tl.to("#f04-sub", { opacity: 1, duration: 0.5, ease: "power3.out" }, 3.3);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

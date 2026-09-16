@@ -1,0 +1,196 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Dubai";
+      font-weight: 400;
+      font-style: normal;
+      src: url("assets/fonts/DUBAI-REGULAR.TTF") format("truetype");
+    }
+    @font-face {
+      font-family: "Dubai";
+      font-weight: 500;
+      font-style: normal;
+      src: url("assets/fonts/DUBAI-MEDIUM.TTF") format("truetype");
+    }
+    @font-face {
+      font-family: "Dubai";
+      font-weight: 700;
+      font-style: normal;
+      src: url("assets/fonts/DUBAI-BOLD.TTF") format("truetype");
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      container-type: size;
+      overflow: hidden;
+      font-family: "Dubai", sans-serif;
+      background: #020202;
+    }
+
+    .f03-bg { position: absolute; inset: 0; background: #020202; }
+    .f03-glow {
+      position: absolute;
+      left: 460px;
+      top: 540px;
+      width: 1100px;
+      height: 1100px;
+      margin-left: -550px;
+      margin-top: -550px;
+      background: radial-gradient(circle, rgba(38,54,125,0.5) 0%, rgba(2,2,2,0) 62%);
+      opacity: 0;
+    }
+
+    /* mockup vertical: la grabación real es 1080×1920, así que el marco
+       respeta su proporción nativa en vez de recortarla en un panel ancho */
+    .f03-device {
+      position: absolute;
+      left: 250px;
+      top: 140px;
+      width: 420px;
+      height: 747px;
+      border: 1.5px solid rgba(51, 102, 153, 0.5);
+      border-radius: 26px;
+      background: #0a0a0a;
+      opacity: 0;
+      transform: translateY(26px) scale(0.97);
+    }
+    /* pantalla en reposo permanente: evita un hueco negro cuando el clip cierra */
+    .f03-device-rest {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      width: 396px;
+      height: 723px;
+      border-radius: 16px;
+      background: radial-gradient(ellipse at 40% 20%, #16233b 0%, #0a0a0a 72%);
+    }
+
+    .f03-col {
+      position: absolute;
+      left: 790px;
+      top: 210px;
+      width: 960px;
+    }
+
+    .f03-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      opacity: 0;
+    }
+    .f03-eyebrow-rule {
+      width: 48px;
+      height: 4px;
+      border-radius: 2px;
+      background: #c8951a;
+      transform: scaleX(0);
+      transform-origin: left center;
+    }
+    .f03-eyebrow-text {
+      font-size: 0.95cqw;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #c8951a;
+    }
+
+    .f03-headline {
+      margin-top: 28px;
+      font-size: 3.1cqw;
+      font-weight: 700;
+      line-height: 1.12;
+      color: #FFFFFF;
+      letter-spacing: -0.015em;
+      opacity: 0;
+    }
+
+    .f03-cards { margin-top: 52px; display: flex; flex-direction: column; gap: 20px; }
+    .f03-card {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      border: 1.5px solid rgba(51, 102, 153, 0.35);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 22px 30px;
+      opacity: 0;
+      transform: translateX(34px);
+    }
+    .f03-card img { width: 52px; height: 52px; flex-shrink: 0; }
+    .f03-card-text { font-size: 1.35cqw; font-weight: 500; color: #FFFFFF; }
+
+    .f03-foot {
+      margin-top: 44px;
+      font-size: 1.2cqw;
+      font-weight: 400;
+      color: #999999;
+      opacity: 0;
+    }
+  </style>
+
+  <div data-hf-id="hf-tzcq" id="root" data-composition-id="03-automatizacion" data-start="0" data-duration="8.5" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-n77n" id="f03-bg" class="clip f03-bg" data-start="0" data-duration="8.5" data-track-index="0"></div>
+    <div data-hf-id="hf-bkov" id="f03-glow" class="clip f03-glow" data-layout-allow-overflow="" data-start="0" data-duration="8.5" data-track-index="1"></div>
+
+    <div data-hf-id="hf-ezth" id="f03-device" class="clip f03-device" data-start="0" data-duration="8.5" data-track-index="2">
+      <div data-hf-id="hf-4j8j" class="f03-device-rest"></div>
+      <!-- marcado para que assemble-index lo eleve a la raíz del index -->
+      <!-- approved frame video hoisted by assemble-index -->
+    </div>
+
+    <div data-hf-id="hf-eles" id="f03-col" class="clip f03-col" data-start="0" data-duration="8.5" data-track-index="3">
+      <div data-hf-id="hf-egmc" id="f03-eyebrow" class="f03-eyebrow">
+        <div data-hf-id="hf-clle" id="f03-eyebrow-rule" class="f03-eyebrow-rule"></div>
+        <div data-hf-id="hf-l84c" class="f03-eyebrow-text">Automatización de tareas</div>
+      </div>
+
+      <div data-hf-id="hf-73um" id="f03-headline" class="f03-headline">Olvida el Excel disperso.</div>
+
+      <div data-hf-id="hf-m0af" class="f03-cards">
+        <div data-hf-id="hf-nlz8" id="f03-card-1" class="f03-card">
+          <img data-hf-id="hf-et84" src="assets/seguridad_vial_icono_conductores.webp" alt="">
+          <div data-hf-id="hf-x4lp" class="f03-card-text">Conductores</div>
+        </div>
+        <div data-hf-id="hf-w9v3" id="f03-card-2" class="f03-card">
+          <img data-hf-id="hf-8n71" src="assets/seguridad_vial_icono_vehiculos.webp" alt="">
+          <div data-hf-id="hf-sx2s" class="f03-card-text">Vehículos</div>
+        </div>
+        <div data-hf-id="hf-sbr2" id="f03-card-3" class="f03-card">
+          <img data-hf-id="hf-zmwk" src="assets/seguridad_vial_icono_mantenimientos.webp" alt="">
+          <div data-hf-id="hf-qjyk" class="f03-card-text">Mantenimientos preventivos</div>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-a8ma" id="f03-foot" class="f03-foot">Centralizados, con alertas de vencimientos.</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const ID = "03-automatizacion";
+      const tl = gsap.timeline({ paused: true });
+
+      /* Escena 1 (0.0–0.7s) — el halo abre y el dispositivo se asienta */
+      tl.to("#f03-glow", { opacity: 1, duration: 0.8, ease: "power3.out" }, 0.0);
+      tl.to("#f03-device", { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: "power3.out" }, 0.05);
+
+      /* Escena 2 (0.15–1.4s) — primera frase de voz: "Olvida el Excel disperso." */
+      tl.to("#f03-eyebrow", { opacity: 1, duration: 0.35, ease: "power3.out" }, 0.15);
+      tl.fromTo("#f03-eyebrow-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "power3.out" }, 0.2);
+      tl.fromTo("#f03-headline", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.4);
+
+      /* Escena 3 (1.46–3.7s) — la voz enumera; cada tarjeta entra cuando la nombra */
+      tl.fromTo("#f03-card-1", { opacity: 0, x: 34 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 1.55);
+      tl.fromTo("#f03-card-2", { opacity: 0, x: 34 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 2.25);
+      tl.fromTo("#f03-card-3", { opacity: 0, x: 34 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 2.95);
+
+      /* Escena 4 (4.0s→) — cierra la idea y sostiene */
+      tl.to("#f03-foot", { opacity: 1, duration: 0.5, ease: "power3.out" }, 4.0);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

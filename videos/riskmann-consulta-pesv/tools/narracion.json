@@ -1,0 +1,56 @@
+[
+  {
+    "n": 1,
+    "frames": ["01-hook"],
+    "texto": "¿Tu empresa tiene once vehículos? ¿O dos conductores a cargo? Entonces el PESV ya te aplica, lo sepas o no.",
+    "frases": [
+      "¿Tu empresa tiene once vehículos?",
+      "¿O dos conductores a cargo?",
+      "Entonces el PESV ya te aplica, lo sepas o no."
+    ]
+  },
+  {
+    "n": 2,
+    "frames": ["02-product-intro"],
+    "texto": "RiskMann te ayuda a saberlo, gratis, en un minuto.",
+    "frases": [
+      "RiskMann te ayuda a saberlo, gratis, en un minuto."
+    ]
+  },
+  {
+    "n": 3,
+    "frames": ["03-automatizacion"],
+    "texto": "Olvida el Excel disperso. Conductores, vehículos y mantenimientos, centralizados.",
+    "frases": [
+      "Olvida el Excel disperso.",
+      "Conductores, vehículos y mantenimientos, centralizados."
+    ]
+  },
+  {
+    "n": 4,
+    "frames": ["04-ahorro-tiempo"],
+    "texto": "Y reduce hasta un setenta por ciento el tiempo de gestión documental.",
+    "frases": [
+      "Y reduce hasta un setenta por ciento el tiempo de gestión documental."
+    ]
+  },
+  {
+    "n": 5,
+    "frames": ["05-beneficio"],
+    "texto": "Cumple los veinticuatro pasos del ciclo PESV. Mantén tu auditoría al día. Evita multas de hasta quinientos salarios mínimos.",
+    "frases": [
+      "Cumple los veinticuatro pasos del ciclo PESV.",
+      "Mantén tu auditoría al día.",
+      "Evita multas de hasta quinientos salarios mínimos."
+    ]
+  },
+  {
+    "n": 6,
+    "frames": ["06-branding"],
+    "texto": "Consulta gratis si el PESV te aplica. RiskMann, by SOFU.",
+    "frases": [
+      "Consulta gratis si el PESV te aplica.",
+      "RiskMann, by SOFU."
+    ]
+  }
+]
