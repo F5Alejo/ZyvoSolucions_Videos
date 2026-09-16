@@ -1,0 +1,97 @@
+<template>
+  <style>
+    @font-face { font-family: "Dubai"; font-weight: 400; src: url("assets/fonts/DUBAI-REGULAR.TTF") format("truetype"); }
+    @font-face { font-family: "Dubai"; font-weight: 500; src: url("assets/fonts/DUBAI-MEDIUM.TTF") format("truetype"); }
+    @font-face { font-family: "Dubai"; font-weight: 700; src: url("assets/fonts/DUBAI-BOLD.TTF") format("truetype"); }
+
+    #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Dubai", sans-serif; background: #020202; }
+    .s6-layer { position: absolute; inset: 0; }
+    .s6-ground { background:
+      radial-gradient(1100px 1000px at 50% 52%, rgba(38,54,125,0.66) 0%, rgba(2,2,2,0) 70%),
+      radial-gradient(820px 700px at 14% 16%, rgba(51,102,153,0.28) 0%, rgba(2,2,2,0) 72%),
+      #020202; }
+    .s6-halo { position: absolute; left: 50%; top: 1230px; width: 1100px; height: 1100px; margin-left: -550px; margin-top: -550px;
+      background: radial-gradient(circle, rgba(255,51,51,0.34) 0%, rgba(2,2,2,0) 62%); opacity: 0; }
+
+    .s6-q { position: absolute; left: 84px; top: 560px; width: 912px; text-align: center;
+      font-size: 84px; font-weight: 700; line-height: 1.38; color: #FFFFFF; letter-spacing: -0.025em; }
+    .s6-q .w { display: inline-block; opacity: 0; }
+
+    .s6-logo { position: absolute; left: 290px; top: 880px; width: 500px; height: auto; opacity: 0;
+      filter: drop-shadow(0 22px 50px rgba(0,0,0,0.6)); }
+    .s6-rule { position: absolute; left: 492px; top: 1060px; width: 96px; height: 6px; border-radius: 3px; background: #c8951a;
+      transform: scaleX(0); box-shadow: 0 0 22px rgba(200,149,26,0.8); }
+
+    .s6-ctabox { position: absolute; left: 84px; top: 1160px; width: 912px; text-align: center; }
+    .s6-cta { display: inline-block; opacity: 0;
+      background: linear-gradient(145deg, #FF4646, #E32020);
+      color: #FFFFFF; font-weight: 700; font-size: 64px; padding: 42px 112px; border-radius: 100px; white-space: nowrap;
+      box-shadow: 0 30px 80px rgba(255,51,51,0.45), inset 0 2px 0 rgba(255,255,255,0.3); }
+
+    .s6-free { position: absolute; left: 84px; top: 1380px; width: 912px; text-align: center; font-size: 42px; font-weight: 500; color: #06c7fb; opacity: 0; }
+    .s6-url { position: absolute; left: 84px; top: 1460px; width: 912px; text-align: center; font-size: 34px; font-weight: 500; color: #FFFFFF; letter-spacing: 0.06em; opacity: 0; }
+  </style>
+
+  <div id="root" data-composition-id="s06-contacto" data-start="0" data-duration="6" data-width="1080" data-height="1920">
+    <div id="s6-ground" class="clip s6-layer s6-ground" data-start="0" data-duration="6" data-track-index="0"></div>
+    <div id="s6-halo" class="clip s6-halo" data-layout-allow-overflow data-start="0" data-duration="6" data-track-index="1"></div>
+
+    <div id="s6-stage" class="clip s6-layer" data-start="0" data-duration="6" data-track-index="2">
+      <div class="s6-q" id="s6-q"><span class="w">¿Quieres</span> <span class="w">saber</span> <span class="w">si</span> <span class="w">te</span> <span class="w">aplica?</span></div>
+
+      <img class="s6-logo" id="s6-logo" src="assets/riskmann_logo_blanco.png" alt="RiskMann" />
+      <div class="s6-rule" id="s6-rule"></div>
+
+      <div class="s6-ctabox" id="s6-ctabox">
+        <div class="s6-cta" id="s6-cta">Escríbenos</div>
+      </div>
+
+      <div class="s6-free" id="s6-free">La consulta es gratis.</div>
+      <div class="s6-url" id="s6-url">riskmann.com/consulta-pesv</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      /* 0.00 · entrada atravesando la lente */
+      tl.fromTo("#s6-stage", { scale: 0.88 }, { scale: 1, duration: 0.75, ease: "expo.out" }, 0);
+      tl.fromTo("#s6-stage", { filter: "blur(7px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.28, ease: "power2.out" }, 0);
+
+      /* 0.10 · la pregunta, en cascada (voz: "¿Quieres saber si te aplica?") */
+      tl.fromTo("#s6-q .w", { opacity: 0, y: 54 },
+        { opacity: 1, y: 0, duration: 0.65, ease: "power4.out", stagger: 0.08 }, 0.1);
+      tl.fromTo("#s6-q .w", { filter: "blur(6px)" },
+        { filter: "blur(0px)", immediateRender: false, duration: 0.25, ease: "power2.out", stagger: 0.08 }, 0.1);
+
+      /* 0.90 · la marca florece */
+      tl.set("#s6-logo", { opacity: 1 }, 0.9);
+      tl.fromTo("#s6-logo", { scale: 0.62 }, { scale: 1, duration: 0.85, ease: "back.out(1.5)" }, 0.9);
+      tl.fromTo("#s6-logo", { filter: "blur(8px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.28, ease: "power2.out" }, 0.9);
+      tl.fromTo("#s6-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power4.out" }, 1.35);
+
+      /* 1.50 · SPECTACLE — el botón aterriza con overshoot y halo (voz: "Escríbenos") */
+      tl.set("#s6-cta", { opacity: 1 }, 1.5);
+      tl.fromTo("#s6-cta", { scale: 0.5 }, { scale: 1, duration: 0.95, ease: "back.out(1.8)" }, 1.5);
+      tl.fromTo("#s6-cta", { filter: "blur(8px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.28, ease: "power2.out" }, 1.5);
+      tl.fromTo("#s6-halo", { opacity: 0, scale: 0.45 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power4.out" }, 1.5);
+      tl.to("#s6-halo", { opacity: 0.5, duration: 0.7, ease: "power2.inOut" }, 2.0);
+
+      /* 2.40 · la oferta y la dirección */
+      tl.fromTo("#s6-free", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.5, ease: "power4.out" }, 2.4);
+      tl.fromTo("#s6-url", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.5, ease: "power4.out" }, 2.75);
+
+      /* 3.20 · AMBIENT IDLE — el botón late suave hasta el final */
+      tl.to("#s6-cta", { scale: 1.035, duration: 1.4, ease: "sine.inOut" }, 3.2);
+      tl.to("#s6-cta", { scale: 1, duration: 1.4, ease: "sine.inOut" }, 4.6);
+      tl.to("#s6-halo", { opacity: 0.74, scale: 1.1, duration: 1.5, ease: "sine.inOut" }, 3.2);
+      tl.to("#s6-halo", { opacity: 0.5, scale: 1, duration: 1.3, ease: "sine.inOut" }, 4.7);
+      tl.to("#s6-logo", { y: -12, duration: 2.6, ease: "sine.inOut" }, 3.2);
+      tl.to("#s6-q", { y: -16, duration: 2.6, ease: "sine.inOut" }, 3.2);
+
+      window.__timelines["s06-contacto"] = tl;
+    })();
+  </script>
+</template>

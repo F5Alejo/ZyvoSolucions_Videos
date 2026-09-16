@@ -1,0 +1,22 @@
+{
+ "duracion": 37.5,
+ "salida": "assets/mezcla-B.wav",
+ "pasa_altos": 90,
+ "pistas": [
+  {
+   "archivo": "assets/cama.wav",
+   "en": 0,
+   "ganancia": 0.5
+  },
+  {
+   "archivo": "assets/sfx1.wav",
+   "en": 0,
+   "ganancia": 0.7
+  },
+  {
+   "archivo": "assets/sfx2.wav",
+   "en": 0,
+   "ganancia": 0.7
+  }
+ ]
+}

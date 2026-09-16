@@ -1,0 +1,109 @@
+<template>
+  <style>
+    @font-face { font-family: "Dubai"; font-weight: 400; src: url("assets/fonts/DUBAI-REGULAR.TTF") format("truetype"); }
+    @font-face { font-family: "Dubai"; font-weight: 500; src: url("assets/fonts/DUBAI-MEDIUM.TTF") format("truetype"); }
+    @font-face { font-family: "Dubai"; font-weight: 700; src: url("assets/fonts/DUBAI-BOLD.TTF") format("truetype"); }
+
+    #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Dubai", sans-serif; background: #020202; }
+    .s3-layer { position: absolute; inset: 0; }
+    .s3-ground { background:
+      radial-gradient(1000px 900px at 50% 52%, rgba(120,12,18,0.55) 0%, rgba(2,2,2,0) 68%),
+      radial-gradient(900px 800px at 12% 16%, rgba(38,54,125,0.3) 0%, rgba(2,2,2,0) 72%),
+      #020202; }
+    .s3-pulse { position: absolute; left: 50%; top: 880px; width: 1300px; height: 1300px; margin-left: -650px; margin-top: -650px;
+      background: radial-gradient(circle, rgba(255,51,51,0.3) 0%, rgba(2,2,2,0) 62%); opacity: 0; }
+
+    /* onda expansiva del impacto */
+    .s3-ring { position: absolute; left: 50%; top: 880px; width: 620px; height: 620px; margin-left: -310px; margin-top: -310px;
+      border: 5px solid rgba(255,51,51,0.75); border-radius: 50%; opacity: 0; }
+
+    .s3-kicker { position: absolute; left: 84px; top: 430px; width: 912px; font-size: 52px; font-weight: 500; line-height: 1.5; color: #FFFFFF; }
+    .s3-kicker .w { display: inline-block; opacity: 0; }
+
+    .s3-hero { position: absolute; left: 0; top: 700px; width: 1080px; text-align: center; }
+    .s3-num { display: inline-block; opacity: 0; font-size: 300px; font-weight: 700; line-height: 1.16; color: #FF3333;
+      letter-spacing: -0.05em; text-shadow: 0 22px 90px rgba(255,51,51,0.55); }
+    .s3-unit { position: absolute; left: 0; top: 1150px; width: 1080px; text-align: center;
+      font-size: 84px; font-weight: 700; color: #FFFFFF; letter-spacing: 0.04em; opacity: 0; }
+
+    .s3-chip { position: absolute; left: 190px; top: 1310px; width: 700px; box-sizing: border-box;
+      padding: 32px 44px; border-radius: 100px; opacity: 0; display: flex; align-items: center; justify-content: center; gap: 20px;
+      background: linear-gradient(145deg, rgba(200,149,26,0.24), rgba(200,149,26,0.07));
+      border: 1px solid rgba(200,149,26,0.5);
+      box-shadow: 0 26px 70px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.18);
+      backdrop-filter: blur(20px); }
+    .s3-chip-text { font-size: 52px; font-weight: 700; color: #FFFFFF; letter-spacing: -0.01em; white-space: nowrap; }
+
+    .s3-legal { position: absolute; left: 84px; top: 1475px; width: 912px; text-align: center; font-size: 30px; font-weight: 400; line-height: 1.5; color: #999999; opacity: 0; }
+  </style>
+
+  <div id="root" data-composition-id="s03-costo" data-start="0" data-duration="6.5" data-width="1080" data-height="1920">
+    <div id="s3-ground" class="clip s3-layer s3-ground" data-start="0" data-duration="6.5" data-track-index="0"></div>
+    <div id="s3-pulse" class="clip s3-pulse" data-layout-allow-overflow data-start="0" data-duration="6.5" data-track-index="1"></div>
+
+    <div id="s3-stage" class="clip s3-layer" data-start="0" data-duration="6.5" data-track-index="2">
+      <div class="s3-ring" id="s3-ring" aria-hidden="true" data-layout-ignore></div>
+
+      <div class="s3-kicker" id="s3-kicker"><span class="w">No</span> <span class="w">cumplir</span> <span class="w">cuesta</span> <span class="w">hasta</span></div>
+
+      <div class="s3-hero"><span class="s3-num" id="s3-num">500</span></div>
+      <div class="s3-unit" id="s3-unit">SMMLV</div>
+
+      <div class="s3-chip" id="s3-chip">
+        <div class="s3-chip-text">≈ $650.000.000</div>
+      </div>
+
+      <div class="s3-legal" id="s3-legal">Ley 1562 de 2012 · sanción del Ministerio del Trabajo</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      /* 0.00 · entrada atravesando la lente */
+      tl.fromTo("#s3-stage", { scale: 0.88 }, { scale: 1, duration: 0.75, ease: "expo.out" }, 0);
+      tl.fromTo("#s3-stage", { filter: "blur(7px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.28, ease: "power2.out" }, 0);
+      tl.fromTo("#s3-pulse", { opacity: 0, scale: 0.7 }, { opacity: 0.55, scale: 1, duration: 0.92, ease: "power3.out" }, 0);
+
+      /* 0.20 · el cargo, en cascada (voz: "Y no cumplir cuesta hasta…") */
+      tl.fromTo("#s3-kicker .w", { opacity: 0, y: 48 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power4.out", stagger: 0.075 }, 0.2);
+      tl.fromTo("#s3-kicker .w", { filter: "blur(5px)" },
+        { filter: "blur(0px)", immediateRender: false, duration: 0.24, ease: "power2.out", stagger: 0.075 }, 0.2);
+
+      /* 1.00 · SPECTACLE — la cifra aterriza con overshoot y onda expansiva */
+      tl.set("#s3-num", { opacity: 1 }, 1.0);
+      tl.fromTo("#s3-num", { scale: 0.34 }, { scale: 1, duration: 0.95, ease: "back.out(1.6)" }, 1.0);
+      tl.fromTo("#s3-num", { filter: "blur(10px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.32, ease: "power2.out" }, 1.0);
+      tl.fromTo("#s3-ring", { opacity: 0.85, scale: 0.25 },
+        { opacity: 0, scale: 2.6, duration: 1.1, ease: "expo.out" }, 1.05);
+      tl.to("#s3-pulse", { opacity: 0.9, duration: 0.3, ease: "power4.out" }, 1.0);
+      tl.to("#s3-pulse", { opacity: 0.5, duration: 0.8, ease: "power2.inOut" }, 1.3);
+
+      /* 1.70 · la unidad entra de costado */
+      tl.fromTo("#s3-unit", { opacity: 0, x: 90 }, { opacity: 1, x: 0, duration: 0.6, ease: "expo.out" }, 1.7);
+      tl.fromTo("#s3-unit", { filter: "blur(5px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.24, ease: "power2.out" }, 1.7);
+
+      /* 2.90 · la traducción a pesos (voz: "Más de seiscientos cincuenta millones") */
+      tl.fromTo("#s3-chip", { opacity: 0, y: 60, scale: 0.9 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "back.out(1.6)" }, 2.9);
+
+      /* 3.70 · el respaldo legal */
+      tl.fromTo("#s3-legal", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 3.7);
+
+      /* 3.90 · AMBIENT IDLE */
+      tl.to("#s3-num", { scale: 1.028, duration: 1.6, ease: "sine.inOut" }, 3.9);
+      tl.to("#s3-chip", { y: -14, duration: 1.7, ease: "sine.inOut" }, 3.9);
+      tl.to("#s3-pulse", { opacity: 0.78, scale: 1.09, duration: 1.7, ease: "sine.inOut" }, 3.9);
+
+      /* 5.55 · salida */
+      tl.to(["#s3-hero", "#s3-unit", "#s3-chip", "#s3-kicker", "#s3-legal"],
+        { scale: 1.5, opacity: 0, filter: "blur(9px)", duration: 0.95, ease: "expo.in", stagger: 0.04 }, 5.55);
+      tl.to("#s3-pulse", { opacity: 0, duration: 0.8, ease: "power2.in" }, 5.7);
+
+      window.__timelines["s03-costo"] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,116 @@
+<template>
+  <style>
+    @font-face { font-family: "Dubai"; font-weight: 400; src: url("assets/fonts/DUBAI-REGULAR.TTF") format("truetype"); }
+    @font-face { font-family: "Dubai"; font-weight: 500; src: url("assets/fonts/DUBAI-MEDIUM.TTF") format("truetype"); }
+    @font-face { font-family: "Dubai"; font-weight: 700; src: url("assets/fonts/DUBAI-BOLD.TTF") format("truetype"); }
+
+    #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Dubai", sans-serif; background: #020202; }
+    .s2-layer { position: absolute; inset: 0; }
+    .s2-ground { background:
+      radial-gradient(1000px 900px at 76% 22%, rgba(38,54,125,0.6) 0%, rgba(2,2,2,0) 70%),
+      radial-gradient(900px 900px at 18% 80%, rgba(51,51,102,0.44) 0%, rgba(2,2,2,0) 72%),
+      #020202; }
+
+    .s2-eyebrow { position: absolute; left: 84px; top: 470px; display: flex; align-items: center; gap: 18px; opacity: 0; }
+    .s2-eyebrow-rule { width: 56px; height: 5px; border-radius: 3px; background: #c8951a; transform: scaleX(0); transform-origin: left center; }
+    .s2-eyebrow-text { font-size: 30px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: #c8951a; }
+
+    .s2-card { position: absolute; left: 84px; width: 912px; box-sizing: border-box;
+      padding: 40px 52px; border-radius: 32px; opacity: 0; display: flex; align-items: center; gap: 44px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.035));
+      border: 1px solid rgba(255,255,255,0.16);
+      box-shadow: 0 34px 90px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.22);
+      backdrop-filter: blur(22px); }
+    .s2-c1 { top: 610px; }
+    .s2-c2 { top: 920px; }
+
+    .s2-numwrap { position: relative; flex-shrink: 0; }
+    .s2-num { font-size: 168px; font-weight: 700; line-height: 1.12; color: #FFFFFF; letter-spacing: -0.04em; }
+    .s2-bar { position: absolute; left: 0; bottom: 18px; width: 100%; height: 12px; border-radius: 6px; background: #FF3333;
+      transform: scaleX(0); transform-origin: left center; box-shadow: 0 0 26px rgba(255,51,51,0.7); }
+    .s2-lab { font-size: 50px; font-weight: 500; line-height: 1.35; color: #FFFFFF; letter-spacing: -0.01em; opacity: 0; }
+
+    /* el veredicto — el clímax del plano */
+    .s2-verdict { position: absolute; left: 84px; top: 1290px; width: 912px; box-sizing: border-box;
+      padding: 40px 48px; border-radius: 28px; opacity: 0;
+      background: linear-gradient(145deg, rgba(255,51,51,0.22), rgba(255,51,51,0.07));
+      border: 1px solid rgba(255,51,51,0.45);
+      box-shadow: 0 30px 80px rgba(255,51,51,0.22), inset 0 1px 0 rgba(255,255,255,0.18);
+      backdrop-filter: blur(20px); }
+    .s2-verdict-text { font-size: 56px; font-weight: 700; line-height: 1.42; color: #FFFFFF; letter-spacing: -0.015em; }
+    .s2-verdict-text .w { display: inline-block; opacity: 0; }
+    .s2-flash { position: absolute; left: 50%; top: 1400px; width: 1200px; height: 1200px; margin-left: -600px; margin-top: -600px;
+      background: radial-gradient(circle, rgba(255,51,51,0.4) 0%, rgba(2,2,2,0) 60%); opacity: 0; }
+  </style>
+
+  <div id="root" data-composition-id="s02-umbral" data-start="0" data-duration="6.5" data-width="1080" data-height="1920">
+    <div id="s2-ground" class="clip s2-layer s2-ground" data-start="0" data-duration="6.5" data-track-index="0"></div>
+
+    <div id="s2-stage" class="clip s2-layer" data-start="0" data-duration="6.5" data-track-index="1">
+      <div class="s2-eyebrow" id="s2-eyebrow">
+        <div class="s2-eyebrow-rule" id="s2-eyebrow-rule"></div>
+        <div class="s2-eyebrow-text">Los dos umbrales</div>
+      </div>
+
+      <div class="s2-card s2-c1" id="s2-card-1">
+        <div class="s2-numwrap"><div class="s2-num">11</div><div class="s2-bar" id="s2-bar-1"></div></div>
+        <div class="s2-lab" id="s2-lab-1">o más vehículos</div>
+      </div>
+
+      <div class="s2-card s2-c2" id="s2-card-2">
+        <div class="s2-numwrap"><div class="s2-num">2</div><div class="s2-bar" id="s2-bar-2"></div></div>
+        <div class="s2-lab" id="s2-lab-2">o más conductores</div>
+      </div>
+
+      <div class="s2-flash" id="s2-flash" aria-hidden="true" data-layout-ignore></div>
+      <div class="s2-verdict" id="s2-verdict">
+        <div class="s2-verdict-text" id="s2-verdict-text"><span class="w">Con</span> <span class="w">cualquiera</span> <span class="w">de</span> <span class="w">las</span> <span class="w">dos,</span> <span class="w">ya</span> <span class="w">te</span> <span class="w">aplica.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      /* 0.00 · el plano entra atravesando la lente desde el anterior */
+      tl.fromTo("#s2-stage", { scale: 0.86 }, { scale: 1, duration: 0.75, ease: "expo.out" }, 0);
+      tl.fromTo("#s2-stage", { filter: "blur(7px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.28, ease: "power2.out" }, 0);
+
+      tl.to("#s2-eyebrow", { opacity: 1, duration: 0.3, ease: "power3.out" }, 0.1);
+      tl.fromTo("#s2-eyebrow-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "power4.out" }, 0.15);
+
+      /* 0.20 · primera tarjeta (voz: "Once vehículos") */
+      tl.fromTo("#s2-card-1", { opacity: 0, y: 64, scale: 0.94 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "back.out(1.4)" }, 0.2);
+      tl.fromTo("#s2-bar-1", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power4.out" }, 0.6);
+      tl.fromTo("#s2-lab-1", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.5, ease: "expo.out" }, 0.65);
+
+      /* 0.95 · segunda tarjeta (voz: "O dos conductores") */
+      tl.fromTo("#s2-card-2", { opacity: 0, y: 64, scale: 0.94 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "back.out(1.4)" }, 0.95);
+      tl.fromTo("#s2-bar-2", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power4.out" }, 1.35);
+      tl.fromTo("#s2-lab-2", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.5, ease: "expo.out" }, 1.4);
+
+      /* 2.05 · SPECTACLE — el veredicto aterriza con overshoot y destello */
+      tl.fromTo("#s2-verdict", { opacity: 0, y: 80, scale: 0.9 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: "back.out(1.7)" }, 2.05);
+      tl.fromTo("#s2-flash", { opacity: 0, scale: 0.45 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power4.out" }, 2.05);
+      tl.to("#s2-flash", { opacity: 0.38, duration: 0.7, ease: "power2.inOut" }, 2.45);
+      tl.to("#s2-verdict-text .w", { opacity: 1, duration: 0.38, ease: "power3.out", stagger: 0.065 }, 2.4);
+
+      /* 3.30 · AMBIENT IDLE — las tarjetas flotan a distinto ritmo: eso da profundidad */
+      tl.to("#s2-card-1", { y: -16, duration: 2.2, ease: "sine.inOut" }, 3.3);
+      tl.to("#s2-card-2", { y: -9, duration: 2.4, ease: "sine.inOut" }, 3.3);
+      tl.to("#s2-verdict", { y: -20, scale: 1.014, duration: 2.2, ease: "sine.inOut" }, 3.3);
+      tl.to("#s2-flash", { opacity: 0.58, scale: 1.1, duration: 2.2, ease: "sine.inOut" }, 3.3);
+
+      /* 5.55 · salida: atraviesa la lente */
+      tl.to(["#s2-card-1", "#s2-card-2", "#s2-verdict", "#s2-eyebrow"],
+        { scale: 1.5, opacity: 0, filter: "blur(9px)", duration: 0.95, ease: "expo.in", stagger: 0.04 }, 5.55);
+
+      window.__timelines["s02-umbral"] = tl;
+    })();
+  </script>
+</template>

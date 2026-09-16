@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js" integrity="sha384-sG0Hv1tP1lZCk9KQmrIbY/XNwi+OY84GQqhMscbnsoBFqAz8KNCil1kvfL3Hbbk2" crossorigin="anonymous"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #000;
+      }
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #020202;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="37.5"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div
+        id="el-s01-gancho"
+        class="scene"
+        data-composition-id="s01-gancho"
+        data-composition-src="compositions/frames/s01-gancho.html"
+        data-start="0"
+        data-duration="6.5"
+        data-track-index="1"
+      ></div>
+      <audio
+        id="el-s01-gancho-voice"
+        src="assets/voz/f01.mp3"
+        data-start="0"
+        data-duration="6.5"
+        data-track-index="10"
+        data-volume="1"
+      ></audio>
+
+      <div
+        id="el-s02-umbral"
+        class="scene"
+        data-composition-id="s02-umbral"
+        data-composition-src="compositions/frames/s02-umbral.html"
+        data-start="6.5"
+        data-duration="6.5"
+        data-track-index="1"
+      ></div>
+      <audio
+        id="el-s02-umbral-voice"
+        src="assets/voz/f02.mp3"
+        data-start="6.5"
+        data-duration="6.5"
+        data-track-index="10"
+        data-volume="1"
+      ></audio>
+
+      <div
+        id="el-s03-costo"
+        class="scene"
+        data-composition-id="s03-costo"
+        data-composition-src="compositions/frames/s03-costo.html"
+        data-start="13"
+        data-duration="6.5"
+        data-track-index="1"
+      ></div>
+      <audio
+        id="el-s03-costo-voice"
+        src="assets/voz/f03.mp3"
+        data-start="13"
+        data-duration="6.5"
+        data-track-index="10"
+        data-volume="1"
+      ></audio>
+
+      <div
+        id="el-s04-solucion"
+        class="scene"
+        data-composition-id="s04-solucion"
+        data-composition-src="compositions/frames/s04-solucion.html"
+        data-start="19.5"
+        data-duration="6.5"
+        data-track-index="1"
+      ></div>
+      <audio
+        id="el-s04-solucion-voice"
+        src="assets/voz/f04.mp3"
+        data-start="19.5"
+        data-duration="6.5"
+        data-track-index="10"
+        data-volume="1"
+      ></audio>
+
+      <div
+        id="el-s05-prueba"
+        class="scene"
+        data-composition-id="s05-prueba"
+        data-composition-src="compositions/frames/s05-prueba.html"
+        data-start="26"
+        data-duration="5.5"
+        data-track-index="1"
+      ></div>
+      <audio
+        id="el-s05-prueba-voice"
+        src="assets/voz/f05.mp3"
+        data-start="26"
+        data-duration="5.5"
+        data-track-index="10"
+        data-volume="1"
+      ></audio>
+
+      <div
+        id="el-s06-contacto"
+        class="scene"
+        data-composition-id="s06-contacto"
+        data-composition-src="compositions/frames/s06-contacto.html"
+        data-start="31.5"
+        data-duration="6"
+        data-track-index="1"
+      ></div>
+      <audio
+        id="el-s06-contacto-voice"
+        src="assets/voz/f06.mp3"
+        data-start="31.5"
+        data-duration="6"
+        data-track-index="10"
+        data-volume="1"
+      ></audio>
+
+      <video id="el-s05-prueba-video-4" src="assets/graficas-limpio.mp4" muted playsinline loop
+        class="clip"
+        style="position:absolute;left:334px;top:344px;width:412px;height:695px;object-fit:cover"
+        data-start="26.4"
+        data-duration="4.8"
+        data-track-index="5009"
+      ></video>
+
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

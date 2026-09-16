@@ -1,0 +1,56 @@
+[
+  {
+    "n": 1,
+    "frames": ["s01-gancho"],
+    "texto": "El PESV no me aplica. ¿Seguro?",
+    "frases": [
+      "El PESV no me aplica.",
+      "¿Seguro?"
+    ]
+  },
+  {
+    "n": 2,
+    "frames": ["s02-umbral"],
+    "texto": "Once vehículos. O dos conductores. Con cualquiera de las dos, tu empresa ya está obligada.",
+    "frases": [
+      "Once vehículos.",
+      "O dos conductores.",
+      "Con cualquiera de las dos, tu empresa ya está obligada."
+    ]
+  },
+  {
+    "n": 3,
+    "frames": ["s03-costo"],
+    "texto": "Y no cumplir cuesta hasta quinientos salarios mínimos. Más de seiscientos cincuenta millones de pesos.",
+    "frases": [
+      "Y no cumplir cuesta hasta quinientos salarios mínimos.",
+      "Más de seiscientos cincuenta millones de pesos."
+    ]
+  },
+  {
+    "n": 4,
+    "frames": ["s04-solucion"],
+    "texto": "RiskMann automatiza tu PESV. Conductores, vehículos y mantenimientos, en una sola plataforma.",
+    "frases": [
+      "RiskMann automatiza tu PESV.",
+      "Conductores, vehículos y mantenimientos, en una sola plataforma."
+    ]
+  },
+  {
+    "n": 5,
+    "frames": ["s05-prueba"],
+    "texto": "Y reduce hasta un setenta por ciento el tiempo de gestión documental.",
+    "frases": [
+      "Y reduce hasta un setenta por ciento el tiempo de gestión documental."
+    ]
+  },
+  {
+    "n": 6,
+    "frames": ["s06-contacto"],
+    "texto": "¿Quieres saber si te aplica? Escríbenos. La consulta es gratis.",
+    "frases": [
+      "¿Quieres saber si te aplica?",
+      "Escríbenos. La consulta es gratis."
+    ]
+  }
+]
