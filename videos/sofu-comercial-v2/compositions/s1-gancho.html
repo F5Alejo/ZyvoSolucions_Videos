@@ -1,0 +1,91 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Montserrat", sans-serif; background: #E8EAE9; }
+    .g-layer { position: absolute; inset: 0; }
+    .g-shake { position: absolute; inset: -60px; will-change: transform; }
+
+    /* three hard cards: one per half beat, each in a different brand colour */
+    .g-card { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; }
+    .g-c-teal { background: #19484D; }
+    .g-c-yellow { background: #F9B410; }
+    .g-c-paper { background: #E8EAE9; }
+    .g-word { font-size: 240px; font-weight: 900; line-height: 1; letter-spacing: -0.03em; white-space: nowrap; }
+    .g-on-teal { color: #FFFFFF; }
+    .g-on-yellow { color: #19484D; }
+    .g-on-paper { color: #19484D; }
+    .g-bar { position: absolute; left: -20%; width: 140%; height: 24px; background: #F9B410; transform: scaleX(0); transform-origin: 0 50%; }
+    .g-bar-teal { background: #19484D; }
+
+    /* the question, three lines, key words in yellow on a teal slab */
+    .g-quest { position: absolute; left: 150px; top: 250px; width: 1620px; }
+    .g-line { font-size: 86px; font-weight: 800; line-height: 1.2; color: #19484D; white-space: nowrap; }
+    .g-w { display: inline-block; opacity: 0; will-change: transform, opacity; }
+    .g-hi { position: relative; display: inline-block; }
+    .g-hi-bar { position: absolute; left: -8px; right: -10px; top: 14%; bottom: 8%; background: #F9B410; transform: scaleX(0); transform-origin: 0 50%; border-radius: 4px; z-index: 0; }
+    .g-hi .g-w { position: relative; z-index: 1; }
+
+    .g-pain { position: absolute; left: 150px; top: 720px; font-size: 54px; font-weight: 600; color: #3C5A5C; white-space: nowrap; opacity: 0; }
+    .g-pain b { color: #19484D; font-weight: 900; }
+
+    .g-flash { position: absolute; inset: 0; background: #FFFFFF; opacity: 0; }
+    /* exit: the teal slab sweeps up and becomes scene 2's ground */
+    .g-wipe { position: absolute; inset: 0; background: #19484D; transform: translateY(1080px); }
+  </style>
+
+  <div id="root" data-composition-id="s1-gancho" data-start="0" data-duration="6" data-width="1920" data-height="1080">
+    <div id="g-ground" class="clip g-layer g-c-paper" data-start="0" data-duration="6" data-track-index="0"></div>
+
+    <div id="g-stage" class="clip g-layer" data-start="0" data-duration="6" data-track-index="2">
+      <div class="g-quest">
+        <div class="g-line"><span class="g-w">¿Su</span> <span class="g-w">empresa</span> <span class="g-w">necesita</span> <span class="g-w">mejorar</span> <span class="g-w">la</span></div>
+        <div class="g-line"><span class="g-hi"><span class="g-hi-bar" id="g-hi-1" aria-hidden="true" data-layout-ignore></span><span class="g-w">gestión</span> <span class="g-w">de</span> <span class="g-w">sus</span> <span class="g-w">riesgos</span></span><span class="g-w">,</span> <span class="g-w">optimizar</span></div>
+        <div class="g-line"><span class="g-w">sus</span> <span class="g-hi"><span class="g-hi-bar" id="g-hi-2" aria-hidden="true" data-layout-ignore></span><span class="g-w">procesos</span></span> <span class="g-w">o</span> <span class="g-w">sumar</span> <span class="g-hi"><span class="g-hi-bar" id="g-hi-3" aria-hidden="true" data-layout-ignore></span><span class="g-w">tecnología</span></span><span class="g-w">?</span></div>
+      </div>
+      <div class="g-pain" id="g-pain">Gestionar la información <b>manualmente</b> cuesta tiempo.</div>
+    </div>
+
+    <div id="g-fx" class="clip g-layer" data-start="0" data-duration="6" data-track-index="3">
+      <div class="g-flash" id="g-flash" aria-hidden="true" data-layout-ignore></div>
+      <div class="g-wipe" id="g-wipe" aria-hidden="true" data-layout-ignore></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var F = 1 / 30;
+
+      /* 0.3 · the question builds word by word, straight off the hook */
+      var words = gsap.utils.toArray("#g-stage .g-w");
+      for (var i = 0; i < words.length; i++) {
+        tl.set(words[i], { opacity: 1 }, 0.3 + i * 0.05);
+        tl.fromTo(words[i], { y: 44, rotationX: -55, transformPerspective: 900, transformOrigin: "50% 100%" },
+          { y: 0, rotationX: 0, duration: 0.38, ease: "power4.out" }, 0.3 + i * 0.05);
+      }
+      /* 1.8 / 2.1 / 2.4 · the yellow marker hits the three key words */
+      tl.to("#g-hi-1", { scaleX: 1, duration: 0.3, ease: "power2.out" }, 1.8);
+      tl.to("#g-hi-2", { scaleX: 1, duration: 0.3, ease: "power2.out" }, 2.1);
+      tl.to("#g-hi-3", { scaleX: 1, duration: 0.3, ease: "power2.out" }, 2.4);
+
+      /* 3.2 · the cost line lands under the question */
+      tl.fromTo("#g-pain", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 3.2);
+
+      /* 5.2 · the teal slab sweeps up: it is scene 2's ground */
+      tl.fromTo("#g-wipe", { y: 1080 }, { y: 0, duration: 0.8, ease: "power3.in" }, 5.2);
+
+      window.__timelines["s1-gancho"] = tl;
+    })();
+  </script>
+</template>

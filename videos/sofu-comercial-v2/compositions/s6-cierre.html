@@ -1,0 +1,87 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Montserrat", sans-serif; }
+    .c-layer { position: absolute; inset: 0; }
+    .c-ground { background: radial-gradient(1500px 950px at 50% 40%, #1E565C 0%, #19484D 58%, #12383C 100%); }
+
+    .c-card { position: absolute; left: 560px; top: 170px; width: 800px; height: 320px; border-radius: 24px; background: #FFFFFF;
+      transform-origin: 50% 50%; opacity: 0; }
+    .c-card img { position: absolute; left: 70px; top: 6px; width: 660px; height: 334.9px; }
+
+    .c-claim { position: absolute; left: 0; width: 1920px; text-align: center; font-size: 64px; font-weight: 900; color: #FFFFFF; line-height: 1.1; white-space: nowrap; }
+    .c-claim-1 { top: 552px; }
+    .c-claim-2 { top: 638px; }
+    .c-claim span { display: inline-block; opacity: 0; will-change: transform, opacity; }
+    .c-claim i { font-style: normal; color: #F9B410; }
+
+    .c-sub { position: absolute; left: 0; top: 748px; width: 1920px; text-align: center; font-size: 40px; font-weight: 500; color: #BBD3D4; white-space: nowrap; opacity: 0; }
+
+    .c-cta { position: absolute; left: 610px; top: 826px; width: 700px; height: 104px; border-radius: 52px; background: #F9B410;
+      display: grid; place-items: center; font-size: 40px; font-weight: 900; color: #19484D; white-space: nowrap; opacity: 0; will-change: transform, opacity; }
+    .c-note { position: absolute; left: 0; top: 962px; width: 1920px; text-align: center; font-size: 26px; font-weight: 500; color: #9FBCBD; white-space: nowrap; opacity: 0; }
+  </style>
+
+  <div id="root" data-composition-id="s6-cierre" data-start="0" data-duration="10" data-width="1920" data-height="1080">
+    <div id="c-ground" class="clip c-layer c-ground" data-start="0" data-duration="10" data-track-index="0"></div>
+
+    <div id="c-stage" class="clip c-layer" data-start="0" data-duration="10" data-track-index="1">
+      <div class="c-card" id="c-card"><img src="assets/marca/sofu-logo.png" alt="SOFU BIC SAS" /></div>
+
+      <div class="c-claim c-claim-1" id="c-claim">
+        <span>Tecnología</span> <span>y</span> <span>gestión</span> <span>para</span> <span>empresas</span>
+      </div>
+      <div class="c-claim c-claim-2" id="c-claim-2">
+        <span><i>más</i></span> <span><i>seguras</i></span> <span><i>y</i></span> <span><i>eficientes.</i></span>
+      </div>
+      <div class="c-sub" id="c-sub">Gestión de riesgos · Seguridad y Salud en el Trabajo · Soluciones tecnológicas</div>
+
+      <div class="c-cta" id="c-cta">Contáctenos</div>
+      <div class="c-note" id="c-note">SOFU BIC S.A.S. · Yopal, Casanare · Colombia</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      /* 0.3 · the lockup lands on its white card and holds */
+      tl.fromTo("#c-card", { opacity: 0, scale: 0.86, y: 40 }, { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "power4.out" }, 0.3);
+
+      /* 1.1 · the closing claim, word by word; the last four words carry the yellow */
+      var words = gsap.utils.toArray("#c-claim span, #c-claim-2 span");
+      for (var i = 0; i < words.length; i++) {
+        tl.set(words[i], { opacity: 1 }, 1.1 + i * 0.07);
+        tl.fromTo(words[i], { y: 46 }, { y: 0, duration: 0.36, ease: "power4.out" }, 1.1 + i * 0.07);
+      }
+      tl.fromTo("#c-sub", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 2.4);
+
+      /* 3.2 · the call to action arrives with a single scale punch */
+      tl.set("#c-cta", { opacity: 1 }, 3.2);
+      tl.fromTo("#c-cta", { scale: 0.7 }, { scale: 1, duration: 0.45, ease: "power4.out" }, 3.2);
+      tl.to("#c-cta", { scale: 1.04, duration: 0.14, ease: "power2.out" }, 4.2);
+      tl.to("#c-cta", { scale: 1, duration: 0.3, ease: "power2.inOut" }, 4.34);
+
+      tl.fromTo("#c-note", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out" }, 4.6);
+
+      /* 5.6 · a slow push holds the end card alive */
+      tl.fromTo("#c-stage", { scale: 1 }, { scale: 1.02, duration: 3.4, ease: "sine.inOut", immediateRender: false }, 5.6);
+
+      /* final 0.9 s · the only fade-out of the piece */
+      tl.to("#c-stage", { opacity: 0, duration: 0.9, ease: "power1.in" }, 9.1);
+
+      window.__timelines["s6-cierre"] = tl;
+    })();
+  </script>
+</template>

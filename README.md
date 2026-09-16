@@ -25,6 +25,8 @@ videos/
   pesv-m01-profundidad/  exploración: partículas por GPU y 3D con cámara (16:9)
   pesv-m01-profundidad-vertical/  la misma exploración en 9:16
   sofu-comercial/        comercial de SOFU BIC S.A.S. (68 s, 16:9)
+  sofu-comercial-v2/     el comercial rehecho con gancho, golpe inicial y cierre (52 s, 16:9)
+  sofu-comercial-v2-vertical/  la versión v2 en 9:16 para redes
   riskmann-sala-de-control/  video de marketing de la plataforma (68 s)
 ```
 
@@ -43,6 +45,8 @@ Todos los videos terminados están en la carpeta compartida de Drive:
 | 04 | `Presentacion de la plataforma - Video promocional (1m08)` | Marketing de RiskMann, sin sonido — *no usar comercialmente aún* | `videos/riskmann-sala-de-control/` |
 | 04b | `Presentacion de la plataforma - Video promocional narrado (1m08)` | El mismo 04, con voz y música | `videos/riskmann-sala-de-control/` |
 | 05 | `SOFU BIC SAS - Presentacion comercial de la empresa (1m08)` | Comercial de la casa matriz SOFU, a partir de su guion | `videos/sofu-comercial/` |
+| 06 | `SOFU BIC SAS - Comercial dinamico (52s)` | El comercial rehecho: gancho, golpe inicial y cierre | `videos/sofu-comercial-v2/` |
+| 06b | `SOFU BIC SAS - Comercial dinamico vertical para redes (52s)` | El mismo 06 en 9:16 | `videos/sofu-comercial-v2-vertical/` |
 
 Los archivos 01–03 empiezan por `NN - Seguridad Vial para Pasajeros - Modulo 1 Actor Vial - …` y
 los 04 por `NN - RiskMann - …`; el número es el orden sugerido para verlos. Los nombres coinciden con los

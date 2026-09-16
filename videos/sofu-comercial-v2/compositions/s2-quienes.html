@@ -1,0 +1,120 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Montserrat", sans-serif; }
+    .q-layer { position: absolute; inset: 0; }
+    .q-ground { background: radial-gradient(1400px 900px at 50% 34%, #1E565C 0%, #19484D 58%, #12383C 100%); }
+
+    /* the official lockup lives on its own white card: the ink is dark and the ground is not */
+    .q-card { position: absolute; left: 340px; top: 130px; width: 1240px; height: 470px; border-radius: 26px; background: #FFFFFF;
+      transform-origin: 50% 50%; will-change: transform; }
+    .q-logo { position: absolute; left: 170px; top: 6px; width: 900px; height: 456.7px; }
+    .q-logo img { display: block; width: 900px; height: 456.7px; }
+
+    .q-line { position: absolute; left: 0; width: 1920px; text-align: center; white-space: nowrap; }
+    .q-l1 { top: 650px; font-size: 62px; font-weight: 800; color: #FFFFFF; line-height: 1.1; }
+    .q-l1 .q-w { display: inline-block; opacity: 0; will-change: transform, opacity; }
+    .q-l2 { top: 736px; font-size: 40px; font-weight: 500; color: #BBD3D4; line-height: 1.2; opacity: 0; }
+
+    /* three chips: the company's own three fronts */
+    .q-chips { position: absolute; left: 0; top: 830px; width: 1920px; display: flex; justify-content: center; gap: 26px; }
+    .q-chip { display: flex; align-items: center; gap: 16px; padding: 18px 30px; border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08); box-shadow: inset 0 0 0 2px rgba(249, 180, 16, 0.55);
+      font-size: 34px; font-weight: 800; color: #FFFFFF; white-space: nowrap; opacity: 0; will-change: transform, opacity; }
+    .q-dot { width: 16px; height: 16px; border-radius: 50%; background: #F9B410; }
+
+    .q-bic { position: absolute; left: 0; top: 950px; width: 1920px; text-align: center; font-size: 34px; font-weight: 600; color: #E8EAE9; white-space: nowrap; opacity: 0; }
+    .q-bic b { color: #F9B410; font-weight: 900; }
+
+    /* exit: paper blocks close in (scene 3's ground) */
+    .q-block { position: absolute; top: 0; width: 240px; height: 1080px; background: #E8EAE9; transform: scaleY(0); }
+  </style>
+
+  <div id="root" data-composition-id="s2-quienes" data-start="0" data-duration="8" data-width="1920" data-height="1080">
+    <div id="q-ground" class="clip q-layer q-ground" data-start="0" data-duration="8" data-track-index="0"></div>
+
+    <div id="q-stage" class="clip q-layer" data-start="0" data-duration="8" data-track-index="1">
+      <div class="q-card" id="q-card">
+        <div class="q-logo" id="q-logo"><img src="assets/marca/sofu-logo.png" alt="SOFU BIC SAS" /></div>
+      </div>
+
+      <div class="q-line q-l1" id="q-l1">
+        <span class="q-w">Tecnología,</span> <span class="q-w">gestión</span> <span class="q-w">de</span> <span class="q-w">riesgos</span>
+        <span class="q-w">y</span> <span class="q-w">asesoría</span> <span class="q-w">especializada.</span>
+      </div>
+      <div class="q-line q-l2" id="q-l2">Empresa colombiana con presencia en Yopal, Casanare.</div>
+
+      <div class="q-chips" id="q-chips">
+        <div class="q-chip"><span class="q-dot"></span>Mejorar la organización</div>
+        <div class="q-chip"><span class="q-dot"></span>Fortalecer los procesos</div>
+        <div class="q-chip"><span class="q-dot"></span>Gestionar los riesgos</div>
+      </div>
+
+      <div class="q-bic" id="q-bic">Como empresa <b>BIC</b>, generamos valor económico, social y ambiental.</div>
+    </div>
+
+    <div id="q-exit" class="clip q-layer" data-start="0" data-duration="8" data-track-index="2">
+      <div class="q-block" style="left: 0px; transform-origin: 50% 0%" aria-hidden="true" data-layout-ignore></div>
+      <div class="q-block" style="left: 240px; transform-origin: 50% 100%" aria-hidden="true" data-layout-ignore></div>
+      <div class="q-block" style="left: 480px; transform-origin: 50% 0%" aria-hidden="true" data-layout-ignore></div>
+      <div class="q-block" style="left: 720px; transform-origin: 50% 100%" aria-hidden="true" data-layout-ignore></div>
+      <div class="q-block" style="left: 960px; transform-origin: 50% 0%" aria-hidden="true" data-layout-ignore></div>
+      <div class="q-block" style="left: 1200px; transform-origin: 50% 100%" aria-hidden="true" data-layout-ignore></div>
+      <div class="q-block" style="left: 1440px; transform-origin: 50% 0%" aria-hidden="true" data-layout-ignore></div>
+      <div class="q-block" style="left: 1680px; transform-origin: 50% 100%" aria-hidden="true" data-layout-ignore></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      /* 0.0 · the white card springs open from the middle of the frame */
+      tl.fromTo("#q-card", { scaleY: 0.04, scaleX: 0.5 }, { scaleY: 1, scaleX: 1, duration: 0.45, ease: "expo.out" }, 0);
+      /* 0.5 · the lockup is revealed by a wipe over the whole official file — never redrawn */
+      tl.fromTo("#q-logo", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.out" }, 0.5);
+
+      /* 1.5 · what the company does, word by word */
+      var words = gsap.utils.toArray("#q-l1 .q-w");
+      for (var i = 0; i < words.length; i++) {
+        tl.set(words[i], { opacity: 1 }, 1.2 + i * 0.06);
+        tl.fromTo(words[i], { y: 40 }, { y: 0, duration: 0.35, ease: "power4.out" }, 1.2 + i * 0.06);
+      }
+      /* 2.5 · where it is */
+      tl.fromTo("#q-l2", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 2.0);
+
+      /* 3.5-4.5 · the three chips arrive from depth, one per half beat */
+      var chips = gsap.utils.toArray("#q-chips .q-chip");
+      for (var k = 0; k < chips.length; k++) {
+        tl.set(chips[k], { opacity: 1 }, 2.8 + k * 0.4);
+        tl.fromTo(chips[k], { z: -600, rotationX: -35, transformPerspective: 1000, transformOrigin: "50% 100%" },
+          { z: 0, rotationX: 0, duration: 0.5, ease: "power4.out" }, 2.8 + k * 0.4);
+      }
+
+      /* 5.5 · the BIC commitment */
+      tl.fromTo("#q-bic", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 4.4);
+
+      /* 6.5 · a slow push keeps the card alive while the copy holds */
+      tl.fromTo("#q-card", { scale: 1 }, { scale: 1.02, duration: 2.0, ease: "sine.inOut", immediateRender: false }, 5.2);
+
+      /* 9.2 · exit: paper blocks close the frame for scene 3 */
+      var blocks = gsap.utils.toArray("#q-exit .q-block");
+      for (var q = 0; q < blocks.length; q++) {
+        tl.fromTo(blocks[q], { scaleY: 0 }, { scaleY: 1, duration: 0.32, ease: "power3.in" }, 7.2 + q * 0.04);
+      }
+
+      window.__timelines["s2-quienes"] = tl;
+    })();
+  </script>
+</template>
