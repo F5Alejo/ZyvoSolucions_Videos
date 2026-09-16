@@ -1,0 +1,14 @@
+{
+ "bpm": 120,
+ "duracion": 37.5,
+ "salida": "assets/ritmo.wav",
+ "secciones": [
+  { "desde": 0,    "hasta": 6.5,  "bombo": true, "platillo": true },
+  { "desde": 6.5,  "hasta": 13,   "bombo": true, "platillo": true, "bajo": true },
+  { "desde": 13,   "hasta": 19.5, "bombo": true, "platillo": true, "palmas": true, "bajo": true, "acordes": true },
+  { "desde": 19.5, "hasta": 26,   "bombo": true, "platillo": true, "palmas": true, "bajo": true, "acordes": true },
+  { "desde": 26,   "hasta": 31.5, "bombo": true, "platillo": true, "palmas": true, "bajo": true, "acordes": true },
+  { "desde": 31.5, "hasta": 37.5, "bombo": true, "platillo": true, "bajo": true, "acordes": true }
+ ],
+ "subidas": [6.5, 13, 19.5, 26, 31.5]
+}

@@ -4,7 +4,7 @@
  "pasa_altos": 90,
  "pistas": [
   {
-   "archivo": "assets/cama.wav",
+   "archivo": "assets/ritmo.wav",
    "en": 0,
    "ganancia": 1.0
   }

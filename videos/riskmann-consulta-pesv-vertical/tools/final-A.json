@@ -4,19 +4,19 @@
  "pasa_altos": 90,
  "pistas": [
   {
-   "archivo": "assets/cama.wav",
+   "archivo": "assets/ritmo.wav",
    "en": 0,
-   "ganancia": 0.32
+   "ganancia": 0.3
   },
   {
    "archivo": "assets/sfx1.wav",
    "en": 0,
-   "ganancia": 0.55
+   "ganancia": 0.5
   },
   {
    "archivo": "assets/sfx2.wav",
    "en": 0,
-   "ganancia": 0.55
+   "ganancia": 0.5
   }
  ],
  "voz": [
