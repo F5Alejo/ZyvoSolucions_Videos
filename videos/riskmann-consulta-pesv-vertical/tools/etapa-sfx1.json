@@ -1,5 +1,5 @@
 {
- "duracion": 34.0,
+ "duracion": 33.3,
  "salida": "assets/sfx1.wav",
  "efectos": [
   {
@@ -29,77 +29,77 @@
   },
   {
    "efecto": "whoosh-cinematic",
-   "en": 3.65,
+   "en": 3.15,
    "ganancia": 0.52
   },
   {
    "efecto": "whoosh",
-   "en": 4.6,
+   "en": 3.9,
    "ganancia": 0.26
   },
   {
    "efecto": "pop",
-   "en": 4.8,
+   "en": 4.1,
    "ganancia": 0.42
   },
   {
    "efecto": "click-soft",
-   "en": 5.2,
+   "en": 4.5,
    "ganancia": 0.3
   },
   {
    "efecto": "pop",
-   "en": 5.8,
+   "en": 5.1,
    "ganancia": 0.42
   },
   {
    "efecto": "click-soft",
-   "en": 6.2,
+   "en": 5.5,
    "ganancia": 0.3
   },
   {
    "efecto": "impact-bass-2",
-   "en": 7.05,
+   "en": 6.35,
    "ganancia": 0.6
   },
   {
    "efecto": "whoosh-cinematic",
-   "en": 9.95,
+   "en": 9.25,
    "ganancia": 0.52
   },
   {
    "efecto": "whoosh",
-   "en": 10.9,
+   "en": 10.2,
    "ganancia": 0.26
   },
   {
    "efecto": "click-soft",
-   "en": 11.05,
+   "en": 10.35,
    "ganancia": 0.26
   },
   {
    "efecto": "impact-bass-1",
-   "en": 12.35,
+   "en": 11.65,
    "ganancia": 0.7
   },
   {
    "efecto": "whoosh-short",
-   "en": 13.05,
+   "en": 12.35,
    "ganancia": 0.32
   },
   {
    "efecto": "pop",
-   "en": 14.05,
+   "en": 13.35,
    "ganancia": 0.42
   },
   {
    "efecto": "click-soft",
-   "en": 14.9,
+   "en": 14.2,
    "ganancia": 0.24
   },
   {
    "efecto": "whoosh-cinematic",
-   "en": 16.35,
+   "en": 15.65,
    "ganancia": 0.52
   }
  ]
