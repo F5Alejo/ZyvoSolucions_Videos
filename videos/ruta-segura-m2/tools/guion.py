@@ -13,7 +13,7 @@ RAIZ = os.path.dirname(AQUI)
 
 import construir, cronometro
 
-TITULOS = {12: "Apertura · ¿qué defecto obliga a no salir?",
+TITULOS = {12: "Apertura · defectos que obligan a no salir",
            13: "Los ocho puntos de inspección",
            14: "La inspección termina en una decisión",
            15: "Actividad · visible a 360°",
@@ -67,22 +67,22 @@ def main():
         if n is None:
             continue
         frases = laminas[n]["frases"]
-        ini = cronometro.VOZ[n] if voz else cronometro.REF[n]
+        oidas = cronometro.vigentes(n, frases)
         out += ["## Lámina %02d · %s" % (n, TITULOS[n]),
                 "",
                 "**%s → %s** · narración %.1f s de %.1f s disponibles."
-                % (tc(e["inicio"]), tc(e["inicio"] + e["dura"]), ini[-1], e["dura"]),
+                % (tc(e["inicio"]), tc(e["inicio"] + e["dura"]), cronometro.narracion(n), e["dura"]),
                 ""]
-        for i, f in enumerate(frases):
-            out.append("- `+%05.1f s` %s" % (ini[i], f))
+        for t, f in oidas:
+            out.append("- `+%05.1f s` %s" % (t, f))
         out.append("")
 
     out += ["---", "",
             "## Qué queda fuera del video",
             "",
+            "- Las láminas 16 a 18 del PPTX (reto, retroalimentación, repaso y evaluación):",
+            "  los quiz se implementan en la plataforma después de ver el video.",
             "- No se locutan los rótulos del documento que traen algunas notas del PPTX.",
-            "- Las cifras de escudos (+80 / +200 / +300) vienen del PPTX de origen. Si el cliente las",
-            "  ajusta, se cambian en la lámina correspondiente y se vuelve a construir.",
             ""]
 
     io.open(os.path.join(RAIZ, "GUION-VOZ.md"), "w", encoding="utf-8", newline="\n").write("\n".join(out))

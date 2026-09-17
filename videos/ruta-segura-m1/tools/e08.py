@@ -93,9 +93,9 @@ TL = """      /* 1.59 · «La ruta ordenada está inundada, no tiene iluminació
 
 """ + pausa_tl(52.30) + """
       /* 63.56 · «esa ausencia también es un peligro que debe reportarse» */
-      tl.to("#pausa", { opacity: 0, duration: 0.4, ease: "power1.in" }, 63.10);
       tl.to(["#k-n1", "#k-n2"], { opacity: 0, duration: 0.45, ease: "power1.in" }, 63.10);
-      tl.fromTo("#k-final", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 63.70);
+      /* entra cuando las notas ya salieron: el recorte de la invitación a pausar dejó las dos cosas juntas */
+      tl.fromTo("#k-final", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 64.30);
 """
 
 

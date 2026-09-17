@@ -810,7 +810,7 @@ Once láminas con el mismo encuadre no se mantienen a mano. En `tools/`:
 - `cronometro.py` — **el mapa entre dos locuciones** (ver abajo).
 - `voz-eleven.py` — pide la locución con timestamps y escribe `tiempos-voz.json`.
 - `pista.py` — coloca cada lámina en su sitio del máster, normaliza a −16 LUFS y verifica.
-- `construir.py` — encadena, calcula inicios y arma el `index.html` con barra, sello y voz.
+- `construir.py` — encadena, calcula inicios y arma el `index.html` con sello y voz.
 - `guion.py` — escribe `GUION-VOZ.md`, el libreto con la **ventana absoluta** de cada lámina.
 
 **Lo que hace sostenible el formato es `cronometro.py`.** Las apariciones se escriben una vez
@@ -826,14 +826,19 @@ acortó 3 s y la siguiente se alargó 6 s.
 
 ### 14.4 Reglas de composición para láminas de ~60 s
 
-- **Una sola línea de fuente documental** abajo (y=946). Nada puede invadirla: es el error que
-  más veces apareció. Los cierres de lámina van en una sola línea, no en dos.
+- **Nada por debajo de y=946** (donde iba la línea de fuente, que ya no se muestra). Invadir
+  esa franja es el error que más veces apareció. Los cierres de lámina van en una sola línea, no en dos.
 - **Título de máximo dos renglones** (50 px, ancho 1450) y la regla de acento **debajo** de esa
   caja, no dentro.
 - **Sustituir en vez de acumular.** Cuando entra la idea de cierre, se apaga la anterior en el
   mismo sitio; si no, la lámina termina siendo un muro.
-- **Una sola petición al espectador**: la pastilla «PAUSA EL VIDEO Y RESPONDE», y solo donde la
-  narración lo pide.
+- **Sin quiz ni barra de avance en el video.** Las láminas de reto, retroalimentación, repaso
+  y evaluación se implementan en la plataforma después de ver cada video, y el módulo se
+  entrega solo, no unido a los demás.
+- **El video es informativo, no un quiz.** Sin pastilla de pausa, sin escudos del Reto, sin
+  preguntas para el espectador ni línea de fuente. Si la locución ya grabada invita a pausar o
+  responder, esas frases se recortan con `CORTES` en `tools/cronometro.py`: `pista.py` las quita
+  del audio y el montaje se corre solo, sin volver a locutar.
 - `check` toma **nueve muestras** en doce minutos: no basta. Hay que sacar `snapshot` en el
   momento más lleno de cada lámina (el final) y revisar la hoja de contactos.
 
@@ -847,8 +852,7 @@ consumidores son el Chrome del usuario (~1,5 GB), el Chrome sin cabeza del rende
    entero a PCM —unos 250 MB para once minutos— y ese es justo el margen que falta. Se
    renderiza mudo y se pega después: las dos pistas arrancan en cero y miden lo mismo.
 2. **El render por partes.** `construir.py --partes 4` escribe cuatro `index-parte-N.html`
-   con las escenas rebasadas a su propio cero y la barra de avance ajustada para que siga
-   midiendo el módulo completo. Cada parte se renderiza sola y se unen sin recodificar.
+   con las escenas rebasadas a su propio cero. Cada parte se renderiza sola y se unen sin recodificar.
 
 ```bash
 python tools/construir.py --sin-audio --partes 4

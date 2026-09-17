@@ -54,24 +54,17 @@ for _c, (_x, _t, _items) in enumerate(COLS):
            '        <div class="g-raya" id="g-r%d" data-layout-ignore></div>\n%s'
            '      </div>\n' % (_c + 1, _x, _t, _c + 1, _it))
 
-CUERPO = chrome("15", "ACTIVIDAD", "Visible a 360°: <b style=\"color:#D4A62B\">proteger sin perder control</b>") + """
+CUERPO = chrome("15", "MÓDULO 2", "Visible a 360°: <b style=\"color:#D4A62B\">proteger sin perder control</b>") + """
 
     <div class="clip capa" data-start="0" data-duration="{d}" data-track-index="3">
-      <div class="g-escudo" id="g-escudo">
-        <div class="g-escudo-n">+300</div><div class="g-escudo-t">EN JUEGO</div>
-      </div>
 """ + CC + """
       <div class="g-retiro" id="g-retiro"><span>Tras un <b>impacto relevante</b>, daño o el límite del fabricante:
         retirar el casco y evaluarlo o reemplazarlo.</span></div>
-      <div class="g-tarea" id="g-tarea">Pausa y revisa tu propio equipo frente a un espejo.</div>
     </div>
 
 """ + PAUSA_HTML
 
-TL = """      tl.fromTo("#g-escudo", { opacity: 0, scale: 0.8, transformOrigin: "50% 50%" },
-        { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, 0.60);
-
-      /* 3.48 · el casco / 5.66 · cómo se ajusta */
+TL = """      /* 3.48 · el casco / 5.66 · cómo se ajusta */
       tl.fromTo("#g-c1", { opacity: 0, y: 44 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 3.55);
       tl.fromTo("#g-r1", { scaleX: 0 }, { scaleX: 1, duration: 0.42, ease: "power2.out" }, 3.85);
       tl.fromTo("#g-i11", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.45, ease: "power2.out" }, 5.75);
@@ -95,8 +88,6 @@ TL = """      tl.fromTo("#g-escudo", { opacity: 0, scale: 0.8, transformOrigin: 
       tl.fromTo("#g-i32", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.45, ease: "power2.out" }, 45.90);
       tl.fromTo("#g-i33", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.45, ease: "power2.out" }, 48.60);
 
-      /* 52.29 · «pausa el video y revisa tu propio equipo» */
-      tl.fromTo("#g-tarea", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 52.40);
 """ + pausa_tl(52.90)
 
 

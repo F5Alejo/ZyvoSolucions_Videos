@@ -26,10 +26,10 @@ videos/
   pesv-m01-profundidad/  exploración: partículas por GPU y 3D con cámara (16:9)
   pesv-m01-profundidad-vertical/  la misma exploración en 9:16
   sofu-comercial/        comercial de SOFU BIC S.A.S. (68 s, 16:9)
-  ruta-segura-m1/        curso «Ruta Segura» · apertura + módulo 1 (10:57)
-  ruta-segura-m2/        curso «Ruta Segura» · módulo 2, bicicleta lista (6:52)
-  ruta-segura-m3/        curso «Ruta Segura» · módulo 3, misión segura (6:48)
-  ruta-segura-m4/        curso «Ruta Segura» · módulo 4, evaluación y cierre (7:41)
+  ruta-segura-m1/        curso «Ruta Segura» · apertura + módulo 1 (6:48)
+  ruta-segura-m2/        curso «Ruta Segura» · módulo 2, bicicleta lista (3:43)
+  ruta-segura-m3/        curso «Ruta Segura» · módulo 3, misión segura (3:43)
+  ruta-segura-m4/        curso «Ruta Segura» · módulo 4, cierre y fuentes (2:08)
   riskmann-sala-de-control/  video de marketing de la plataforma (68 s)
 ```
 
@@ -48,11 +48,10 @@ Todos los videos terminados están en la carpeta compartida de Drive:
 | 04 | `Presentacion de la plataforma - Video promocional (1m08)` | Marketing de RiskMann, sin sonido — *no usar comercialmente aún* | `videos/riskmann-sala-de-control/` |
 | 04b | `Presentacion de la plataforma - Video promocional narrado (1m08)` | El mismo 04, con voz y música | `videos/riskmann-sala-de-control/` |
 | 05 | `SOFU BIC SAS - Presentacion comercial de la empresa (1m08)` | Comercial de la casa matriz SOFU, a partir de su guion | `videos/sofu-comercial/` |
-| 07 | `Ruta Segura - Modulo 1 Actor vial y Sistema Seguro - Narrado (10m57)` | Curso de ciclistas: apertura + módulo 1 | `videos/ruta-segura-m1/` |
-| 08 | `Ruta Segura - Modulo 2 Bicicleta lista - Narrado (6m52)` | Inspección, clasificación, protección y visibilidad | `videos/ruta-segura-m2/` |
-| 09 | `Ruta Segura - Modulo 3 Mision segura - Narrado (6m48)` | Anticipación, maniobra, ruta y estado, respuesta | `videos/ruta-segura-m3/` |
-| 10 | `Ruta Segura - Modulo 4 Evaluacion final y cierre - Narrado (7m41)` | Evaluación, compromiso, clave, cierre y fuentes | `videos/ruta-segura-m4/` |
-| — | `Ruta Segura - CURSO COMPLETO NARRADO (32m18)` | Los cuatro seguidos, unidos sin recodificar | `tools/unir-curso.py` |
+| 07 | `Ruta Segura - Modulo 1 Actor vial y Sistema Seguro - Narrado (6m48)` | Curso de ciclistas: apertura + módulo 1 | `videos/ruta-segura-m1/` |
+| 08 | `Ruta Segura - Modulo 2 Bicicleta lista - Narrado (3m43)` | Inspección, clasificación, protección y visibilidad | `videos/ruta-segura-m2/` |
+| 09 | `Ruta Segura - Modulo 3 Mision segura - Narrado (3m43)` | Anticipación, maniobra, ruta y estado, respuesta | `videos/ruta-segura-m3/` |
+| 10 | `Ruta Segura - Modulo 4 Cierre - Narrado (2m08)` | Cierre y fuentes | `videos/ruta-segura-m4/` |
 
 El curso completo va con **locución sintética en voz colombiana** (ElevenLabs, «Carlos»,
 `eleven_v3`). Cada módulo trae su copia liviana (`Nb`) y su `GUION-VOZ-modulo-N.md` con la

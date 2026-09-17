@@ -145,7 +145,6 @@ TL += """
 
 """ + pausa_tl(48.00) + """
       /* 54.98 · «cada decisión segura comienza antes de pedalear.» */
-      tl.to("#pausa", { opacity: 0, duration: 0.4, ease: "power1.in" }, 54.40);
       tl.fromTo("#p-oscuro", { opacity: 0 }, { opacity: 1, duration: 0.7, ease: "power2.inOut" }, 54.40);
       tl.to(["#p-lock", "#p-badge", "#p-head", ".p-fila", "#p-nota"], { opacity: 0, duration: 0.6, ease: "power1.in" }, 54.40);
       tl.fromTo("#p-cierre", { opacity: 0, y: 34, scale: 0.94 },

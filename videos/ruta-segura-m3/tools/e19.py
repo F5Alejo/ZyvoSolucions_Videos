@@ -67,14 +67,9 @@ CUERPO = """    <div class="clip capa" data-start="0" data-duration="{d}" data-t
 """ + chrome("19", "MÓDULO 3", "Misión segura: <b style=\"color:#D4A62B\">ruta, maniobra y respuesta</b>") + """
 
     <div class="clip capa" data-start="0" data-duration="{d}" data-track-index="3">
-      <div class="v-escudo" id="v-escudo">
-        <div class="v-escudo-n">+80</div><div class="v-escudo-t">RETO RISKMANN</div>
-      </div>
-
       <div class="v-cap" id="v-cap">TRES IDEAS QUE NO SON LA MISMA</div>
 """ + II + """
-      <div class="v-preg" id="v-preg">Si no ves al conductor, ¿puedes asumir que te ve?</div>
-      <div class="v-no" id="v-no">NO.</div>
+      <div class="v-preg" id="v-preg">Si no ves al conductor, no asumas que te ve.</div>
       <div class="v-regla" id="v-regla">No me ubico entre el vehículo y el borde en una intersección,
         aunque exista espacio disponible.</div>
       <div class="v-obs" id="v-obs">Mantengo distancia y observo <b>direccionales, ruedas, espejos y trayectoria</b>,
@@ -95,8 +90,6 @@ TL = """      /* 0.00 · «distingo tres ideas» / 3.70 · las tres */
 
       /* 7.94 · «si no veo al conductor, no asumo que me ve» */
       tl.fromTo("#v-preg", { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 8.05);
-      tl.fromTo("#v-no", { opacity: 0, scale: 1.4, transformOrigin: "0% 50%" },
-        { opacity: 1, scale: 1, duration: 0.45, ease: "power4.out" }, 10.60);
 
       /* 13.06 · los vehículos pesados */
       tl.fromTo("#v-pcap", { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 13.15);

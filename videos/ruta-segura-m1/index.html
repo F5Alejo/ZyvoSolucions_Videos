@@ -14,76 +14,45 @@
       .sello { position: absolute; right: 118px; bottom: 24px; width: 186px; height: 62px;
                 border-radius: 34px; background: #FFFFFF; }
       .sello img { position: absolute; left: 20px; top: 9px; width: 120px; height: 45px; }
-      /* barra de avance del módulo: se llena a lo largo de los 10.9 minutos */
-      .barra { position: absolute; left: 120px; bottom: 44px; width: 1520px; height: 5px;
-                border-radius: 3px; background: rgba(174,188,214,0.22); overflow: hidden; }
-      .barra-fill { position: absolute; inset: 0; background: #AC841D;
-                     transform: scaleX(0); transform-origin: 0 50%; }
-      .marca { position: absolute; bottom: 38px; width: 2px; height: 17px;
-                border-radius: 1px; background: rgba(174,188,214,0.45); }
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="656.5"
+    <div id="root" data-composition-id="main" data-start="0" data-duration="400.0"
          data-width="1920" data-height="1080">
       <div id="el-e01" class="escena" data-composition-id="e01-portada"
            data-composition-src="compositions/e01-portada.html"
-           data-start="0" data-duration="50.5" data-track-index="1"></div>
+           data-start="0" data-duration="45" data-track-index="1"></div>
       <div id="el-e02" class="escena" data-composition-id="e02-pregunta"
            data-composition-src="compositions/e02-pregunta.html"
-           data-start="50.5" data-duration="57.5" data-track-index="1"></div>
+           data-start="45" data-duration="44" data-track-index="1"></div>
       <div id="el-e03" class="escena" data-composition-id="e03-proposito"
            data-composition-src="compositions/e03-proposito.html"
-           data-start="108" data-duration="64" data-track-index="1"></div>
+           data-start="89" data-duration="64" data-track-index="1"></div>
       <div id="el-e04" class="escena" data-composition-id="e04-ruta"
            data-composition-src="compositions/e04-ruta.html"
-           data-start="172" data-duration="60.5" data-track-index="1"></div>
+           data-start="153" data-duration="26" data-track-index="1"></div>
       <div id="el-e05" class="escena" data-composition-id="e05-cuidado"
            data-composition-src="compositions/e05-cuidado.html"
-           data-start="232.5" data-duration="60" data-track-index="1"></div>
+           data-start="179" data-duration="41.5" data-track-index="1"></div>
       <div id="el-e06" class="escena" data-composition-id="e06-sistema"
            data-composition-src="compositions/e06-sistema.html"
-           data-start="292.5" data-duration="58.5" data-track-index="1"></div>
+           data-start="220.5" data-duration="58.5" data-track-index="1"></div>
       <div id="el-e07" class="escena" data-composition-id="e07-reglas"
            data-composition-src="compositions/e07-reglas.html"
-           data-start="351" data-duration="63.5" data-track-index="1"></div>
+           data-start="279" data-duration="63.5" data-track-index="1"></div>
       <div id="el-e08" class="escena" data-composition-id="e08-caso"
            data-composition-src="compositions/e08-caso.html"
-           data-start="414.5" data-duration="59" data-track-index="1"></div>
-      <div id="el-e09" class="escena" data-composition-id="e09-reto"
-           data-composition-src="compositions/e09-reto.html"
-           data-start="473.5" data-duration="53.5" data-track-index="1"></div>
-      <div id="el-e10" class="escena" data-composition-id="e10-retro"
-           data-composition-src="compositions/e10-retro.html"
-           data-start="527" data-duration="61" data-track-index="1"></div>
-      <div id="el-e11" class="escena" data-composition-id="e11-repaso"
-           data-composition-src="compositions/e11-repaso.html"
-           data-start="588" data-duration="61.5" data-track-index="1"></div>
+           data-start="342.5" data-duration="50.5" data-track-index="1"></div>
       <div id="el-e12" class="escena" data-composition-id="e12-cierre"
            data-composition-src="compositions/e12-cierre.html"
-           data-start="649.5" data-duration="7" data-track-index="1"></div>
-      <div id="chrome" class="clip chrome" data-start="0" data-duration="656.5" data-track-index="6">
-        <div class="barra"><div class="barra-fill" id="barra-fill"></div></div>
-        <div class="marca" style="left: 236.9px"></div>
-        <div class="marca" style="left: 370.1px"></div>
-        <div class="marca" style="left: 518.2px"></div>
-        <div class="marca" style="left: 658.3px"></div>
-        <div class="marca" style="left: 797.2px"></div>
-        <div class="marca" style="left: 932.7px"></div>
-        <div class="marca" style="left: 1079.7px"></div>
-        <div class="marca" style="left: 1216.3px"></div>
-        <div class="marca" style="left: 1340.2px"></div>
-        <div class="marca" style="left: 1481.4px"></div>
-        <div class="marca" style="left: 1623.8px"></div>
+           data-start="393" data-duration="7" data-track-index="1"></div>
+      <div id="chrome" class="clip chrome" data-start="0" data-duration="400.0" data-track-index="6">
         <div class="sello" id="sello"><img src="assets/marca/riskmann_logo_color.png" alt="RiskMann by SOFU" /></div>
       </div>
     </div>
     <script>
       window.__timelines = window.__timelines || {};
       var tl = gsap.timeline({ paused: true });
-      /* la barra avanza sin pausa: da al espectador la medida del módulo */
-      tl.fromTo("#barra-fill", { scaleX: 0.00000 }, { scaleX: 1.00000, duration: 656.5, ease: "none" }, 0);
-      tl.to(".barra, .marca", { opacity: 0, duration: 0.8, ease: "power1.in" }, 655.6);
       window.__timelines["main"] = tl;
     </script>
   </body>

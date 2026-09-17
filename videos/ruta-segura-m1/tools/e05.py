@@ -71,9 +71,7 @@ CUERPO = """    <div class="clip capa" data-start="0" data-duration="{d}" data-t
 """ + chrome("05", "MÓDULO 1", "Actor vial, reglas y <b style=\"color:#D4A62B\">Sistema Seguro</b>") + """
 
     <div class="clip capa" data-start="0" data-duration="{d}" data-track-index="3">
-      <div class="s-preg" id="s-preg">¿Ser cuidadoso basta para estar seguro?</div>
-      <div class="s-no" id="s-no">NO.</div>
-      <div class="s-no-r" id="s-no-r" data-layout-ignore></div>
+      <div class="s-preg" id="s-preg">Ser cuidadoso, por sí solo, no basta para estar seguro.</div>
       <div class="s-lead" id="s-lead">La prudencia individual es esencial, pero por sí sola no controla:</div>
 """ + CHIPS + """
       <div class="s-cap" id="s-cap">LO QUE SÍ OBSERVO AL ANALIZAR EL RIESGO VIAL</div>
@@ -89,10 +87,6 @@ CUERPO = """    <div class="clip capa" data-start="0" data-duration="{d}" data-t
 TL = """      /* 3.23 · «¿ser cuidadoso basta para estar seguro?» */
       tl.fromTo("#s-preg", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 3.30);
 
-      /* 5.84 · «Mi respuesta es no.» */
-      tl.fromTo("#s-no", { opacity: 0, scale: 1.5, transformOrigin: "0% 50%" },
-        { opacity: 1, scale: 1, duration: 0.45, ease: "power4.out" }, 5.90);
-      tl.fromTo("#s-no-r", { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "power2.out" }, 6.20);
 
       /* 7.20 · «no controla por sí sola una bicicleta defectuosa, una intersección…» */
       tl.fromTo("#s-lead", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 7.40);
@@ -121,7 +115,6 @@ TL += """
 
 """ + pausa_tl(45.90) + """
       /* 57.77 · «varias capas de protección deben trabajar juntas» */
-      tl.to("#pausa", { opacity: 0, duration: 0.4, ease: "power1.in" }, 57.30);
       tl.to("#s-porque", { opacity: 0, duration: 0.4, ease: "power1.in" }, 57.30);
       tl.fromTo("#s-final", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 57.90);
 """

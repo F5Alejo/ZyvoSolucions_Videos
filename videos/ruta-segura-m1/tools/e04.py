@@ -72,15 +72,6 @@ CUERPO = chrome("04", "RUTA DE APRENDIZAJE",
     <div class="clip capa" data-start="0" data-duration="{d}" data-track-index="3">
       <div class="m-riel" id="m-riel" data-layout-ignore></div>
 """ + CARDS + """
-      <div class="m-reto" id="m-reto">RETO RISKMANN · ESCUDOS SIMBÓLICOS</div>
-""" + ESCUDOS + """
-      <div class="m-veto" id="m-veto">
-        <div class="m-veto-l" id="m-v1" style="top: 26px">Nunca se premia velocidad, distancia, llegar primero ni asumir riesgos.</div>
-        <div class="m-veto-l" id="m-v2" style="top: 96px">Los resultados no se usan para exponer ni avergonzar a nadie.</div>
-      </div>
-
-      <div class="m-nota" id="m-nota">Si ves el video de forma individual, registra tus escudos como herramienta personal de seguimiento.</div>
-      <div class="m-cierre" id="m-cierre">Lo importante no es competir: es <b>detenerte, pensar y elegir el control más seguro.</b></div>
     </div>
 """
 
@@ -90,28 +81,6 @@ for _i, _t in enumerate([2.60, 11.10, 22.45]):
     TL += ('      tl.fromTo("#m-c%d", { opacity: 0, y: 46, scale: 0.95 },'
            ' { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "power3.out" }, %.2f);\n' % (_i + 1, _t))
 
-TL += """
-      /* 30.39 · «Durante el recorrido usaré el Reto RiskMann» */
-      tl.fromTo("#m-reto", { opacity: 0, x: -26 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 30.55);
-
-      /* 34.55 · «premian decisiones correctas, identificación de peligros y apoyo respetuoso» */
-"""
-for _i, _t in enumerate([34.90, 36.60, 38.30]):
-    TL += ('      tl.fromTo("#m-e%d", { opacity: 0, scale: 0.82, transformOrigin: "50%% 50%%" },'
-           ' { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, %.2f);\n' % (_i + 1, _t))
-
-TL += """
-      /* 42.36 · «Nunca premio velocidad…» / 47.03 · «Tampoco… exponer o avergonzar» */
-      tl.fromTo("#m-veto", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.55, ease: "power2.out" }, 42.50);
-      tl.fromTo("#m-v1", { opacity: 0 }, { opacity: 1, duration: 0.45, ease: "power1.out" }, 42.95);
-      tl.fromTo("#m-v2", { opacity: 0 }, { opacity: 1, duration: 0.45, ease: "power1.out" }, 47.20);
-
-      /* 50.76 · «registra tus escudos como una herramienta personal de seguimiento» */
-      tl.fromTo("#m-nota", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 50.95);
-
-      /* 57.23 · «Lo importante no es competir…» */
-      tl.fromTo("#m-cierre", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 57.40);
-"""
 
 
 def escena():

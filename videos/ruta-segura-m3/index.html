@@ -14,60 +14,33 @@
       .sello { position: absolute; right: 118px; bottom: 24px; width: 186px; height: 62px;
                 border-radius: 34px; background: #FFFFFF; }
       .sello img { position: absolute; left: 20px; top: 9px; width: 120px; height: 45px; }
-      /* barra de avance del módulo: se llena a lo largo de los 6.8 minutos */
-      .barra { position: absolute; left: 120px; bottom: 44px; width: 1520px; height: 5px;
-                border-radius: 3px; background: rgba(174,188,214,0.22); overflow: hidden; }
-      .barra-fill { position: absolute; inset: 0; background: #AC841D;
-                     transform: scaleX(0); transform-origin: 0 50%; }
-      .marca { position: absolute; bottom: 38px; width: 2px; height: 17px;
-                border-radius: 1px; background: rgba(174,188,214,0.45); }
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="407.5"
+    <div id="root" data-composition-id="main" data-start="0" data-duration="222.5"
          data-width="1920" data-height="1080">
       <div id="el-e19" class="escena" data-composition-id="e19-apertura"
            data-composition-src="compositions/e19-apertura.html"
-           data-start="0" data-duration="50.5" data-track-index="1"></div>
+           data-start="0" data-duration="39.5" data-track-index="1"></div>
       <div id="el-e20" class="escena" data-composition-id="e20-cinco-pasos"
            data-composition-src="compositions/e20-cinco-pasos.html"
-           data-start="50.5" data-duration="58" data-track-index="1"></div>
+           data-start="39.5" data-duration="58" data-track-index="1"></div>
       <div id="el-e21" class="escena" data-composition-id="e21-ruta-estado"
            data-composition-src="compositions/e21-ruta-estado.html"
-           data-start="108.5" data-duration="62.5" data-track-index="1"></div>
+           data-start="97.5" data-duration="62.5" data-track-index="1"></div>
       <div id="el-e22" class="escena" data-composition-id="e22-caso"
            data-composition-src="compositions/e22-caso.html"
-           data-start="171" data-duration="55.5" data-track-index="1"></div>
-      <div id="el-e23" class="escena" data-composition-id="e23-reto"
-           data-composition-src="compositions/e23-reto.html"
-           data-start="226.5" data-duration="50.5" data-track-index="1"></div>
-      <div id="el-e24" class="escena" data-composition-id="e24-retro"
-           data-composition-src="compositions/e24-retro.html"
-           data-start="277" data-duration="58" data-track-index="1"></div>
-      <div id="el-e25" class="escena" data-composition-id="e25-repaso"
-           data-composition-src="compositions/e25-repaso.html"
-           data-start="335" data-duration="65.5" data-track-index="1"></div>
+           data-start="160" data-duration="55.5" data-track-index="1"></div>
       <div id="el-e26" class="escena" data-composition-id="e26-cierre"
            data-composition-src="compositions/e26-cierre.html"
-           data-start="400.5" data-duration="7" data-track-index="1"></div>
-      <div id="chrome" class="clip chrome" data-start="0" data-duration="407.5" data-track-index="6">
-        <div class="barra"><div class="barra-fill" id="barra-fill"></div></div>
-        <div class="marca" style="left: 308.4px"></div>
-        <div class="marca" style="left: 524.7px"></div>
-        <div class="marca" style="left: 757.8px"></div>
-        <div class="marca" style="left: 964.9px"></div>
-        <div class="marca" style="left: 1153.2px"></div>
-        <div class="marca" style="left: 1369.6px"></div>
-        <div class="marca" style="left: 1613.9px"></div>
+           data-start="215.5" data-duration="7" data-track-index="1"></div>
+      <div id="chrome" class="clip chrome" data-start="0" data-duration="222.5" data-track-index="6">
         <div class="sello" id="sello"><img src="assets/marca/riskmann_logo_color.png" alt="RiskMann by SOFU" /></div>
       </div>
     </div>
     <script>
       window.__timelines = window.__timelines || {};
       var tl = gsap.timeline({ paused: true });
-      /* la barra avanza sin pausa: da al espectador la medida del módulo */
-      tl.fromTo("#barra-fill", { scaleX: 0.00000 }, { scaleX: 1.00000, duration: 407.5, ease: "none" }, 0);
-      tl.to(".barra, .marca", { opacity: 0, duration: 0.8, ease: "power1.in" }, 406.6);
       window.__timelines["main"] = tl;
     </script>
   </body>
