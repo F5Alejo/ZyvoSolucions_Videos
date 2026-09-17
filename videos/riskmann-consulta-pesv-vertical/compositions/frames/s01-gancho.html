@@ -92,17 +92,17 @@
         { filter: "blur(0px)", immediateRender: false, duration: 0.26, ease: "power2.out", stagger: 0.09 }, 0.1);
 
       /* 1.00 · el tachón se dibuja */
-      tl.to("#s1-strike-1", { strokeDashoffset: 0, duration: 0.34, ease: "power2.out" }, 1.0);
+      tl.to("#s1-strike-1", { strokeDashoffset: 0, duration: 0.34, ease: "power2.out" }, 0.85);
 
       /* 1.40 · la frase retrocede en profundidad y cede el centro */
-      tl.to("#s1-quote", { scale: 0.52, y: -180, opacity: 0.32, duration: 0.7, ease: "expo.inOut" }, 1.4);
+      tl.to("#s1-quote", { scale: 0.52, y: -180, opacity: 0.32, duration: 0.7, ease: "expo.inOut" }, 1.15);
 
-      /* 1.80 · SPECTACLE — ¿SEGURO? aterriza con overshoot y destello */
-      tl.set("#s1-seguro", { opacity: 1 }, 1.8);
-      tl.fromTo("#s1-seguro", { scale: 0.42 }, { scale: 1, duration: 0.85, ease: "back.out(1.7)" }, 1.8);
-      tl.fromTo("#s1-seguro", { filter: "blur(9px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.3, ease: "power2.out" }, 1.8);
-      tl.fromTo("#s1-glow", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power4.out" }, 1.8);
-      tl.to("#s1-glow", { opacity: 0.55, duration: 0.6, ease: "power2.inOut" }, 2.3);
+      /* 1.53 · SPECTACLE — ¿SEGURO? aterriza justo cuando Carlos dice la palabra */
+      tl.set("#s1-seguro", { opacity: 1 }, 1.53);
+      tl.fromTo("#s1-seguro", { scale: 0.42 }, { scale: 1, duration: 0.85, ease: "back.out(1.7)" }, 1.53);
+      tl.fromTo("#s1-seguro", { filter: "blur(9px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.3, ease: "power2.out" }, 1.53);
+      tl.fromTo("#s1-glow", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power4.out" }, 1.53);
+      tl.to("#s1-glow", { opacity: 0.55, duration: 0.6, ease: "power2.inOut" }, 2.03);
 
       /* 2.60 · la tarjeta glass sube */
       tl.fromTo("#s1-card", { opacity: 0, y: 70, scale: 0.94 },

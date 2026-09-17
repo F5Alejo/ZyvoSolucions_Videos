@@ -69,34 +69,34 @@
 
       /* 0.20 · el cargo, en cascada (voz: "Y no cumplir cuesta hasta…") */
       tl.fromTo("#s3-kicker .w", { opacity: 0, y: 48 },
-        { opacity: 1, y: 0, duration: 0.6, ease: "power4.out", stagger: 0.075 }, 0.2);
+        { opacity: 1, y: 0, duration: 0.6, ease: "power4.out", stagger: 0.075 }, 0.15);
       tl.fromTo("#s3-kicker .w", { filter: "blur(5px)" },
-        { filter: "blur(0px)", immediateRender: false, duration: 0.24, ease: "power2.out", stagger: 0.075 }, 0.2);
+        { filter: "blur(0px)", immediateRender: false, duration: 0.24, ease: "power2.out", stagger: 0.075 }, 0.15);
 
-      /* 1.00 · SPECTACLE — la cifra aterriza con overshoot y onda expansiva */
-      tl.set("#s3-num", { opacity: 1 }, 1.0);
-      tl.fromTo("#s3-num", { scale: 0.34 }, { scale: 1, duration: 0.95, ease: "back.out(1.6)" }, 1.0);
-      tl.fromTo("#s3-num", { filter: "blur(10px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.32, ease: "power2.out" }, 1.0);
+      /* 1.45 · SPECTACLE — la cifra aterriza cuando la voz dice "quinientos" */
+      tl.set("#s3-num", { opacity: 1 }, 1.45);
+      tl.fromTo("#s3-num", { scale: 0.34 }, { scale: 1, duration: 0.95, ease: "back.out(1.6)" }, 1.45);
+      tl.fromTo("#s3-num", { filter: "blur(10px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.32, ease: "power2.out" }, 1.45);
       tl.fromTo("#s3-ring", { opacity: 0.85, scale: 0.25 },
-        { opacity: 0, scale: 2.6, duration: 1.1, ease: "expo.out" }, 1.05);
-      tl.to("#s3-pulse", { opacity: 0.9, duration: 0.3, ease: "power4.out" }, 1.0);
-      tl.to("#s3-pulse", { opacity: 0.5, duration: 0.8, ease: "power2.inOut" }, 1.3);
+        { opacity: 0, scale: 2.6, duration: 1.1, ease: "expo.out" }, 1.5);
+      tl.to("#s3-pulse", { opacity: 0.9, duration: 0.3, ease: "power4.out" }, 1.45);
+      tl.to("#s3-pulse", { opacity: 0.5, duration: 0.8, ease: "power2.inOut" }, 1.75);
 
-      /* 1.70 · la unidad entra de costado */
-      tl.fromTo("#s3-unit", { opacity: 0, x: 90 }, { opacity: 1, x: 0, duration: 0.6, ease: "expo.out" }, 1.7);
-      tl.fromTo("#s3-unit", { filter: "blur(5px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.24, ease: "power2.out" }, 1.7);
+      /* 2.15 · la unidad entra de costado */
+      tl.fromTo("#s3-unit", { opacity: 0, x: 90 }, { opacity: 1, x: 0, duration: 0.6, ease: "expo.out" }, 2.15);
+      tl.fromTo("#s3-unit", { filter: "blur(5px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.24, ease: "power2.out" }, 2.15);
 
-      /* 2.90 · la traducción a pesos (voz: "Más de seiscientos cincuenta millones") */
+      /* 3.15 · la traducción a pesos (voz: "seiscientos cincuenta millones", 3.11 s) */
       tl.fromTo("#s3-chip", { opacity: 0, y: 60, scale: 0.9 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "back.out(1.6)" }, 2.9);
+        { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "back.out(1.6)" }, 3.15);
 
-      /* 3.70 · el respaldo legal */
-      tl.fromTo("#s3-legal", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 3.7);
+      /* 4.00 · el respaldo legal */
+      tl.fromTo("#s3-legal", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 4.0);
 
-      /* 3.90 · AMBIENT IDLE */
-      tl.to("#s3-num", { scale: 1.028, duration: 1.6, ease: "sine.inOut" }, 3.9);
-      tl.to("#s3-chip", { y: -14, duration: 1.7, ease: "sine.inOut" }, 3.9);
-      tl.to("#s3-pulse", { opacity: 0.78, scale: 1.09, duration: 1.7, ease: "sine.inOut" }, 3.9);
+      /* 4.15 · AMBIENT IDLE */
+      tl.to("#s3-num", { scale: 1.028, duration: 1.35, ease: "sine.inOut" }, 4.15);
+      tl.to("#s3-chip", { y: -14, duration: 1.35, ease: "sine.inOut" }, 4.15);
+      tl.to("#s3-pulse", { opacity: 0.78, scale: 1.09, duration: 1.35, ease: "sine.inOut" }, 4.15);
 
       /* 5.55 · salida */
       tl.to(["#s3-hero", "#s3-unit", "#s3-chip", "#s3-kicker", "#s3-legal"],

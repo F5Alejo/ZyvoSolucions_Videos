@@ -18,8 +18,17 @@ DEST = os.path.join(RAIZ, "assets", "voz")
 MODELO = "eleven_multilingual_v2"
 
 
-def convertir(clave, voice_id, texto, modelo):
-    ajustes = {"stability": 0.5, "similarity_boost": 0.75, "use_speaker_boost": True}
+# Una locucion publicitaria no se lee, se interpreta. Con stability 0.5 el modelo
+# entrega una lectura plana y apresurada; bajarla deja que module, y "style" le da
+# intencion. "speed" se afina por plano en narracion.json: solo donde sobra tiempo
+# dentro de su corte, porque la duracion de cada plano es fija.
+AJUSTES = {"stability": 0.32, "similarity_boost": 0.85, "style": 0.45,
+           "use_speaker_boost": True, "speed": 0.96}
+
+
+def convertir(clave, voice_id, texto, modelo, extra=None):
+    ajustes = dict(AJUSTES)
+    ajustes.update(extra or {})
     cuerpo = {"text": texto, "model_id": modelo, "voice_settings": ajustes}
     url = ("https://api.elevenlabs.io/v1/text-to-speech/%s/with-timestamps"
            "?output_format=mp3_44100_128" % voice_id)
@@ -56,15 +65,23 @@ def main():
         os.makedirs(DEST)
     planos = json.load(io.open(os.path.join(AQUI, "narracion.json"), encoding="utf-8"))
 
-    tiempos = []
+    tiempos, desbordes = [], []
     for p in planos:
-        d = convertir(clave, voice_id, p["texto"], modelo)
+        d = convertir(clave, voice_id, p["texto"], modelo, p.get("ajustes"))
         mp3 = os.path.join(DEST, "f%02d.mp3" % p["n"])
         io.open(mp3, "wb").write(base64.b64decode(d["audio_base64"]))
         ini = inicios_de_frase(p["texto"], p["frases"], d["alignment"])
         tiempos.append({"n": p["n"], "frames": p["frames"], "frases": p["frases"], "inicios": ini,
                          "duracion": ini[-1]})
-        print("plano %02d  %5.2f s  (%d frases)  -> %s" % (p["n"], ini[-1], len(p["frases"]), mp3))
+        # cada plano dura lo que dura su corte: si la voz se pasa, hay que
+        # acortar el texto o subir "speed", nunca descubrirlo en el MP4 final
+        tope = p.get("tope")
+        aviso = ""
+        if tope and ini[-1] > tope:
+            aviso = "  DESBORDA el plano por %.2f s" % (ini[-1] - tope)
+            desbordes.append((p["n"], ini[-1], tope))
+        print("plano %02d  %5.2f s  (%d frases)  -> %s%s"
+              % (p["n"], ini[-1], len(p["frases"]), mp3, aviso))
 
     io.open(os.path.join(AQUI, "tiempos-voz.json"), "w", encoding="utf-8", newline="\n").write(
         json.dumps(tiempos, ensure_ascii=False, indent=1))
@@ -72,6 +89,10 @@ def main():
     print("-" * 44)
     print("narración total %.1f s  ·  voz %s, modelo %s" % (total, voice_id, modelo))
     print("escrito tools/tiempos-voz.json")
+    if desbordes:
+        for n, d, t in desbordes:
+            print("  plano %02d: %.2f s contra un tope de %.2f s" % (n, d, t))
+        raise SystemExit("FALLO: hay locucion que no cabe en su plano")
 
 
 if __name__ == "__main__":
