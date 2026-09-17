@@ -35,11 +35,11 @@
     .s4-foot { position: absolute; left: 84px; top: 1470px; width: 912px; text-align: center; font-size: 44px; font-weight: 500; color: #06c7fb; opacity: 0; }
   </style>
 
-  <div id="root" data-composition-id="s04-solucion" data-start="0" data-duration="6.5" data-width="1080" data-height="1920">
-    <div id="s4-ground" class="clip s4-layer s4-ground" data-start="0" data-duration="6.5" data-track-index="0"></div>
-    <div id="s4-halo" class="clip s4-halo" data-layout-allow-overflow data-start="0" data-duration="6.5" data-track-index="1"></div>
+  <div id="root" data-composition-id="s04-solucion" data-start="0" data-duration="6.4" data-width="1080" data-height="1920">
+    <div id="s4-ground" class="clip s4-layer s4-ground" data-start="0" data-duration="6.4" data-track-index="0"></div>
+    <div id="s4-halo" class="clip s4-halo" data-layout-allow-overflow data-start="0" data-duration="6.4" data-track-index="1"></div>
 
-    <div id="s4-stage" class="clip s4-layer" data-start="0" data-duration="6.5" data-track-index="2">
+    <div id="s4-stage" class="clip s4-layer" data-start="0" data-duration="6.4" data-track-index="2">
       <img class="s4-logo" id="s4-logo" src="assets/riskmann_logo_blanco.png" alt="RiskMann" />
       <div class="s4-rule" id="s4-rule"></div>
 
@@ -104,8 +104,19 @@
 
       /* 5.55 · salida */
       tl.to(["#s4-logo", "#s4-rule", "#s4-claim", "#s4-chips", "#s4-foot"],
-        { scale: 1.45, opacity: 0, filter: "blur(9px)", duration: 0.95, ease: "expo.in", stagger: 0.04 }, 5.55);
-      tl.to("#s4-halo", { opacity: 0, duration: 0.8, ease: "power2.in" }, 5.7);
+        { scale: 1.45, opacity: 0, filter: "blur(9px)", duration: 0.95, ease: "expo.in", stagger: 0.04 }, 5.45);
+      tl.to("#s4-halo", { opacity: 0, duration: 0.8, ease: "power2.in" }, 5.6);
+
+
+      /* deriva continua del fondo: sin esto el plano se congela entre
+         golpe y golpe. Medido, 44 de 76 ventanas estaban paradas. */
+      tl.fromTo("#s4-ground", { scale: 1, y: 0 },
+        { scale: 1.24, y: -70, duration: 6.4, ease: "none" }, 0);
+
+
+      /* deriva continua del contenido. El fondo solo no alcanza: un
+         degradado suave casi no cambia pixel a pixel, y el texto si. */
+      tl.to("#s4-stage", { scale: 1.07, y: -30, duration: 5.65, ease: "none" }, 0.75);
 
       window.__timelines["s04-solucion"] = tl;
     })();

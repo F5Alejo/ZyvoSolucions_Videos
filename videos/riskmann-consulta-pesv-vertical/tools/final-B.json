@@ -1,22 +1,26 @@
 {
- "duracion": 37.5,
+ "duracion": 34.0,
  "salida": "assets/mezcla-B.wav",
  "pasa_altos": 90,
- "pistas": [
+ "musica": [
   {
-   "archivo": "assets/ritmo.wav",
+   "archivo": "assets/musica-mixkit-hip-hop-02.mp3",
    "en": 0,
-   "ganancia": 0.62
-  },
+   "ganancia": 0.8,
+   "entrada": 0.6,
+   "salida": 2.2
+  }
+ ],
+ "pistas": [
   {
    "archivo": "assets/sfx1.wav",
    "en": 0,
-   "ganancia": 0.62
+   "ganancia": 0.58
   },
   {
    "archivo": "assets/sfx2.wav",
    "en": 0,
-   "ganancia": 0.62
+   "ganancia": 0.58
   }
  ]
 }

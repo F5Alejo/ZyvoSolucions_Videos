@@ -45,11 +45,11 @@
     .s1-card-text .w { display: inline-block; opacity: 0; }
   </style>
 
-  <div id="root" data-composition-id="s01-gancho" data-start="0" data-duration="6.5" data-width="1080" data-height="1920">
-    <div id="s1-ground" class="clip s1-layer s1-ground" data-start="0" data-duration="6.5" data-track-index="0"></div>
-    <div id="s1-grain" class="clip s1-layer s1-grain" data-start="0" data-duration="6.5" data-track-index="1"></div>
+  <div id="root" data-composition-id="s01-gancho" data-start="0" data-duration="4.6" data-width="1080" data-height="1920">
+    <div id="s1-ground" class="clip s1-layer s1-ground" data-start="0" data-duration="4.6" data-track-index="0"></div>
+    <div id="s1-grain" class="clip s1-layer s1-grain" data-start="0" data-duration="4.6" data-track-index="1"></div>
 
-    <div id="s1-stage" class="clip s1-layer" data-start="0" data-duration="6.5" data-track-index="2">
+    <div id="s1-stage" class="clip s1-layer" data-start="0" data-duration="4.6" data-track-index="2">
       <div class="s1-sweep" id="s1-sweep" aria-hidden="true" data-layout-ignore></div>
 
       <div class="s1-stack" id="s1-stack">
@@ -102,7 +102,7 @@
       tl.fromTo("#s1-seguro", { scale: 0.42 }, { scale: 1, duration: 0.85, ease: "back.out(1.7)" }, 1.53);
       tl.fromTo("#s1-seguro", { filter: "blur(9px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.3, ease: "power2.out" }, 1.53);
       tl.fromTo("#s1-glow", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power4.out" }, 1.53);
-      tl.to("#s1-glow", { opacity: 0.55, duration: 0.6, ease: "power2.inOut" }, 2.03);
+      tl.to("#s1-glow", { opacity: 0.55, duration: 0.58, ease: "power2.inOut" }, 2.05);
 
       /* 2.60 · la tarjeta glass sube */
       tl.fromTo("#s1-card", { opacity: 0, y: 70, scale: 0.94 },
@@ -110,15 +110,26 @@
       tl.to("#s1-card-text .w", { opacity: 1, duration: 0.4, ease: "power3.out", stagger: 0.08 }, 2.95);
 
       /* 3.40 · AMBIENT IDLE — nada queda quieto (tweens finitos, seek-safe) */
-      tl.to("#s1-seguro", { scale: 1.022, duration: 2.1, ease: "sine.inOut" }, 3.4);
-      tl.to("#s1-card", { y: -14, duration: 2.4, ease: "sine.inOut" }, 3.45);
-      tl.to("#s1-glow", { opacity: 0.78, scale: 1.08, duration: 2.2, ease: "sine.inOut" }, 3.4);
-      tl.to("#s1-quote", { y: -210, duration: 2.4, ease: "sine.inOut" }, 3.4);
+      tl.to("#s1-seguro", { scale: 1.05, duration: 0.42, ease: "sine.inOut" }, 3.2);
+      tl.to("#s1-card", { y: -30, duration: 0.22, ease: "sine.inOut" }, 3.42);
+      tl.to("#s1-glow", { opacity: 0.82, scale: 1.12, duration: 0.45, ease: "sine.inOut" }, 3.2);
+      tl.to("#s1-quote", { y: -240, duration: 0.45, ease: "sine.inOut" }, 3.2);
 
       /* 5.55 · salida: todo atraviesa la lente */
       tl.to(["#s1-hero", "#s1-card", "#s1-quote"],
-        { scale: 1.55, opacity: 0, filter: "blur(9px)", duration: 0.95, ease: "expo.in", stagger: 0.05 }, 5.55);
-      tl.to("#s1-grain", { opacity: 0, duration: 0.7, ease: "power2.in" }, 5.8);
+        { scale: 1.55, opacity: 0, filter: "blur(9px)", duration: 0.95, ease: "expo.in", stagger: 0.05 }, 3.65);
+      tl.to("#s1-grain", { opacity: 0, duration: 0.7, ease: "power2.in" }, 3.9);
+
+
+      /* deriva continua del fondo: sin esto el plano se congela entre
+         golpe y golpe. Medido, 44 de 76 ventanas estaban paradas. */
+      tl.fromTo("#s1-ground", { scale: 1, y: 0 },
+        { scale: 1.24, y: -70, duration: 4.6, ease: "none" }, 0);
+
+
+      /* el rotulo sigue creciendo mientras sube la tarjeta: sin esto el
+         plano se para entre 2.0 y 2.5 s */
+      tl.to("#s1-seguro", { scale: 1.035, duration: 0.78, ease: "none" }, 2.4);
 
       window.__timelines["s01-gancho"] = tl;
     })();
