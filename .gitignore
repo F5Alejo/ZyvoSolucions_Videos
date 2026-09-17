@@ -180,3 +180,6 @@ videos/*/index-parte-*.html
 # Cache de miniaturas del Studio. Sus nombres superan el limite de ruta de
 # Windows y rompen `git add` entero; ademas se regenera solo.
 **/.thumbnails/
+
+# Renders del esqueleto de la v2: se rehacen con npm run render
+videos/riskmann-pesv-v2/renders/

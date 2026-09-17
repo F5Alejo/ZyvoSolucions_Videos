@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script
+      src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"
+      integrity="sha384-sG0Hv1tP1lZCk9KQmrIbY/XNwi+OY84GQqhMscbnsoBFqAz8KNCil1kvfL3Hbbk2"
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      @font-face { font-family: "Dubai"; font-weight: 300; src: url("assets/fonts/DUBAI-LIGHT.TTF") format("truetype"); }
+      @font-face { font-family: "Dubai"; font-weight: 400; src: url("assets/fonts/DUBAI-REGULAR.TTF") format("truetype"); }
+      @font-face { font-family: "Dubai"; font-weight: 500; src: url("assets/fonts/DUBAI-MEDIUM.TTF") format("truetype"); }
+      @font-face { font-family: "Dubai"; font-weight: 700; src: url("assets/fonts/DUBAI-BOLD.TTF") format("truetype"); }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #020202; }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #020202;
+        font-family: "Dubai", sans-serif;
+      }
+
+      /* ---------- el suelo: nunca se apaga, da continuidad al espacio ---------- */
+      .capa { position: absolute; inset: 0; }
+      #fondo {
+        background:
+          radial-gradient(1200px 1100px at 50% 46%, rgba(38, 54, 125, 0.55) 0%, rgba(2, 2, 2, 0) 70%),
+          radial-gradient(900px 800px at 12% 14%, rgba(51, 51, 102, 0.30) 0%, rgba(2, 2, 2, 0) 72%),
+          #020202;
+      }
+      /* halo que vira de color con el relato; vive los 34 s */
+      /* Tres ambientes apilados. GSAP no sabe interpolar un radial-gradient:
+         tweenear "background" hacia visible la caja rectangular del div. Se
+         cruzan por opacidad, que si es interpolable. */
+      .ambiente {
+        position: absolute;
+        left: 50%; top: 900px;
+        width: 1500px; height: 1500px;
+        margin-left: -750px; margin-top: -750px;
+        opacity: 0;
+      }
+      #amb-cian { background: radial-gradient(circle, rgba(6, 199, 251, 0.22) 0%, rgba(2, 2, 2, 0) 62%); }
+      #amb-rojo { background: radial-gradient(circle, rgba(255, 51, 51, 0.26) 0%, rgba(2, 2, 2, 0) 62%); }
+      #amb-oro  { background: radial-gradient(circle, rgba(200, 149, 26, 0.22) 0%, rgba(2, 2, 2, 0) 62%); }
+
+      /* ---------- la lente: el motivo del manual, siempre en pantalla ---------- */
+      #lente {
+        position: absolute;
+        left: 50%; top: 900px;
+        width: 860px; height: 860px;
+        margin-left: -430px; margin-top: -430px;
+      }
+      .aro { position: absolute; inset: 0; border-radius: 50%; }
+      /* anillo grueso cian: el cuerpo de la lente */
+      #aro-cian {
+        border: 22px solid rgba(6, 199, 251, 0.55);
+        box-shadow: 0 0 90px rgba(6, 199, 251, 0.35), inset 0 0 70px rgba(6, 199, 251, 0.22);
+      }
+      /* anillo fino dorado, por fuera: el toque de prestigio del manual */
+      #aro-oro {
+        inset: -34px;
+        border: 3px solid rgba(200, 149, 26, 0.85);
+        box-shadow: 0 0 26px rgba(200, 149, 26, 0.5);
+      }
+      /* arco brillante: un solo tramo encendido, gira y da vida */
+      #aro-arco {
+        inset: 16px;
+        border: 3px solid transparent;
+        border-top-color: rgba(120, 225, 255, 0.95);
+        border-right-color: rgba(120, 225, 255, 0.35);
+        box-shadow: 0 0 30px rgba(6, 199, 251, 0.45);
+      }
+
+      /* ---------- la camara: todo el contenido cuelga de aqui ---------- */
+      #camara { position: absolute; inset: 0; transform-origin: 50% 47%; }
+
+      /* cada tiempo es una capa dentro de la camara, no una composicion aparte */
+      .tiempo {
+        position: absolute;
+        left: 0; top: 0;
+        width: 1080px; height: 1920px;
+        opacity: 0;
+      }
+      .bloque {
+        position: absolute;
+        left: 90px;
+        top: 620px;
+        width: 900px;
+        text-align: center;
+      }
+      .rotulo {
+        font-size: 30px;
+        font-weight: 500;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: #c8951a;
+      }
+      .titular {
+        margin-top: 34px;
+        font-size: 92px;
+        line-height: 1.5;
+        color: #ffffff;
+        letter-spacing: -0.025em;
+      }
+      /* la regla tipografica del manual: Bold carga, Light une */
+      .titular b { font-weight: 700; }
+      .titular i { font-weight: 300; font-style: normal; color: rgba(255, 255, 255, 0.72); }
+      .pie {
+        margin-top: 40px;
+        font-size: 36px;
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.55);
+      }
+
+      /* marca de andamiaje: se retira al colgar el contenido real */
+      #sello {
+        position: absolute;
+        left: 0; bottom: 96px;
+        width: 1080px;
+        text-align: center;
+        font-size: 26px;
+        font-weight: 300;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: rgb(122, 122, 122);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="34"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="fondo" class="clip capa" data-start="0" data-duration="34" data-track-index="0"></div>
+      <div id="ambiente" class="clip capa" data-layout-allow-overflow data-start="0" data-duration="34" data-track-index="1">
+        <div id="amb-cian" class="ambiente"></div>
+        <div id="amb-rojo" class="ambiente"></div>
+        <div id="amb-oro" class="ambiente"></div>
+      </div>
+
+      <!-- La lente vive los 34 s completos. Nunca se apaga y nunca se corta. -->
+      <div id="lente" class="clip" data-layout-allow-overflow data-start="0" data-duration="34" data-track-index="2">
+        <div id="aro-cian" class="aro"></div>
+        <div id="aro-oro" class="aro"></div>
+        <div id="aro-arco" class="aro"></div>
+      </div>
+
+      <div id="camara" class="clip capa" data-start="0" data-duration="34" data-track-index="3">
+        <div id="t1" class="tiempo">
+          <div class="bloque">
+            <div class="rotulo">El gancho</div>
+            <div class="titular">El PESV <b>no me aplica</b>.</div>
+            <div class="pie">0.0 — 5.5 s</div>
+          </div>
+        </div>
+
+        <div id="t2" class="tiempo">
+          <div class="bloque">
+            <div class="rotulo">Los umbrales</div>
+            <div class="titular"><b>11</b> <i>vehículos</i>. <b>2</b> <i>conductores</i>.</div>
+            <div class="pie">5.5 — 11.0 s</div>
+          </div>
+        </div>
+
+        <div id="t3" class="tiempo">
+          <div class="bloque">
+            <div class="rotulo">El costo</div>
+            <div class="titular">No cumplir <b>cuesta hasta</b> <b>500</b> <i>SMMLV</i>.</div>
+            <div class="pie">11.0 — 17.0 s</div>
+          </div>
+        </div>
+
+        <div id="t4" class="tiempo">
+          <div class="bloque">
+            <div class="rotulo">Los tres niveles</div>
+            <div class="titular">No es <b>un solo</b> PESV.</div>
+            <div class="pie">17.0 — 23.0 s</div>
+          </div>
+        </div>
+
+        <div id="t5" class="tiempo">
+          <div class="bloque">
+            <div class="rotulo">La solución</div>
+            <div class="titular">RiskMann <b>lo automatiza</b>.</div>
+            <div class="pie">23.0 — 28.5 s</div>
+          </div>
+        </div>
+
+        <div id="t6" class="tiempo">
+          <div class="bloque">
+            <div class="rotulo">El cierre</div>
+            <div class="titular"><b>Escríbenos</b>.</div>
+            <div class="pie">28.5 — 34.0 s</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="sello" class="clip" data-start="0" data-duration="34" data-track-index="4">
+        Esqueleto · sin contenido final
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        window.__timelines = window.__timelines || {};
+        var tl = gsap.timeline({ paused: true });
+
+        var TOTAL = 34;
+        // Limites de montaje, NO cortes: cada tiempo entra antes de que salga el anterior.
+        var T = [0, 5.5, 11.0, 17.0, 23.0, 28.5];
+        var SOLAPE = 0.55;
+
+        /* ------------------------------------------------------------------
+           LA LENTE — un solo giro finito en los 34 s. Sin repeat, sin yoyo:
+           el render busca por tiempo y tiene que ser determinista.
+           ------------------------------------------------------------------ */
+        tl.to("#aro-arco", { rotation: 360, duration: TOTAL, ease: "none" }, 0);
+        tl.to("#lente", { rotation: -22, duration: TOTAL, ease: "none" }, 0);
+
+        // Apertura: la lente se forma. Es lo primero que ve el espectador.
+        tl.fromTo("#lente", { scale: 0.18, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 1.5, ease: "expo.out" }, 0);
+        tl.fromTo("#ambiente", { scale: 0.6 }, { scale: 1, duration: 1.7, ease: "power3.out" }, 0);
+        tl.fromTo("#amb-cian", { opacity: 0 }, { opacity: 1, duration: 1.7, ease: "power3.out" }, 0);
+
+        /* ------------------------------------------------------------------
+           EL CONTENIDO ATRAVIESA LA LENTE
+           Cada tiempo nace dentro del aro y sale pasando por delante de la
+           camara. La lente no se mueve de sitio: es el marco por el que pasa
+           todo, y por eso el ojo nunca encuentra una frontera.
+           ------------------------------------------------------------------ */
+        for (var i = 0; i < T.length; i++) {
+          var sel = "#t" + (i + 1);
+          var fin = i + 1 < T.length ? T[i + 1] : TOTAL;
+          // El saliente se apaga ANTES de que el entrante sea legible. Los dos
+          // titulares viven en el mismo sitio de la pantalla, asi que solaparlos
+          // los vuelve ilegibles -se vio en el render del esqueleto-. La
+          // continuidad no la carga el texto: la carga el aro, que nunca se va.
+          var entra = T[i] === 0 ? 0.55 : T[i] - 0.28;
+          var apaga = fin - 0.92;
+
+          // nace en el centro del aro, pequeño, y se asienta
+          tl.fromTo(sel, { opacity: 0, scale: 0.62 },
+            { opacity: 1, scale: 1, duration: 0.85, ease: "expo.out" }, entra);
+          tl.fromTo(sel, { filter: "blur(10px)" },
+            { filter: "blur(0px)", immediateRender: false, duration: 0.4, ease: "power2.out" }, entra);
+
+          // deriva lenta mientras se sostiene: nada queda quieto
+          tl.to(sel, { y: -34, duration: Math.max(0.6, apaga - entra - 0.7), ease: "sine.inOut" }, entra + 0.7);
+
+          // sale hacia el espectador; la opacidad cae rapido para no empastar
+          tl.to(sel, { scale: 2.1, filter: "blur(14px)", duration: 0.92, ease: "expo.in" }, apaga);
+          tl.to(sel, { opacity: 0, duration: 0.5, ease: "power2.in" }, apaga);
+        }
+
+        /* ------------------------------------------------------------------
+           EL PASO POR EL ARO — en cada relevo la lente hace un iris:
+           se contrae y vuelve a abrir. Es el gesto que lleva el ojo de una
+           idea a la siguiente sin que haya corte.
+           ------------------------------------------------------------------ */
+        for (var j = 1; j < T.length; j++) {
+          var t = T[j] - SOLAPE;
+          tl.to("#lente", { scale: 0.74, duration: 0.42, ease: "power2.in" }, t - 0.42);
+          tl.to("#lente", { scale: 1, duration: 0.95, ease: "expo.out" }, t);
+          // un pulso de brillo acompaña el relevo
+          tl.to("#aro-cian", { borderWidth: 30, duration: 0.42, ease: "power2.in" }, t - 0.42);
+          tl.to("#aro-cian", { borderWidth: 22, duration: 0.95, ease: "expo.out" }, t);
+        }
+
+        /* ------------------------------------------------------------------
+           EL COLOR DEL ARO SIGUE EL RELATO
+           Cian en reposo · #FF3333 en la tension (el manual lo reserva para
+           alertas) · dorado en el cierre (toques de prestigio).
+           ------------------------------------------------------------------ */
+        // tiempo 3, el costo: la lente se pone en alerta
+        tl.to("#aro-cian", { borderColor: "rgba(255,51,51,0.62)", duration: 0.8, ease: "power2.inOut" }, T[2] - SOLAPE);
+        tl.to("#amb-cian", { opacity: 0, duration: 0.8, ease: "power2.inOut" }, T[2] - SOLAPE);
+        tl.fromTo("#amb-rojo", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power2.inOut" }, T[2] - SOLAPE);
+
+        // tiempo 4: vuelve a cian, la tension baja
+        tl.to("#aro-cian", { borderColor: "rgba(6,199,251,0.55)", duration: 0.9, ease: "power2.inOut" }, T[3] - SOLAPE);
+        tl.to("#amb-rojo", { opacity: 0, duration: 0.9, ease: "power2.inOut" }, T[3] - SOLAPE);
+        tl.to("#amb-cian", { opacity: 1, duration: 0.9, ease: "power2.inOut" }, T[3] - SOLAPE);
+
+        // tiempo 5, la solucion: la lente se vuelve dorada
+        tl.to("#aro-cian", { borderColor: "rgba(200,149,26,0.62)", duration: 1.0, ease: "power2.inOut" }, T[4] - SOLAPE);
+        tl.to("#amb-cian", { opacity: 0, duration: 1.0, ease: "power2.inOut" }, T[4] - SOLAPE);
+        tl.fromTo("#amb-oro", { opacity: 0 }, { opacity: 1, duration: 1.0, ease: "power2.inOut" }, T[4] - SOLAPE);
+
+        // tiempo 6, el cierre: el rojo del boton toma el aro
+        tl.to("#aro-cian", { borderColor: "rgba(255,51,51,0.68)", duration: 0.9, ease: "power2.inOut" }, T[5] - SOLAPE);
+        tl.to("#amb-oro", { opacity: 0, duration: 0.9, ease: "power2.inOut" }, T[5] - SOLAPE);
+        tl.to("#amb-rojo", { opacity: 1, duration: 0.9, ease: "power2.inOut" }, T[5] - SOLAPE);
+
+        /* ------------------------------------------------------------------
+           LA CAMARA — deriva continua, muy leve. Su unico trabajo es que el
+           encuadre no se sienta fijo ni un solo segundo.
+           ------------------------------------------------------------------ */
+        tl.fromTo("#camara", { scale: 1.06 }, { scale: 1.0, duration: 17, ease: "sine.inOut" }, 0);
+        tl.to("#camara", { scale: 1.05, duration: 17, ease: "sine.inOut" }, 17);
+        tl.fromTo("#fondo", { scale: 1.12 }, { scale: 1.0, duration: TOTAL, ease: "none" }, 0);
+
+        // el cierre: la lente se recoge para convertirse en el halo del boton
+        tl.to("#lente", { scale: 0.62, duration: 1.6, ease: "expo.out" }, 30.2);
+        tl.to("#aro-oro", { opacity: 0.35, duration: 1.2, ease: "power2.inOut" }, 30.2);
+
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>
