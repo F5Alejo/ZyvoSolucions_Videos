@@ -8,7 +8,7 @@ duracion y, todas opcionales, las capas de la "cama", las lineas de "voz", las
 "efectos", cada uno en su segundo exacto. "pasa_altos" (Hz) recorta la subgrave
 antes de normalizar. Este script no cambia entre modulos.
 
-Siete lecciones de produccion estan escritas aqui para que no se repitan:
+Ocho lecciones de produccion estan escritas aqui para que no se repitan:
 
 1. La cama vive en 110 Hz hacia arriba. Un drone en 55-82 Hz mide bien en el
    vumetro y suena a silencio en un portatil o un telefono.
@@ -32,6 +32,10 @@ Siete lecciones de produccion estan escritas aqui para que no se repitan:
    entrega 192 kHz y desplaza los timestamps: el apad/atrim posterior devuelve
    silencio sin dar ningun error. Verificar SIEMPRE el margen voz-musica frase
    por frase, no el nivel general de la mezcla.
+8. El bus frontal puede quedar VACIO: una version de solo musica no lleva voz ni
+   efectos. amix con cero entradas no da error, deja el grafo colgado y ffmpeg
+   se queda girando. Y sin voz no se aplica ducking: la musica se agacharia bajo
+   sus propios efectos.
 
 Los efectos salen de la libreria incluida en /media-use (licencia Pixabay: uso
 comercial sin atribucion). La cama es sintesis propia: no hay derechos de nadie.
@@ -112,7 +116,11 @@ def main(cfg_path):
         fg.append(f"[v{i}]"); i += 1
 
     chain = ";".join(filters)
-    chain += ";" + "".join(fg) + f"amix=inputs={len(fg)}:normalize=0[fgmix]"
+    # leccion 8: el bus frontal puede estar VACIO -una version de solo musica no
+    # lleva voz ni efectos-. amix con cero entradas no da error: deja el grafo
+    # colgado y ffmpeg se queda girando sin terminar nunca.
+    if fg:
+        chain += ";" + "".join(fg) + f"amix=inputs={len(fg)}:normalize=0[fgmix]"
 
     # todo lo que debe apartarse bajo la voz: la cama sintetizada y la musica
     duck = []
@@ -126,20 +134,20 @@ def main(cfg_path):
             chain += ";" + "".join(duck) + f"amix=inputs={len(duck)}:normalize=0[duckin]"
         else:
             chain += f";{duck[0]}anull[duckin]"
-        # la llave: la locucion sola si la hay, si no todo el frente (comportamiento previo)
         if voz:
+            # el ducking existe para proteger la locucion: sin voz no se aplica,
+            # o la musica acabaria agachandose bajo sus propios efectos
             chain += ";" + "".join(voz) + (f"amix=inputs={len(voz)}:normalize=0[llave]"
                                            if len(voz) > 1 else "anull[llave]")
-            llave = "[llave]"
-            resto = "[fgmix]"
+            d = cfg.get("ducking", {})
+            chain += (f";[duckin][llave]sidechaincompress="
+                      f"threshold={d.get('umbral', 0.05)}:ratio={d.get('ratio', 6)}:"
+                      f"attack={d.get('ataque', 15)}:release={d.get('reposo', 420)}[duckout]")
+            chain += ";[duckout][fgmix]amix=inputs=2:normalize=0,"
+        elif fg:
+            chain += ";[duckin][fgmix]amix=inputs=2:normalize=0,"
         else:
-            chain += ";[fgmix]asplit=2[fg1][fg2]"  # leccion 2: el bus se duplica, nunca se reutiliza
-            llave, resto = "[fg1]", "[fg2]"
-        d = cfg.get("ducking", {})
-        chain += (f";[duckin]{llave}sidechaincompress="
-                  f"threshold={d.get('umbral', 0.05)}:ratio={d.get('ratio', 6)}:"
-                  f"attack={d.get('ataque', 15)}:release={d.get('reposo', 420)}[duckout]")
-        chain += f";[duckout]{resto}amix=inputs=2:normalize=0,"
+            chain += ";[duckin]"
     else:
         chain += ";[fgmix]"
     # "pasa_altos" (Hz, opcional): recorta la subgrave antes de normalizar, para que no se

@@ -38,11 +38,11 @@
     .s5-label .w { display: inline-block; opacity: 0; }
   </style>
 
-  <div id="root" data-composition-id="s05-prueba" data-start="0" data-duration="5.5" data-width="1080" data-height="1920">
-    <div id="s5-ground" class="clip s5-layer s5-ground" data-start="0" data-duration="5.5" data-track-index="0"></div>
-    <div id="s5-flash" class="clip s5-flash" data-layout-allow-overflow data-start="0" data-duration="5.5" data-track-index="1"></div>
+  <div id="root" data-composition-id="s05-prueba" data-start="0" data-duration="4.9" data-width="1080" data-height="1920">
+    <div id="s5-ground" class="clip s5-layer s5-ground" data-start="0" data-duration="4.9" data-track-index="0"></div>
+    <div id="s5-flash" class="clip s5-flash" data-layout-allow-overflow data-start="0" data-duration="4.9" data-track-index="1"></div>
 
-    <div id="s5-stage" class="clip s5-layer" data-start="0" data-duration="5.5" data-track-index="2">
+    <div id="s5-stage" class="clip s5-layer" data-start="0" data-duration="4.9" data-track-index="2">
       <div class="s5-card" id="s5-card">
         <div class="s5-card-rest"></div>
         <!-- approved frame video hoisted by assemble-index -->
@@ -89,12 +89,23 @@
       /* 2.90 · AMBIENT IDLE */
       tl.to("#s5-card", { y: -18, duration: 1.7, ease: "sine.inOut" }, 2.9);
       tl.to("#s5-num", { scale: 1.026, duration: 1.6, ease: "sine.inOut" }, 2.9);
-      tl.to("#s5-flash", { opacity: 0.62, scale: 1.1, duration: 1.6, ease: "sine.inOut" }, 2.9);
+      tl.to("#s5-flash", { opacity: 0.62, scale: 1.1, duration: 1.15, ease: "sine.inOut" }, 2.9);
 
       /* 4.55 · salida */
       tl.to(["#s5-card", "#s5-num", "#s5-track", "#s5-label"],
-        { scale: 1.45, opacity: 0, filter: "blur(9px)", duration: 0.95, ease: "expo.in", stagger: 0.04 }, 4.55);
-      tl.to("#s5-flash", { opacity: 0, duration: 0.8, ease: "power2.in" }, 4.7);
+        { scale: 1.45, opacity: 0, filter: "blur(9px)", duration: 0.95, ease: "expo.in", stagger: 0.04 }, 3.95);
+      tl.to("#s5-flash", { opacity: 0, duration: 0.8, ease: "power2.in" }, 4.1);
+
+
+      /* deriva continua del fondo: sin esto el plano se congela entre
+         golpe y golpe. Medido, 44 de 76 ventanas estaban paradas. */
+      tl.fromTo("#s5-ground", { scale: 1, y: 0 },
+        { scale: 1.24, y: -70, duration: 4.9, ease: "none" }, 0);
+
+
+      /* deriva continua del contenido. El fondo solo no alcanza: un
+         degradado suave casi no cambia pixel a pixel, y el texto si. */
+      tl.to("#s5-stage", { scale: 1.07, y: -30, duration: 4.15, ease: "none" }, 0.75);
 
       window.__timelines["s05-prueba"] = tl;
     })();
