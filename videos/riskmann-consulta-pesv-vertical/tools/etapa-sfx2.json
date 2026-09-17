@@ -24,22 +24,22 @@
   },
   {
    "efecto": "pop",
-   "en": 21.6,
+   "en": 21.45,
    "ganancia": 0.4
   },
   {
    "efecto": "pop",
-   "en": 21.76,
+   "en": 21.61,
    "ganancia": 0.4
   },
   {
    "efecto": "pop",
-   "en": 21.92,
+   "en": 21.77,
    "ganancia": 0.4
   },
   {
    "efecto": "click-soft",
-   "en": 22.9,
+   "en": 23.55,
    "ganancia": 0.24
   },
   {
@@ -59,12 +59,12 @@
   },
   {
    "efecto": "impact-bass-1",
-   "en": 27.0,
+   "en": 27.15,
    "ganancia": 0.62
   },
   {
    "efecto": "riser",
-   "en": 27.6,
+   "en": 27.75,
    "ganancia": 0.3
   },
   {
@@ -89,22 +89,22 @@
   },
   {
    "efecto": "impact-bass-2",
-   "en": 32.4,
+   "en": 32.35,
    "ganancia": 0.5
   },
   {
    "efecto": "click",
-   "en": 33.0,
+   "en": 32.85,
    "ganancia": 0.55
   },
   {
    "efecto": "pop",
-   "en": 33.9,
+   "en": 33.7,
    "ganancia": 0.36
   },
   {
    "efecto": "click-soft",
-   "en": 34.25,
+   "en": 34.1,
    "ganancia": 0.22
   }
  ]

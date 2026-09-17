@@ -2,51 +2,63 @@
  "duracion": 37.5,
  "salida": "assets/mezcla-A.wav",
  "pasa_altos": 90,
- "pistas": [
+ "musica": [
   {
-   "archivo": "assets/ritmo.wav",
+   "archivo": "assets/musica-mixkit-hip-hop-02.mp3",
    "en": 0,
-   "ganancia": 0.3
-  },
+   "ganancia": 0.46,
+   "hueco_voz": -4.5,
+   "hueco_hz": 1900,
+   "entrada": 0.6,
+   "salida": 2.2
+  }
+ ],
+ "ducking": {
+  "umbral": 0.055,
+  "ratio": 4,
+  "ataque": 12,
+  "reposo": 380
+ },
+ "pistas": [
   {
    "archivo": "assets/sfx1.wav",
    "en": 0,
-   "ganancia": 0.5
+   "ganancia": 0.42
   },
   {
    "archivo": "assets/sfx2.wav",
    "en": 0,
-   "ganancia": 0.5
+   "ganancia": 0.42
   }
  ],
  "voz": [
   {
-   "archivo": "assets/voz/f01.mp3",
+   "archivo": "assets/voz-nivelada/f01.wav",
    "en": 0.0,
-   "ganancia": 1.0
+   "ganancia": 1.5
   },
   {
-   "archivo": "assets/voz/f02.mp3",
+   "archivo": "assets/voz-nivelada/f02.wav",
    "en": 6.5,
    "ganancia": 1.0
   },
   {
-   "archivo": "assets/voz/f03.mp3",
+   "archivo": "assets/voz-nivelada/f03.wav",
    "en": 13.0,
    "ganancia": 1.0
   },
   {
-   "archivo": "assets/voz/f04.mp3",
+   "archivo": "assets/voz-nivelada/f04.wav",
    "en": 19.5,
    "ganancia": 1.0
   },
   {
-   "archivo": "assets/voz/f05.mp3",
+   "archivo": "assets/voz-nivelada/f05.wav",
    "en": 26.0,
    "ganancia": 1.0
   },
   {
-   "archivo": "assets/voz/f06.mp3",
+   "archivo": "assets/voz-nivelada/f06.wav",
    "en": 31.5,
    "ganancia": 1.0
   }

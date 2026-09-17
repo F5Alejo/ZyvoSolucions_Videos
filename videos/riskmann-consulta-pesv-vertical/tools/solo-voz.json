@@ -1,0 +1,12 @@
+{
+ "duracion": 37.5,
+ "salida": "assets/mezcla-voz.wav",
+ "voz": [
+  { "archivo": "assets/voz-nivelada/f01.wav", "en": 0.0,  "ganancia": 1.5 },
+  { "archivo": "assets/voz-nivelada/f02.wav", "en": 6.5,  "ganancia": 1.0 },
+  { "archivo": "assets/voz-nivelada/f03.wav", "en": 13.0, "ganancia": 1.0 },
+  { "archivo": "assets/voz-nivelada/f04.wav", "en": 19.5, "ganancia": 1.0 },
+  { "archivo": "assets/voz-nivelada/f05.wav", "en": 26.0, "ganancia": 1.0 },
+  { "archivo": "assets/voz-nivelada/f06.wav", "en": 31.5, "ganancia": 1.0 }
+ ]
+}

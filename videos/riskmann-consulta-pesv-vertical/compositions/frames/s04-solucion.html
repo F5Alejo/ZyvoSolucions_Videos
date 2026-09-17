@@ -87,13 +87,13 @@
       tl.fromTo("#s4-claim .w", { filter: "blur(5px)" },
         { filter: "blur(0px)", immediateRender: false, duration: 0.24, ease: "power2.out", stagger: 0.085 }, 1.05);
 
-      /* 2.10 · los tres módulos, en cascada con overshoot (voz los nombra en 2.148) */
+      /* 1.95 · los tres módulos, en cascada con overshoot (voz los nombra en 1.92) */
       tl.fromTo(["#s4-chip-1", "#s4-chip-2", "#s4-chip-3"],
         { opacity: 0, y: 70, scale: 0.9 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "back.out(1.7)", stagger: 0.16 }, 2.1);
+        { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "back.out(1.7)", stagger: 0.16 }, 1.95);
 
-      /* 3.40 · el remate */
-      tl.fromTo("#s4-foot", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.55, ease: "power4.out" }, 3.4);
+      /* 4.05 · el remate: cae sobre "en una sola plataforma" */
+      tl.fromTo("#s4-foot", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.55, ease: "power4.out" }, 4.05);
 
       /* 3.70 · AMBIENT IDLE — cada chip flota a su propio ritmo */
       tl.to("#s4-chip-1", { y: -18, duration: 1.8, ease: "sine.inOut" }, 3.7);

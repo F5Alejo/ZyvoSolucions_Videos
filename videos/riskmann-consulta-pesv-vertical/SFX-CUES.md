@@ -6,25 +6,39 @@ Esta tabla es el mapa que consume `tools/mezcla.py`. Los planos arrancan en
 
 ## La música
 
-`tools/ritmo-video.json` → `tools/ritmo.py` genera `assets/ritmo.wav` a **120 BPM**.
+`assets/musica-mixkit-hip-hop-02.mp3` — Mixkit «Hip Hop 02» (id 738). Licencia
+Mixkit Free: uso comercial, sin atribución, **sin restricción de plataforma**.
+Ver `assets/musica-LICENCIA.txt`.
 
-**No usar una cama de senos sostenidos.** Se intentó primero y quedó inaudible: un
-acorde entre 146 y 440 Hz mide bien en el vúmetro pero un parlante de celular corta
-por debajo de 500 Hz. Medido, esa cama daba −62.7 dB en agudos contra −31.5 dB de
-la pista rítmica. Es la misma lección que ya advierte el encabezado de `ritmo.py`.
+**No se usó la Biblioteca de Audio de YouTube**: sus pistas solo están
+licenciadas para videos alojados en YouTube, y esta pieza también va a Reels,
+TikTok y Facebook.
 
-La instrumentación crece con la narrativa:
+Sustituyó a la pista sintetizada de `tools/ritmo.py`. Medida en tres bandas,
+entra con 4 dB de diferencia entre graves, medios y agudos — se oye en un
+celular sin pelear con nada.
 
-| Tramo | Instrumentos |
-| --- | --- |
-| 0 – 6.5 · la objeción | bombo + platillos (tenso, vacío) |
-| 6.5 – 13 · los umbrales | + bajo |
-| 13 – 26 · el costo y la solución | + palmas + acordes (lleno) |
-| 26 – 31.5 · la prueba | lleno |
-| 31.5 – 37.5 · el contacto | bombo, platillos, bajo, acordes |
+**La música va en `musica`, nunca en `pistas`.** `pistas` desemboca en el mismo
+`amix` que la locución y nada la aparta: en los picos se come la voz. Esa era la
+causa real de que la música tapara a Carlos.
 
-Las **subidas de ruido** terminan justo en cada corte (6.5, 13, 19.5, 26, 31.5), así
-refuerzan las salidas que atraviesan la lente.
+## El nivel de la voz
+
+ElevenLabs entrega la locución a **−33 dB de media**; una pista de catálogo viene
+a **−14 dB**. Son 19 dB de desventaja que ningún ducking compensa. Por eso la voz
+se nivela **antes**, a disco:
+
+```bash
+python ../../tools/nivelar-voz.py assets/voz assets/voz-nivelada -14
+```
+
+No se hace dentro de `mezcla.py`: `loudnorm` en un `filter_complex` entrega
+192 kHz y desplaza los timestamps, así que el `apad`/`atrim` posterior devuelve
+**silencio sin dar ningún error**.
+
+La verificación que manda es el **margen voz–música frase por frase**, no el
+nivel general de la mezcla. Objetivo: la voz entre **+7 y +25 dB** sobre la
+música en cada frase. Estado actual: mínimo **+7.5 dB**, «¿Seguro?» a **+8.2 dB**.
 
 ## Los efectos
 
@@ -33,36 +47,37 @@ refuerzan las salidas que atraviesan la lente.
 | t | Plano | Qué pasa en pantalla | Efecto |
 | --- | --- | --- | --- |
 | 0.00 | 1 | El barrido de luz abre la pieza | whoosh |
-| 1.00 | 1 | El tachón rojo se dibuja | whoosh-short |
-| 1.40 | 1 | La objeción retrocede en profundidad | whoosh-short |
-| **1.80** | 1 | **¿SEGURO? aterriza con overshoot** | **impact-bass-1** |
+| 0.85 | 1 | El tachón rojo se dibuja | whoosh-short |
+| 1.15 | 1 | La objeción retrocede en profundidad | whoosh-short |
+| **1.45** | 1 | **El golpe grave, justo antes de la palabra** | **impact-bass-1** |
+| **1.53** | 1 | **¿SEGURO? aterriza con la voz de Carlos** | *(sin efecto: la palabra manda)* |
 | 2.60 | 1 | La tarjeta glass sube | pop |
 | 5.55 | 1 | Salida push-through | whoosh-cinematic |
 | 6.70 | 2 | Tarjeta del umbral 11 | pop |
 | 7.10 | 2 | Se dibuja su barra roja | click-soft |
-| 7.45 | 2 | Tarjeta del umbral 2 | pop |
-| 7.85 | 2 | Se dibuja su barra roja | click-soft |
-| **8.55** | 2 | **El veredicto aterriza y destella** | **impact-bass-2** |
+| 7.70 | 2 | Tarjeta del umbral 2 | pop |
+| 8.10 | 2 | Se dibuja su barra roja | click-soft |
+| **8.95** | 2 | **El veredicto aterriza y destella** | **impact-bass-2** |
 | 12.05 | 2 | Salida | whoosh-cinematic |
-| 13.20 | 3 | «No cumplir cuesta hasta» en cascada | click-soft |
-| **14.00** | 3 | **500 aterriza + onda expansiva** | **impact-bass-1** |
-| 14.70 | 3 | SMMLV entra de costado | whoosh-short |
-| 15.90 | 3 | Chip dorado de los pesos | pop |
-| 16.70 | 3 | El respaldo legal | click-soft |
+| 13.15 | 3 | «No cumplir cuesta hasta» en cascada | click-soft |
+| **14.45** | 3 | **500 aterriza + onda expansiva** | **impact-bass-1** |
+| 15.15 | 3 | SMMLV entra de costado | whoosh-short |
+| 16.15 | 3 | Chip dorado de los pesos | pop |
+| 17.00 | 3 | El respaldo legal | click-soft |
 | 18.55 | 3 | Salida | whoosh-cinematic |
 | **19.65** | 4 | **El logo florece** | **impact-bass-2** |
 | 20.35 | 4 | Regla dorada | click-soft |
-| 21.60 / 21.76 / 21.92 | 4 | Los tres módulos en cascada | pop ×3 |
-| 22.90 | 4 | «en una sola plataforma» | click-soft |
+| 21.45 / 21.61 / 21.77 | 4 | Los tres módulos en cascada | pop ×3 |
+| 23.55 | 4 | «en una sola plataforma» | click-soft |
 | 25.05 | 4 | Salida | whoosh-cinematic |
 | 26.10 | 5 | La tarjeta del producto sube | pop |
-| **27.00** | 5 | **70% aterriza con destello cian** | **impact-bass-1** |
-| 27.60 | 5 | La barra se llena | riser |
+| **27.15** | 5 | **70% aterriza con destello cian** | **impact-bass-1** |
+| 27.75 | 5 | La barra se llena | riser |
 | 30.55 | 5 | Salida | whoosh-cinematic |
-| 32.40 | 6 | El logo florece | impact-bass-2 |
-| **33.00** | 6 | **El botón Escríbenos aterriza** | **click** |
-| 33.90 | 6 | «La consulta es gratis» | pop |
-| 34.25 | 6 | La dirección | click-soft |
+| 32.35 | 6 | El logo florece | impact-bass-2 |
+| **32.85** | 6 | **El botón Escríbenos aterriza** | **click** |
+| 33.70 | 6 | «La consulta es gratis» | pop |
+| 34.10 | 6 | La dirección | click-soft |
 
 *(Las entradas de plano a 6.5, 13, 19.5, 26 y 31.5 llevan su propio `whoosh`.)*
 
@@ -72,7 +87,7 @@ El filtro de ffmpeg con 47 entradas simultáneas **agota la memoria** de una má
 normal — falló dos veces antes de partirlo. Se arma por etapas:
 
 ```bash
-python ../../tools/ritmo.py tools/ritmo-video.json     # la música
+python ../../tools/nivelar-voz.py assets/voz assets/voz-nivelada -14   # voz a nivel
 python ../../tools/mezcla.py tools/etapa-sfx1.json     # 20 efectos
 python ../../tools/mezcla.py tools/etapa-sfx2.json     # 21 efectos
 python ../../tools/mezcla.py tools/final-A.json        # música + efectos + voz
@@ -90,8 +105,10 @@ ffmpeg -i video.mp4 -i assets/mezcla-A.wav \
 ## Reglas de mezcla
 
 - La mezcla se normaliza a **−16 LUFS**, la referencia del repositorio.
-- `mezcla.py` aparta la música bajo la voz con su propio ducking; por eso en A la
-  pista va a 0.30 de ganancia y en B a 0.62.
+- `mezcla.py` aparta la música bajo la voz con `sidechaincompress`, y la **llave
+  es solo la locución**, no los efectos: los golpes no hacen bombear la pista.
+- Los efectos nunca caen encima de una palabra clave. El `impact-bass-1` del
+  gancho se adelantó a 1.45 s para dejar sonar «¿Seguro?» a 1.53 s.
 - **Verificar por bandas, no solo el nivel general.** Un balance sano queda dentro
   de ~12 dB entre graves, medios y agudos:
   ```bash

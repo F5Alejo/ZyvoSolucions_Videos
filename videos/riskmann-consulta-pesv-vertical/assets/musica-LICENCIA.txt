@@ -1,0 +1,9 @@
+assets/musica-mixkit-hip-hop-02.mp3
+
+Origen : Mixkit (Envato) — "Hip Hop 02", id 738
+Licencia: Mixkit Free License (mixkit.co/license). Uso comercial permitido,
+          sin atribucion obligatoria, sin restriccion de plataforma.
+
+Importante: NO se uso la Biblioteca de Audio de YouTube. Sus pistas solo estan
+licenciadas para videos alojados en YouTube y esta pieza se publica tambien en
+Reels, TikTok y Facebook.

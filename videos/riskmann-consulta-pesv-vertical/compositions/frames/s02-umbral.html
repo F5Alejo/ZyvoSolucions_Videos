@@ -87,24 +87,24 @@
       tl.fromTo("#s2-bar-1", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power4.out" }, 0.6);
       tl.fromTo("#s2-lab-1", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.5, ease: "expo.out" }, 0.65);
 
-      /* 0.95 · segunda tarjeta (voz: "O dos conductores") */
+      /* 1.20 · segunda tarjeta (voz: "o dos conductores", 1.17 s) */
       tl.fromTo("#s2-card-2", { opacity: 0, y: 64, scale: 0.94 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "back.out(1.4)" }, 0.95);
-      tl.fromTo("#s2-bar-2", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power4.out" }, 1.35);
-      tl.fromTo("#s2-lab-2", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.5, ease: "expo.out" }, 1.4);
+        { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "back.out(1.4)" }, 1.2);
+      tl.fromTo("#s2-bar-2", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power4.out" }, 1.6);
+      tl.fromTo("#s2-lab-2", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.5, ease: "expo.out" }, 1.65);
 
-      /* 2.05 · SPECTACLE — el veredicto aterriza con overshoot y destello */
+      /* 2.45 · SPECTACLE — el veredicto aterriza sobre "tu empresa ya está obligada" (2.39 s) */
       tl.fromTo("#s2-verdict", { opacity: 0, y: 80, scale: 0.9 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: "back.out(1.7)" }, 2.05);
-      tl.fromTo("#s2-flash", { opacity: 0, scale: 0.45 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power4.out" }, 2.05);
-      tl.to("#s2-flash", { opacity: 0.38, duration: 0.7, ease: "power2.inOut" }, 2.45);
-      tl.to("#s2-verdict-text .w", { opacity: 1, duration: 0.38, ease: "power3.out", stagger: 0.065 }, 2.4);
+        { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: "back.out(1.7)" }, 2.45);
+      tl.fromTo("#s2-flash", { opacity: 0, scale: 0.45 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power4.out" }, 2.45);
+      tl.to("#s2-flash", { opacity: 0.38, duration: 0.7, ease: "power2.inOut" }, 2.85);
+      tl.to("#s2-verdict-text .w", { opacity: 1, duration: 0.38, ease: "power3.out", stagger: 0.065 }, 2.8);
 
-      /* 3.30 · AMBIENT IDLE — las tarjetas flotan a distinto ritmo: eso da profundidad */
-      tl.to("#s2-card-1", { y: -16, duration: 2.2, ease: "sine.inOut" }, 3.3);
-      tl.to("#s2-card-2", { y: -9, duration: 2.4, ease: "sine.inOut" }, 3.3);
-      tl.to("#s2-verdict", { y: -20, scale: 1.014, duration: 2.2, ease: "sine.inOut" }, 3.3);
-      tl.to("#s2-flash", { opacity: 0.58, scale: 1.1, duration: 2.2, ease: "sine.inOut" }, 3.3);
+      /* 3.60 · AMBIENT IDLE — las tarjetas flotan a distinto ritmo: eso da profundidad */
+      tl.to("#s2-card-1", { y: -16, duration: 1.9, ease: "sine.inOut" }, 3.6);
+      tl.to("#s2-card-2", { y: -9, duration: 1.9, ease: "sine.inOut" }, 3.6);
+      tl.to("#s2-verdict", { y: -20, scale: 1.014, duration: 1.9, ease: "sine.inOut" }, 3.6);
+      tl.to("#s2-flash", { opacity: 0.58, scale: 1.1, duration: 1.9, ease: "sine.inOut" }, 3.6);
 
       /* 5.55 · salida: atraviesa la lente */
       tl.to(["#s2-card-1", "#s2-card-2", "#s2-verdict", "#s2-eyebrow"],
