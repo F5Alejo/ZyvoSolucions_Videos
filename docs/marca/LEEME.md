@@ -20,8 +20,32 @@ verlos hace falta `pdftoppm`, que este equipo no tiene todavía:
 winget install --id oschwartz10612.Poppler -e
 ```
 
-Sin eso, la lectura es solo textual y hay reglas del manual que no se pueden
-comprobar.
+Ya instalado (`oschwartz10612.Poppler`). El binario **no queda en el PATH** que
+winget anuncia; vive en:
+`%LOCALAPPDATA%\Microsoft\WinGet\Packages\oschwartz10612.Poppler_*\poppler-*\Libraryin`
+
+El PDF es **una sola pagina de 2200 x 10269 pt**, asi que hay que trocearla en
+bandas para leerla:
+
+```bash
+pdftoppm -png -r 70 -x 0 -y <desplazamiento> -W 2139 -H 1660 manual.pdf banda
+```
+
+## Lo que solo se ve mirando las paginas
+
+Esto no lo da `pdftotext` y es justo lo que define el aire de la marca:
+
+- **El caballero es fotografia real**, no ilustracion: cota de malla, yelmo,
+  espada y escudo, en monocromo casi negro, iluminacion baja y dramatica.
+- Alrededor del caballero hay **dos anillos concentricos**: uno grueso en cian
+  `#06c7fb` y otro fino en dorado `#c8951a`. Es un motivo propio de la marca,
+  una lente o portal que enmarca al sujeto.
+- **La tipografia mezcla pesos dentro de una misma frase**: Bold en las palabras
+  que cargan el mensaje y Light en los conectores.
+  «RiskMann **es una** solucion digital **para gestionar** riesgos **de forma**
+  simple, segura **y** conforme **a la** normativa.»
+  Es un recurso de enfasis de la marca, no una licencia tipografica.
+- El lockup del logo lleva **«by SOFU»** bajo el nombre.
 
 ## Lo que fija el manual
 
