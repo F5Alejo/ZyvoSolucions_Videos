@@ -1,0 +1,57 @@
+{
+ "duracion": 15,
+ "salida": "assets/mezcla-A.wav",
+ "pasa_altos": 90,
+ "musica": [
+  {
+   "archivo": "assets/musica-elegant.mp3",
+   "desde": 12,
+   "en": 0,
+   "ganancia": 0.36,
+   "hueco_voz": -4.5,
+   "hueco_hz": 1900,
+   "entrada": 0.8,
+   "salida": 2.2
+  }
+ ],
+ "ducking": {
+  "umbral": 0.045,
+  "ratio": 5,
+  "ataque": 5,
+  "reposo": 400
+ },
+ "pistas": [
+  {
+   "archivo": "assets/sfx.wav",
+   "en": 0,
+   "ganancia": 0.46
+  }
+ ],
+ "voz": [
+  {
+   "archivo": "assets/voz-nivelada/f01.wav",
+   "en": 0.2,
+   "ganancia": 1.15
+  },
+  {
+   "archivo": "assets/voz-nivelada/f02.wav",
+   "en": 2.9,
+   "ganancia": 1.1
+  },
+  {
+   "archivo": "assets/voz-nivelada/f03.wav",
+   "en": 4.95,
+   "ganancia": 1.0
+  },
+  {
+   "archivo": "assets/voz-nivelada/f04.wav",
+   "en": 9.95,
+   "ganancia": 1.45
+  },
+  {
+   "archivo": "assets/voz-nivelada/f05.wav",
+   "en": 12.45,
+   "ganancia": 1.25
+  }
+ ]
+}
