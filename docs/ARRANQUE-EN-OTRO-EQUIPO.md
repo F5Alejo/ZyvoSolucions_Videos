@@ -168,6 +168,73 @@ ilegibles en el render. La forma honesta de comprobar que algo está resuelto es
 `data-layout-allow-overlap` **no se hereda**: hay que ponerlo en el bloque de
 texto y también en los `<b>`/`<i>` de dentro.
 
+
+### Trampas que no dan ningún error (añadidas el 18 de septiembre)
+
+Todas estas pasaron la validación, terminaron el render sin fallo y **solo se
+detectaron mirando los fotogramas**. Son la familia más cara de bugs.
+
+**Un elemento elevado a la raíz lleva tiempos GLOBALES y no se mueve con su
+plano.** El video aprobado que el ensamblador saca a la raíz del `index.html`
+tiene su propio `data-start` absoluto. Al recortar los planos se recolocaron
+`el-<plano>` y `el-<plano>-voice` con una expresión regular, pero el elemento se
+llamaba `el-s05-prueba-video-4` y no coincidía: quedó anclado al montaje viejo y
+entraba 3.3 s tarde, con la tarjeta saliendo vacía en pantalla.
+→ Al recolocar planos, **auditar TODOS los `data-start` del index**, no solo los
+que siguen el patrón de nombres esperado.
+
+**Ese mismo elemento hereda la escala de su tarjeta pero NO su opacidad.** Al
+cerrar el plano todo se desvanecía menos la captura, que se cortaba de golpe a
+brillo pleno. Se arregla dándole en la timeline raíz la misma curva de salida
+que usa su contenedor.
+
+**El Studio reescribe los archivos mientras la vista previa está abierta.**
+Añade atributos `data-hf-id` y normaliza los que ya existen. Un anclaje de texto
+que funcionaba deja de coincidir en silencio: el CSS y los tweens entraron, el
+bloque HTML no, y **GSAP animando un elemento inexistente no da error**. El
+verificador pasó con cero errores y el render salió sin el elemento.
+→ Parar la vista previa antes de escribir, y anclar por `id` con expresión
+regular, nunca por la línea completa.
+
+**Nunca silenciar avisos del verificador en bloque.** Se marcaron 40 errores de
+`content_overlap` como intencionales y eran ciertos: los textos salían
+ilegibles. La forma honesta de comprobar que algo está resuelto es **retirar las
+supresiones y ver si el error vuelve**.
+
+### Los colores de un manual no siempre pasan el contraste
+
+El manual de Yezid Ricaurte está pensado para papel. Sobre cristal oscuro, su
+oliva `#80804a` da **1.75:1** y su tierra `#cdb5a2` da **2.99:1**, contra el
+mínimo de 3:1. La solución no es abandonar la paleta: se crean variantes
+aclaradas **solo para texto** y el color de marca se conserva intacto en reglas,
+acentos y elementos gráficos.
+
+### Página y manual pueden no coincidir
+
+`yezidricaurte.com` usa Cormorant Garamond + Montserrat sobre `#001217` con
+escala dorada. Su manual fija Dubai y la paleta verde/tierra. **Son dos sistemas
+distintos.** No es un error de nadie: es una decisión que tiene que tomar el
+cliente, y hay que planteársela en vez de mezclar mitad y mitad.
+
+### El acento de ElevenLabs es una propiedad de la voz
+
+No hay un parámetro que lo module. Para cambiarlo hay que cambiar de voz:
+`tools/probar-voces.py` genera la misma frase con varias para comparar a ciegas.
+Ojo: la misma frase dura entre **6.5 y 9.9 s** según la voz, así que cambiarla
+obliga a regenerar la locución y recolocar las animaciones.
+
+Y el cuerpo de la petición va en **UTF-8 explícito**: con `curl` y acentos, la
+API responde `400 invalid_unicode`. Por eso se manda desde Python.
+
+### OneDrive revirtió el repositorio entero
+
+Además de borrar archivos, el 17 de septiembre **devolvió la carpeta a un estado
+de horas antes**: el HEAD local retrocedió seis commits y se perdió un proyecto
+completo que nunca se había confirmado. Lo único que salvó el trabajo fue
+GitHub.
+→ **Clonar fuera de OneDrive, y hacer commit ANTES de renderizar.** Un render
+tarda dos minutos; reconstruir un proyecto entero, una hora.
+
 ---
 
 ## 3. Cómo se mide un «tiempo muerto»
