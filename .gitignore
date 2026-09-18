@@ -183,3 +183,6 @@ videos/*/index-parte-*.html
 
 # Renders del esqueleto de la v2: se rehacen con npm run render
 videos/riskmann-pesv-v2/renders/
+
+# Renders del promo de Yezid: se rehacen con npm run render
+videos/yezid-envivo-pesv-autogestion/renders/

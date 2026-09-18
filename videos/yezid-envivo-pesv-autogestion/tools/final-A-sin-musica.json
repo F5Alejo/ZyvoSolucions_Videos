@@ -1,0 +1,13 @@
+{
+ "duracion": 15,
+ "salida": "assets/mezcla-A-sin-musica.wav",
+ "pasa_altos": 90,
+ "pistas": [ { "archivo": "assets/sfx.wav", "en": 0, "ganancia": 0.50 } ],
+ "voz": [
+  { "archivo": "assets/voz-nivelada/f01.wav", "en": 0.20,  "ganancia": 1.15 },
+  { "archivo": "assets/voz-nivelada/f02.wav", "en": 2.90,  "ganancia": 1.10 },
+  { "archivo": "assets/voz-nivelada/f03.wav", "en": 4.95,  "ganancia": 1.0  },
+  { "archivo": "assets/voz-nivelada/f04.wav", "en": 9.95,  "ganancia": 1.10 },
+  { "archivo": "assets/voz-nivelada/f05.wav", "en": 12.45, "ganancia": 1.10 }
+ ]
+}
