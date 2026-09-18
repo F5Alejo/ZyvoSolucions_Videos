@@ -153,7 +153,7 @@
         class="clip"
         style="position:absolute;left:334px;top:344px;width:412px;height:695px;object-fit:cover"
         data-start="23.1"
-        data-duration="3.9"
+        data-duration="4.8"
         data-track-index="5009"
       ></video>
 
@@ -161,7 +161,16 @@
 
     <script>
       window.__timelines = window.__timelines || {};
-      window.__timelines["main"] = gsap.timeline({ paused: true });
+      (function () {
+        var tl = gsap.timeline({ paused: true });
+        /* El video del producto se eleva a la raiz del index, asi que hereda la
+           escala de su tarjeta pero no su opacidad. Sin esto, al cerrar el plano
+           todo se desvanece menos la captura, que desaparece de golpe. Misma
+           posicion y misma curva que la salida de #s5-card. */
+        tl.to("#el-s05-prueba-video-4",
+          { opacity: 0, duration: 0.95, ease: "power2.in" }, 26.95);
+        window.__timelines["main"] = tl;
+      })();
     </script>
   </body>
 </html>
