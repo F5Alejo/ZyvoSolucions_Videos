@@ -1,0 +1,144 @@
+<template>
+  <!-- ==================================================================
+       Scene07_Beneficios · 5 s
+       VO: "Indicadores automaticos. Evidencia lista." [confianza tranquila]
+           "Todo en un solo lugar, en tiempo real." [ritmo calmado]
+       Fuente: la landing dice "Todo en un solo lugar, en tiempo real".
+       Salida: fadeToBlack (400 ms)
+
+       SIN CIFRAS DE RESULTADO. El prompt proponia 98%, 24/24 y 100% como
+       "valores de ejemplo". La regla del repositorio lo prohibe: "Nada entra
+       al video si no puede rastrearse a un archivo que entrego RiskMann... El
+       primer video incumplio esto (afirma un 100% inventado)".
+
+       En su lugar se replica el MOCKUP de la landing: tres indicadores con sus
+       barras y el contador de conductores, que es una captura de interfaz y no
+       una promesa de resultado. El countUp sigue usandose, pero sobre el
+       recuento de frentes cubiertos -24, que si tiene fuente-, no sobre un
+       porcentaje de exito inventado.
+       ================================================================== -->
+  <style>
+    #root { position: relative; width: 1080px; height: 1920px; overflow: hidden;
+            background: var(--blanco); font-family: var(--fuente); color: var(--negro); }
+    .s7-capa { position: absolute; inset: 0; }
+
+    #s7-rot {
+      position: absolute; left: 0; top: 480px; width: 1080px; text-align: center;
+      font-size: 26px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase;
+      color: #6d6d6b; opacity: 0;
+    }
+    #s7-titulo {
+      position: absolute; left: 90px; top: 560px; width: 900px; text-align: center;
+      font-size: 76px; font-weight: 700; line-height: var(--alto-linea);
+      letter-spacing: -0.03em; color: var(--negro); opacity: 0;
+    }
+
+    #s7-tarjetas { position: absolute; left: 110px; top: 800px; width: 860px;
+                   display: flex; flex-direction: column; gap: 26px; }
+    .s7-tar {
+      padding: 34px 40px; border-radius: 20px; opacity: 0;
+      background: var(--blanco); border: 2px solid rgba(6,199,251,0.45);
+      box-shadow: 0 22px 54px rgba(2,2,2,0.10);
+    }
+    .s7-cab { display: flex; align-items: baseline; justify-content: space-between; }
+    .s7-nom { font-size: 34px; font-weight: 500; color: var(--negro); }
+    .s7-val { font-size: 40px; font-weight: 700; color: var(--azul); }
+    .s7-pista { position: relative; margin-top: 22px; height: 14px; border-radius: 8px;
+                background: rgba(2,2,2,0.08); overflow: hidden; }
+    .s7-relleno { position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+                  border-radius: 8px; background: var(--cian);
+                  transform-origin: left center; transform: scaleX(0); }
+
+    #s7-boton {
+      position: absolute; left: 50%; top: 1460px; transform: translateX(-50%);
+      padding: 32px 80px; border-radius: 100px; white-space: nowrap; opacity: 0;
+      background: var(--azul); color: var(--blanco);
+      font-size: var(--ui); font-weight: 700; letter-spacing: 0.06em;
+    }
+    #s7-aura {
+      position: absolute; left: 50%; top: 1508px; width: 620px; height: 240px;
+      margin-left: -310px; margin-top: -120px; border-radius: 120px;
+      background: radial-gradient(ellipse, rgba(6,199,251,0.45) 0%, rgba(255,255,255,0) 70%);
+      opacity: 0;
+    }
+    #s7-negro { position: absolute; inset: 0; background: var(--negro); opacity: 0; }
+  </style>
+
+  <div id="root" data-composition-id="scene07-indicadores" data-start="0" data-duration="5"
+       data-width="1080" data-height="1920">
+
+    <div id="s7-fondo" class="clip s7-capa" data-start="0" data-duration="5" data-track-index="0"
+         style="background: var(--blanco);"></div>
+
+    <div class="clip" id="s7-rot" data-start="0" data-duration="5" data-track-index="1">En tiempo real</div>
+    <div class="clip" id="s7-titulo" data-start="0" data-duration="5" data-track-index="2">
+      Todo en un solo lugar
+    </div>
+
+    <div class="clip" id="s7-tarjetas" data-start="0" data-duration="5" data-track-index="3">
+      <div class="s7-tar" id="s7-t0">
+        <div class="s7-cab"><span class="s7-nom">Frentes cubiertos</span>
+          <span class="s7-val" id="s7-v0">0</span></div>
+        <div class="s7-pista"><div class="s7-relleno" id="s7-r0"></div></div>
+      </div>
+      <div class="s7-tar" id="s7-t1">
+        <div class="s7-cab"><span class="s7-nom">Indicadores</span>
+          <span class="s7-val">automáticos</span></div>
+        <div class="s7-pista"><div class="s7-relleno" id="s7-r1"></div></div>
+      </div>
+      <div class="s7-tar" id="s7-t2">
+        <div class="s7-cab"><span class="s7-nom">Evidencia</span>
+          <span class="s7-val">lista</span></div>
+        <div class="s7-pista"><div class="s7-relleno" id="s7-r2"></div></div>
+      </div>
+    </div>
+
+    <div class="clip" id="s7-aura" data-layout-allow-overflow data-start="0" data-duration="5"
+         data-track-index="4" aria-hidden="true" data-layout-ignore></div>
+    <div class="clip" id="s7-boton" data-start="0" data-duration="5" data-track-index="5">
+      Descargar reporte
+    </div>
+    <div class="clip s7-capa" id="s7-negro" data-start="0" data-duration="5" data-track-index="6"
+         aria-hidden="true" data-layout-ignore></div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var RM = window.RM;
+
+      tl.fromTo("#s7-rot", { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.45, ease: "power2.inOut" }, 0.10);
+      tl.fromTo("#s7-titulo", { opacity: 0, y: 22 },
+        { opacity: 1, y: 0, duration: 0.55, ease: "power2.inOut" }, 0.25);
+
+      /* las tres tarjetas en cascada: fade + translateY 20 -> 0, stagger 100 ms */
+      for (var i = 0; i < 3; i++) {
+        tl.fromTo("#s7-t" + i, { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.55, ease: "power2.inOut" }, 0.60 + i * 0.10);
+        tl.fromTo("#s7-r" + i, { scaleX: 0 },
+          { scaleX: [0.85, 0.95, 1][i], duration: 0.85, ease: "power2.out" }, 0.85 + i * 0.10);
+      }
+
+      /* countUp sobre los 24 frentes, que SI tienen fuente en la landing */
+      RM.countUp(tl, "#s7-v0", 0, 24, 0.85, 0.85);
+
+      tl.fromTo("#s7-boton", { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.55, ease: "power2.inOut" }, 1.95);
+
+      /* el halo del boton late: ciclos finitos, nunca repeat:-1 */
+      tl.set("#s7-aura", { opacity: 0.3 }, 2.40);
+      for (var c = 0; c < 3; c++) {
+        tl.to("#s7-aura", { opacity: 0.6, duration: 0.42, ease: "sine.inOut" }, 2.40 + c * 0.84);
+        tl.to("#s7-aura", { opacity: 0.3, duration: 0.42, ease: "sine.inOut" }, 2.82 + c * 0.84);
+      }
+      RM.pulse(tl, "#s7-boton", 1, 1.035, 0.42, 3, 2.40, 2);
+
+      /* 4.6 s · SALIDA fade a negro en 400 ms, preparando el cierre de marca */
+      tl.to("#s7-negro", { opacity: 1, duration: 0.40, ease: "power2.inOut" }, 4.60);
+
+      window.__timelines["scene07-indicadores"] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,127 @@
+<template>
+  <!-- ==================================================================
+       Scene04_VisitaSinAviso · 5 s
+       VO: "La visita puede llegar sin aviso." [tension, susurrado pero firme]
+           "Y tu evidencia... no deberia improvisarse." [grave, advertencia]
+       Split 50/50 VERTICAL: en formato 1080x1920 el corte natural es
+       horizontal -arriba/abajo-, no lateral: dos mitades laterales de 540 px
+       dejarian los textos ilegibles.
+       Salida: swipeUp
+       ================================================================== -->
+  <style>
+    #root { position: relative; width: 1080px; height: 1920px; overflow: hidden;
+            background: var(--negro); font-family: var(--fuente); color: var(--blanco); }
+    .s4-capa { position: absolute; inset: 0; }
+
+    #s4-arriba { position: absolute; left: 0; top: 0; width: 1080px; height: 960px;
+                 background: var(--negro); overflow: hidden; }
+    #s4-abajo  { position: absolute; left: 0; top: 960px; width: 1080px; height: 960px;
+                 background: var(--azul); overflow: hidden; }
+
+    /* divisoria con vibracion sutil */
+    #s4-linea { position: absolute; left: 0; top: 958px; width: 1080px; height: 4px;
+                background: var(--blanco); }
+
+    /* --- mitad superior: la puerta --- */
+    #s4-puerta { position: absolute; left: 50%; top: 250px; margin-left: -150px;
+                 width: 300px; height: 440px; }
+    #s4-puerta rect, #s4-puerta line { fill: none; stroke: var(--blanco); stroke-width: 5; }
+    #s4-hoja { transform-origin: 8px 50%; }
+
+    #s4-sinaviso {
+      position: absolute; left: 0; top: 740px; width: 1080px; text-align: center;
+      font-size: 96px; font-weight: 700; line-height: var(--alto-linea);
+      letter-spacing: -0.02em; color: var(--rojo); opacity: 0;
+    }
+    #s4-scan { position: absolute; left: 0; top: 0; width: 1080px; height: 56px;
+               background: linear-gradient(180deg, rgba(255,51,51,0) 0%, rgba(255,51,51,0.30) 50%, rgba(255,51,51,0) 100%); }
+
+    /* --- mitad inferior: las carpetas cayendo --- */
+    .s4-carp { position: absolute; width: 190px; height: 240px; border-radius: 10px;
+               background: rgba(255,255,255,0.92); }
+    /* el motion blur se simula con copias semitransparentes desfasadas */
+    .s4-estela { position: absolute; width: 190px; height: 240px; border-radius: 10px;
+                 background: rgba(255,255,255,0.22); }
+
+    #s4-evidencia {
+      position: absolute; left: 90px; top: 1660px; width: 900px; text-align: center;
+      font-size: var(--ui); font-weight: 300; line-height: var(--alto-linea);
+      color: var(--blanco); opacity: 0;
+    }
+  </style>
+
+  <div id="root" data-composition-id="scene04-visita" data-start="0" data-duration="5"
+       data-width="1080" data-height="1920">
+
+    <div class="clip" id="s4-arriba" data-start="0" data-duration="5" data-track-index="0">
+      <svg id="s4-puerta" viewBox="0 0 300 440" aria-hidden="true" data-layout-ignore>
+        <rect x="4" y="4" width="292" height="432" rx="6"/>
+        <g id="s4-hoja"><rect x="8" y="8" width="284" height="424" rx="4"/>
+          <line x1="250" y1="220" x2="268" y2="220"/></g>
+      </svg>
+      <div id="s4-scan" aria-hidden="true" data-layout-ignore></div>
+    </div>
+
+    <div class="clip" id="s4-abajo" data-start="0" data-duration="5" data-track-index="1">
+      <div class="s4-estela" id="s4-e0" style="left:120px; top:-260px"></div>
+      <div class="s4-carp"   id="s4-k0" style="left:120px; top:-260px"></div>
+      <div class="s4-estela" id="s4-e1" style="left:450px; top:-420px"></div>
+      <div class="s4-carp"   id="s4-k1" style="left:450px; top:-420px"></div>
+      <div class="s4-estela" id="s4-e2" style="left:760px; top:-320px"></div>
+      <div class="s4-carp"   id="s4-k2" style="left:760px; top:-320px"></div>
+    </div>
+
+    <div class="clip" id="s4-linea" data-start="0" data-duration="5" data-track-index="2"
+         aria-hidden="true" data-layout-ignore></div>
+    <div class="clip" id="s4-sinaviso" data-start="0" data-duration="5" data-track-index="3">SIN AVISO</div>
+    <div class="clip" id="s4-evidencia" data-start="0" data-duration="5" data-track-index="4">
+      Tu evidencia no debería improvisarse.
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var RM = window.RM;
+
+      /* 0.2 s · la puerta se abre de golpe */
+      tl.fromTo("#s4-hoja", { rotationY: 0, skewX: 0 },
+        { rotationY: -62, skewX: -8, duration: 0.15, ease: "power4.in" }, 0.20);
+
+      /* "SIN AVISO" con flash: opacidad 0<->1, tres repeticiones de 150 ms */
+      tl.set("#s4-sinaviso", { opacity: 1 }, 0.42);
+      for (var f = 0; f < 3; f++) {
+        tl.to("#s4-sinaviso", { opacity: 0.1, duration: 0.075, ease: "none" }, 0.42 + f * 0.15);
+        tl.to("#s4-sinaviso", { opacity: 1, duration: 0.075, ease: "none" }, 0.42 + f * 0.15 + 0.075);
+      }
+
+      /* scanline recorriendo la mitad superior: pasadas finitas, no repeat:-1 */
+      RM.scanline(tl, "#s4-scan", 960, 1.15, 4, 0.0);
+
+      /* la divisoria vibra todo el plano */
+      RM.jitter(tl, "#s4-linea", 1, 30, 4.6, 0.0, 5);
+
+      /* las carpetas caen en camara lenta; la estela va un poco retrasada y eso
+         hace el motion blur sin necesidad de un filtro direccional */
+      for (var i = 0; i < 3; i++) {
+        var caida = 1100 + RM.azar(i, 31) * 160;
+        tl.fromTo("#s4-k" + i, { y: 0, rotation: 0 },
+          { y: caida, rotation: (RM.azar(i, 32) * 2 - 1) * 26, duration: 2.6, ease: "power1.in" },
+          0.55 + i * 0.28);
+        tl.fromTo("#s4-e" + i, { y: 0, rotation: 0 },
+          { y: caida, rotation: (RM.azar(i, 32) * 2 - 1) * 26, duration: 2.6, ease: "power1.in" },
+          0.55 + i * 0.28 + 0.06);
+      }
+
+      tl.fromTo("#s4-evidencia", { opacity: 0, y: 24 },
+        { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 2.60);
+
+      /* 4.7 s · SALIDA swipeUp: la escena se va hacia arriba y la siguiente
+         entra empujando. Aqui se empuja esta mitad; la entrante hace su parte. */
+      tl.to("#root", { y: -1920, duration: 0.30, ease: "power2.inOut" }, 4.70);
+
+      window.__timelines["scene04-visita"] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,127 @@
+<template>
+  <!-- ==================================================================
+       Scene08_CierreMarca · 5 s · end card
+       VO: "El PESV va a pasar de todas formas." [neutro, casi filosofico]
+           "RiskMann." [marca, seco y memorable]
+       Fuente: la landing dice, textual, "El PESV va a pasar de todas formas.
+       ¿Lo reconstruyes bajo presion, o lo consultas en un clic?" y su CTA es
+       "Quiero registrarme · Sin tarjeta, sin compromiso."
+       Cierre: freezeFadeToBlack. No hay transicion de salida: es el final.
+
+       EL LOGO NO SE RE-LETRA. El prompt pedia escribir "Riskmann" como
+       wordmark; el manual lo prohibe (§0.1: nunca redibujado ni re-letrado).
+       Se usa el archivo oficial assets/riskmann_logo_blanco.png. Es la unica
+       excepcion a "todo vectorial" del prompt, y la regla del logo pesa mas.
+       ================================================================== -->
+  <style>
+    #root { position: relative; width: 1080px; height: 1920px; overflow: hidden;
+            background: var(--negro); font-family: var(--fuente); color: var(--blanco); }
+    .s8-capa { position: absolute; inset: 0; }
+
+    #s8-frase {
+      position: absolute; left: 110px; top: 620px; width: 860px; text-align: center;
+      font-size: 62px; font-weight: 300; line-height: var(--alto-linea);
+      color: var(--blanco); opacity: 0;
+    }
+
+    /* placa blanca detras del logotipo: el manual pide area de reserva libre */
+    #s8-placa {
+      position: absolute; left: 50%; top: 950px; width: 820px; height: 360px;
+      margin-left: -410px; border-radius: 28px; background: var(--blanco);
+      transform: scale(0); transform-origin: 50% 50%;
+    }
+    #s8-logo {
+      position: absolute; left: 50%; top: 1040px; width: 560px; margin-left: -280px;
+      height: auto; opacity: 0;
+      /* Sobre la placa clara va la VERSION A COLOR del manual. No se aplica
+         ningun filtro: invert() o cualquier ajuste de color seria recolorear
+         el logotipo, y el manual lo prohibe (§0.1). */
+    }
+
+    #s8-check {
+      position: absolute; left: 50%; top: 1400px; width: 130px; height: 130px;
+      margin-left: -65px; border-radius: 50%; opacity: 0;
+      background: rgba(6,199,251,0.16); border: 4px solid var(--cian);
+      display: flex; align-items: center; justify-content: center;
+    }
+    #s8-check svg { width: 62px; height: 62px; fill: none; stroke: var(--cian);
+                    stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+
+    #s8-cta {
+      position: absolute; left: 0; top: 1600px; width: 1080px; text-align: center;
+      font-size: 32px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--oro-claro); opacity: 0;
+    }
+    #s8-nota {
+      position: absolute; left: 0; top: 1670px; width: 1080px; text-align: center;
+      font-size: 26px; font-weight: 300; color: var(--gris-txt); opacity: 0;
+    }
+    #s8-negro { position: absolute; inset: 0; background: var(--negro); opacity: 0; }
+  </style>
+
+  <div id="root" data-composition-id="scene08-cierre" data-start="0" data-duration="5"
+       data-width="1080" data-height="1920">
+
+    <div id="s8-fondo" class="clip s8-capa" data-start="0" data-duration="5" data-track-index="0"
+         style="background: var(--negro);"></div>
+
+    <div class="clip" id="s8-frase" data-start="0" data-duration="5" data-track-index="1">
+      El PESV va a pasar de todas formas.
+    </div>
+
+    <div class="clip" id="s8-placa" data-start="0" data-duration="5" data-track-index="2"
+         aria-hidden="true" data-layout-ignore></div>
+    <img class="clip" id="s8-logo" src="assets/riskmann_logo_color.png" alt="RiskMann"
+         data-start="0" data-duration="5" data-track-index="3" />
+
+    <div class="clip" id="s8-check" data-start="0" data-duration="5" data-track-index="4"
+         aria-hidden="true" data-layout-ignore>
+      <svg viewBox="0 0 64 64"><path d="M14 34l12 12 24-28"/></svg>
+    </div>
+
+    <div class="clip" id="s8-cta" data-start="0" data-duration="5" data-track-index="5">
+      Quiero registrarme
+    </div>
+    <div class="clip" id="s8-nota" data-start="0" data-duration="5" data-track-index="6">
+      Sin tarjeta, sin compromiso.
+    </div>
+
+    <div class="clip s8-capa" id="s8-negro" data-start="0" data-duration="5" data-track-index="7"
+         aria-hidden="true" data-layout-ignore></div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      /* la frase entra con un fade simple: el tono es neutro, casi filosofico */
+      tl.fromTo("#s8-frase", { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.70, ease: "power2.inOut" }, 0.20);
+
+      /* 1.5 s · la placa y el logotipo oficial hacen pop-in */
+      tl.fromTo("#s8-placa", { scale: 0 },
+        { scale: 1, duration: 0.55, ease: "back.out(1.6)" }, 1.50);
+      tl.fromTo("#s8-logo", { opacity: 0, scale: 0.82 },
+        { opacity: 1, scale: 1, duration: 0.60, ease: "back.out(1.4)" }, 1.68);
+
+      /* 2.5 s · el check se contrae, como el "tap" final */
+      tl.set("#s8-check", { opacity: 1 }, 2.50);
+      tl.fromTo("#s8-check", { scale: 1.3 },
+        { scale: 1, duration: 0.20, ease: "back.out(2.2)" }, 2.50);
+
+      tl.fromTo("#s8-cta", { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.50, ease: "power2.inOut" }, 2.85);
+      tl.fromTo("#s8-nota", { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, duration: 0.45, ease: "power2.inOut" }, 3.10);
+
+      /* 3.6 -> 4.1 s · FREEZE de 500 ms sobre el cierre completo: nada se
+         mueve, que es justo lo que le da peso al end card. */
+
+      /* 4.1 s · fade a negro en 400 ms y fin del video */
+      tl.to("#s8-negro", { opacity: 1, duration: 0.40, ease: "power2.inOut" }, 4.10);
+
+      window.__timelines["scene08-cierre"] = tl;
+    })();
+  </script>
+</template>
