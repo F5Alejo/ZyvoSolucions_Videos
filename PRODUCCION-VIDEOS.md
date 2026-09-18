@@ -882,6 +882,13 @@ python tools/render-partes.py videos/curso-m1 videos/curso-m2 videos/curso-m3 vi
 > falla con `multiple_root_compositions`. Se valida con la raíz limpia y se generan las
 > partes después; `montar.py` las borra al terminar.
 
+**Partir un módulo en piezas de ~1 minuto:** `tools/cortar-laminas.py videos/<proyecto>`.
+La plataforma muestra el curso en piezas cortas, y una lámina dura ya cerca de un
+minuto: el script agrupa láminas consecutivas mientras la suma no pase de 75 s y corta
+el MP4 aprobado **solo en frontera de lámina**, donde la lámina saliente ya está
+apagada (§14.4). No se recompone ni se recorta contenido. Cortar obliga a recodificar
+el video —el corte cae en un fotograma que no es clave— pero el audio se copia.
+
 **Unir los módulos en un máster continuo:** `tools/unir-curso.py <carpeta> <salida.mp4>`.
 Concatena sin recodificar y avisa si algún módulo va mudo.
 
