@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script
+      src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"
+      integrity="sha384-sG0Hv1tP1lZCk9KQmrIbY/XNwi+OY84GQqhMscbnsoBFqAz8KNCil1kvfL3Hbbk2"
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      /* ==================================================================
+         IDENTIDAD: manda el MANUAL DE MARCA de Yezid Ricaurte.
+         La pagina del evento usa Cormorant + Montserrat sobre #001217; el
+         manual fija Dubai y la paleta verde/tierra. Conflicto real, y por
+         decision del cliente prevalece el manual. La pagina aporta el
+         CONTENIDO: fechas, copia y datos del evento.
+
+         Manual p.05 tipografia: Dubai Bold titulos · Medium subtitulos ·
+                                 Regular parrafos · Light complementarios
+         Manual p.06 paleta:     #80804a  #336666  #cdb5a2
+         Manual p.04 estilo:     "elegancia, experiencia y sobriedad" ·
+                                 "el mensaje prevalece sobre la decoracion"
+
+         FOCO: el EN VIVO. El PESV es contexto, no protagonista.
+
+         MOTION (/hyperframes-animation):
+           - kinetic-beat-slam : una rejilla de tempo unica, entradas DISTINTAS
+                                 por frase, remate bloqueado
+           - ambient-glow-bloom: halo finito, pico <= ~0.45
+         FONDO (/hyperframes-registry):
+           - aurora-drift : tres campos de aurora derivados del acento, con
+                            vinieta propia. Se le inyecta --brand con el verde
+                            del manual para que las auroras sean de marca.
+         ================================================================== */
+      @font-face { font-family: "Dubai"; font-weight: 300; src: url("assets/fonts/DUBAI-LIGHT.TTF") format("truetype"); }
+      @font-face { font-family: "Dubai"; font-weight: 400; src: url("assets/fonts/DUBAI-REGULAR.TTF") format("truetype"); }
+      @font-face { font-family: "Dubai"; font-weight: 500; src: url("assets/fonts/DUBAI-MEDIUM.TTF") format("truetype"); }
+      @font-face { font-family: "Dubai"; font-weight: 700; src: url("assets/fonts/DUBAI-BOLD.TTF") format("truetype"); }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #16302f; }
+
+      #root {
+        position: relative; width: 1080px; height: 1920px; overflow: hidden;
+        background: #16302f; color: #fff; font-family: "Dubai", sans-serif;
+
+        /* el verde del manual entra al componente de aurora por este token */
+        --brand:      #336666;
+        --oliva:      #80804a;
+        --oliva-txt:  #b8b884;  /* oliva aclarado para texto: #80804a da 1.75:1 sobre cristal */
+        --tierra:     #cdb5a2;
+        --tierra-txt: #e3d3c6;  /* tierra aclarado para texto: #cdb5a2 da 2.99:1 */
+        --palido:     #f1ecb0;
+        --mudo:       rgba(255, 255, 255, 0.74);
+      }
+      .capa { position: absolute; inset: 0; }
+
+      #velo {
+        background:
+          radial-gradient(1250px 1200px at 50% 36%, rgba(51,102,102,0.62) 0%, rgba(22,48,47,0) 74%),
+          linear-gradient(158deg, rgba(44,91,90,0.45) 0%, rgba(20,43,42,0.62) 100%);
+      }
+      #trama {
+        background-image: repeating-linear-gradient(45deg,
+          rgba(255,255,255,0.026) 0 2px, rgba(255,255,255,0) 2px 10px);
+      }
+      #halo-palido {
+        position: absolute; border-radius: 50%;
+        left: 50%; top: 1020px; width: 1250px; height: 1250px; margin-left: -625px; margin-top: -625px;
+        background: radial-gradient(circle, rgba(241,236,176,0.32) 0%, rgba(22,48,47,0) 62%);
+        opacity: 0;
+      }
+
+      /* ---------- marco de construccion, guiño al manual ---------- */
+      #marco { position: absolute; inset: 56px; border: 1px solid rgba(205,181,162,0.16); opacity: 0; }
+      .esq { position: absolute; width: 44px; height: 44px; border: 2px solid var(--oliva); opacity: 0; }
+      .esq-si { top: -1px; left: -1px; border-right: none; border-bottom: none; transform-origin: top left; }
+      .esq-sd { top: -1px; right: -1px; border-left: none; border-bottom: none; transform-origin: top right; }
+      .esq-ii { bottom: -1px; left: -1px; border-right: none; border-top: none; transform-origin: bottom left; }
+      .esq-id { bottom: -1px; right: -1px; border-left: none; border-top: none; transform-origin: bottom right; }
+
+      #camara { position: absolute; inset: 0; transform-origin: 50% 45%; }
+
+      /* ---------- 1 · el dolor ---------- */
+      #dolor {
+        position: absolute; left: 100px; top: 700px; width: 880px; text-align: center;
+        font-size: 82px; font-weight: 700; line-height: 1.5; letter-spacing: -0.03em; color: #fff;
+      }
+      #dolor .w { display: inline-block; opacity: 0; }
+      #dolor-pie {
+        position: absolute; left: 140px; top: 1010px; width: 800px; text-align: center;
+        font-size: 34px; font-weight: 300; line-height: 1.5; color: var(--mudo); opacity: 0;
+      }
+
+      /* ---------- 2 · el protagonista ---------- */
+      #chip {
+        position: absolute; left: 50%; top: 480px; transform: translateX(-50%);
+        display: flex; align-items: center; gap: 16px; white-space: nowrap;
+        padding: 18px 44px; border-radius: 100px; opacity: 0;
+        background: linear-gradient(145deg, rgba(255,255,255,0.13), rgba(255,255,255,0.045));
+        border: 1px solid rgba(205,181,162,0.45);
+        box-shadow: 0 20px 56px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.20);
+        backdrop-filter: blur(18px);
+        font-size: 25px; font-weight: 500; letter-spacing: 0.22em;
+        text-transform: uppercase; color: var(--tierra-txt);
+      }
+      #punto { width: 15px; height: 15px; border-radius: 50%; background: var(--palido);
+        box-shadow: 0 0 20px rgba(241,236,176,0.95); }
+      #envivo {
+        position: absolute; left: 0; top: 590px; width: 1080px; text-align: center;
+        font-size: 196px; font-weight: 700; line-height: 1.5; letter-spacing: -0.045em;
+        color: #fff; opacity: 0;
+      }
+      #con {
+        position: absolute; left: 0; top: 890px; width: 1080px; text-align: center;
+        font-size: 46px; font-weight: 300; color: var(--mudo); opacity: 0;
+      }
+      #con b { font-weight: 700; color: var(--tierra-txt); }
+      #regla-alta {
+        position: absolute; left: 50%; top: 990px; width: 240px; height: 3px; margin-left: -120px;
+        background: var(--oliva); transform: scaleX(0);
+      }
+
+      /* ---------- 3 · los cuatro temas, numerados ---------- */
+      #rotulo-temas {
+        position: absolute; left: 0; top: 560px; width: 1080px; text-align: center;
+        font-size: 24px; font-weight: 500; letter-spacing: 0.26em; text-transform: uppercase;
+        color: var(--tierra-txt); opacity: 0;
+      }
+      #temas { position: absolute; left: 90px; top: 660px; width: 900px;
+        display: flex; flex-direction: column; gap: 22px; }
+      .tema {
+        display: flex; align-items: center; gap: 30px; opacity: 0;
+        padding: 30px 40px; border-radius: 22px;
+        background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.042));
+        border: 1px solid rgba(205,181,162,0.30);
+        box-shadow: 0 24px 60px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,255,255,0.18);
+        backdrop-filter: blur(20px);
+        font-size: 38px; font-weight: 500; line-height: 1.35; color: #fff;
+      }
+      .num {
+        font-size: 30px; font-weight: 700; letter-spacing: 0.04em;
+        color: var(--oliva-txt); flex-shrink: 0; min-width: 62px;
+      }
+      .tema:nth-child(2) .num { color: var(--tierra-txt); }
+      .tema:nth-child(3) .num { color: var(--palido); }
+      .tema:nth-child(4) .num { color: var(--tierra-txt); }
+
+      /* ---------- 4 · SPECTACLE ---------- */
+      #fecha-caja { position: absolute; left: 0; top: 760px; width: 1080px; text-align: center; }
+      #fecha {
+        display: inline-block; opacity: 0;
+        font-size: 112px; font-weight: 700; line-height: 1.5; letter-spacing: -0.03em;
+        color: var(--palido);
+      }
+      #hora {
+        position: absolute; left: 0; top: 960px; width: 1080px; text-align: center;
+        font-size: 34px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--mudo); opacity: 0;
+      }
+      #regla-fecha {
+        position: absolute; left: 50%; top: 1050px; width: 220px; height: 3px; margin-left: -110px;
+        background: var(--oliva); transform: scaleX(0);
+      }
+
+      /* ---------- 5 · donde registrarse ---------- */
+      #boton {
+        position: absolute; left: 50%; top: 1160px; transform: translateX(-50%);
+        padding: 32px 76px; border-radius: 100px; opacity: 0; white-space: nowrap;
+        background: linear-gradient(145deg, #8f8f53, #6d6d3f); color: #fff;
+        font-size: 36px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+        box-shadow: 0 24px 56px rgba(128,128,74,0.46), inset 0 2px 0 rgba(255,255,255,0.22);
+      }
+      #donde {
+        position: absolute; left: 0; top: 1305px; width: 1080px; text-align: center;
+        font-size: 36px; font-weight: 500; letter-spacing: 0.06em; color: var(--tierra-txt); opacity: 0;
+      }
+      #cupos {
+        position: absolute; left: 0; top: 1375px; width: 1080px; text-align: center;
+        font-size: 27px; font-weight: 300; color: var(--mudo); opacity: 0;
+      }
+
+      /* ---------- 6 · la firma ---------- */
+      #firma {
+        position: absolute; left: 50%; top: 1500px; width: 430px; margin-left: -215px;
+        height: auto; opacity: 0; filter: drop-shadow(0 14px 30px rgba(0,0,0,0.55));
+      }
+      #regla-firma {
+        position: absolute; left: 50%; top: 1750px; width: 260px; height: 2px; margin-left: -130px;
+        background: var(--oliva); transform: scaleX(0);
+      }
+      #rol {
+        position: absolute; left: 0; top: 1778px; width: 1080px; text-align: center;
+        font-size: 22px; font-weight: 300; letter-spacing: 0.24em; text-transform: uppercase;
+        color: var(--tierra-txt); opacity: 0;
+      }
+
+      /* ---------- banda de fecha: acompania todo el primer tramo ---------- */
+      #banda {
+        position: absolute; left: 50%; top: 1480px; transform: translateX(-50%);
+        display: flex; align-items: center; gap: 28px; white-space: nowrap; opacity: 0;
+        padding: 24px 52px; border-radius: 18px;
+        background: linear-gradient(145deg, rgba(255,255,255,0.10), rgba(255,255,255,0.035));
+        border: 1px solid rgba(205,181,162,0.26);
+        backdrop-filter: blur(16px);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.16);
+      }
+      .banda-dato { font-size: 32px; font-weight: 700; color: #fff; letter-spacing: 0.02em; }
+      .banda-sep { width: 2px; height: 34px; background: rgba(205,181,162,0.40); }
+      .banda-rot { font-size: 20px; font-weight: 500; letter-spacing: 0.2em;
+        text-transform: uppercase; color: var(--tierra-txt); }
+
+      /* ---------- cronometro: el pulso a la vista ---------- */
+      #pulso { position: absolute; left: 50%; bottom: 140px; transform: translateX(-50%);
+        display: flex; gap: 14px; }
+      #pulso i { width: 6px; height: 26px; border-radius: 3px; background: var(--oliva); opacity: 0.22; }
+    </style>
+  </head>
+
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="15"
+         data-width="1080" data-height="1920">
+
+      <div id="aurora" class="clip capa"
+           data-composition-id="aurora-drift"
+           data-composition-src="compositions/components/aurora-drift.html"
+           data-composition-vars='{"accent":"green","mood":"deep"}'
+           data-start="0" data-duration="15" data-track-index="0"></div>
+
+      <div id="velo" class="clip capa" data-start="0" data-duration="15" data-track-index="1"></div>
+      <div id="trama" class="clip capa" data-start="0" data-duration="15" data-track-index="2"></div>
+      <div id="halo-palido" class="clip" data-layout-allow-overflow data-start="0" data-duration="15" data-track-index="3"></div>
+
+      <div id="marco" class="clip" data-start="0" data-duration="15" data-track-index="4">
+        <div class="esq esq-si" id="e1"></div>
+        <div class="esq esq-sd" id="e2"></div>
+        <div class="esq esq-ii" id="e3"></div>
+        <div class="esq esq-id" id="e4"></div>
+      </div>
+
+      <div id="camara" class="clip capa" data-start="0" data-duration="15" data-track-index="5">
+        <div id="dolor">
+          <span class="w">Otra</span> <span class="w">vez</span> <span class="w">armando</span>
+          <span class="w">el</span> <span class="w">informe</span> <span class="w">a</span>
+          <span class="w">mano.</span>
+        </div>
+        <div id="dolor-pie">Inspecciones, flota, conductores, kilómetros… y fin de año encima.</div>
+
+        <div id="chip"><span id="punto"></span>Conversatorio virtual exclusivo</div>
+        <div id="envivo">EN VIVO</div>
+        <div id="con">con el <b>Dr. Yezid Ricaurte</b></div>
+        <div id="regla-alta"></div>
+
+        <div id="rotulo-temas">Lo que vas a ver</div>
+        <div id="temas">
+          <div class="tema" id="tm1"><span class="num">01</span>Auditorías de inspección preoperacional</div>
+          <div class="tema" id="tm2"><span class="num">02</span>Kilometraje, flota y conductores</div>
+          <div class="tema" id="tm3"><span class="num">03</span>Tus indicadores de siniestralidad</div>
+          <div class="tema" id="tm4"><span class="num">04</span>Tu informe, con un solo clic</div>
+        </div>
+
+        <div id="fecha-caja"><span id="fecha">3 DE OCTUBRE</span></div>
+        <div id="hora">10:00 a. m. · Hora Colombia</div>
+        <div id="regla-fecha"></div>
+
+        <div id="boton">Asegura tu cupo</div>
+        <div id="donde">yezidricaurte.com</div>
+        <div id="cupos">Gratuito · cupos limitados · recordatorio por WhatsApp</div>
+
+        <img id="firma" src="assets/firma-yezid-blanca.png" alt="Yezid Ricaurte" />
+        <div id="regla-firma"></div>
+        <div id="rol">Abogado | Consultor | Conferencista</div>
+
+        <div id="banda">
+          <div>
+            <div class="banda-rot">Sábado</div>
+            <div class="banda-dato">3 de Octubre</div>
+          </div>
+          <div class="banda-sep"></div>
+          <div>
+            <div class="banda-rot">Hora</div>
+            <div class="banda-dato">10:00 a. m.</div>
+          </div>
+        </div>
+
+        <div id="pulso" aria-hidden="true" data-layout-ignore><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        window.__timelines = window.__timelines || {};
+        var tl = gsap.timeline({ paused: true });
+
+        /* ==================================================================
+           TIEMPOS DE LA LOCUCION (ElevenLabs)
+           Estos son los tiempos REALES devueltos por
+           /v1/text-to-speech/{id}/with-timestamps para la locucion de Carlos.
+           Ninguna animacion lleva un numero suelto: todas cuelgan de esta
+           tabla o de la rejilla de tempo que sale de ella.
+           ================================================================== */
+        var elevenLabsTimestamps = {
+          dolor:       0.20,
+          dolorPie:    1.55,
+          apertura:    2.45,
+          enVivo:      2.90,
+          conQuien:    3.80,
+          temas:       5.05,
+          fechaEvento: 9.20,
+          hora:        9.95,
+          cta:        11.15,
+          donde:      11.60,
+          firma:      12.45
+        };
+        var T = elevenLabsTimestamps;
+        var FIN = 15;
+
+        /* REJILLA DE TEMPO (kinetic-beat-slam) */
+        var PULSO = 0.62;
+        var GOLPES = [T.temas, T.temas + PULSO, T.temas + PULSO * 2, T.temas + PULSO * 3];
+
+        /* AMBIENT IDLE — ease "none": otra curva deja tramos quietos */
+        tl.fromTo("#velo",   { scale: 1.00 }, { scale: 1.08, duration: FIN, ease: "none" }, 0);
+        tl.fromTo("#trama",  { scale: 1.00, y: 0 }, { scale: 1.06, y: -56, duration: FIN, ease: "none" }, 0);
+        tl.fromTo("#camara", { scale: 1.05 }, { scale: 1.00, duration: FIN, ease: "none" }, 0);
+
+        /* 0 · EL MARCO — se dibuja por las esquinas, como la construccion del logo */
+        tl.to("#marco", { opacity: 1, duration: 0.5, ease: "power3.out" }, 0.05);
+        tl.fromTo("#e1", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.45, ease: "power3.out" }, 0.08);
+        tl.fromTo("#e2", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.45, ease: "power3.out" }, 0.16);
+        tl.fromTo("#e3", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.45, ease: "power3.out" }, 0.24);
+        tl.fromTo("#e4", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.45, ease: "power3.out" }, 0.32);
+
+        /* 1 · EL DOLOR — gana el derecho a la oferta */
+        tl.fromTo("#dolor .w", { opacity: 0, y: 66, rotationX: -48 },
+          { opacity: 1, y: 0, rotationX: 0, duration: 0.74, ease: "expo.out", stagger: 0.075 }, T.dolor);
+        tl.fromTo("#dolor .w", { filter: "blur(8px)" },
+          { filter: "blur(0px)", immediateRender: false, duration: 0.28, ease: "power2.out", stagger: 0.075 }, T.dolor);
+        tl.fromTo("#dolor-pie", { opacity: 0, y: 28 },
+          { opacity: 1, y: 0, duration: 0.62, ease: "expo.out" }, T.dolorPie);
+        tl.to(["#dolor", "#dolor-pie"],
+          { opacity: 0, y: -130, filter: "blur(9px)", duration: 0.70, ease: "power2.in", stagger: 0.05 }, T.apertura - 0.35);
+
+        /* 2 · EL PROTAGONISTA */
+        tl.fromTo("#chip", { opacity: 0, y: -50, scale: 0.84 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.74, ease: "back.out(1.5)" }, T.apertura);
+        // pulsos finitos: nunca repeat:-1, el render busca por tiempo
+        tl.to("#punto", { scale: 1.45, duration: 0.30, ease: "power2.out" }, 3.15);
+        tl.to("#punto", { scale: 1.00, duration: 0.38, ease: "power2.inOut" }, 3.45);
+        tl.to("#punto", { scale: 1.38, duration: 0.30, ease: "power2.out" }, 4.15);
+        tl.to("#punto", { scale: 1.00, duration: 0.38, ease: "power2.inOut" }, 4.45);
+
+        tl.fromTo("#envivo", { opacity: 0, scale: 1.55, filter: "blur(22px)" },
+          { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.60, ease: "power4.out" }, T.enVivo);
+        tl.fromTo("#con", { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: 0.60, ease: "expo.out" }, T.conQuien);
+        tl.fromTo("#regla-alta", { scaleX: 0 },
+          { scaleX: 1, duration: 0.56, ease: "expo.out" }, T.conQuien + 0.20);
+        tl.to(["#envivo", "#con", "#regla-alta", "#chip"],
+          { opacity: 0, y: -120, filter: "blur(8px)", duration: 0.66, ease: "power2.in", stagger: 0.05 }, T.temas - 0.52);
+
+        /* 3 · LOS CUATRO GOLPES — entradas DISTINTAS, no un helper repetido */
+        tl.fromTo("#rotulo-temas", { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.50, ease: "expo.out" }, T.temas - 0.30);
+        tl.fromTo("#tm1", { opacity: 0, x: -95, scale: 0.94 },
+          { opacity: 1, x: 0, scale: 1, duration: 0.48, ease: "expo.out" }, GOLPES[0]);
+        tl.fromTo("#tm2", { opacity: 0, y: 76, rotation: 2 },
+          { opacity: 1, y: 0, rotation: 0, duration: 0.50, ease: "circ.out" }, GOLPES[1]);
+        tl.fromTo("#tm3", { opacity: 0, x: 95, scale: 0.94 },
+          { opacity: 1, x: 0, scale: 1, duration: 0.48, ease: "expo.out" }, GOLPES[2]);
+        tl.fromTo("#tm4", { opacity: 0, scale: 0.60 },
+          { opacity: 1, scale: 1, duration: 0.58, ease: "back.out(1.9)" }, GOLPES[3]);
+
+        // el cronometro marca el MISMO pulso
+        gsap.utils.toArray("#pulso i").forEach(function (tick, i) {
+          var t = T.temas - PULSO + PULSO * i;
+          tl.to(tick, { opacity: 0.85, duration: 0.10, ease: "power2.out" }, t);
+          tl.to(tick, { opacity: 0.22, duration: 0.36, ease: "power2.in" }, t + 0.10);
+        });
+
+        // la banda de fecha acompania el primer tramo y llena la mitad inferior
+        tl.fromTo("#banda", { opacity: 0, y: 40, scale: 0.94 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.70, ease: "back.out(1.4)" }, T.dolorPie + 0.10);
+        tl.to("#banda", { y: -18, duration: 3.2, ease: "sine.inOut" }, T.enVivo);
+        tl.to("#banda", { y: 0, duration: 3.2, ease: "sine.inOut" }, T.enVivo + 3.2);
+
+        /* 4 · RELEVO — power2.in, no expo.in */
+        tl.to(["#rotulo-temas", "#temas"],
+          { opacity: 0, y: -140, filter: "blur(9px)", duration: 0.76, ease: "power2.in", stagger: 0.06 },
+          T.fechaEvento - 0.62);
+        tl.to("#pulso", { opacity: 0, duration: 0.45, ease: "power2.in" }, T.fechaEvento - 0.58);
+        // la banda se encoge hacia el centro: el climax la recoge en grande
+        tl.to("#banda", { opacity: 0, scale: 0.82, y: -120, duration: 0.62, ease: "power2.in" }, T.fechaEvento - 0.62);
+
+        /* 5 · SPECTACLE — overshoot 1.4x, rebote y resplandor palido */
+        tl.set("#fecha", { opacity: 1 }, T.fechaEvento);
+        tl.fromTo("#fecha", { scale: 0.32 },
+          { scale: 1.40, duration: 0.44, ease: "expo.out" }, T.fechaEvento);
+        tl.to("#fecha", { scale: 1.00, duration: 0.72, ease: "back.out(2.8)" }, T.fechaEvento + 0.44);
+        tl.fromTo("#fecha", { filter: "drop-shadow(0 0 0px rgba(241,236,176,0))" },
+          { filter: "drop-shadow(0 0 52px rgba(241,236,176,0.95))", immediateRender: false,
+            duration: 0.40, ease: "power3.out" }, T.fechaEvento);
+        tl.to("#fecha", { filter: "drop-shadow(0 0 24px rgba(241,236,176,0.55))",
+          duration: 0.85, ease: "power2.inOut" }, T.fechaEvento + 0.44);
+        tl.fromTo("#halo-palido", { opacity: 0, scale: 0.45 },
+          { opacity: 1, scale: 1, duration: 0.48, ease: "expo.out" }, T.fechaEvento);
+        tl.to("#halo-palido", { opacity: 0.56, scale: 1.16, duration: 4.4, ease: "sine.inOut" }, T.fechaEvento + 0.48);
+
+        tl.fromTo("#hora", { opacity: 0, y: 24 },
+          { opacity: 1, y: 0, duration: 0.56, ease: "expo.out" }, T.hora);
+        tl.fromTo("#regla-fecha", { scaleX: 0 },
+          { scaleX: 1, duration: 0.56, ease: "expo.out" }, T.hora + 0.22);
+
+        /* 6 · DONDE Y QUIEN — el video ya no solo invita: dice adonde ir */
+        tl.fromTo("#boton", { opacity: 0, scale: 0.58 },
+          { opacity: 1, scale: 1, duration: 0.74, ease: "back.out(1.8)" }, T.cta);
+        tl.fromTo("#donde", { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.52, ease: "expo.out" }, T.donde);
+        tl.fromTo("#cupos", { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.48, ease: "expo.out" }, T.donde + 0.24);
+
+        tl.fromTo("#firma", { opacity: 0, scale: 0.90, y: 22 },
+          { opacity: 1, scale: 1, y: 0, duration: 0.90, ease: "expo.out" }, T.firma);
+        tl.fromTo("#regla-firma", { scaleX: 0 },
+          { scaleX: 1, duration: 0.60, ease: "expo.out" }, T.firma + 0.30);
+        tl.fromTo("#rol", { opacity: 0, y: 14 },
+          { opacity: 1, y: 0, duration: 0.50, ease: "expo.out" }, T.firma + 0.44);
+
+        // remate bloqueado: el boton respira hasta el final
+        tl.to("#boton", { scale: 1.05, duration: 0.60, ease: "sine.inOut" }, T.cta + 1.10);
+        tl.to("#boton", { scale: 1.00, duration: 0.60, ease: "sine.inOut" }, T.cta + 1.70);
+        tl.to("#boton", { scale: 1.04, duration: 0.60, ease: "sine.inOut" }, T.cta + 2.60);
+        tl.to("#boton", { scale: 1.00, duration: 0.60, ease: "sine.inOut" }, T.cta + 3.20);
+
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

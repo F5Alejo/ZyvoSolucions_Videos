@@ -1,0 +1,76 @@
+[
+ {
+  "n": 1,
+  "frames": [
+   "dolor"
+  ],
+  "frases": [
+   "¿Otra vez armando el informe a mano?"
+  ],
+  "inicios": [
+   0.0,
+   2.043
+  ],
+  "duracion": 2.043
+ },
+ {
+  "n": 2,
+  "frames": [
+   "envivo"
+  ],
+  "frases": [
+   "En vivo con el doctor Yezid Ricaurte."
+  ],
+  "inicios": [
+   0.0,
+   2.09
+  ],
+  "duracion": 2.09
+ },
+ {
+  "n": 3,
+  "frames": [
+   "temas"
+  ],
+  "frases": [
+   "Auditorías, flota, conductores, tus indicadores",
+   "y tu informe con un solo clic."
+  ],
+  "inicios": [
+   0.0,
+   2.844,
+   4.876
+  ],
+  "duracion": 4.876
+ },
+ {
+  "n": 4,
+  "frames": [
+   "fecha"
+  ],
+  "frases": [
+   "Sábado 3 de octubre",
+   "diez de la mañana."
+  ],
+  "inicios": [
+   0.0,
+   1.358,
+   2.368
+  ],
+  "duracion": 2.368
+ },
+ {
+  "n": 5,
+  "frames": [
+   "cierre"
+  ],
+  "frases": [
+   "Cupo gratuito en yezidricaurte punto com."
+  ],
+  "inicios": [
+   0.0,
+   2.09
+  ],
+  "duracion": 2.09
+ }
+]
