@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script
+      src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"
+      integrity="sha384-sG0Hv1tP1lZCk9KQmrIbY/XNwi+OY84GQqhMscbnsoBFqAz8KNCil1kvfL3Hbbk2"
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      /* ==================================================================
+         ORQUESTADOR · riskmann-pesv-publicitario
+
+         Los TOKENS se definen aqui una sola vez, en #root. Las escenas se
+         montan como sub-composiciones DENTRO de #root, y las custom properties
+         de CSS se heredan por el DOM: por eso ninguna escena repite un hex.
+
+         Paleta: la del manual de marca, confirmada por la propia landing
+         (docs/fuentes/manejo-pesv-24-pasos.pdf), que es negra con acentos
+         dorados. Ver BRIEF.md para los conflictos con el prompt original.
+         ================================================================== */
+      @font-face { font-family: "Dubai"; font-weight: 300; src: url("assets/fonts/DUBAI-LIGHT.TTF") format("truetype"); }
+      @font-face { font-family: "Dubai"; font-weight: 400; src: url("assets/fonts/DUBAI-REGULAR.TTF") format("truetype"); }
+      @font-face { font-family: "Dubai"; font-weight: 500; src: url("assets/fonts/DUBAI-MEDIUM.TTF") format("truetype"); }
+      @font-face { font-family: "Dubai"; font-weight: 700; src: url("assets/fonts/DUBAI-BOLD.TTF") format("truetype"); }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #020202; }
+
+      #root {
+        position: relative; width: 1080px; height: 1920px; overflow: hidden;
+        background: #020202; color: #fff;
+
+        /* ---------- tokens de color (manual de marca) ---------- */
+        --negro:        #020202;  /* fondo principal */
+        --blanco:       #FFFFFF;  /* texto, contraste */
+        --rojo:         #FF3333;  /* enfasis, alertas, tension */
+        --oro:          #c8951a;  /* prestigio, acento de la landing */
+        --oro-claro:    #e0b544;  /* el oro aclarado, solo para texto pequeno */
+        --cian:         #06c7fb;  /* graficos de acento; cuenta el alivio */
+        --azul:         #26367D;  /* institucional de soporte */
+        --azul-tec:     #333366;  /* elementos tecnologicos */
+        --gris:         #272725;  /* separadores, fondos secundarios */
+        --gris-txt:     #9a9a98;  /* texto secundario legible */
+
+        /* ---------- tokens de tipografia ---------- */
+        --fuente:       "Dubai", sans-serif;
+        --hero:         150px;    /* titulares de escena 1 y 8 */
+        --ui:           40px;     /* textos de mockup y apoyo */
+        /* Dubai: line-height NUNCA por debajo de 1.5. Su caja de linea mide
+           ~1.45em y por debajo de eso las lineas se pisan. */
+        --alto-linea:   1.5;
+      }
+
+      .escena { position: absolute; inset: 0; width: 1080px; height: 1920px; }
+    </style>
+  </head>
+
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="36"
+         data-width="1080" data-height="1920">
+
+      <!-- Los offsets NO estan escritos a mano: se calculan abajo a partir de
+           las duraciones, para que las escenas se puedan reordenar. Estos
+           valores son el resultado de ese calculo, volcado al HTML. -->
+
+      <div id="el-scene01-hook" class="clip escena" data-composition-id="scene01-hook"
+           data-composition-src="compositions/scenes/scene01-hook.html"
+           data-start="0" data-duration="4" data-track-index="1"></div>
+
+      <div id="el-scene02-frentes" class="clip escena" data-composition-id="scene02-frentes"
+           data-composition-src="compositions/scenes/scene02-frentes.html"
+           data-start="4" data-duration="4" data-track-index="2"></div>
+
+      <div id="el-scene03-deadline" class="clip escena" data-composition-id="scene03-deadline"
+           data-composition-src="compositions/scenes/scene03-deadline.html"
+           data-start="8" data-duration="4" data-track-index="3"></div>
+
+      <div id="el-scene04-visita" class="clip escena" data-composition-id="scene04-visita"
+           data-composition-src="compositions/scenes/scene04-visita.html"
+           data-start="12" data-duration="5" data-track-index="4"></div>
+
+      <div id="el-scene05-caos" class="clip escena" data-composition-id="scene05-caos"
+           data-composition-src="compositions/scenes/scene05-caos.html"
+           data-start="17" data-duration="4" data-track-index="5"></div>
+
+      <div id="el-scene06-alivio" class="clip escena" data-composition-id="scene06-alivio"
+           data-composition-src="compositions/scenes/scene06-alivio.html"
+           data-start="21" data-duration="5" data-track-index="6"></div>
+
+      <div id="el-scene07-indicadores" class="clip escena" data-composition-id="scene07-indicadores"
+           data-composition-src="compositions/scenes/scene07-indicadores.html"
+           data-start="26" data-duration="5" data-track-index="7"></div>
+
+      <div id="el-scene08-cierre" class="clip escena" data-composition-id="scene08-cierre"
+           data-composition-src="compositions/scenes/scene08-cierre.html"
+           data-start="31" data-duration="5" data-track-index="8"></div>
+    </div>
+
+    <script>
+      /* ==================================================================
+         LIBRERIA DE EFECTOS · window.RM
+
+         Se define aqui, en el orquestador, porque este script corre antes de
+         que se monten las sub-composiciones. Cada escena la consume con
+         window.RM.<efecto>(...).
+
+         DETERMINISMO, no negociable: el render busca por tiempo y cada
+         fotograma tiene que salir identico siempre. Por eso no hay
+         Math.random(), Date.now(), repeat:-1 ni yoyo en ninguna parte. El
+         "desfase aleatorio" y el "jitter" que pide el guion se resuelven con
+         una funcion hash sobre el indice del elemento: se ve igual de
+         irregular y es reproducible.
+         ================================================================== */
+      window.RM = (function () {
+
+        /* Pseudo-aleatorio DETERMINISTA. Mismo indice -> mismo valor, siempre.
+           Sustituye a Math.random() en todo el proyecto. */
+        function azar(i, semilla) {
+          var x = Math.sin((i + 1) * 12.9898 + (semilla || 0) * 78.233) * 43758.5453;
+          return x - Math.floor(x);
+        }
+
+        /* --------------------------------------------------------------
+           shake(tl, sel, amplitud, frecuencia, duracion, en)
+           Oscilacion en X (y algo de Y) por keyframes discretos. Se usa en
+           las escenas 1, 3 y 4.
+           -------------------------------------------------------------- */
+        function shake(tl, sel, amplitud, frecuencia, duracion, en) {
+          var pasos = Math.max(2, Math.round(duracion * frecuencia));
+          var paso = duracion / pasos;
+          for (var i = 0; i < pasos; i++) {
+            var dx = (azar(i, 1) * 2 - 1) * amplitud;
+            var dy = (azar(i, 2) * 2 - 1) * amplitud * 0.45;
+            tl.to(sel, { x: dx, y: dy, duration: paso, ease: "none" }, en + i * paso);
+          }
+          tl.to(sel, { x: 0, y: 0, duration: paso, ease: "power2.out" }, en + duracion);
+        }
+
+        /* --------------------------------------------------------------
+           glitch(tl, sel, intensidad, duracion, en)
+           Aberracion cromatica: dos copias del elemento se separan en rojo y
+           cian, mas un parpadeo de 1-2 fotogramas. Se usa en la salida de la
+           escena 1. Las copias las crea la escena con .rm-glitch-r / -c.
+           -------------------------------------------------------------- */
+        function glitch(tl, sel, intensidad, duracion, en) {
+          var r = sel + " .rm-glitch-r", c = sel + " .rm-glitch-c";
+          var t = duracion / 6;
+          tl.to(r, { opacity: 0.85, x: -intensidad, duration: t, ease: "none" }, en);
+          tl.to(c, { opacity: 0.85, x: intensidad, duration: t, ease: "none" }, en);
+          tl.to(sel, { opacity: 0.25, duration: t * 0.5, ease: "none" }, en + t * 1.5);
+          tl.to(sel, { opacity: 1, duration: t * 0.5, ease: "none" }, en + t * 2);
+          tl.to(r, { x: -intensidad * 1.8, duration: t, ease: "none" }, en + t * 3);
+          tl.to(c, { x: intensidad * 1.8, duration: t, ease: "none" }, en + t * 3);
+          tl.to([r, c], { opacity: 0, x: 0, duration: t * 2, ease: "power2.in" }, en + t * 4);
+        }
+
+        /* --------------------------------------------------------------
+           countUp(tl, sel, desde, hasta, duracion, en, sufijo)
+           Interpola un numero y lo escribe en el elemento. El onUpdate solo
+           LEE del proxy y escribe texto: no guarda estado, asi que es
+           seek-safe. Se usa en las escenas 2 y 7.
+           -------------------------------------------------------------- */
+        function countUp(tl, sel, desde, hasta, duracion, en, sufijo) {
+          var el = document.querySelector(sel);
+          if (!el) return;
+          var proxy = { v: desde };
+          var suf = sufijo || "";
+          tl.fromTo(proxy, { v: desde }, {
+            v: hasta, duration: duracion, ease: "power2.out",
+            onUpdate: function () { el.textContent = Math.round(proxy.v) + suf; }
+          }, en);
+        }
+
+        /* --------------------------------------------------------------
+           ripple(tl, sel, duracion, en)
+           Circulo que nace y se expande desvaneciendose. Se usa en las
+           escenas 6 y 8. El color lo pone la escena por CSS.
+           -------------------------------------------------------------- */
+        function ripple(tl, sel, duracion, en) {
+          tl.fromTo(sel, { scale: 0, opacity: 0.85 },
+            { scale: 3, opacity: 0, duration: duracion, ease: "power2.out" }, en);
+        }
+
+        /* --------------------------------------------------------------
+           scanline(tl, sel, recorrido, duracion, pasadas, en)
+           Linea horizontal que baja en bucle. El bucle se construye con
+           pasadas finitas encadenadas, NUNCA con repeat:-1. Se usa en la
+           escena 4.
+           -------------------------------------------------------------- */
+        function scanline(tl, sel, recorrido, duracion, pasadas, en) {
+          for (var i = 0; i < pasadas; i++) {
+            tl.fromTo(sel, { y: -60, opacity: 0 },
+              { y: recorrido, opacity: 1, duration: duracion, ease: "none" },
+              en + i * duracion);
+          }
+        }
+
+        /* --------------------------------------------------------------
+           pulse(tl, sel, desde, hasta, duracion, ciclos, en, indice)
+           Pulso de escala. Con "indice" cada hermano arranca desfasado, para
+           que un grupo no lata sincronizado. El desfase sale del hash, no de
+           Math.random(). Se usa en las escenas 2 y 7.
+           -------------------------------------------------------------- */
+        function pulse(tl, sel, desde, hasta, duracion, ciclos, en, indice) {
+          var desfase = azar(indice || 0, 7) * 0.15;
+          for (var i = 0; i < ciclos; i++) {
+            var t = en + desfase + i * duracion * 2;
+            tl.fromTo(sel, { scale: desde }, { scale: hasta, duration: duracion, ease: "sine.inOut" }, t);
+            tl.to(sel, { scale: desde, duration: duracion, ease: "sine.inOut" }, t + duracion);
+          }
+        }
+
+        /* --------------------------------------------------------------
+           jitter(tl, sel, amplitud, pasos, duracion, en, indice)
+           Desplazamientos pequenos y constantes. Es el "caos" de la escena 5
+           y el temblor de la linea divisoria de la 4.
+           -------------------------------------------------------------- */
+        function jitter(tl, sel, amplitud, pasos, duracion, en, indice) {
+          var paso = duracion / pasos;
+          for (var i = 0; i < pasos; i++) {
+            tl.to(sel, {
+              x: (azar(i, (indice || 0) + 3) * 2 - 1) * amplitud,
+              y: (azar(i, (indice || 0) + 11) * 2 - 1) * amplitud,
+              rotation: (azar(i, (indice || 0) + 17) * 2 - 1) * amplitud * 0.3,
+              duration: paso, ease: "none"
+            }, en + i * paso);
+          }
+        }
+
+        return { azar: azar, shake: shake, glitch: glitch, countUp: countUp,
+                 ripple: ripple, scanline: scanline, pulse: pulse, jitter: jitter };
+      })();
+
+      /* ==================================================================
+         ORQUESTACION
+
+         Los offsets se CALCULAN a partir de las duraciones, no se escriben a
+         mano: asi las escenas se pueden reordenar sin tocar tiempos. El
+         resultado se vuelca a los data-start del HTML de arriba, que es lo
+         que lee HyperFrames.
+
+         playbackRate queda expuesto para poder acelerar o frenar el preview
+         mientras se ajusta al audio de ElevenLabs.
+         ================================================================== */
+      window.MONTAJE = [
+        { escena: "scene01-hook",        duracion: 4, salida: "glitchCollapse" },
+        { escena: "scene02-frentes",     duracion: 4, salida: "convergeFlash" },
+        { escena: "scene03-deadline",    duracion: 4, salida: "zoomInSaturate" },
+        { escena: "scene04-visita",      duracion: 5, salida: "swipeUp" },
+        { escena: "scene05-caos",        duracion: 4, salida: "hardCut" },
+        { escena: "scene06-alivio",      duracion: 5, salida: "crossfade" },
+        { escena: "scene07-indicadores", duracion: 5, salida: "fadeToBlack" },
+        { escena: "scene08-cierre",      duracion: 5, salida: "freezeFadeToBlack" }
+      ];
+      window.OFFSETS = (function () {
+        var t = 0, out = {};
+        window.MONTAJE.forEach(function (m) { out[m.escena] = t; t += m.duracion; });
+        out.__total = t;   // 36 s
+        return out;
+      })();
+      window.playbackRate = 1;
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>
