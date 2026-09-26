@@ -5,6 +5,7 @@ Repositorio dedicado a la elaboración de videos para presentaciones, marketing 
 
 | Documento | Para quién | Qué contiene |
 | --- | --- | --- |
+| [`docs/PLAYBOOK.md`](docs/PLAYBOOK.md) | Quien arranca un proyecto nuevo | Qué se hizo, qué formato elegir, qué copiar, trampas principales y huecos conocidos |
 | [`docs/POC-SEGURIDAD-VIAL-PASAJEROS.md`](docs/POC-SEGURIDAD-VIAL-PASAJEROS.md) | Revisión del PoC | Entregable, checklist del issue, criterios de aceptación, viabilidad y pendientes |
 | [`GUIA-PROMPTS.md`](GUIA-PROMPTS.md) | Quien pide los videos (marketing, gerencia) | «Con este prompt consigo esto»: instrucciones probadas, tiempos y lo que no funciona |
 | [`PRODUCCION-VIDEOS.md`](PRODUCCION-VIDEOS.md) | Quien los produce (persona o agente) | El estándar: veracidad, marca, identidad visual, formatos, procedimiento, audio, trampas |
@@ -31,6 +32,10 @@ videos/
   ruta-segura-m3/        curso «Ruta Segura» · módulo 3, misión segura (3:43)
   ruta-segura-m4/        curso «Ruta Segura» · módulo 4, cierre y fuentes (2:08)
   riskmann-sala-de-control/  video de marketing de la plataforma (68 s)
+  moto-curso/            generador del curso «Motociclista laboral seguro» (datos + plantillas)
+  moto-apertura … moto-cierre/  los 15 videos generados de ese curso (40:47)
+  csm-curso/             generador del curso «Conducción Segura y Manejo Defensivo»
+  csm-apertura … csm-cierre/    los 15 videos generados de ese curso (~33 min)
 ```
 
 ## Videos
@@ -52,6 +57,8 @@ Todos los videos terminados están en la carpeta compartida de Drive:
 | 08 | `Ruta Segura - Modulo 2 Bicicleta lista - Narrado (3m43)` | Inspección, clasificación, protección y visibilidad | `videos/ruta-segura-m2/` |
 | 09 | `Ruta Segura - Modulo 3 Mision segura - Narrado (3m43)` | Anticipación, maniobra, ruta y estado, respuesta | `videos/ruta-segura-m3/` |
 | 10 | `Ruta Segura - Modulo 4 Cierre - Narrado (2m08)` | Cierre y fuentes | `videos/ruta-segura-m4/` |
+| — | `curso-motociclista/00 … 14` | Curso «Motociclista laboral seguro», 15 videos | `videos/moto-*` (generados por `videos/moto-curso/`) |
+| — | `curso-conduccion-segura/00-1 … 13-1` | Curso «Conducción Segura y Manejo Defensivo», 15 videos | `videos/csm-*` (generados por `videos/csm-curso/`) |
 
 El curso completo va con **locución sintética en voz colombiana** (ElevenLabs, «Carlos»,
 `eleven_v3`). Cada módulo trae su copia liviana (`Nb`) y su `GUION-VOZ-modulo-N.md` con la
