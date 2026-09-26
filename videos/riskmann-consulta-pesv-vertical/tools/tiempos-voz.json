@@ -5,15 +5,15 @@
    "s01-gancho"
   ],
   "frases": [
-   "El PESV no me aplica.",
+   "El PESV no me aplica",
    "¿Seguro?"
   ],
   "inicios": [
    0.0,
-   1.08,
-   1.765
+   1.533,
+   2.368
   ],
-  "duracion": 1.765
+  "duracion": 2.368
  },
  {
   "n": 2,
@@ -21,17 +21,17 @@
    "s02-umbral"
   ],
   "frases": [
-   "Once vehículos.",
-   "O dos conductores.",
+   "Once vehículos",
+   "o dos conductores",
    "Con cualquiera de las dos, tu empresa ya está obligada."
   ],
   "inicios": [
    0.0,
-   0.929,
-   2.067,
-   4.737
+   1.173,
+   2.392,
+   5.062
   ],
-  "duracion": 4.737
+  "duracion": 5.062
  },
  {
   "n": 3,
@@ -39,15 +39,15 @@
    "s03-costo"
   ],
   "frases": [
-   "Y no cumplir cuesta hasta quinientos salarios mínimos.",
-   "Más de seiscientos cincuenta millones de pesos."
+   "No cumplir cuesta hasta quinientos salarios mínimos",
+   "seiscientos cincuenta millones de pesos."
   ],
   "inicios": [
    0.0,
-   2.984,
-   5.851
+   3.111,
+   5.294
   ],
-  "duracion": 5.851
+  "duracion": 5.294
  },
  {
   "n": 4,
@@ -55,15 +55,15 @@
    "s04-solucion"
   ],
   "frases": [
-   "RiskMann automatiza tu PESV.",
-   "Conductores, vehículos y mantenimientos, en una sola plataforma."
+   "RiskMann automatiza tu PESV",
+   "conductores, vehículos y mantenimientos en una sola plataforma."
   ],
   "inicios": [
    0.0,
-   2.148,
-   5.805
+   1.916,
+   5.341
   ],
-  "duracion": 5.805
+  "duracion": 5.341
  },
  {
   "n": 5,
@@ -75,9 +75,9 @@
   ],
   "inicios": [
    0.0,
-   4.272
+   3.576
   ],
-  "duracion": 4.272
+  "duracion": 3.576
  },
  {
   "n": 6,
@@ -86,13 +86,15 @@
   ],
   "frases": [
    "¿Quieres saber si te aplica?",
-   "Escríbenos. La consulta es gratis."
+   "Escríbenos.",
+   "La consulta es gratis."
   ],
   "inicios": [
    0.0,
-   1.463,
-   3.715
+   1.312,
+   2.136,
+   3.483
   ],
-  "duracion": 3.715
+  "duracion": 3.483
  }
 ]

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head><meta charset="UTF-8"><title>escena-tema</title></head>
+  <body>
+    <template>
+      <style>
+      @font-face { font-family: "FEGIR Sans"; font-weight: 300; src: url("assets/fonts/segoeuil.ttf") format("truetype"); }
+      @font-face { font-family: "FEGIR Sans"; font-weight: 400; src: url("assets/fonts/segoeui.ttf") format("truetype"); }
+      @font-face { font-family: "FEGIR Sans"; font-weight: 600; src: url("assets/fonts/segoeuisb.ttf") format("truetype"); }
+      @font-face { font-family: "FEGIR Sans"; font-weight: 700; src: url("assets/fonts/segoeuib.ttf") format("truetype"); }
+        #root {
+          position: absolute; inset: 0; overflow: hidden; background: transparent;
+          font-family: "FEGIR Sans", sans-serif; color: #fff;
+          --verde:        #45a035;
+          --verde-claro:  #a8c875;
+          --crema:        #f1ecb0;
+          --banda-a:      #50cd72;
+          --banda-b:      #4ecd25;
+          --verde-fondo:  #3a8f2c;
+          --verde-hondo:  #22621a;
+          --tinta:        #1d2b1a;
+        }
+        .capa { position: absolute; inset: 0; }
+      .cortina {
+        position: absolute; left: -400px; top: -300px; width: 1900px; height: 2600px;
+        transform-origin: 50% 50%;
+      }
+      #cortina-verde {
+        background: linear-gradient(135deg, var(--banda-a) 0%, var(--verde-fondo) 34%, #2e7a22 100%);
+      }
+      #cortina-blanca { background: #ffffff; }
+      #cortina-verde2 {
+        background: linear-gradient(135deg, var(--banda-b) 0%, var(--verde-fondo) 34%, #2e7a22 100%);
+      }
+      #cortina-blanca2 { background: #ffffff; }
+      .filo { position: absolute; left: 0; top: 0; width: 100%; height: 38px; }
+      #cortina-verde .filo, #cortina-verde2 .filo { background: var(--verde-claro); }
+      #cortina-blanca .filo, #cortina-blanca2 .filo { background: var(--crema); }
+
+      #visto { position: absolute; left: 50%; top: 630px; width: 300px; height: 240px; margin-left: -150px; overflow: visible; }
+      #visto path { fill: none; stroke: var(--verde); stroke-width: 44; stroke-linecap: round; stroke-linejoin: round; }
+      #tema-rot {
+        position: absolute; left: 0; top: 960px; width: 1080px; text-align: center;
+        font-size: 30px; font-weight: 600; letter-spacing: 0.28em; text-transform: uppercase;
+        color: var(--verde-hondo);
+      }
+      #tema {
+        position: absolute; left: 90px; top: 1030px; width: 900px; text-align: center;
+        font-size: 96px; font-weight: 700; line-height: 1.08; letter-spacing: -0.025em; color: var(--tinta);
+      }
+      #tema .l { display: block; overflow: hidden; padding-bottom: 6px; }
+      #tema .l span { display: inline-block; }
+      #clic {
+        position: absolute; left: 50%; top: 1350px; transform: translateX(-50%);
+        padding: 20px 60px; border-radius: 100px; white-space: nowrap;
+        background: var(--verde-fondo); color: #fff;
+        font-size: 50px; font-weight: 700; letter-spacing: 0.02em;
+      }
+      </style>
+
+      <div data-hf-id="hf-dfqk" id="root" data-composition-id="escena-tema" data-width="1080" data-height="1920">
+        <div data-hf-id="hf-3soc" id="cortina-blanca" class="cortina"><div data-hf-id="hf-w2io" class="filo"></div></div>
+        <svg data-hf-id="hf-i03f" id="visto" viewBox="0 0 300 240"><path data-hf-id="hf-e3fh" id="visto-trazo" d="M 30 120 L 110 200 L 270 30" /></svg>
+        <div data-hf-id="hf-vyac" id="tema-rot">El tema</div>
+        <div data-hf-id="hf-wulm" id="tema">
+          <div style="clip-path: inset(0px)" data-hf-id="hf-5pjo" class="l"><span data-hf-id="hf-mn3a">Informe de</span></div>
+          <div style="clip-path: inset(0px)" data-hf-id="hf-ok30" class="l"><span data-hf-id="hf-djgd">Autogestión PESV</span></div>
+        </div>
+        <div data-hf-id="hf-4hl7" id="clic">en 1 clic</div>
+      </div>
+
+      <script>
+      (function () {
+        window.__timelines = window.__timelines || {};
+        gsap.set("[data-hf-id=\"hf-ok30\"]", { x: -141, y: -118 });
+        gsap.set("[data-hf-id=\"hf-ok30\"]", { x: -236, y: -130 });
+        gsap.set("[data-hf-id=\"hf-ok30\"]", { x: -99, y: -4 });
+        gsap.set("[data-hf-id=\"hf-5pjo\"]", { x: -37, y: -4 });
+        gsap.set("[data-hf-id=\"hf-ok30\"]", { x: -91, y: -24 });
+        var tl = gsap.timeline({ paused: true });
+
+        /* TIEMPOS - globales, en segundos del video completo.
+           V: inicio de cada toma de voz (tools/tiempos-voz.json + index.html).
+           S: inicio de ESTA escena (su data-start en index.html).
+           Si mueves la escena en el Studio, cambia S aqui tambien. */
+        var V = { f1: 0.30, f2: 3.95, f3: 7.25, f4: 10.85, f5: 14.10, f6: 16.60 };
+        var CORT = 0.40;   // la cortina entra 0.40 s antes de su frase
+        var S = 6.80;
+        var L = function (t) { return t - S; };   // global -> local
+
+        tl.fromTo("#cortina-blanca", { rotation: 28, yPercent: 105 },
+          { rotation: 28, yPercent: 0, duration: 0.75, ease: "power3.inOut" }, L(V.f3 - CORT));
+        tl.fromTo("#cortina-blanca", { rotation: 28 }, { rotation: 0, immediateRender: false, duration: 0.9, ease: "power2.out" }, L(V.f3 + 0.2));
+
+        var clic = V.f3 + 2.10;   // "en un solo clic" en +2.171
+        tl.fromTo("#visto-trazo", { strokeDasharray: 420, strokeDashoffset: 420 },
+          { strokeDashoffset: 0, duration: 0.7, ease: "power2.inOut" }, L(V.f3 + 0.05));
+        tl.fromTo("#tema-rot", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, L(V.f3 + 0.1));
+        tl.fromTo("#tema .l span", { yPercent: 110 },
+          { yPercent: 0, duration: 0.8, ease: "expo.out", stagger: 0.25 }, L(V.f3 + 0.2));
+        tl.fromTo("#clic", { opacity: 0, scale: 0.5 },
+          { opacity: 1, scale: 1, duration: 0.65, ease: "back.out(2.2)" }, L(clic));
+        tl.set("[data-hf-id=\"hf-ok30\"]", { width: 1090, height: 133, immediateRender: true }, 0);
+        tl.set("[data-hf-id=\"hf-5pjo\"]", { width: 974, height: 119, immediateRender: true }, 0);
+        window.__timelines["escena-tema"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>

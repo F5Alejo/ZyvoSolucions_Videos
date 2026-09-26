@@ -1,0 +1,79 @@
+[
+  {
+    "n": 1,
+    "frames": [
+      "dolor"
+    ],
+    "tope": 5.0,
+    "ajustes": {
+      "speed": 0.96,
+      "style": 0.5
+    },
+    "texto": "¿Otra vez armando el informe a mano?... Tu solución está en vivo, este sábado.",
+    "frases": [
+      "¿Otra vez armando el informe a mano?",
+      "Tu solución está en vivo, este sábado."
+    ]
+  },
+  {
+    "n": 2,
+    "frames": [
+      "envivo"
+    ],
+    "tope": 2.2,
+    "ajustes": {
+      "speed": 1.0,
+      "style": 0.55
+    },
+    "texto": "Con el doctor Yezid Ricaurte.",
+    "frases": [
+      "Con el doctor Yezid Ricaurte."
+    ]
+  },
+  {
+    "n": 3,
+    "frames": [
+      "temas"
+    ],
+    "tope": 5.0,
+    "ajustes": {
+      "speed": 1.02
+    },
+    "texto": "Auditorías, flota, conductores, tus indicadores... y tu informe con un solo clic.",
+    "frases": [
+      "Auditorías, flota, conductores, tus indicadores",
+      "y tu informe con un solo clic."
+    ]
+  },
+  {
+    "n": 4,
+    "frames": [
+      "fecha"
+    ],
+    "tope": 2.7,
+    "ajustes": {
+      "speed": 0.98,
+      "style": 0.55
+    },
+    "texto": "Sábado 3 de octubre, diez de la mañana.",
+    "frases": [
+      "Sábado 3 de octubre",
+      "diez de la mañana."
+    ]
+  },
+  {
+    "n": 5,
+    "frames": [
+      "cierre"
+    ],
+    "tope": 2.6,
+    "ajustes": {
+      "speed": 0.97,
+      "style": 0.5
+    },
+    "texto": "Cupo gratuito en yezidricaurte punto com.",
+    "frases": [
+      "Cupo gratuito en yezidricaurte punto com."
+    ]
+  }
+]

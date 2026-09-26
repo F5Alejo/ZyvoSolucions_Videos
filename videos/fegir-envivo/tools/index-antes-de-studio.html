@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js" integrity="sha384-sG0Hv1tP1lZCk9KQmrIbY/XNwi+OY84GQqhMscbnsoBFqAz8KNCil1kvfL3Hbbk2" crossorigin="anonymous"></script>
+    <style>
+      /* ==================================================================
+         FEGIR · EN VIVO PESV — pieza PROPIA de la fundacion, sin otra marca.
+
+         Fuente de identidad: Fegir.org/Manual identidad FEGIR.pdf
+           s.2 color   #45a035 verde · #a8c875 verde claro · #f1ecb0 crema
+           banda verde del manual, muestreada: #50cd72 -> #4ecd25
+           portada     foto de obra en duotono verde (se usa la misma foto)
+           s.3 usos    logo primario a color sobre blanco; blanco sobre verde
+           s.4         logo sin fondos, sin nada encima, sin deformar
+           letra       Segoe UI (la del manual y del logotipo)
+         Fuente de contenido: fegir.org (PDF de la web) — "En vivo gratuito",
+           "Informe de Autogestion PESV en 1 Clic", "3 Oct · 10:00 AM",
+           "Reservar cupo gratis", "¡Tu seguridad, nuestra prioridad!".
+
+         SISTEMA: los planos alternan VERDE y BLANCO, como las paginas del
+         manual. El motivo es el VISTO del escudo ("una afirmacion positiva en
+         cada paso"): cada cambio de plano lo barre una cortina diagonal.
+
+         CONTRASTE: el verde brillante de la banda (#50cd72) da 2:1 con blanco;
+         sirve de luz, nunca de fondo bajo texto. Bajo texto: #3a8f2c o mas
+         oscuro (>= 3.9:1 con blanco).
+         ================================================================== */
+      @font-face { font-family: "FEGIR Sans"; font-weight: 300; src: url("assets/fonts/segoeuil.ttf") format("truetype"); }
+      @font-face { font-family: "FEGIR Sans"; font-weight: 400; src: url("assets/fonts/segoeui.ttf") format("truetype"); }
+      @font-face { font-family: "FEGIR Sans"; font-weight: 600; src: url("assets/fonts/segoeuisb.ttf") format("truetype"); }
+      @font-face { font-family: "FEGIR Sans"; font-weight: 700; src: url("assets/fonts/segoeuib.ttf") format("truetype"); }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #2e7a22; }
+
+      #root {
+        position: relative; width: 1080px; height: 1920px; overflow: hidden;
+        background: #2e7a22; font-family: "FEGIR Sans", sans-serif; color: #fff;
+        --verde:        #45a035;
+        --verde-claro:  #a8c875;
+        --crema:        #f1ecb0;
+        --banda-a:      #50cd72;
+        --banda-b:      #4ecd25;
+        --verde-fondo:  #3a8f2c;  /* fondo bajo texto blanco: 3.9:1 */
+        --verde-hondo:  #22621a;  /* texto verde sobre blanco: 7.3:1 */
+        --tinta:        #1d2b1a;
+      }
+      .capa { position: absolute; inset: 0; }
+
+      /* ---------- plano 1 · la foto de la portada del manual ---------- */
+      #foto-caja { overflow: hidden; }
+      #foto {
+        position: absolute; left: -60px; top: -80px; width: 1200px; height: auto;
+        filter: grayscale(1) contrast(1.08) brightness(1.05);
+      }
+      /* duotono como la portada: verde de marca encima de la foto en gris */
+      #foto-tinte {
+        background: linear-gradient(160deg, #50cd72 0%, #3fa532 55%, #4ecd25 100%);
+        mix-blend-mode: multiply;
+      }
+      #foto-sombra {
+        background: linear-gradient(180deg, rgba(20,60,16,0) 38%, rgba(20,60,16,0.78) 78%, rgba(20,60,16,0.92) 100%);
+      }
+      #pregunta {
+        position: absolute; left: 90px; top: 1180px; width: 900px;
+        font-size: 92px; font-weight: 700; line-height: 1.12; letter-spacing: -0.02em;
+      }
+      #pregunta .l { display: block; overflow: hidden; padding-bottom: 8px; }
+      #pregunta .l span { display: inline-block; }
+      #pregunta .marca { color: var(--crema); }
+
+      /* ---------- cortinas: el visto que barre ---------- */
+      .cortina {
+        position: absolute; left: -400px; top: -300px; width: 1900px; height: 2600px;
+        transform-origin: 50% 50%;
+      }
+      #cortina-verde {
+        background: linear-gradient(135deg, var(--banda-a) 0%, var(--verde-fondo) 34%, #2e7a22 100%);
+      }
+      #cortina-blanca { background: #ffffff; }
+      #cortina-verde2 {
+        background: linear-gradient(135deg, var(--banda-b) 0%, var(--verde-fondo) 34%, #2e7a22 100%);
+      }
+      #cortina-blanca2 { background: #ffffff; }
+      .filo { position: absolute; left: 0; top: 0; width: 100%; height: 38px; }
+      #cortina-verde .filo, #cortina-verde2 .filo { background: var(--verde-claro); }
+      #cortina-blanca .filo, #cortina-blanca2 .filo { background: var(--crema); }
+
+      /* ---------- plano 2 · FEGIR te invita (verde) ---------- */
+      #logo-blanco {
+        position: absolute; left: 50%; top: 590px; width: 600px; margin-left: -300px; height: auto;
+      }
+      #invita {
+        position: absolute; left: 0; top: 960px; width: 1080px; text-align: center;
+        font-size: 34px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase;
+        color: var(--crema);
+      }
+      #envivo {
+        position: absolute; left: 0; top: 1030px; width: 1080px; text-align: center;
+        font-size: 200px; font-weight: 700; line-height: 1.3; letter-spacing: -0.04em;
+      }
+      #gratis {
+        position: absolute; left: 50%; top: 1320px; transform: translateX(-50%);
+        padding: 18px 52px; border-radius: 100px; white-space: nowrap;
+        background: var(--crema); color: var(--verde-hondo);
+        font-size: 36px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+        box-shadow: 0 18px 40px rgba(14,48,10,0.35);
+      }
+
+      /* ---------- plano 3 · el tema (blanco) ---------- */
+      #visto { position: absolute; left: 50%; top: 630px; width: 300px; height: 240px; margin-left: -150px; overflow: visible; }
+      #visto path { fill: none; stroke: var(--verde); stroke-width: 44; stroke-linecap: round; stroke-linejoin: round; }
+      #tema-rot {
+        position: absolute; left: 0; top: 960px; width: 1080px; text-align: center;
+        font-size: 30px; font-weight: 600; letter-spacing: 0.28em; text-transform: uppercase;
+        color: var(--verde-hondo);
+      }
+      #tema {
+        position: absolute; left: 90px; top: 1030px; width: 900px; text-align: center;
+        font-size: 96px; font-weight: 700; line-height: 1.08; letter-spacing: -0.025em; color: var(--tinta);
+      }
+      #tema .l { display: block; overflow: hidden; padding-bottom: 6px; }
+      #tema .l span { display: inline-block; }
+      #clic {
+        position: absolute; left: 50%; top: 1350px; transform: translateX(-50%);
+        padding: 20px 60px; border-radius: 100px; white-space: nowrap;
+        background: var(--verde-fondo); color: #fff;
+        font-size: 50px; font-weight: 700; letter-spacing: 0.02em;
+      }
+
+      /* ---------- plano 4 · la fecha (verde) ---------- */
+      #cal {
+        position: absolute; left: 50%; top: 610px; width: 560px; margin-left: -280px;
+        border-radius: 40px; overflow: hidden; background: #fff;
+        box-shadow: 0 40px 90px rgba(10,40,8,0.40);
+      }
+      #cal-cab {
+        background: var(--crema); color: var(--verde-hondo); text-align: center;
+        font-size: 38px; font-weight: 700; letter-spacing: 0.3em; padding: 26px 0 22px;
+      }
+      #cal-num { text-align: center; font-size: 280px; font-weight: 700; line-height: 1.2; color: var(--tinta); letter-spacing: -0.04em; }
+      #cal-mes { text-align: center; font-size: 50px; font-weight: 700; letter-spacing: 0.22em; color: var(--verde-hondo); padding: 0 0 40px; }
+      #hora {
+        position: absolute; left: 0; top: 1290px; width: 1080px; text-align: center;
+        font-size: 84px; font-weight: 700; letter-spacing: -0.01em;
+      }
+      #zona {
+        position: absolute; left: 0; top: 1408px; width: 1080px; text-align: center;
+        font-size: 30px; font-weight: 600; letter-spacing: 0.26em; text-transform: uppercase; color: var(--crema);
+      }
+
+      /* ---------- plano 5 · reserva (blanco) ---------- */
+      #cta-rot {
+        position: absolute; left: 0; top: 600px; width: 1080px; text-align: center;
+        font-size: 30px; font-weight: 600; letter-spacing: 0.28em; text-transform: uppercase; color: var(--verde-hondo);
+      }
+      #boton {
+        position: absolute; left: 50%; top: 680px; transform: translateX(-50%);
+        padding: 40px 84px; border-radius: 100px; white-space: nowrap;
+        background: linear-gradient(135deg, #3f9a30, #2e7a22); color: #fff;
+        font-size: 54px; font-weight: 700; letter-spacing: 0.01em;
+        box-shadow: 0 26px 60px rgba(46,122,34,0.40), inset 0 2px 0 rgba(255,255,255,0.25);
+      }
+      #web {
+        position: absolute; left: 0; top: 880px; width: 1080px; text-align: center;
+        font-size: 76px; font-weight: 700; color: var(--tinta); letter-spacing: -0.01em;
+      }
+      #resumen {
+        position: absolute; left: 0; top: 1000px; width: 1080px; text-align: center;
+        font-size: 34px; font-weight: 400; color: #3d4a3a;
+      }
+
+      /* ---------- plano 6 · la firma de la fundacion (blanco) ---------- */
+      #logo-color {
+        position: absolute; left: 50%; top: 1290px; width: 720px; margin-left: -360px; height: auto;
+      }
+      #lema {
+        position: absolute; left: 0; top: 1620px; width: 1080px; text-align: center;
+        font-size: 50px; font-weight: 700; color: var(--verde-hondo); letter-spacing: -0.01em;
+      }
+
+      /* ---------- sello EN VIVO: presente todo el video ---------- */
+      #sello {
+        position: absolute; left: 50%; top: 120px; transform: translateX(-50%);
+        display: flex; align-items: center; gap: 16px; white-space: nowrap;
+        padding: 16px 38px; border-radius: 100px;
+        background: #1f5a17; color: var(--crema);
+        font-size: 28px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+        box-shadow: 0 14px 34px rgba(8,30,6,0.35);
+      }
+      #latido { position: relative; width: 16px; height: 16px; flex-shrink: 0; }
+      #latido i { position: absolute; inset: 0; border-radius: 50%; background: var(--crema); }
+      #aro { position: absolute; inset: -7px; border-radius: 50%; border: 2px solid var(--crema); opacity: 0; }
+    </style>
+  </head>
+
+  <body>
+    <div data-hf-id="hf-wnx1" id="root" data-composition-id="main" data-start="0" data-duration="19.5" data-width="1080" data-height="1920">
+
+      <!-- plano 1 -->
+      <div data-hf-id="hf-bnxu" id="foto-caja" class="clip capa" data-start="0" data-duration="4.1" data-track-index="0">
+        <img data-hf-id="hf-w74y" id="foto" src="assets/fotos/portada-manual-vertical.jpg" alt="">
+        <div data-hf-id="hf-ogim" id="foto-tinte" class="capa"></div>
+        <div data-hf-id="hf-xfvu" id="foto-sombra" class="capa"></div>
+        <div data-hf-id="hf-dgq3" id="pregunta">
+          <div data-hf-id="hf-5pjo" class="l"><span data-hf-id="hf-rael">¿Tu informe</span></div>
+          <div data-hf-id="hf-ok30" class="l"><span data-hf-id="hf-t4q9" class="marca">PESV</span> <span data-hf-id="hf-ia81">todavía</span></div>
+          <div data-hf-id="hf-nd5x" class="l"><span data-hf-id="hf-hgyz">se arma a mano?</span></div>
+        </div>
+      </div>
+
+      <!-- plano 2 -->
+      <div data-hf-id="hf-7wur" id="p2" class="clip capa" data-start="3.3" data-duration="4.1" data-track-index="1">
+        <div data-hf-id="hf-yzez" id="cortina-verde" class="cortina"><div data-hf-id="hf-w2io" class="filo"></div></div>
+        <img data-hf-id="hf-68fg" id="logo-blanco" src="assets/logo/fegir-logo-blanco.png" alt="FEGIR">
+        <div data-hf-id="hf-ezac" id="invita">te invita a un</div>
+        <div data-hf-id="hf-nyz1" id="envivo" data-layout-allow-overlap="">EN VIVO</div>
+        <div data-hf-id="hf-nz9m" id="gratis">Gratuito</div>
+      </div>
+
+      <!-- plano 3 -->
+      <div data-hf-id="hf-69zq" id="p3" class="clip capa" data-start="6.6" data-duration="4.2" data-track-index="2">
+        <div data-hf-id="hf-3soc" id="cortina-blanca" class="cortina"><div data-hf-id="hf-m3eg" class="filo"></div></div>
+        <svg data-hf-id="hf-i03f" id="visto" viewBox="0 0 300 240"><path data-hf-id="hf-e3fh" id="visto-trazo" d="M 30 120 L 110 200 L 270 30" /></svg>
+        <div data-hf-id="hf-vyac" id="tema-rot">El tema</div>
+        <div data-hf-id="hf-wulm" id="tema">
+          <div data-hf-id="hf-nrgy" class="l"><span data-hf-id="hf-mn3a">Informe de</span></div>
+          <div data-hf-id="hf-pr03" class="l"><span data-hf-id="hf-djgd">Autogestión PESV</span></div>
+        </div>
+        <div data-hf-id="hf-4hl7" id="clic">en 1 clic</div>
+      </div>
+
+      <!-- plano 4 -->
+      <div data-hf-id="hf-97gu" id="p4" class="clip capa" data-start="10" data-duration="4.05" data-track-index="3">
+        <div data-hf-id="hf-ky57" id="cortina-verde2" class="cortina"><div data-hf-id="hf-kwhd" class="filo"></div></div>
+        <div data-hf-id="hf-jrer" id="cal">
+          <div data-hf-id="hf-gwxy" id="cal-cab">SÁBADO</div>
+          <div data-hf-id="hf-90yt" id="cal-num">3</div>
+          <div data-hf-id="hf-yy23" id="cal-mes">OCTUBRE</div>
+        </div>
+        <div data-hf-id="hf-j3tw" id="hora">10:00 a. m.</div>
+        <div data-hf-id="hf-mfpv" id="zona">Hora Colombia</div>
+      </div>
+
+      <!-- planos 5 y 6 -->
+      <div data-hf-id="hf-ykbq" id="p5" class="clip capa" data-start="13.25" data-duration="6.25" data-track-index="4">
+        <div data-hf-id="hf-c62u" id="cortina-blanca2" class="cortina"><div data-hf-id="hf-lase" class="filo"></div></div>
+        <div data-hf-id="hf-s6ft" id="cta-rot">Cupos limitados</div>
+        <div data-hf-id="hf-fvxz" id="boton">Reserva tu cupo gratis</div>
+        <div data-hf-id="hf-vzjq" id="web">fegir.org</div>
+        <div data-hf-id="hf-q8d2" id="resumen">En vivo · sábado 3 de octubre · 10:00 a. m.</div>
+        <img data-hf-id="hf-1old" id="logo-color" src="assets/logo/fegir-logo-color.png" alt="FEGIR - Fundación Especializada en Gestión Integral del Riesgo">
+        <div data-hf-id="hf-6l35" id="lema">¡Tu seguridad, nuestra prioridad!</div>
+      </div>
+
+      <div data-hf-id="hf-kkj8" id="sello" class="clip" data-start="0" data-duration="19.5" data-track-index="5">
+        <span data-hf-id="hf-6f59" id="latido"><i data-hf-id="hf-wt6k"></i><span data-hf-id="hf-mgvi" id="aro"></span></span>En vivo · 3 oct
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        window.__timelines = window.__timelines || {};
+        var tl = gsap.timeline({ paused: true });
+
+        /* ==================================================================
+           TIEMPOS DE LA LOCUCION — hoy ESTIMADOS. Con la voz real se
+           reemplazan por los de ElevenLabs /with-timestamps (tools/).
+           Todo cuelga de esta tabla: ningun numero suelto en las entradas.
+
+             f1 "¿Tu informe del P-E-S-V todavía se arma a mano?..."
+             f2 "La Fundación FEGIR te invita a un en vivo, gratuito."
+             f3 "Informe de Autogestión P-E-S-V, en un solo clic."
+             f4 "Este sábado tres de octubre, a las diez de la mañana."
+             f5 "Reserva tu cupo gratis en fegir punto org."
+             f6 "FEGIR... tu seguridad, nuestra prioridad."
+           ================================================================== */
+        /* Inicio de cada toma en la mezcla (tools/audio.py) + inicio de frase
+           medido por ElevenLabs en tools/tiempos-voz.json. */
+        var V = { f1: 0.30, f2: 3.75, f3: 7.05, f4: 10.45, f5: 13.70, f6: 16.20 };
+        var T = {
+          f1: V.f1,
+          f2: V.f2,  envivo: V.f2 + 1.42,   // "a un en vivo" arranca en +1.416
+          f3: V.f3,  clic:   V.f3 + 1.85,   // "en un solo clic" en +1.927
+          f4: V.f4,  hora:   V.f4 + 1.55,   // "a las diez" en +1.614
+          f5: V.f5,  web:    V.f5 + 1.05,   // "en fegir punto org" en +1.126
+          f6: V.f6 - 0.10, lema: V.f6 + 0.62 // "tu seguridad" en +0.673
+        };
+        var FIN = 19.5;
+        var CORT = 0.40;  // la cortina arranca 0.40 s antes de su frase, tras acabar la anterior
+
+        /* ---------- plano 1: la foto respira y la pregunta sube por mascara */
+        tl.fromTo("#foto", { scale: 1.12, y: 0 }, { scale: 1.0, y: -40, duration: 4.1, ease: "none" }, 0);
+        tl.fromTo("#pregunta .l span", { yPercent: 110 },
+          { yPercent: 0, duration: 0.8, ease: "expo.out", stagger: 0.28 }, T.f1);
+
+        /* ---------- plano 2: cortina verde diagonal, el visto barre */
+        tl.fromTo("#cortina-verde", { rotation: -32, yPercent: 105 },
+          { rotation: -32, yPercent: 0, duration: 0.75, ease: "power3.inOut" }, T.f2 - CORT);
+        tl.fromTo("#cortina-verde", { rotation: -32 }, { rotation: 0, immediateRender: false, duration: 0.9, ease: "power2.out" }, T.f2 + 0.2);
+        tl.fromTo("#logo-blanco", { opacity: 0, y: 40, scale: 0.92 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "expo.out" }, T.f2 + 0.05);
+        tl.fromTo("#invita", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, T.f2 + 0.9);
+        tl.fromTo("#envivo", { opacity: 0, scale: 1.5, filter: "blur(20px)" },
+          { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.6, ease: "power4.out" }, T.envivo);
+        tl.fromTo("#gratis", { opacity: 0, scale: 0.6 },
+          { opacity: 1, scale: 1, duration: 0.6, ease: "back.out(2)" }, T.envivo + 0.55);
+
+        /* ---------- plano 3: cortina blanca, el visto se traza */
+        tl.fromTo("#cortina-blanca", { rotation: 28, yPercent: 105 },
+          { rotation: 28, yPercent: 0, duration: 0.75, ease: "power3.inOut" }, T.f3 - CORT);
+        tl.fromTo("#cortina-blanca", { rotation: 28 }, { rotation: 0, immediateRender: false, duration: 0.9, ease: "power2.out" }, T.f3 + 0.2);
+        tl.fromTo("#visto-trazo", { strokeDasharray: 420, strokeDashoffset: 420 },
+          { strokeDashoffset: 0, duration: 0.7, ease: "power2.inOut" }, T.f3 + 0.05);
+        tl.fromTo("#tema-rot", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, T.f3 + 0.1);
+        tl.fromTo("#tema .l span", { yPercent: 110 },
+          { yPercent: 0, duration: 0.8, ease: "expo.out", stagger: 0.25 }, T.f3 + 0.2);
+        tl.fromTo("#clic", { opacity: 0, scale: 0.5 },
+          { opacity: 1, scale: 1, duration: 0.65, ease: "back.out(2.2)" }, T.clic);
+
+        /* ---------- plano 4: cortina verde, la hoja del calendario cae */
+        tl.fromTo("#cortina-verde2", { rotation: -32, yPercent: 105 },
+          { rotation: -32, yPercent: 0, duration: 0.75, ease: "power3.inOut" }, T.f4 - CORT);
+        tl.fromTo("#cortina-verde2", { rotation: -32 }, { rotation: 0, immediateRender: false, duration: 0.9, ease: "power2.out" }, T.f4 + 0.2);
+        tl.fromTo("#cal", { opacity: 0, y: -260, rotation: -8 },
+          { opacity: 1, y: 0, rotation: 0, duration: 0.9, ease: "back.out(1.4)" }, T.f4 + 0.1);
+        tl.fromTo("#cal-num", { scale: 0.4 }, { scale: 1, duration: 0.7, ease: "back.out(2.4)" }, T.f4 + 0.55);
+        tl.fromTo("#hora", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, T.hora);
+        tl.fromTo("#zona", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, T.hora + 0.25);
+
+        /* ---------- plano 5: cortina blanca, la reserva */
+        tl.fromTo("#cortina-blanca2", { rotation: 28, yPercent: 105 },
+          { rotation: 28, yPercent: 0, duration: 0.75, ease: "power3.inOut" }, T.f5 - CORT);
+        tl.fromTo("#cortina-blanca2", { rotation: 28 }, { rotation: 0, immediateRender: false, duration: 0.9, ease: "power2.out" }, T.f5 + 0.2);
+        tl.fromTo("#cta-rot", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, T.f5);
+        tl.fromTo("#boton", { opacity: 0, scale: 0.55 },
+          { opacity: 1, scale: 1, duration: 0.75, ease: "back.out(1.9)" }, T.f5 + 0.15);
+        tl.fromTo("#web", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, T.web);
+        tl.fromTo("#resumen", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, T.web + 0.3);
+
+        /* ---------- plano 6: el logo primario, como lo pide el manual */
+        tl.fromTo("#logo-color", { opacity: 0, y: 40, scale: 0.94 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: "expo.out" }, T.f6);
+        tl.fromTo("#lema", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, T.lema);
+        // el boton respira hasta el final (tweens explicitos, seek-safe)
+        for (var b = 0; T.f5 + 1.2 + b * 1.2 < FIN - 0.6; b++) {
+          var tb = T.f5 + 1.2 + b * 1.2;
+          tl.to("#boton", { scale: 1.045, duration: 0.6, ease: "sine.inOut" }, tb);
+          tl.to("#boton", { scale: 1.0, duration: 0.6, ease: "sine.inOut" }, tb + 0.6);
+        }
+
+        /* ---------- sello: entra al inicio, late todo el video */
+        tl.fromTo("#sello", { opacity: 0, y: -30 }, { opacity: 1, y: 0, duration: 0.55, ease: "back.out(1.6)" }, 0.3);
+        for (var k = 0; 0.7 + 1.2 * k < FIN - 1.0; k++) {
+          var tp = 0.7 + 1.2 * k;
+          tl.to("#latido i", { scale: 1.3, duration: 0.16, ease: "power2.out" }, tp);
+          tl.to("#latido i", { scale: 1.0, duration: 0.44, ease: "power2.inOut" }, tp + 0.16);
+          tl.fromTo("#aro", { scale: 0.55, opacity: 0.8 },
+            { scale: 2.1, opacity: 0, immediateRender: false, duration: 0.9, ease: "power2.out" }, tp);
+        }
+        tl.set({}, {}, FIN);
+
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

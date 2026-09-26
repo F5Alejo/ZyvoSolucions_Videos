@@ -1,0 +1,12 @@
+{
+  "name": "yezid-envivo-campana",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "python -m http.server 5510",
+    "render": "node tools/render.mjs"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^24.0.0"
+  }
+}

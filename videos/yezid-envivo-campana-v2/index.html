@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>En Vivo PESV · campaña de 3 videos</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <link rel="stylesheet" href="css/stage.css" />
+  <link rel="stylesheet" href="css/player.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- ═════════════ ESCENARIO 1080×1920 (lo que se renderiza) ═════════════ -->
+    <div id="viewport">
+      <div id="stage" data-width="1080" data-height="1920">
+        <canvas id="bg"></canvas>
+
+        <!-- Cromo común: rótulo del evento con el filete dorado del encabezado del correo -->
+        <div class="chrome">
+          <div class="rotulo"><i class="punto"></i><span>En Vivo PESV</span><em>Informe de Autogestión</em></div>
+          <div class="filete"></div>
+        </div>
+
+        <!-- ─────────── VIDEO 1 · ANTICIPACIÓN (faltan 18 días) ─────────── -->
+        <section class="ad" id="ad1" data-composition-id="v1-faltan-18-dias" data-duration="12">
+                    <!-- fondos temáticos: uno por bloque, entran barriendo sobre el color sólido de la web -->
+          <div class="fondos">
+            <div class="fondo banda"><img src="assets/fondos/conversatorio.png" alt="" /></div>
+            <div class="fondo recorte der"><img src="assets/fondos/yezid-agenda.png" alt="" /></div>
+            <div class="fondo pleno"><video src="assets/fondos/app-lista.mp4" muted playsinline preload="auto" data-start="7.9" data-desde="0.3"></video></div>
+            <div class="velo"></div>
+          </div>
+          <div class="shake">
+            <div class="layer hook">
+              <h1 class="gancho"><span class="g1" data-letras>NO LO</span><span class="g2" data-letras>OLVIDES</span></h1>
+              <p class="bajada"><span data-letras>Se viene En Vivo PESV</span></p>
+              <div class="sello">Informe de Autogestión</div>
+            </div>
+
+            <div class="layer fecha">
+              <div class="floater cal-float">
+                <div class="glass cal">
+                  <svg class="anillas" viewBox="0 0 600 60" aria-hidden="true">
+                    <path class="draw" pathLength="1" d="M150 50 V10 M300 50 V10 M450 50 V10" />
+                  </svg>
+                  <div class="cal-mes">Octubre 2026</div>
+                  <div class="cal-dia">03</div>
+                  <div class="cal-sem">Sábado</div>
+                  <div class="cal-linea"></div>
+                  <div class="cal-hora">10:00 a. m. <small>(Hora Colombia)</small></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="layer cta" data-boton="Crea tu cuenta" data-url="app.riskmann.com/registrarse"
+                 data-extra="y entra al grupo oficial de WhatsApp"></div>
+          </div>
+        </section>
+
+        <!-- ─────────── VIDEO 2 · URGENCIA (mañana) ─────────── -->
+        <section class="ad" id="ad2" data-composition-id="v2-manana" data-duration="12">
+                    <!-- fondos temáticos: uno por bloque, entran barriendo sobre el color sólido de la web -->
+          <div class="fondos">
+            <div class="fondo pleno"><img src="assets/fondos/carretera.jpg" alt="" /></div>
+            <div class="fondo pleno app"><video src="assets/fondos/app-graficas.mp4" muted playsinline preload="auto" data-start="3.9" data-desde="1.0"></video></div>
+            <div class="fondo recorte izq"><img src="assets/fondos/yezid-portada.png" alt="" /></div>
+            <div class="velo"></div>
+          </div>
+          <div class="shake">
+            <div class="layer hook">
+              <h1 class="gancho"><span class="g1" data-letras>¡ES</span><span class="g2" data-letras>MAÑANA!</span></h1>
+              <p class="bajada"><span data-letras>En Vivo PESV</span></p>
+              <div class="chip-hora">
+                <svg viewBox="0 0 60 60" aria-hidden="true">
+                  <circle class="draw" pathLength="1" cx="30" cy="30" r="25" />
+                  <path class="draw" pathLength="1" d="M30 14 V30 L40 36" />
+                </svg>
+                <span>10:00 a. m. · Hora Colombia</span>
+              </div>
+            </div>
+
+            <div class="layer info">
+              <div class="floater pasos-float">
+                <div class="glass pasos">
+                  <div class="paso">
+                    <svg viewBox="0 0 64 64" aria-hidden="true"><path class="draw" pathLength="1" d="M32 8c14 0 24 10 24 22s-10 22-24 22c-4 0-7-.6-10-1.8L10 54l3.6-10.4C10 39.8 8 35 8 30 8 18 18 8 32 8z" /></svg>
+                    <div><b>Los enlaces llegan por el grupo oficial de WhatsApp</b></div>
+                  </div>
+                  <div class="paso">
+                    <svg viewBox="0 0 64 64" aria-hidden="true"><circle class="draw" pathLength="1" cx="32" cy="32" r="24" /><path class="draw" pathLength="1" d="M21 33 l8 8 l15 -17" /></svg>
+                    <div><b>Ten lista tu cuenta en app.riskmann.com</b></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="layer cta" data-boton="Entrar al grupo de WhatsApp" data-url="Mañana · 10:00 a. m. (Hora Colombia)"></div>
+          </div>
+        </section>
+
+        <!-- ─────────── VIDEO 3 · HOY ─────────── -->
+        <section class="ad" id="ad3" data-composition-id="v3-hoy" data-duration="12">
+                    <!-- fondos temáticos: uno por bloque, entran barriendo sobre el color sólido de la web -->
+          <div class="fondos">
+            <div class="fondo recorte centro"><img src="assets/fondos/yezid-portada.png" alt="" /></div>
+            <div class="fondo banda"><img src="assets/fondos/conversatorio.png" alt="" /></div>
+            <div class="fondo recorte der"><img src="assets/fondos/yezid-agenda.png" alt="" /></div>
+            <div class="velo"></div>
+          </div>
+          <div class="shake">
+            <!-- Indicador EN VIVO: sin rojo, por indicación del cliente para esta serie
+                 (el rojo es «peligro»); late en el pálido de marca, como en la pieza aprobada -->
+            <div class="live">
+              <svg viewBox="0 0 120 120" aria-hidden="true">
+                <circle class="onda o1" cx="60" cy="60" r="22" />
+                <circle class="onda o2" cx="60" cy="60" r="22" />
+                <circle class="draw aro" pathLength="1" cx="60" cy="60" r="34" />
+                <circle class="nucleo" cx="60" cy="60" r="16" />
+              </svg>
+              <span>EN VIVO</span>
+            </div>
+
+            <div class="layer hook">
+              <h1 class="gancho"><span class="g1" data-letras>¡HOY ES</span><span class="g2" data-letras>EL DÍA!</span></h1>
+              <p class="bajada"><span data-letras>En Vivo PESV · 10:00 a. m.</span></p>
+            </div>
+
+            <div class="layer redes">
+              <p class="redes-tit"><span class="w">La</span> <span class="w">transmisión</span> <span class="w">va</span> <span class="w">por</span></p>
+              <div class="floater redes-float">
+                <div class="red glass">
+                  <svg viewBox="0 0 64 64" aria-hidden="true"><rect class="draw" pathLength="1" x="10" y="10" width="44" height="44" rx="13" /><circle class="draw" pathLength="1" cx="32" cy="32" r="10" /><circle class="dot" cx="45" cy="19" r="3" /></svg>
+                  <span>Instagram</span>
+                </div>
+                <div class="red glass">
+                  <svg viewBox="0 0 64 64" aria-hidden="true"><path class="draw" pathLength="1" d="M36 10 V40 a10 10 0 1 1 -10 -10 M36 10 c2 8 8 13 16 14" /></svg>
+                  <span>TikTok</span>
+                </div>
+                <div class="red glass">
+                  <svg viewBox="0 0 64 64" aria-hidden="true"><rect class="draw" pathLength="1" x="6" y="14" width="52" height="36" rx="11" /><path class="draw" pathLength="1" d="M27 24 L41 32 L27 40 Z" /></svg>
+                  <span>YouTube</span>
+                </div>
+              </div>
+              <div class="floater cuenta-float">
+                <div class="glass cuenta">Ten abierta tu cuenta en <b>app.riskmann.com</b></div>
+              </div>
+            </div>
+
+            <div class="layer cta" data-boton="Ir al grupo de WhatsApp" data-url="Hoy · 10:00 a. m. (Hora Colombia)"></div>
+          </div>
+        </section>
+
+        <div class="progress"><i></i></div>
+      </div>
+    </div>
+
+    <!-- ═════════════ CONTROLES (no se renderizan) ═════════════ -->
+    <aside id="panel">
+      <header>
+        <img src="assets/firma-yezid-blanca.png" alt="Yezid Ricaurte" />
+        <p>En Vivo PESV · Informe de Autogestión · 3 videos · 9:16 · 12 s</p>
+      </header>
+      <nav id="tabs">
+        <button data-ad="ad1">Video 1 · Faltan 18 días</button>
+        <button data-ad="ad2">Video 2 · Mañana</button>
+        <button data-ad="ad3">Video 3 · Hoy</button>
+      </nav>
+      <div id="transport">
+        <button id="play" aria-label="Reproducir">▶</button>
+        <button id="restart" aria-label="Reiniciar">⟲</button>
+        <span id="clock">0.00 s</span>
+        <label class="chk"><input type="checkbox" id="loop" checked /> bucle</label>
+        <span id="audio-state">voz: —</span>
+      </div>
+      <div id="scrub">
+        <div class="seg hook">GANCHO</div><div class="seg valor">DATO</div><div class="seg cta">CTA 8–12</div>
+        <input type="range" id="range" min="0" max="12" step="0.01" value="0" />
+      </div>
+      <section id="script"></section>
+      <details id="board"><summary>[STORYBOARD TIMELINE] de este video</summary><div></div></details>
+      <p class="hint">Espacio: reproducir/pausar · ← → : ±0.1 s · 1/2/3: video · <code>?ad=2&amp;render=1</code> deja solo el lienzo</p>
+    </aside>
+
+    <!-- AUDIO FINAL: el reproductor usa assets/mezcla/adN.wav si existe (voz + efectos + música) -->
+    <audio id="vo-ad1" preload="auto" data-src="assets/mezcla/ad1.wav"></audio>
+    <audio id="vo-ad2" preload="auto" data-src="assets/mezcla/ad2.wav"></audio>
+    <audio id="vo-ad3" preload="auto" data-src="assets/mezcla/ad3.wav"></audio>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

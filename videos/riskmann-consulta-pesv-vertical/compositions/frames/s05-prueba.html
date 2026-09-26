@@ -69,22 +69,22 @@
       tl.fromTo("#s5-card", { opacity: 0, y: 90, scale: 0.9 },
         { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: "back.out(1.4)" }, 0.1);
 
-      /* 1.00 · SPECTACLE — la cifra aterriza con overshoot y destello cian */
-      tl.set("#s5-num", { opacity: 1 }, 1.0);
-      tl.fromTo("#s5-num", { scale: 0.4 }, { scale: 1, duration: 0.9, ease: "back.out(1.7)" }, 1.0);
-      tl.fromTo("#s5-num", { filter: "blur(9px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.3, ease: "power2.out" }, 1.0);
-      tl.fromTo("#s5-flash", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.45, ease: "power4.out" }, 1.0);
-      tl.to("#s5-flash", { opacity: 0.42, duration: 0.7, ease: "power2.inOut" }, 1.45);
+      /* 1.15 · SPECTACLE — la cifra aterriza sobre "setenta por ciento" */
+      tl.set("#s5-num", { opacity: 1 }, 1.15);
+      tl.fromTo("#s5-num", { scale: 0.4 }, { scale: 1, duration: 0.9, ease: "back.out(1.7)" }, 1.15);
+      tl.fromTo("#s5-num", { filter: "blur(9px)" }, { filter: "blur(0px)", immediateRender: false, duration: 0.3, ease: "power2.out" }, 1.15);
+      tl.fromTo("#s5-flash", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.45, ease: "power4.out" }, 1.15);
+      tl.to("#s5-flash", { opacity: 0.42, duration: 0.7, ease: "power2.inOut" }, 1.6);
 
-      /* 1.60 · la barra confirma la proporción */
-      tl.to("#s5-track", { opacity: 1, duration: 0.3, ease: "power3.out" }, 1.6);
-      tl.fromTo("#s5-fill", { scaleX: 0 }, { scaleX: 0.7, duration: 0.9, ease: "expo.out" }, 1.6);
+      /* 1.75 · la barra confirma la proporción */
+      tl.to("#s5-track", { opacity: 1, duration: 0.3, ease: "power3.out" }, 1.75);
+      tl.fromTo("#s5-fill", { scaleX: 0 }, { scaleX: 0.7, duration: 0.9, ease: "expo.out" }, 1.75);
 
-      /* 2.20 · la etiqueta, en cascada */
+      /* 2.45 · la etiqueta cae sobre "gestión documental" */
       tl.fromTo("#s5-label .w", { opacity: 0, y: 34 },
-        { opacity: 1, y: 0, duration: 0.5, ease: "power4.out", stagger: 0.07 }, 2.2);
+        { opacity: 1, y: 0, duration: 0.5, ease: "power4.out", stagger: 0.07 }, 2.45);
       tl.fromTo("#s5-label .w", { filter: "blur(4px)" },
-        { filter: "blur(0px)", immediateRender: false, duration: 0.22, ease: "power2.out", stagger: 0.07 }, 2.2);
+        { filter: "blur(0px)", immediateRender: false, duration: 0.22, ease: "power2.out", stagger: 0.07 }, 2.45);
 
       /* 2.90 · AMBIENT IDLE */
       tl.to("#s5-card", { y: -18, duration: 1.7, ease: "sine.inOut" }, 2.9);

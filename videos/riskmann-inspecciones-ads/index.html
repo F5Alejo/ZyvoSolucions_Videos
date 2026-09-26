@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RiskMann · Inspecciones gratis — 3 anuncios de 12 s</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <link rel="stylesheet" href="css/stage.css" />
+  <link rel="stylesheet" href="css/player.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- ═════════════ ESCENARIO 1080×1920 (lo que se renderiza) ═════════════ -->
+    <div id="viewport">
+      <div id="stage" data-width="1080" data-height="1920">
+        <canvas id="bg"></canvas>
+        <div class="grain"></div>
+
+        <!-- ─────────── AD 1 · AUTODIAGNÓSTICO ─────────── -->
+        <section class="ad" id="ad1" data-composition-id="ad1-autodiagnostico" data-duration="12">
+          <div class="shake">
+            <div class="eyebrow"><span class="rule"></span>Inspección preoperacional · 100% gratis</div>
+
+            <div class="layer hook">
+              <h1 class="hook-title">
+                <span class="w">¿Inspeccionas</span><br />
+                <span class="w red mega">TODOS</span><br />
+                <span class="w">tus vehículos?</span>
+              </h1>
+            </div>
+
+            <div class="layer valor">
+              <h2 class="q1"><span class="w">¿Cuándo</span> <span class="w">fue</span> <span class="w">la</span> <span class="w">última</span> <span class="w">vez…?</span></h2>
+              <div class="clock-wrap">
+                <svg class="clock" viewBox="0 0 400 400" aria-hidden="true">
+                  <circle class="draw ring" cx="200" cy="200" r="176" pathLength="1" />
+                  <circle class="draw ring-in" cx="200" cy="200" r="150" pathLength="1" />
+                  <g class="ticks"></g>
+                  <line class="hand hour" x1="200" y1="200" x2="200" y2="118" />
+                  <line class="hand min" x1="200" y1="200" x2="200" y2="76" />
+                  <circle class="hub" cx="200" cy="200" r="11" />
+                </svg>
+              </div>
+              <div class="floater phone-float">
+                <div class="glass phone">
+                  <div class="sheen"></div>
+                  <div class="ph-head">
+                    <!-- ASSET DE MARCA: icono oficial del módulo de inspecciones (assets/img del repo) -->
+                    <img src="assets/icono_inspecciones.webp" alt="" />
+                    <div><b>Inspección preoperacional</b><small>Desde el celular</small></div>
+                  </div>
+                  <ul class="steps">
+                    <li><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" /><path class="draw" pathLength="1" d="M11 21 l6 6 l12 -13" /></svg>Crea la inspección</li>
+                    <li><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" /><path class="draw" pathLength="1" d="M11 21 l6 6 l12 -13" /></svg>Marca el checklist</li>
+                    <li><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" /><path class="draw" pathLength="1" d="M11 21 l6 6 l12 -13" /></svg>Listo, quedó registrada</li>
+                  </ul>
+                  <div class="badge">En minutos</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="layer cta" data-sub="Gratis · Sin tarjeta de crédito"></div>
+          </div>
+        </section>
+
+        <!-- ─────────── AD 2 · CONSECUENCIA ─────────── -->
+        <section class="ad" id="ad2" data-composition-id="ad2-consecuencia" data-duration="12">
+          <div class="shake">
+            <div class="eyebrow"><span class="rule"></span>Inspección preoperacional · 100% gratis</div>
+
+            <div class="layer hook">
+              <div class="icons">
+                <div class="icon-card" data-shatter>
+                  <div class="face">
+                    <svg viewBox="0 0 120 140"><path d="M18 8h62l24 24v100H18z" /><path d="M80 8v24h24" /><path class="ln" d="M34 56h54M34 74h54M34 92h40M34 110h48" /></svg>
+                    <span>Papel</span>
+                  </div>
+                </div>
+                <div class="icon-card" data-shatter>
+                  <div class="face">
+                    <svg viewBox="0 0 120 140"><rect x="12" y="14" width="96" height="112" rx="6" /><path class="ln" d="M12 42h96M12 70h96M12 98h96M44 14v112M76 14v112" /><rect class="x" x="0" y="0" width="40" height="40" rx="6" /><path class="xm" d="M10 10l20 20M30 10L10 30" /></svg>
+                    <span>Excel</span>
+                  </div>
+                </div>
+                <div class="icon-card" data-shatter>
+                  <div class="face">
+                    <svg viewBox="0 0 120 140"><path d="M60 22c28 0 48 18 48 42s-20 42-48 42c-7 0-13-1-19-3l-22 11 6-19C17 87 12 76 12 64c0-24 20-42 48-42z" /><circle class="dot" cx="40" cy="64" r="6" /><circle class="dot" cx="60" cy="64" r="6" /><circle class="dot" cx="80" cy="64" r="6" /></svg>
+                    <span>WhatsApp</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="layer valor">
+              <h2 class="l1"><span class="w">El</span> <span class="w">vehículo</span> <span class="w">sigue</span> <span class="w">rodando…</span></h2>
+              <h2 class="l2 red"><span class="w">con</span> <span class="w">una</span> <span class="w">novedad</span> <span class="w">pendiente.</span></h2>
+              <h3 class="l3"><span class="w">¿Quién</span> <span class="w">lo</span> <span class="w">inspeccionó?</span> <span class="w">¿Cuándo?</span></h3>
+
+              <h2 class="l4"><span class="w">Todo</span> <span class="w">en</span> <span class="w">un</span> <span class="w cyan">solo</span> <span class="w cyan">lugar.</span></h2>
+              <div class="floater phone-float">
+                <div class="glass phone">
+                  <div class="sheen"></div>
+                  <div class="ph-head">
+                    <img src="assets/icono_inspecciones.webp" alt="" />
+                    <div><b>Resultado de la inspección</b><small>Por vehículo, conductor y fecha</small></div>
+                  </div>
+                  <div class="chips">
+                    <div class="chip ok"><i></i><div><b>Apto</b><small>El vehículo puede operar</small></div></div>
+                    <div class="chip ctrl"><i></i><div><b>Con control específico</b><small>Puede operar, pero con seguimiento</small></div></div>
+                    <div class="chip no"><i></i><div><b>No apto</b><small>El vehículo no debería rodar</small></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="layer cta" data-sub="Todo en un solo lugar · Gratis"></div>
+          </div>
+        </section>
+
+        <!-- ─────────── AD 3 · URGENCIA ─────────── -->
+        <section class="ad" id="ad3" data-composition-id="ad3-urgencia" data-duration="12">
+          <div class="shake">
+            <div class="eyebrow"><span class="rule"></span>PESV · Paso 16 · Inspección de vehículos</div>
+
+            <div class="layer hook">
+              <h1 class="hook-title small">
+                <span class="w">¿Tu</span> <span class="w">técnico‑mecánica…</span><br />
+                <span class="w red mega2">al día?</span>
+              </h1>
+              <div class="floater hv-float">
+                <div class="glass hv">
+                  <div class="hv-title">Hoja de vida del vehículo</div>
+                  <div class="hv-row"><span>SOAT</span><em>?</em></div>
+                  <div class="hv-row"><span>Revisión técnico‑mecánica</span><em>?</em></div>
+                  <div class="hv-row"><span>Inspección de hoy</span><em>?</em></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="layer valor">
+              <h2 class="m1"><span class="w">El</span> <span class="w">PESV</span> <span class="w">exige</span> <span class="w">registrar</span> <span class="w">la</span> <span class="w">inspección…</span></h2>
+              <div class="m2"><span class="w">todos</span> <span class="w">los</span> <span class="w">días.</span><span class="gold-line"></span></div>
+              <div class="tag">Resolución 20223040040595 de 2022 · Paso 16</div>
+
+              <h2 class="m3"><span class="w">Sin</span> <span class="w">registro…</span> <span class="w">tu</span> <span class="w">empresa</span> <span class="w">queda</span></h2>
+              <div class="m4">EXPUESTA</div>
+
+              <div class="shield-wrap">
+                <svg class="shield" viewBox="0 0 400 480" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="shg" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0" stop-color="#336699" /><stop offset="1" stop-color="#26367D" />
+                    </linearGradient>
+                  </defs>
+                  <g class="pieces">
+                    <polygon class="pc" points="200,20 40,70 40,170 200,170" />
+                    <polygon class="pc" points="200,20 360,70 360,170 200,170" />
+                    <polygon class="pc" points="40,170 200,170 200,310 62,310 40,230" />
+                    <polygon class="pc" points="360,170 200,170 200,310 338,310 360,230" />
+                    <polygon class="pc" points="62,310 200,310 200,460 130,410" />
+                    <polygon class="pc" points="338,310 200,310 200,460 270,410" />
+                  </g>
+                  <path class="draw outline" pathLength="1" d="M200 20 L360 70 L360 230 L338 310 L270 410 L200 460 L130 410 L62 310 L40 230 L40 70 Z" />
+                  <path class="draw check" pathLength="1" d="M128 240 l52 52 l96 -106" />
+                </svg>
+                <div class="shield-cap">PESV · Paso 16</div>
+              </div>
+            </div>
+
+            <div class="layer cta" data-sub="Aplica para todos los niveles del PESV"></div>
+          </div>
+        </section>
+
+        <div class="progress"><i></i></div>
+
+        <!-- AUDIO FINAL — inyección de la locución de ElevenLabs.
+             Deja los MP3 en assets/voz/ con estos nombres y el reproductor los
+             sincroniza solos con el timeline (el audio pasa a ser el reloj maestro).
+             En la composición HyperFrames equivalen a:
+             <audio src="assets/voz/ad1.mp3" data-start="0" data-duration="12" data-track-index="10" data-volume="1"></audio> -->
+        <audio id="vo-ad1" preload="auto" data-src="assets/voz/ad1.mp3"></audio>
+        <audio id="vo-ad2" preload="auto" data-src="assets/voz/ad2.mp3"></audio>
+        <audio id="vo-ad3" preload="auto" data-src="assets/voz/ad3.mp3"></audio>
+        <!-- MÚSICA / SFX: misma mecánica. Pista licenciada en assets/musica.mp3 (ver
+             riskmann-consulta-pesv-vertical/assets/musica-LICENCIA.txt para el precedente). -->
+        <audio id="music" preload="auto" data-src="assets/musica.mp3"></audio>
+      </div>
+    </div>
+
+    <!-- ═════════════ CONTROLES (no se renderizan) ═════════════ -->
+    <aside id="panel">
+      <header>
+        <img src="assets/riskmann_logo_blanco.png" alt="RiskMann" />
+        <p>Landing <b>Inspecciones gratis</b> · 3 anuncios · 9:16 · 12 s</p>
+      </header>
+      <nav id="tabs">
+        <button data-ad="ad1">AD 1 · Autodiagnóstico</button>
+        <button data-ad="ad2">AD 2 · Consecuencia</button>
+        <button data-ad="ad3">AD 3 · Urgencia</button>
+      </nav>
+      <div id="variant">
+        <label>Versión
+          <select id="sel-v"><option value="1">V1 · acentos en rojo</option><option value="2">V2 · rojo = peligro, CTA dorado</option></select>
+        </label>
+        <label>Fondo
+          <select id="sel-bg">
+            <option value="liquido">Líquido (V1)</option>
+            <option value="aurora">Aurora</option>
+            <option value="topografico">Topográfico</option>
+            <option value="carretera">Carretera</option>
+            <option value="bokeh">Bokeh de tráfico</option>
+            <option value="solido">Sólido (como la landing)</option>
+            <option value="azul">Azul con diseño (V3)</option>
+          </select>
+        </label>
+      </div>
+      <div id="transport">
+        <button id="play" aria-label="Reproducir">▶</button>
+        <button id="restart" aria-label="Reiniciar">⟲</button>
+        <span id="clock">0.00 s</span>
+        <label class="chk"><input type="checkbox" id="loop" checked /> bucle</label>
+        <span id="audio-state" title="Locución">voz: —</span>
+      </div>
+      <div id="scrub">
+        <div class="seg hook">HOOK 0–2</div><div class="seg valor">VALOR 2–8</div><div class="seg cta">CTA 8–12</div>
+        <input type="range" id="range" min="0" max="12" step="0.01" value="0" />
+      </div>
+      <section id="script"></section>
+      <details id="board"><summary>[STORYBOARD TIMELINE] de este anuncio</summary><div></div></details>
+      <p class="hint">Espacio: reproducir/pausar · ← → : ±0.1 s · 1/2/3: anuncio · <code>?ad=2&amp;render=1</code> deja solo el lienzo 1080×1920</p>
+    </aside>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

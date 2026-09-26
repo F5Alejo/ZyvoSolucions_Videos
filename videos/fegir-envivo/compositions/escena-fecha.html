@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head><meta charset="UTF-8"><title>escena-fecha</title></head>
+  <body>
+    <template>
+      <style>
+      @font-face { font-family: "FEGIR Sans"; font-weight: 300; src: url("assets/fonts/segoeuil.ttf") format("truetype"); }
+      @font-face { font-family: "FEGIR Sans"; font-weight: 400; src: url("assets/fonts/segoeui.ttf") format("truetype"); }
+      @font-face { font-family: "FEGIR Sans"; font-weight: 600; src: url("assets/fonts/segoeuisb.ttf") format("truetype"); }
+      @font-face { font-family: "FEGIR Sans"; font-weight: 700; src: url("assets/fonts/segoeuib.ttf") format("truetype"); }
+        #root {
+          position: absolute; inset: 0; overflow: hidden; background: transparent;
+          font-family: "FEGIR Sans", sans-serif; color: #fff;
+          --verde:        #45a035;
+          --verde-claro:  #a8c875;
+          --crema:        #f1ecb0;
+          --banda-a:      #50cd72;
+          --banda-b:      #4ecd25;
+          --verde-fondo:  #3a8f2c;
+          --verde-hondo:  #22621a;
+          --tinta:        #1d2b1a;
+        }
+        .capa { position: absolute; inset: 0; }
+      .cortina {
+        position: absolute; left: -400px; top: -300px; width: 1900px; height: 2600px;
+        transform-origin: 50% 50%;
+      }
+      #cortina-verde {
+        background: linear-gradient(135deg, var(--banda-a) 0%, var(--verde-fondo) 34%, #2e7a22 100%);
+      }
+      #cortina-blanca { background: #ffffff; }
+      #cortina-verde2 {
+        background: linear-gradient(135deg, var(--banda-b) 0%, var(--verde-fondo) 34%, #2e7a22 100%);
+      }
+      #cortina-blanca2 { background: #ffffff; }
+      .filo { position: absolute; left: 0; top: 0; width: 100%; height: 38px; }
+      #cortina-verde .filo, #cortina-verde2 .filo { background: var(--verde-claro); }
+      #cortina-blanca .filo, #cortina-blanca2 .filo { background: var(--crema); }
+
+      #cal {
+        position: absolute; left: 50%; top: 610px; width: 560px; margin-left: -280px;
+        border-radius: 40px; overflow: hidden; background: #fff;
+        box-shadow: 0 40px 90px rgba(10,40,8,0.40);
+      }
+      #cal-cab {
+        background: var(--crema); color: var(--verde-hondo); text-align: center;
+        font-size: 38px; font-weight: 700; letter-spacing: 0.3em; padding: 26px 0 22px;
+      }
+      #cal-num { text-align: center; font-size: 280px; font-weight: 700; line-height: 1.2; color: var(--tinta); letter-spacing: -0.04em; }
+      #cal-mes { text-align: center; font-size: 50px; font-weight: 700; letter-spacing: 0.22em; color: var(--verde-hondo); padding: 0 0 40px; }
+      #hora {
+        position: absolute; left: 0; top: 1290px; width: 1080px; text-align: center;
+        font-size: 84px; font-weight: 700; letter-spacing: -0.01em;
+      }
+      #zona {
+        position: absolute; left: 0; top: 1408px; width: 1080px; text-align: center;
+        font-size: 30px; font-weight: 600; letter-spacing: 0.26em; text-transform: uppercase; color: var(--crema);
+      }
+      </style>
+
+      <div data-hf-id="hf-m69q" id="root" data-composition-id="escena-fecha" data-width="1080" data-height="1920">
+        <div data-hf-id="hf-ky57" id="cortina-verde2" class="cortina"><div data-hf-id="hf-w2io" class="filo"></div></div>
+        <div data-hf-id="hf-jrer" id="cal">
+          <div data-hf-id="hf-gwxy" id="cal-cab">SÁBADO</div>
+          <div data-hf-id="hf-90yt" id="cal-num">3</div>
+          <div data-hf-id="hf-yy23" id="cal-mes">OCTUBRE</div>
+        </div>
+        <div data-hf-id="hf-j3tw" id="hora">10:00 a. m.</div>
+        <div data-hf-id="hf-mfpv" id="zona">Hora Colombia</div>
+      </div>
+
+      <script>
+      (function () {
+        window.__timelines = window.__timelines || {};
+        var tl = gsap.timeline({ paused: true });
+
+        /* TIEMPOS - globales, en segundos del video completo.
+           V: inicio de cada toma de voz (tools/tiempos-voz.json + index.html).
+           S: inicio de ESTA escena (su data-start en index.html).
+           Si mueves la escena en el Studio, cambia S aqui tambien. */
+        var V = { f1: 0.30, f2: 3.95, f3: 7.25, f4: 10.85, f5: 14.10, f6: 16.60 };
+        var CORT = 0.40;   // la cortina entra 0.40 s antes de su frase
+        var S = 10.40;
+        var L = function (t) { return t - S; };   // global -> local
+
+        tl.fromTo("#cortina-verde2", { rotation: -32, yPercent: 105 },
+          { rotation: -32, yPercent: 0, duration: 0.75, ease: "power3.inOut" }, L(V.f4 - CORT));
+        tl.fromTo("#cortina-verde2", { rotation: -32 }, { rotation: 0, immediateRender: false, duration: 0.9, ease: "power2.out" }, L(V.f4 + 0.2));
+
+        var hora = V.f4 + 1.55;   // "a las diez" en +1.614
+        tl.fromTo("#cal", { opacity: 0, y: -260, rotation: -8 },
+          { opacity: 1, y: 0, rotation: 0, duration: 0.9, ease: "back.out(1.4)" }, L(V.f4 + 0.1));
+        tl.fromTo("#cal-num", { scale: 0.4 }, { scale: 1, duration: 0.7, ease: "back.out(2.4)" }, L(V.f4 + 0.55));
+        tl.fromTo("#hora", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, L(hora));
+        tl.fromTo("#zona", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, L(hora + 0.25));
+        // salida: el texto blanco se va mientras sube la cortina blanca de la escena siguiente
+        tl.to(["#hora", "#zona"], { opacity: 0, duration: 0.25, ease: "power2.in" }, L(V.f5 - CORT));
+        window.__timelines["escena-fecha"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>

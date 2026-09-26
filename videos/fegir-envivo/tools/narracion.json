@@ -1,0 +1,101 @@
+[
+ {
+  "n": 1,
+  "frames": [
+   "pregunta"
+  ],
+  "tope": 3.6,
+  "ajustes": {
+   "speed": 0.97,
+   "style": 0.5
+  },
+  "texto": "¿Tu informe del pe e ese ve todavía se arma a mano?...",
+  "frases": [
+   "¿Tu informe del pe e ese ve todavía se arma a mano?"
+  ]
+ },
+ {
+  "n": 2,
+  "frames": [
+   "invita",
+   "envivo"
+  ],
+  "tope": 3.4,
+  "ajustes": {
+   "speed": 1.0,
+   "style": 0.55
+  },
+  "texto": "La Fundación FEGIR te invita a un en vivo, gratuito.",
+  "frases": [
+   "La Fundación FEGIR te invita",
+   "a un en vivo, gratuito."
+  ]
+ },
+ {
+  "n": 3,
+  "frames": [
+   "tema",
+   "clic"
+  ],
+  "tope": 3.4,
+  "ajustes": {
+   "speed": 1.0
+  },
+  "texto": "Informe de Autogestión pe e ese ve... en un solo clic.",
+  "frases": [
+   "Informe de Autogestión pe e ese ve",
+   "en un solo clic."
+  ]
+ },
+ {
+  "n": 4,
+  "frames": [
+   "fecha",
+   "hora"
+  ],
+  "tope": 3.4,
+  "ajustes": {
+   "speed": 0.98,
+   "style": 0.55
+  },
+  "texto": "Este sábado tres de octubre, a las diez de la mañana.",
+  "frases": [
+   "Este sábado tres de octubre",
+   "a las diez de la mañana."
+  ]
+ },
+ {
+  "n": 5,
+  "frames": [
+   "boton",
+   "web"
+  ],
+  "tope": 2.8,
+  "ajustes": {
+   "speed": 0.97,
+   "style": 0.5
+  },
+  "texto": "Reserva tu cupo gratis en fegir punto org.",
+  "frases": [
+   "Reserva tu cupo gratis",
+   "en fegir punto org."
+  ]
+ },
+ {
+  "n": 6,
+  "frames": [
+   "logo",
+   "lema"
+  ],
+  "tope": 3.0,
+  "ajustes": {
+   "speed": 0.95,
+   "style": 0.5
+  },
+  "texto": "FEGIR... tu seguridad, nuestra prioridad.",
+  "frases": [
+   "FEGIR",
+   "tu seguridad, nuestra prioridad."
+  ]
+ }
+]

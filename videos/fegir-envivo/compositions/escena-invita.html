@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head><meta charset="UTF-8"><title>escena-invita</title></head>
+  <body>
+    <template>
+      <style>
+      @font-face { font-family: "FEGIR Sans"; font-weight: 300; src: url("assets/fonts/segoeuil.ttf") format("truetype"); }
+      @font-face { font-family: "FEGIR Sans"; font-weight: 400; src: url("assets/fonts/segoeui.ttf") format("truetype"); }
+      @font-face { font-family: "FEGIR Sans"; font-weight: 600; src: url("assets/fonts/segoeuisb.ttf") format("truetype"); }
+      @font-face { font-family: "FEGIR Sans"; font-weight: 700; src: url("assets/fonts/segoeuib.ttf") format("truetype"); }
+        #root {
+          position: absolute; inset: 0; overflow: hidden; background: transparent;
+          font-family: "FEGIR Sans", sans-serif; color: #fff;
+          --verde:        #45a035;
+          --verde-claro:  #a8c875;
+          --crema:        #f1ecb0;
+          --banda-a:      #50cd72;
+          --banda-b:      #4ecd25;
+          --verde-fondo:  #3a8f2c;
+          --verde-hondo:  #22621a;
+          --tinta:        #1d2b1a;
+        }
+        .capa { position: absolute; inset: 0; }
+      .cortina {
+        position: absolute; left: -400px; top: -300px; width: 1900px; height: 2600px;
+        transform-origin: 50% 50%;
+      }
+      #cortina-verde {
+        background: linear-gradient(135deg, var(--banda-a) 0%, var(--verde-fondo) 34%, #2e7a22 100%);
+      }
+      #cortina-blanca { background: #ffffff; }
+      #cortina-verde2 {
+        background: linear-gradient(135deg, var(--banda-b) 0%, var(--verde-fondo) 34%, #2e7a22 100%);
+      }
+      #cortina-blanca2 { background: #ffffff; }
+      .filo { position: absolute; left: 0; top: 0; width: 100%; height: 38px; }
+      #cortina-verde .filo, #cortina-verde2 .filo { background: var(--verde-claro); }
+      #cortina-blanca .filo, #cortina-blanca2 .filo { background: var(--crema); }
+
+      #logo-blanco {
+        position: absolute; left: 50%; top: 590px; width: 600px; margin-left: -300px; height: auto;
+      }
+      #invita {
+        position: absolute; left: 0; top: 960px; width: 1080px; text-align: center;
+        font-size: 34px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase;
+        color: var(--crema);
+      }
+      #envivo {
+        position: absolute; left: 0; top: 1030px; width: 1080px; text-align: center;
+        font-size: 200px; font-weight: 700; line-height: 1.3; letter-spacing: -0.04em;
+      }
+      #gratis {
+        position: absolute; left: 50%; top: 1320px; transform: translateX(-50%);
+        padding: 18px 52px; border-radius: 100px; white-space: nowrap;
+        background: var(--crema); color: var(--verde-hondo);
+        font-size: 36px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+        box-shadow: 0 18px 40px rgba(14,48,10,0.35);
+      }
+      </style>
+
+      <div data-hf-id="hf-yes4" id="root" data-composition-id="escena-invita" data-width="1080" data-height="1920">
+        <div data-hf-id="hf-yzez" id="cortina-verde" class="cortina"><div data-hf-id="hf-w2io" class="filo"></div></div>
+        <img data-hf-id="hf-68fg" id="logo-blanco" src="assets/logo/fegir-logo-blanco.png" alt="FEGIR">
+        <div data-hf-id="hf-ezac" id="invita">te invita a un</div>
+        <div data-hf-id="hf-nyz1" id="envivo" data-layout-allow-overlap="">EN VIVO</div>
+        <div data-hf-id="hf-nz9m" id="gratis">Gratuito</div>
+      </div>
+
+      <script>
+      (function () {
+        window.__timelines = window.__timelines || {};
+        var tl = gsap.timeline({ paused: true });
+
+        /* TIEMPOS - globales, en segundos del video completo.
+           V: inicio de cada toma de voz (tools/tiempos-voz.json + index.html).
+           S: inicio de ESTA escena (su data-start en index.html).
+           Si mueves la escena en el Studio, cambia S aqui tambien. */
+        var V = { f1: 0.30, f2: 3.95, f3: 7.25, f4: 10.85, f5: 14.10, f6: 16.60 };
+        var CORT = 0.40;   // la cortina entra 0.40 s antes de su frase
+        var S = 3.50;
+        var L = function (t) { return t - S; };   // global -> local
+
+        tl.fromTo("#cortina-verde", { rotation: -32, yPercent: 105 },
+          { rotation: -32, yPercent: 0, duration: 0.75, ease: "power3.inOut" }, L(V.f2 - CORT));
+        tl.fromTo("#cortina-verde", { rotation: -32 }, { rotation: 0, immediateRender: false, duration: 0.9, ease: "power2.out" }, L(V.f2 + 0.2));
+
+        var envivo = V.f2 + 1.42;   // "a un en vivo" arranca en +1.416
+        tl.fromTo("#logo-blanco", { opacity: 0, y: 40, scale: 0.92 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "expo.out" }, L(V.f2 + 0.05));
+        tl.fromTo("#invita", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, L(V.f2 + 0.9));
+        tl.fromTo("#envivo", { opacity: 0, scale: 1.5, filter: "blur(20px)" },
+          { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.6, ease: "power4.out" }, L(envivo));
+        tl.fromTo("#gratis", { opacity: 0, scale: 0.6 },
+          { opacity: 1, scale: 1, duration: 0.6, ease: "back.out(2)" }, L(envivo + 0.55));
+        window.__timelines["escena-invita"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>

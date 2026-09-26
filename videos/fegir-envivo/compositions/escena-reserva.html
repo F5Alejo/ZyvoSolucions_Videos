@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head><meta charset="UTF-8"><title>escena-reserva</title></head>
+  <body>
+    <template>
+      <style>
+      @font-face { font-family: "FEGIR Sans"; font-weight: 300; src: url("assets/fonts/segoeuil.ttf") format("truetype"); }
+      @font-face { font-family: "FEGIR Sans"; font-weight: 400; src: url("assets/fonts/segoeui.ttf") format("truetype"); }
+      @font-face { font-family: "FEGIR Sans"; font-weight: 600; src: url("assets/fonts/segoeuisb.ttf") format("truetype"); }
+      @font-face { font-family: "FEGIR Sans"; font-weight: 700; src: url("assets/fonts/segoeuib.ttf") format("truetype"); }
+        #root {
+          position: absolute; inset: 0; overflow: hidden; background: transparent;
+          font-family: "FEGIR Sans", sans-serif; color: #fff;
+          --verde:        #45a035;
+          --verde-claro:  #a8c875;
+          --crema:        #f1ecb0;
+          --banda-a:      #50cd72;
+          --banda-b:      #4ecd25;
+          --verde-fondo:  #3a8f2c;
+          --verde-hondo:  #22621a;
+          --tinta:        #1d2b1a;
+        }
+        .capa { position: absolute; inset: 0; }
+      .cortina {
+        position: absolute; left: -400px; top: -300px; width: 1900px; height: 2600px;
+        transform-origin: 50% 50%;
+      }
+      #cortina-verde {
+        background: linear-gradient(135deg, var(--banda-a) 0%, var(--verde-fondo) 34%, #2e7a22 100%);
+      }
+      #cortina-blanca { background: #ffffff; }
+      #cortina-verde2 {
+        background: linear-gradient(135deg, var(--banda-b) 0%, var(--verde-fondo) 34%, #2e7a22 100%);
+      }
+      #cortina-blanca2 { background: #ffffff; }
+      .filo { position: absolute; left: 0; top: 0; width: 100%; height: 38px; }
+      #cortina-verde .filo, #cortina-verde2 .filo { background: var(--verde-claro); }
+      #cortina-blanca .filo, #cortina-blanca2 .filo { background: var(--crema); }
+
+      #cta-rot {
+        position: absolute; left: 0; top: 600px; width: 1080px; text-align: center;
+        font-size: 30px; font-weight: 600; letter-spacing: 0.28em; text-transform: uppercase; color: var(--verde-hondo);
+      }
+      #boton {
+        position: absolute; left: 50%; top: 680px; transform: translateX(-50%);
+        padding: 40px 84px; border-radius: 100px; white-space: nowrap;
+        background: linear-gradient(135deg, #3f9a30, #2e7a22); color: #fff;
+        font-size: 54px; font-weight: 700; letter-spacing: 0.01em;
+        box-shadow: 0 26px 60px rgba(46,122,34,0.40), inset 0 2px 0 rgba(255,255,255,0.25);
+      }
+      #web {
+        position: absolute; left: 0; top: 880px; width: 1080px; text-align: center;
+        font-size: 76px; font-weight: 700; color: var(--tinta); letter-spacing: -0.01em;
+      }
+      #resumen {
+        position: absolute; left: 0; top: 1000px; width: 1080px; text-align: center;
+        font-size: 34px; font-weight: 400; color: #3d4a3a;
+      }
+
+      /* ---------- plano 6 · la firma de la fundacion (blanco) ---------- */
+      #logo-color {
+        position: absolute; left: 50%; top: 1290px; width: 720px; margin-left: -360px; height: auto;
+      }
+      #lema {
+        position: absolute; left: 0; top: 1620px; width: 1080px; text-align: center;
+        font-size: 50px; font-weight: 700; color: var(--verde-hondo); letter-spacing: -0.01em;
+      }
+      </style>
+
+      <div data-hf-id="hf-qvkj" id="root" data-composition-id="escena-reserva" data-width="1080" data-height="1920">
+        <div data-hf-id="hf-c62u" id="cortina-blanca2" class="cortina"><div data-hf-id="hf-w2io" class="filo"></div></div>
+        <div data-hf-id="hf-s6ft" id="cta-rot">Cupos limitados</div>
+        <div data-hf-id="hf-fvxz" id="boton">Reserva tu cupo gratis</div>
+        <div data-hf-id="hf-vzjq" id="web">fegir.org</div>
+        <div data-hf-id="hf-q8d2" id="resumen">En vivo · sábado 3 de octubre · 10:00 a. m.</div>
+        <img data-hf-id="hf-1old" id="logo-color" src="assets/logo/fegir-logo-color.png" alt="FEGIR - Fundación Especializada en Gestión Integral del Riesgo">
+        <div data-hf-id="hf-6l35" id="lema">¡Tu seguridad, nuestra prioridad!</div>
+      </div>
+
+      <script>
+      (function () {
+        window.__timelines = window.__timelines || {};
+        var tl = gsap.timeline({ paused: true });
+
+        /* TIEMPOS - globales, en segundos del video completo.
+           V: inicio de cada toma de voz (tools/tiempos-voz.json + index.html).
+           S: inicio de ESTA escena (su data-start en index.html).
+           Si mueves la escena en el Studio, cambia S aqui tambien. */
+        var V = { f1: 0.30, f2: 3.95, f3: 7.25, f4: 10.85, f5: 14.10, f6: 16.60 };
+        var CORT = 0.40;   // la cortina entra 0.40 s antes de su frase
+        var S = 13.65;
+        var L = function (t) { return t - S; };   // global -> local
+
+        tl.fromTo("#cortina-blanca2", { rotation: 28, yPercent: 105 },
+          { rotation: 28, yPercent: 0, duration: 0.75, ease: "power3.inOut" }, L(V.f5 - CORT));
+        tl.fromTo("#cortina-blanca2", { rotation: 28 }, { rotation: 0, immediateRender: false, duration: 0.9, ease: "power2.out" }, L(V.f5 + 0.2));
+
+        var FIN = 19.9;
+        var web = V.f5 + 1.05;    // "en fegir punto org" en +1.126
+        var lema = V.f6 + 0.62;   // "tu seguridad" en +0.673
+        tl.fromTo("#cta-rot", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, L(V.f5));
+        tl.fromTo("#boton", { opacity: 0, scale: 0.55 },
+          { opacity: 1, scale: 1, duration: 0.75, ease: "back.out(1.9)" }, L(V.f5 + 0.15));
+        tl.fromTo("#web", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, L(web));
+        tl.fromTo("#resumen", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, L(web + 0.3));
+        // el logo primario, como lo pide el manual
+        tl.fromTo("#logo-color", { opacity: 0, y: 40, scale: 0.94 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: "expo.out" }, L(V.f6 - 0.10));
+        tl.fromTo("#lema", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, L(lema));
+        // el boton respira hasta el final (tweens explicitos, seek-safe)
+        for (var b = 0; V.f5 + 1.2 + b * 1.2 < FIN - 0.6; b++) {
+          var tb = V.f5 + 1.2 + b * 1.2;
+          tl.to("#boton", { scale: 1.045, duration: 0.6, ease: "sine.inOut" }, L(tb));
+          tl.to("#boton", { scale: 1.0, duration: 0.6, ease: "sine.inOut" }, L(tb + 0.6));
+        }
+        window.__timelines["escena-reserva"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>

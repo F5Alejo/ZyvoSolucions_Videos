@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js" integrity="sha384-sG0Hv1tP1lZCk9KQmrIbY/XNwi+OY84GQqhMscbnsoBFqAz8KNCil1kvfL3Hbbk2" crossorigin="anonymous"></script>
+    <style>
+      /* ==================================================================
+         FEGIR · EN VIVO PESV — pieza PROPIA de la fundacion, sin otra marca.
+         Organizada para el Studio de HyperFrames: aqui solo hay ANFITRIONES
+         (una fila por escena) y AUDIO (voz, efectos, musica). Cada escena
+         vive en compositions/ con su estilo y su animacion.
+
+         Identidad: Fegir.org/Manual identidad FEGIR.pdf
+           #45a035 verde · #a8c875 verde claro · #f1ecb0 crema
+           banda del manual #50cd72 -> #4ecd25 · letra Segoe UI
+         Las escenas alternan verde y blanco; el orden de apilado lo da el
+         z-index de cada anfitrion (el numero de pista es solo visual).
+         ================================================================== */
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #2e7a22; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #2e7a22; }
+      #root > div { position: absolute; inset: 0; }
+    </style>
+  </head>
+
+  <body>
+    <div data-hf-id="hf-wnx1" id="root" data-composition-id="main" data-start="0" data-duration="19.9" data-width="1080" data-height="1920">
+      <!-- 1 · la pregunta, sobre la foto del manual -->
+      <div data-hf-id="hf-hefa" id="escena-pregunta" data-composition-id="escena-pregunta" data-composition-src="compositions/escena-pregunta.html" data-track-kind="graphics" data-start="0" data-duration="4.3" data-track-index="1" data-width="1080" data-height="1920" style="z-index:1"></div>
+      <!-- 2 · FEGIR te invita a un EN VIVO (verde) -->
+      <div data-hf-id="hf-ee71" id="escena-invita" data-composition-id="escena-invita" data-composition-src="compositions/escena-invita.html" data-track-kind="graphics" data-start="3.5" data-duration="4.1" data-track-index="2" data-width="1080" data-height="1920" style="z-index:2"></div>
+      <!-- 3 · el tema, con el visto (blanco) -->
+      <div data-hf-id="hf-cz2i" id="escena-tema" data-composition-id="escena-tema" data-composition-src="compositions/escena-tema.html" data-track-kind="graphics" data-start="6.8" data-duration="4.4" data-track-index="1" data-width="1080" data-height="1920" style="z-index:3"></div>
+      <!-- 4 · la fecha, hoja de calendario (verde) -->
+      <div data-hf-id="hf-hxli" id="escena-fecha" data-composition-id="escena-fecha" data-composition-src="compositions/escena-fecha.html" data-track-kind="graphics" data-start="10.4" data-duration="4.05" data-track-index="2" data-width="1080" data-height="1920" style="z-index:4"></div>
+      <!-- 5 · reserva y logo (blanco) -->
+      <div data-hf-id="hf-fh5t" id="escena-reserva" data-composition-id="escena-reserva" data-composition-src="compositions/escena-reserva.html" data-track-kind="graphics" data-start="13.65" data-duration="6.25" data-track-index="1" data-width="1080" data-height="1920" style="z-index:5"></div>
+      <!-- sello EN VIVO, presente todo el video -->
+      <div data-hf-id="hf-oruz" id="sello-envivo" data-composition-id="sello-envivo" data-composition-src="compositions/sello-envivo.html" data-track-kind="graphics" data-start="0" data-duration="19.9" data-track-index="3" data-width="1080" data-height="1920" style="z-index:10"></div>
+
+      <!-- VOZ · Carlos (ElevenLabs), una toma por frase, niveladas a -15 LUFS -->
+      <audio data-hf-id="hf-g2ne" id="voz-1" src="assets/mezcla/voz-1.wav" data-start="0.30" data-duration="3.25" data-track-index="10" data-volume="1"></audio>
+      <audio data-hf-id="hf-d7ed" id="voz-2" src="assets/mezcla/voz-2.wav" data-start="3.95" data-duration="2.88" data-track-index="10" data-volume="1"></audio>
+      <audio data-hf-id="hf-m9ja" id="voz-3" src="assets/mezcla/voz-3.wav" data-start="7.25" data-duration="3.20" data-track-index="10" data-volume="1"></audio>
+      <audio data-hf-id="hf-c9fp" id="voz-4" src="assets/mezcla/voz-4.wav" data-start="10.85" data-duration="2.83" data-track-index="10" data-volume="1"></audio>
+      <audio data-hf-id="hf-e29p" id="voz-5" src="assets/mezcla/voz-5.wav" data-start="14.10" data-duration="2.04" data-track-index="10" data-volume="1"></audio>
+      <audio data-hf-id="hf-s4aa" id="voz-6" src="assets/mezcla/voz-6.wav" data-start="16.60" data-duration="2.32" data-track-index="10" data-volume="1"></audio>
+
+      <!-- EFECTOS · ElevenLabs, cada uno en el instante visual que lo justifica -->
+      <audio data-hf-id="hf-177t" id="sfx-cortina-1" src="assets/sfx/cortina.mp3" data-start="3.55" data-duration="1.00" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-0bny" id="sfx-golpe-1" src="assets/sfx/golpe.mp3" data-start="5.37" data-duration="1.50" data-track-index="11" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-44sd" id="sfx-pop-1" src="assets/sfx/pop.mp3" data-start="5.92" data-duration="0.50" data-track-index="12" data-volume="0.40"></audio>
+      <audio data-hf-id="hf-igqx" id="sfx-cortina-2" src="assets/sfx/cortina.mp3" data-start="6.85" data-duration="1.00" data-track-index="12" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-cs2i" id="sfx-visto-1" src="assets/sfx/visto.mp3" data-start="7.30" data-duration="0.80" data-track-index="11" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-jz60" id="sfx-pop-2" src="assets/sfx/pop.mp3" data-start="9.35" data-duration="0.50" data-track-index="11" data-volume="0.40"></audio>
+      <audio data-hf-id="hf-cske" id="sfx-cortina-3" src="assets/sfx/cortina.mp3" data-start="10.45" data-duration="1.00" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-q5q7" id="sfx-hoja-1" src="assets/sfx/hoja.mp3" data-start="10.95" data-duration="0.90" data-track-index="12" data-volume="0.45"></audio>
+      <audio data-hf-id="hf-sb2k" id="sfx-cortina-4" src="assets/sfx/cortina.mp3" data-start="13.70" data-duration="1.00" data-track-index="11" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-w12y" id="sfx-pop-3" src="assets/sfx/pop.mp3" data-start="14.25" data-duration="0.50" data-track-index="12" data-volume="0.40"></audio>
+      <audio data-hf-id="hf-pdg0" id="sfx-brillo-1" src="assets/sfx/brillo.mp3" data-start="16.50" data-duration="1.60" data-track-index="11" data-volume="0.40"></audio>
+
+      <!-- MUSICA · cama generada para FEGIR; baja sola bajo cada frase (curva de volumen) -->
+      <audio data-hf-id="hf-9bf3" id="musica-cama" src="assets/musica/cama.mp3" data-start="0" data-duration="19.9" data-track-index="13" data-volume="1" data-automation="{&quot;version&quot;:1,&quot;lanes&quot;:[{&quot;target&quot;:&quot;volume&quot;,&quot;points&quot;:[{&quot;t&quot;:0.0,&quot;v&quot;:0.0},{&quot;t&quot;:0.25,&quot;v&quot;:0.13},{&quot;t&quot;:3.55,&quot;v&quot;:0.13},{&quot;t&quot;:6.83,&quot;v&quot;:0.13},{&quot;t&quot;:10.45,&quot;v&quot;:0.13},{&quot;t&quot;:13.68,&quot;v&quot;:0.13},{&quot;t&quot;:16.14,&quot;v&quot;:0.13},{&quot;t&quot;:18.92,&quot;v&quot;:0.13},{&quot;t&quot;:19.22,&quot;v&quot;:0.3},{&quot;t&quot;:19.8,&quot;v&quot;:0.0}]}]}"></audio>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

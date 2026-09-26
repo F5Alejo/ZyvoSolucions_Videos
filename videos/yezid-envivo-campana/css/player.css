@@ -1,0 +1,43 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; background: #0b0b0c; color: #eee; font-family: "Dubai", system-ui, sans-serif; }
+#app { display: grid; grid-template-columns: 1fr 440px; height: 100vh; }
+#viewport { position: relative; display: grid; place-items: center; overflow: hidden; background: radial-gradient(circle at 50% 40%, #16161a, #050505); }
+#stage { position: absolute; left: 0; top: 0; box-shadow: 0 30px 90px rgba(0, 0, 0, 0.7); border-radius: 2px; }
+
+#panel { overflow-y: auto; padding: 26px 26px 40px; background: #111113; border-left: 1px solid #222; display: flex; flex-direction: column; gap: 18px; }
+#panel header img { width: 170px; }
+#panel header p { color: #999; font-size: 15px; margin-top: 6px; }
+#tabs { display: grid; gap: 8px; }
+#tabs button { text-align: left; padding: 12px 14px; border-radius: 10px; border: 1px solid #2a2a2e; background: #18181b; color: #ddd; font: 600 16px "Dubai", sans-serif; cursor: pointer; }
+#tabs button.on { border-color: #FF3333; background: rgba(255, 51, 51, 0.12); color: #fff; }
+#transport { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+#transport button { width: 44px; height: 44px; border-radius: 50%; border: 0; background: #FF3333; color: #fff; font-size: 18px; cursor: pointer; }
+#transport #restart { background: #26262a; }
+#clock { font: 600 20px ui-monospace, monospace; min-width: 90px; }
+#transport .chk { font-size: 14px; color: #aaa; }
+#audio-state { font-size: 13px; color: #888; margin-left: auto; }
+#scrub { position: relative; display: grid; grid-template-columns: 2fr 6fr 4fr; gap: 3px; }
+#scrub .seg { font-size: 11px; letter-spacing: 0.08em; padding: 4px 6px; border-radius: 4px; color: #ccc; }
+#scrub .hook { background: #3a1b1b; } #scrub .valor { background: #1b2340; } #scrub .cta { background: #3b2a0c; }
+#scrub input { grid-column: 1 / -1; width: 100%; accent-color: #FF3333; }
+#script .seg-card { border: 1px solid #242428; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; transition: border-color 0.2s, background 0.2s; }
+#script .seg-card.on { border-color: #06c7fb; background: rgba(6, 199, 251, 0.07); }
+#script .seg-card h4 { font-size: 12px; letter-spacing: 0.12em; color: #06c7fb; margin-bottom: 6px; }
+#script .seg-card .vo { font-size: 17px; line-height: 1.45; color: #fff; }
+#script .seg-card .dir { font-size: 13px; color: #999; margin-top: 6px; }
+#board summary { cursor: pointer; color: #c8951a; font-weight: 600; }
+#board table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+#board td { border-top: 1px solid #222; padding: 6px 4px; vertical-align: top; color: #bbb; }
+#board td:first-child { white-space: nowrap; color: #06c7fb; font-family: ui-monospace, monospace; }
+.hint { font-size: 12px; color: #777; }
+.hint code { color: #aaa; }
+
+/* modo render: solo el lienzo, sin escala */
+body.render #app { display: block; }
+body.render #panel { display: none; }
+body.render #viewport { display: block; width: 1080px; height: 1920px; overflow: visible; background: none; }
+body.render #stage { transform: none !important; box-shadow: none; }
+@media (max-width: 900px) { #app { grid-template-columns: 1fr; grid-template-rows: 70vh auto; } #panel { border-left: 0; } }
+#variant { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+#variant label { font-size: 12px; color: #999; display: grid; gap: 4px; }
+#variant select { background: #18181b; color: #eee; border: 1px solid #2a2a2e; border-radius: 8px; padding: 8px; font: 500 14px "Dubai", sans-serif; }

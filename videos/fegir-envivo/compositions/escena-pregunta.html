@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head><meta charset="UTF-8"><title>escena-pregunta</title></head>
+  <body>
+    <template>
+      <style>
+      @font-face { font-family: "FEGIR Sans"; font-weight: 300; src: url("assets/fonts/segoeuil.ttf") format("truetype"); }
+      @font-face { font-family: "FEGIR Sans"; font-weight: 400; src: url("assets/fonts/segoeui.ttf") format("truetype"); }
+      @font-face { font-family: "FEGIR Sans"; font-weight: 600; src: url("assets/fonts/segoeuisb.ttf") format("truetype"); }
+      @font-face { font-family: "FEGIR Sans"; font-weight: 700; src: url("assets/fonts/segoeuib.ttf") format("truetype"); }
+        #root {
+          position: absolute; inset: 0; overflow: hidden; background: #2e7a22;
+          font-family: "FEGIR Sans", sans-serif; color: #fff;
+          --verde:        #45a035;
+          --verde-claro:  #a8c875;
+          --crema:        #f1ecb0;
+          --banda-a:      #50cd72;
+          --banda-b:      #4ecd25;
+          --verde-fondo:  #3a8f2c;
+          --verde-hondo:  #22621a;
+          --tinta:        #1d2b1a;
+        }
+        .capa { position: absolute; inset: 0; }
+      #foto-caja { overflow: hidden; }
+      #foto {
+        position: absolute; left: -60px; top: -80px; width: 1200px; height: auto;
+        filter: grayscale(1) contrast(1.08) brightness(1.05);
+      }
+      /* duotono como la portada: verde de marca encima de la foto en gris */
+      #foto-tinte {
+        background: linear-gradient(160deg, #50cd72 0%, #3fa532 55%, #4ecd25 100%);
+        mix-blend-mode: multiply;
+      }
+      #foto-sombra {
+        background: linear-gradient(180deg, rgba(20,60,16,0) 38%, rgba(20,60,16,0.78) 78%, rgba(20,60,16,0.92) 100%);
+      }
+      #pregunta {
+        position: absolute; left: 76px; top: 1090px; width: 940px;
+        font-size: 112px; font-weight: 700; line-height: 1.1; letter-spacing: -0.025em;
+        text-shadow: 0 6px 30px rgba(10, 40, 8, 0.55);  /* resalta sobre la foto */
+      }
+      #pregunta .l { display: block; overflow: hidden; padding-bottom: 8px; }
+      #pregunta .l span { display: inline-block; }
+      #pregunta .marca { color: var(--crema); }
+      </style>
+
+      <div data-hf-id="hf-64iv" id="root" data-composition-id="escena-pregunta" data-width="1080" data-height="1920">
+        <div data-hf-id="hf-rhn1" id="foto-caja" class="capa">
+          <img data-hf-id="hf-w74y" id="foto" src="assets/fotos/portada-manual-vertical.jpg" alt="">
+          <div data-hf-id="hf-ogim" id="foto-tinte" class="capa"></div>
+          <div data-hf-id="hf-xfvu" id="foto-sombra" class="capa"></div>
+          <div data-hf-id="hf-dgq3" id="pregunta">
+            <div style="clip-path: inset(0px 176.72px 0px 0px)" data-hf-id="hf-5pjo" class="l"><span data-hf-id="hf-rael">¿Tu informe</span></div>
+            <div data-hf-id="hf-ok30" class="l"><span data-hf-id="hf-t4q9" class="marca">PESV</span> <span data-hf-id="hf-ia81">todavía</span></div>
+            <div data-hf-id="hf-nd5x" class="l"><span data-hf-id="hf-hgyz">se arma a mano?</span></div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+      (function () {
+        window.__timelines = window.__timelines || {};
+        gsap.set("[data-hf-id=\"hf-5pjo\"]", { x: -142, y: -17 });
+        gsap.set("[data-hf-id=\"hf-5pjo\"]", { x: -56, y: -48 });
+        gsap.set("[data-hf-id=\"hf-5pjo\"]", { x: -17, y: 27 });
+        var tl = gsap.timeline({ paused: true });
+
+        /* TIEMPOS - globales, en segundos del video completo.
+           V: inicio de cada toma de voz (tools/tiempos-voz.json + index.html).
+           S: inicio de ESTA escena (su data-start en index.html).
+           Si mueves la escena en el Studio, cambia S aqui tambien. */
+        var V = { f1: 0.30, f2: 3.95, f3: 7.25, f4: 10.85, f5: 14.10, f6: 16.60 };
+        var CORT = 0.40;   // la cortina entra 0.40 s antes de su frase
+        var S = 0;
+        var L = function (t) { return t - S; };   // global -> local
+
+        // la foto respira y la pregunta sube por mascara
+        tl.fromTo("#foto", { scale: 1.12, y: 0 }, { scale: 1.0, y: -40, duration: 4.3, ease: "none" }, 0);
+        tl.fromTo("#pregunta .l span", { yPercent: 110 },
+          { yPercent: 0, duration: 0.8, ease: "expo.out", stagger: 0.28 }, L(V.f1));
+        tl.set("[data-hf-id=\"hf-5pjo\"]", { width: 1110, height: 137, immediateRender: true }, 0);
+        window.__timelines["escena-pregunta"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>

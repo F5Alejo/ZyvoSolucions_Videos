@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>En Vivo PESV · versión premium</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <link rel="stylesheet" href="css/stage.css" />
+  <link rel="stylesheet" href="css/player.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- ═════════════ LIENZO 1080×1920 (lo que se renderiza) ═════════════ -->
+    <div id="viewport">
+      <div id="stage" data-composition-id="yezid-envivo-premium" data-width="1080" data-height="1920" data-duration="12">
+        <canvas id="bg"></canvas>
+
+        <div id="camara">
+          <!-- rótulo del evento -->
+          <div class="eyebrow glass"><i class="latido"></i><b data-t="evento"></b><span>·</span><span data-t="subEvento"></span></div>
+
+          <!-- ── la foto del Dr. Yezid en una tarjeta de cristal flotante ── -->
+          <div class="flota" id="foto-flota">
+            <div class="foto-card glass" id="foto-card">
+              <div class="foto-luz"></div>
+              <!-- ASSET: recorte oficial publicado en yezidricaurte.com/images/yezid-portada-1.png -->
+              <img class="foto" id="foto" src="assets/yezid-portada.png" alt="Dr. Yezid Ricaurte" />
+              <div class="brillo"></div>
+            </div>
+            <div class="nombre glass" id="nombre"><b data-t="persona"></b><span data-t="rol"></span></div>
+          </div>
+
+          <!-- ── escena A: urgencia + valor ── -->
+          <div class="capa" id="escena-a">
+            <h1 class="titular" id="titular"></h1>
+            <p class="bajada" id="bajada"></p>
+          </div>
+
+          <!-- ── escena B: cuándo y qué hacer ── -->
+          <div class="capa" id="escena-b">
+            <div class="flota" id="fecha-flota">
+              <div class="fecha glass" id="fecha">
+                <svg class="cal" viewBox="0 0 64 64" aria-hidden="true">
+                  <rect class="draw" pathLength="1" x="8" y="12" width="48" height="44" rx="8" />
+                  <path class="draw" pathLength="1" d="M8 26 H56 M22 6 V18 M42 6 V18" />
+                </svg>
+                <div><b id="fecha-dia"></b><span id="fecha-hora"></span></div>
+              </div>
+            </div>
+            <div class="flota" id="pasos-flota">
+              <ol class="pasos glass" id="pasos"></ol>
+            </div>
+          </div>
+
+          <!-- ── escena C: el llamado a la acción ── -->
+          <div class="capa" id="escena-c">
+            <div class="boton-caja flota" id="boton-flota"><div class="boton" id="boton"></div></div>
+            <p class="sub" id="sub"></p>
+            <!-- ASSET: firma oficial en negativo (manual de marca) -->
+            <img class="firma" id="firma" src="assets/firma-yezid-blanca.png" alt="Yezid Ricaurte" />
+            <p class="web" data-t="web"></p>
+          </div>
+        </div>
+
+        <div class="progreso"><i></i></div>
+
+        <!-- VOZ (ElevenLabs): deja assets/voz/<variante>.mp3 (pocos · manana · hoy) y el
+             reproductor la usa como reloj maestro. En HyperFrames equivale a
+             <audio src="assets/voz/pocos.mp3" data-start="0" data-duration="12" data-track-index="10"> -->
+        <audio id="voz" preload="auto"></audio>
+      </div>
+    </div>
+
+    <!-- ═════════════ CONTROLES (no se renderizan) ═════════════ -->
+    <aside id="panel">
+      <header>
+        <img src="assets/firma-yezid-blanca.png" alt="Yezid Ricaurte" />
+        <p>En Vivo PESV · versión premium · 9:16 · 12 s</p>
+      </header>
+      <nav id="tabs">
+        <button data-v="pocos">1 · Faltan pocos días</button>
+        <button data-v="manana">2 · Es mañana</button>
+        <button data-v="hoy">3 · Es hoy</button>
+      </nav>
+      <div id="transport">
+        <button id="play" aria-label="Reproducir">▶</button>
+        <button id="restart" aria-label="Reiniciar">⟲</button>
+        <span id="clock">0.00 s</span>
+        <label class="chk"><input type="checkbox" id="loop" checked /> bucle</label>
+        <span id="audio-state">voz: —</span>
+      </div>
+      <input type="range" id="range" min="0" max="12" step="0.01" value="0" />
+      <p class="hint">Los textos se editan en <code>js/config.js</code>. Espacio: reproducir · ← →: ±0.1 s · <code>?v=hoy&amp;render=1</code>: solo el lienzo</p>
+    </aside>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
