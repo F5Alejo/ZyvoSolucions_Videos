@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+  <head><meta charset="UTF-8"><title>escena-registro</title></head>
+  <body>
+    <template>
+      <style>
+        @font-face { font-family: "Montserrat"; font-weight: 100 900; font-display: block;
+          src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+          unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+        @font-face { font-family: "Montserrat"; font-weight: 100 900; font-display: block;
+          src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+          unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+        @font-face { font-family: "Open Sans"; font-weight: 400; font-display: block;
+          src: url("assets/fonts/open-sans-latin-400.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+20AC, U+2122, U+FEFF; }
+        @font-face { font-family: "Open Sans"; font-weight: 400; font-display: block;
+          src: url("assets/fonts/open-sans-latin-ext-400.woff2") format("woff2"); unicode-range: U+0100-02BA, U+1E00-1E9F, U+2C60-2C7F, U+A720-A7FF; }
+        @font-face { font-family: "Open Sans"; font-weight: 600; font-display: block;
+          src: url("assets/fonts/open-sans-latin-600.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+20AC, U+2122, U+FEFF; }
+        @font-face { font-family: "Open Sans"; font-weight: 600; font-display: block;
+          src: url("assets/fonts/open-sans-latin-ext-600.woff2") format("woff2"); unicode-range: U+0100-02BA, U+1E00-1E9F, U+2C60-2C7F, U+A720-A7FF; }
+        @font-face { font-family: "Open Sans"; font-weight: 700; font-display: block;
+          src: url("assets/fonts/open-sans-latin-700.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+20AC, U+2122, U+FEFF; }
+        @font-face { font-family: "Open Sans"; font-weight: 700; font-display: block;
+          src: url("assets/fonts/open-sans-latin-ext-700.woff2") format("woff2"); unicode-range: U+0100-02BA, U+1E00-1E9F, U+2C60-2C7F, U+A720-A7FF; }
+        #root {
+          position: absolute; inset: 0; overflow: hidden; background: transparent;
+          font-family: "Open Sans", sans-serif; color: #fff;
+          --negro: #040404; --negro2: #0A0A0A; --tarjeta: #121212; --borde: #262626;
+          --dorado: #AC841D; --dorado-claro: #d9b04a; --gris: #F5F5F5; --texto2: #b9b9b9; --marino: #192744;
+        }
+        .t { font-family: "Montserrat", sans-serif; font-weight: 800; letter-spacing: -0.02em; line-height: 1.12; }
+        .oro { color: var(--dorado-claro); }
+        .l { display: block; overflow: hidden; padding-bottom: 6px; }
+        .l > span { display: inline-block; }
+        #c { position: absolute; inset: 0; }
+        .card { background: linear-gradient(160deg, #161616, #0e0e0e); border: 1px solid var(--borde); border-radius: 28px;
+          box-shadow: 0 30px 70px rgba(0,0,0,0.55); }
+        .chip { display: inline-flex; align-items: center; gap: 14px; padding: 14px 30px; border-radius: 100px;
+          border: 1px solid rgba(172,132,29,0.55); background: rgba(172,132,29,0.10); color: var(--dorado-claro);
+          font-family: "Montserrat", sans-serif; font-weight: 700; font-size: 26px; letter-spacing: 0.14em; text-transform: uppercase; }
+        .num { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--dorado); color: var(--dorado-claro);
+          display: flex; align-items: center; justify-content: center; font-family: "Montserrat", sans-serif; font-weight: 800; font-size: 30px;
+          background: rgba(172,132,29,0.12); flex-shrink: 0; }
+        #tit { position: absolute; left: 108px; top: 300px; width: 864px; font-size: 76px; }
+        #tabla { position: absolute; left: 108px; top: 600px; width: 864px; padding: 20px 0; }
+        .th, .tr { display: flex; justify-content: space-between; align-items: center; padding: 26px 40px; }
+        .th { font-family: "Montserrat"; font-weight: 700; font-size: 24px; letter-spacing: 0.16em; color: var(--texto2); text-transform: uppercase; border-bottom: 1px solid var(--borde); }
+        .tr { font-size: 38px; font-weight: 600; border-bottom: 1px solid #1c1c1c; }
+        .est { font-family: "Montserrat"; font-weight: 800; font-size: 28px; padding: 10px 26px; border-radius: 100px; }
+        .ap { background: rgba(172,132,29,0.9); color: #111; }
+        .re { background: #2a2a2a; color: #eee; border: 1px solid #444; }
+        .pe { background: transparent; color: var(--dorado-claro); border: 1px dashed var(--dorado); }
+        #excel { position: absolute; left: 50%; top: 1090px; transform: translateX(-50%); display: flex; align-items: center; gap: 18px; white-space: nowrap;
+          padding: 24px 44px; border-radius: 18px; background: var(--gris); color: #111; font-family: "Montserrat"; font-weight: 800; font-size: 36px; }
+        #excel .x { width: 54px; height: 54px; border-radius: 10px; background: #1f6e43; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+        #cuenta { position: absolute; left: 108px; top: 1400px; width: 864px; text-align: center; font-size: 58px; }
+        #logo { position: absolute; left: 50%; top: 1600px; width: 420px; margin-left: -210px; height: auto; }
+
+      </style>
+      <div id="root" data-composition-id="escena-registro" data-width="1080" data-height="1920">
+        <div id="c">
+          <div id="tit" class="t">
+          <div class="l "><span>El registro</span></div>
+          <div class="l "><span><span class="oro">se arma solo</span></span></div>
+          </div>
+          <div id="tabla" class="card">
+            <div class="th"><span>Colaborador</span><span>Resultado</span></div>
+            <div class="tr" id="r1"><span class="nom">Colaborador 1</span><span class="est ap">Aprobó</span></div>
+            <div class="tr" id="r2"><span class="nom">Colaborador 2</span><span class="est re">Reprobó</span></div>
+            <div class="tr" id="r3"><span class="nom">Colaborador 3</span><span class="est pe">Pendiente</span></div>
+          </div>
+          <div id="excel"><span class="x">X</span>Reporte en Excel</div>
+          <div id="cuenta" class="t">
+          <div class="l "><span>Todo con la misma</span></div>
+          <div class="l "><span>cuenta de <span class="oro">RiskMann</span></span></div>
+          </div>
+          <img id="logo" src="assets/logo/riskmann_logo_blanco.png" alt="RiskMann">
+        </div>
+      </div>
+      <script>
+      (function () {
+        window.__timelines = window.__timelines || {};
+        var tl = gsap.timeline({ paused: true });
+        /* TIEMPOS globales (s), de tools/tiempos-voz.json. S = data-start de esta escena en index.html;
+           si la mueves en el Studio, cambia S. FINE = cuando esta escena cede el paso. */
+        var S = 24.26, FINE = 31.19;
+        var L = function (g) { return g - S; };
+        var a = 24.209999999999997;   // antes de 'Quién aprobó'
+        var r1 = 24.56;   // 'Quién aprobó'
+        var r2 = 25.396;   // 'quién reprobó'
+        var r3 = 26.232;   // 'quién está pendiente'
+        var x = 27.358;   // 'todo en Excel'
+        var c = 28.7;   // 'Todo con la misma cuenta'
+
+        tl.fromTo("#tit .l > span", { yPercent: 115 }, { yPercent: 0, duration: 0.7, ease: "expo.out", stagger: 0.14 }, L(a) - 0.1);
+        tl.fromTo("#tabla", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, L(a) + 0.3);
+        tl.fromTo("#r1", { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.45, ease: "back.out(1.6)" }, L(r1) - 0.05);
+        tl.fromTo("#r2", { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.45, ease: "back.out(1.6)" }, L(r2) - 0.05);
+        tl.fromTo("#r3", { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.45, ease: "back.out(1.6)" }, L(r3) - 0.05);
+        tl.fromTo("#excel", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.55, ease: "back.out(2)" }, L(x));
+        tl.fromTo("#cuenta .l > span", { yPercent: 115 }, { yPercent: 0, duration: 0.7, ease: "expo.out", stagger: 0.14 }, L(c) - 0.05);
+        tl.fromTo("#logo", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, ease: "expo.out" }, L(c) + 0.5);
+        if (FINE - S < 900) tl.to("#c", { opacity: 0, y: -90, duration: 0.35, ease: "power2.in" }, L(FINE) - 0.35);
+        window.__timelines["escena-registro"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>

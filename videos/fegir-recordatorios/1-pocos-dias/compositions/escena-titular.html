@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es">
+  <head><meta charset="UTF-8"><title>escena-titular</title></head>
+  <body>
+    <template>
+      <style>
+        @font-face { font-family: "FEGIR Sans"; font-weight: 300; src: url("assets/fonts/segoeuil.ttf") format("truetype"); }
+        @font-face { font-family: "FEGIR Sans"; font-weight: 400; src: url("assets/fonts/segoeui.ttf") format("truetype"); }
+        @font-face { font-family: "FEGIR Sans"; font-weight: 600; src: url("assets/fonts/segoeuisb.ttf") format("truetype"); }
+        @font-face { font-family: "FEGIR Sans"; font-weight: 700; src: url("assets/fonts/segoeuib.ttf") format("truetype"); }
+        #root {
+          position: absolute; inset: 0; overflow: hidden; background: #2e7a22;
+          font-family: "FEGIR Sans", sans-serif; color: #fff;
+          --verde: #45a035; --verde-claro: #a8c875; --crema: #f1ecb0;
+          --banda-a: #50cd72; --banda-b: #4ecd25; --verde-fondo: #3a8f2c;
+          --verde-hondo: #22621a; --tinta: #1d2b1a;
+        }
+        .capa { position: absolute; inset: 0; }
+        .cortina { position: absolute; left: -400px; top: -300px; width: 1900px; height: 2600px; transform-origin: 50% 50%; }
+        .filo { position: absolute; left: 0; top: 0; width: 100%; height: 38px; }
+        #foto-caja { overflow: hidden; }
+        #foto { position: absolute; left: -60px; top: -80px; width: 1200px; height: auto;
+          filter: grayscale(1) contrast(1.08) brightness(1.05); }
+        #foto-tinte { background: linear-gradient(160deg, #50cd72 0%, #3fa532 55%, #4ecd25 100%); mix-blend-mode: multiply; }
+        #foto-sombra { background: linear-gradient(180deg, rgba(20,60,16,0) 34%, rgba(20,60,16,0.80) 74%, rgba(20,60,16,0.94) 100%); }
+        #kicker { position: absolute; left: 80px; top: 1040px; width: 920px;
+          font-size: 30px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--crema); }
+        #titular { position: absolute; left: 76px; top: 1110px; width: 940px;
+          font-size: 170px; font-weight: 700; line-height: 1.02; letter-spacing: -0.035em;
+          text-shadow: 0 8px 34px rgba(10, 40, 8, 0.55); }
+        #titular .l { display: block; overflow: hidden; padding-bottom: 10px; }
+        #titular .l span { display: inline-block; }
+
+      </style>
+
+      <div id="root" data-composition-id="escena-titular" data-width="1080" data-height="1920">
+        <div id="foto-caja" class="capa">
+          <img id="foto" src="assets/fotos/portada-manual-vertical.jpg" alt="">
+          <div id="foto-tinte" class="capa"></div>
+          <div id="foto-sombra" class="capa"></div>
+          <div id="kicker">En vivo · Informe de Autogestión PESV</div>
+          <div id="titular">
+          <div class="l"><span>Faltan</span></div>
+          <div class="l"><span>pocos días</span></div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+      (function () {
+        window.__timelines = window.__timelines || {};
+        var tl = gsap.timeline({ paused: true });
+        /* TIEMPOS globales (s). V: inicio de cada frase de voz; S: inicio de esta escena
+           (su data-start en index.html). Si mueves la escena, cambia S tambien. */
+        var V = {"f1": 0.3, "f2": 3.44, "f3": 8.91, "f4": 12.42, "f5": 15.7};
+        var S = 0;
+        var L = function (t) { return t - S; };
+        var kick = 1.333;   // marca de voz: 'para el en vivo'
+
+        tl.fromTo("#foto", { scale: 1.12, y: 0 }, { scale: 1.0, y: -40, duration: 3.79, ease: "none" }, 0);
+        tl.fromTo("#titular .l span", { yPercent: 110 },
+          { yPercent: 0, duration: 0.8, ease: "expo.out", stagger: 0.22 }, L(V.f1));
+        tl.fromTo("#kicker", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, L(kick));
+        window.__timelines["escena-titular"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>

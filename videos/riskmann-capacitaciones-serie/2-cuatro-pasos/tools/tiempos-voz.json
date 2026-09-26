@@ -1,0 +1,31 @@
+[
+ {
+  "n": 1,
+  "texto": "Capacita a tu gente con la misma cuenta de RiskMann.",
+  "dur": 2.972,
+  "marcas": {
+   "Capacita": 0.0,
+   "con la misma": 1.242
+  }
+ },
+ {
+  "n": 2,
+  "texto": "Armas el curso. Tu gente lo toma cuando puede. La plataforma califica sola. Y queda el certificado.",
+  "dur": 6.409,
+  "marcas": {
+   "Armas": 0.0,
+   "Tu gente": 1.579,
+   "La plataforma": 3.077,
+   "Y queda": 4.923
+  }
+ },
+ {
+  "n": 3,
+  "texto": "Empieza ahora: es gratis hasta el primero de enero de dos mil veintisiete.",
+  "dur": 4.969,
+  "marcas": {
+   "Empieza": 0.0,
+   "es gratis": 1.3
+  }
+ }
+]

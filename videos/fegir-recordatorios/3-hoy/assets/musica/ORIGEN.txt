@@ -1,0 +1,2 @@
+cama.mp3 generada con ElevenLabs (sound-generation)
+prompt: Bright, hopeful and modern corporate background music for a safety foundation announcement. 104 BPM, warm piano and clean guitar plucks, light claps and soft kick, uplifting and positive, confident but calm, no vocals, instrumental only.

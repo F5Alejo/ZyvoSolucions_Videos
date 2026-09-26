@@ -1,0 +1,30 @@
+[
+ {
+  "n": 1,
+  "texto": "El módulo de Capacitaciones es gratis... hasta el primero de enero de dos mil veintisiete.",
+  "dur": 5.573,
+  "marcas": {
+   "El módulo": 0.0,
+   "gratis": 1.974,
+   "hasta el primero": 2.775
+  }
+ },
+ {
+  "n": 2,
+  "texto": "Si tu gente ya usa RiskMann, ya tiene la cuenta. Solo falta activar Capacitaciones.",
+  "dur": 4.551,
+  "marcas": {
+   "Si tu gente": 0.0,
+   "Solo falta": 2.543
+  }
+ },
+ {
+  "n": 3,
+  "texto": "Crear tu cuenta es gratis. ¡Actívalo ahora!",
+  "dur": 2.508,
+  "marcas": {
+   "Crear tu cuenta": 0.0,
+   "Actívalo": 1.37
+  }
+ }
+]

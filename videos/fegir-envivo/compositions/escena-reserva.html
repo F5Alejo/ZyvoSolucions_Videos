@@ -86,16 +86,16 @@
            V: inicio de cada toma de voz (tools/tiempos-voz.json + index.html).
            S: inicio de ESTA escena (su data-start en index.html).
            Si mueves la escena en el Studio, cambia S aqui tambien. */
-        var V = { f1: 0.30, f2: 3.95, f3: 7.25, f4: 10.85, f5: 14.10, f6: 16.60 };
+        var V = { f1: 0.30, f2: 3.95, f3: 7.25, f4: 10.85, f5: 16.20, f6: 18.70 };
         var CORT = 0.40;   // la cortina entra 0.40 s antes de su frase
-        var S = 13.65;
+        var S = 15.75;
         var L = function (t) { return t - S; };   // global -> local
 
         tl.fromTo("#cortina-blanca2", { rotation: 28, yPercent: 105 },
           { rotation: 28, yPercent: 0, duration: 0.75, ease: "power3.inOut" }, L(V.f5 - CORT));
         tl.fromTo("#cortina-blanca2", { rotation: 28 }, { rotation: 0, immediateRender: false, duration: 0.9, ease: "power2.out" }, L(V.f5 + 0.2));
 
-        var FIN = 19.9;
+        var FIN = 21.9;
         var web = V.f5 + 1.05;    // "en fegir punto org" en +1.126
         var lema = V.f6 + 0.62;   // "tu seguridad" en +0.673
         tl.fromTo("#cta-rot", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, L(V.f5));

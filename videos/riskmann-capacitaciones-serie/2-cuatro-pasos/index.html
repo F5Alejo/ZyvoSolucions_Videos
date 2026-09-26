@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js" integrity="sha384-sG0Hv1tP1lZCk9KQmrIbY/XNwi+OY84GQqhMscbnsoBFqAz8KNCil1kvfL3Hbbk2" crossorigin="anonymous"></script>
+    <style>
+      /* RiskMann · Capacitaciones · anuncio "2-cuatro-pasos" — generado por ../serie.py. Fuente: riskmann.com/capacitaciones. */
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #040404; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #040404; }
+      #root > div { position: absolute; inset: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="17.4" data-width="1080" data-height="1920">
+      <!-- fondo persistente -->
+      <div id="fondo" data-composition-id="fondo" data-composition-src="compositions/fondo.html"
+        data-track-kind="graphics" data-start="0" data-duration="17.4" data-track-index="1"
+        data-width="1080" data-height="1920" style="z-index:1"></div>
+      <div id="escena-1-titular" data-composition-id="escena-1-titular" data-composition-src="compositions/escena-1-titular.html"
+        data-track-kind="graphics" data-start="0.0" data-duration="3.82" data-track-index="2"
+        data-width="1080" data-height="1920" style="z-index:10"></div>
+      <div id="escena-2-pasos" data-composition-id="escena-2-pasos" data-composition-src="compositions/escena-2-pasos.html"
+        data-track-kind="graphics" data-start="3.82" data-duration="7.06" data-track-index="2"
+        data-width="1080" data-height="1920" style="z-index:11"></div>
+      <div id="escena-3-cta" data-composition-id="escena-3-cta" data-composition-src="compositions/escena-3-cta.html"
+        data-track-kind="graphics" data-start="10.88" data-duration="6.52" data-track-index="2"
+        data-width="1080" data-height="1920" style="z-index:12"></div>
+
+      <!-- VOZ · Carlos (ElevenLabs, semilla fija) -->
+      <audio id="voz-1" src="assets/mezcla/voz-1.wav" data-start="0.50" data-duration="2.97" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-2" src="assets/mezcla/voz-2.wav" data-start="4.12" data-duration="6.41" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-3" src="assets/mezcla/voz-3.wav" data-start="11.18" data-duration="4.97" data-track-index="10" data-volume="1"></audio>
+
+      <!-- EFECTOS -->
+      <audio id="sfx-golpe-1" src="assets/sfx/golpe.mp3" data-start="0.45" data-duration="1.50" data-track-index="11" data-volume="0.40"></audio>
+      <audio id="sfx-whoosh-1" src="assets/sfx/whoosh.mp3" data-start="3.57" data-duration="1.00" data-track-index="11" data-volume="0.30"></audio>
+      <audio id="sfx-pop-1" src="assets/sfx/pop.mp3" data-start="4.07" data-duration="0.50" data-track-index="12" data-volume="0.28"></audio>
+      <audio id="sfx-pop-2" src="assets/sfx/pop.mp3" data-start="5.65" data-duration="0.50" data-track-index="11" data-volume="0.28"></audio>
+      <audio id="sfx-pop-3" src="assets/sfx/pop.mp3" data-start="7.15" data-duration="0.50" data-track-index="11" data-volume="0.28"></audio>
+      <audio id="sfx-pop-4" src="assets/sfx/pop.mp3" data-start="8.99" data-duration="0.50" data-track-index="11" data-volume="0.28"></audio>
+      <audio id="sfx-whoosh-2" src="assets/sfx/whoosh.mp3" data-start="10.63" data-duration="1.00" data-track-index="11" data-volume="0.30"></audio>
+      <audio id="sfx-brillo-1" src="assets/sfx/brillo.mp3" data-start="12.48" data-duration="1.60" data-track-index="11" data-volume="0.35"></audio>
+      <audio id="sfx-pop-5" src="assets/sfx/pop.mp3" data-start="12.78" data-duration="0.50" data-track-index="12" data-volume="0.35"></audio>
+
+      <!-- MUSICA · la del promo; baja bajo la voz y sube al final -->
+      <audio id="musica-cama" src="assets/musica/cama.mp3" data-start="0" data-duration="17.4" data-track-index="14" data-volume="1"
+        data-automation="{&quot;version&quot;:1,&quot;lanes&quot;:[{&quot;target&quot;:&quot;volume&quot;,&quot;points&quot;:[{&quot;t&quot;:0.0,&quot;v&quot;:0.0},{&quot;t&quot;:0.2,&quot;v&quot;:0.12},{&quot;t&quot;:16.15,&quot;v&quot;:0.12},{&quot;t&quot;:16.5,&quot;v&quot;:0.28},{&quot;t&quot;:17.3,&quot;v&quot;:0.0}]}]}"></audio>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

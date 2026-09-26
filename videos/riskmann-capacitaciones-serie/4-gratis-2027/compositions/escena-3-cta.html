@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+  <head><meta charset="UTF-8"><title>escena-3-cta</title></head>
+  <body>
+    <template>
+      <style>
+        @font-face { font-family: "Montserrat"; font-weight: 100 900; font-display: block;
+          src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+          unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+        @font-face { font-family: "Montserrat"; font-weight: 100 900; font-display: block;
+          src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+          unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+        @font-face { font-family: "Open Sans"; font-weight: 400; font-display: block;
+          src: url("assets/fonts/open-sans-latin-400.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+20AC, U+2122, U+FEFF; }
+        @font-face { font-family: "Open Sans"; font-weight: 400; font-display: block;
+          src: url("assets/fonts/open-sans-latin-ext-400.woff2") format("woff2"); unicode-range: U+0100-02BA, U+1E00-1E9F, U+2C60-2C7F, U+A720-A7FF; }
+        @font-face { font-family: "Open Sans"; font-weight: 600; font-display: block;
+          src: url("assets/fonts/open-sans-latin-600.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+20AC, U+2122, U+FEFF; }
+        @font-face { font-family: "Open Sans"; font-weight: 600; font-display: block;
+          src: url("assets/fonts/open-sans-latin-ext-600.woff2") format("woff2"); unicode-range: U+0100-02BA, U+1E00-1E9F, U+2C60-2C7F, U+A720-A7FF; }
+        @font-face { font-family: "Open Sans"; font-weight: 700; font-display: block;
+          src: url("assets/fonts/open-sans-latin-700.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+20AC, U+2122, U+FEFF; }
+        @font-face { font-family: "Open Sans"; font-weight: 700; font-display: block;
+          src: url("assets/fonts/open-sans-latin-ext-700.woff2") format("woff2"); unicode-range: U+0100-02BA, U+1E00-1E9F, U+2C60-2C7F, U+A720-A7FF; }
+        #root {
+          position: absolute; inset: 0; overflow: hidden; background: transparent;
+          font-family: "Open Sans", sans-serif; color: #fff;
+          --negro: #040404; --negro2: #0A0A0A; --tarjeta: #121212; --borde: #262626;
+          --dorado: #AC841D; --dorado-claro: #d9b04a; --gris: #F5F5F5; --texto2: #b9b9b9; --marino: #192744;
+        }
+        .t { font-family: "Montserrat", sans-serif; font-weight: 800; letter-spacing: -0.02em; line-height: 1.12; }
+        .oro { color: var(--dorado-claro); }
+        .l { display: block; overflow: hidden; padding-bottom: 6px; }
+        .l > span { display: inline-block; }
+        #c { position: absolute; inset: 0; }
+        .card { background: linear-gradient(160deg, #161616, #0e0e0e); border: 1px solid var(--borde); border-radius: 28px;
+          box-shadow: 0 30px 70px rgba(0,0,0,0.55); }
+        .chip { display: inline-flex; align-items: center; gap: 14px; padding: 14px 30px; border-radius: 100px;
+          border: 1px solid rgba(172,132,29,0.55); background: rgba(172,132,29,0.10); color: var(--dorado-claro);
+          font-family: "Montserrat", sans-serif; font-weight: 700; font-size: 26px; letter-spacing: 0.14em; text-transform: uppercase; }
+        .num { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--dorado); color: var(--dorado-claro);
+          display: flex; align-items: center; justify-content: center; font-family: "Montserrat", sans-serif; font-weight: 800; font-size: 30px;
+          background: rgba(172,132,29,0.12); flex-shrink: 0; }
+        #tit { position: absolute; left: 108px; top: 340px; width: 864px; text-align: center; font-size: 80px; }
+        #sub { position: absolute; left: 108px; top: 600px; width: 864px; text-align: center; font-family: "Montserrat"; font-weight: 700;
+          font-size: 40px; color: var(--dorado-claro); }
+        #boton { position: absolute; left: 50%; top: 720px; transform: translateX(-50%); white-space: nowrap; display: flex; align-items: center; gap: 18px;
+          padding: 34px 60px; border-radius: 18px; background: linear-gradient(135deg, #AC841D, #8a6813); color: #fff;
+          font-family: "Montserrat"; font-weight: 800; font-size: 44px; box-shadow: 0 26px 70px rgba(172,132,29,0.45); }
+        #boton svg { width: 40px; height: 40px; }
+        #web { position: absolute; left: 0; top: 880px; width: 1080px; text-align: center; font-size: 36px; font-weight: 600; color: #e6e6e6; }
+        #qrbox { position: absolute; left: 50%; top: 990px; margin-left: -150px; width: 300px; padding: 22px 22px 16px; background: #fff; border-radius: 22px; text-align: center; }
+        #qrbox img { width: 256px; height: 256px; display: block; }
+        #qrbox span { display: block; color: #111; font-family: "Montserrat"; font-weight: 700; font-size: 20px; margin-top: 8px; }
+        #logo { position: absolute; left: 50%; top: 1500px; width: 420px; margin-left: -210px; height: auto; }
+
+      </style>
+      <div id="root" data-composition-id="escena-3-cta" data-width="1080" data-height="1920">
+        <div id="c">
+          <div id="tit" class="t">
+          <div class="l "><span>Crear tu cuenta</span></div>
+          <div class="l "><span>es <span class="oro">gratis</span></span></div>
+          </div>
+          <div id="sub">Gratis hasta el 1 de enero de 2027</div>
+          <div id="boton">Activar ahora <svg viewBox="0 0 40 40"><path d="M8 20 H30 M22 12 L30 20 L22 28" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div id="web">riskmann.com/capacitaciones</div>
+          <div id="qrbox"><img src="assets/qr/qr-app-riskmann-com.svg" alt="QR app.riskmann.com"><span>app.riskmann.com</span></div>
+          <img id="logo" src="assets/logo/riskmann_logo_blanco.png" alt="RiskMann">
+        </div>
+      </div>
+      <script>
+      (function () {
+        window.__timelines = window.__timelines || {};
+        var tl = gsap.timeline({ paused: true });
+        /* TIEMPOS globales (s), de tools/tiempos-voz.json. S = data-start de esta escena en index.html. */
+        var S = 11.62, FINE = 15.7, ULTIMA = true;
+        var L = function (g) { return g - S; };
+        var a = 11.92;   // 1a marca de la frase CTA
+        var b = 13.29;   // 2a marca
+        var FIN = 15.7;   // fin del video
+
+        tl.fromTo("#tit .l > span", { yPercent: 115 }, { yPercent: 0, duration: 0.7, ease: "expo.out", stagger: 0.14 }, L(a) - 0.1);
+        tl.fromTo("#sub", { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power4.out" }, L(b));
+        tl.fromTo("#boton", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.7, ease: "back.out(1.9)" }, L(b) + 0.3);
+        tl.fromTo("#web", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, L(b) + 0.6);
+        tl.fromTo("#qrbox", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, L(b) + 0.8);
+        tl.fromTo("#logo", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: "expo.out" }, L(b) + 1.0);
+        for (var k = 0; L(b) + 1.4 + k * 1.2 < L(FIN) - 0.6; k++) {   // el boton respira (tweens explicitos)
+          tl.to("#boton", { scale: 1.045, duration: 0.6, ease: "sine.inOut" }, L(b) + 1.4 + k * 1.2);
+          tl.to("#boton", { scale: 1.0, duration: 0.6, ease: "sine.inOut" }, L(b) + 2.0 + k * 1.2);
+        }
+        window.__timelines["escena-3-cta"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>

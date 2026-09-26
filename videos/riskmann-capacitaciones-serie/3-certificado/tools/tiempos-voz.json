@@ -1,0 +1,32 @@
+[
+ {
+  "n": 1,
+  "texto": "La capacitación ocurrió... ¿Pero puedes demostrarlo?",
+  "dur": 3.019,
+  "marcas": {
+   "La capacitación": 0.0,
+   "¿Pero puedes": 1.509
+  }
+ },
+ {
+  "n": 2,
+  "texto": "Con RiskMann, cada persona que aprueba recibe un certificado en pe de efe: nombre, documento, curso y fecha.",
+  "dur": 6.502,
+  "marcas": {
+   "Con RiskMann": 0.0,
+   "nombre": 4.609,
+   "documento": 4.992,
+   "curso y": 5.538,
+   "fecha": 5.909
+  }
+ },
+ {
+  "n": 3,
+  "texto": "Actívalo gratis hasta el primero de enero de dos mil veintisiete.",
+  "dur": 3.808,
+  "marcas": {
+   "Actívalo": 0.0,
+   "hasta el primero": 1.068
+  }
+ }
+]

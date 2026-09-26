@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js" integrity="sha384-sG0Hv1tP1lZCk9KQmrIbY/XNwi+OY84GQqhMscbnsoBFqAz8KNCil1kvfL3Hbbk2" crossorigin="anonymous"></script>
+    <style>
+      /* FEGIR · En Vivo PESV · recordatorio "1-pocos-dias" — generado por ../serie.py.
+         Identidad: la del video aprobado videos/fegir-envivo (manual FEGIR).
+         Solo anfitriones (una fila por escena en el Studio) y audio. */
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #2e7a22; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #2e7a22; }
+      #root > div { position: absolute; inset: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="18.9" data-width="1080" data-height="1920">
+      <!-- A · titular sobre la foto del manual -->
+      <div id="escena-titular" data-composition-id="escena-titular" data-composition-src="compositions/escena-titular.html"
+        data-track-kind="graphics" data-start="0" data-duration="3.79" data-track-index="1"
+        data-width="1080" data-height="1920" style="z-index:1"></div>
+      <!-- B · la fecha (verde) -->
+      <div id="escena-fecha" data-composition-id="escena-fecha" data-composition-src="compositions/escena-fecha.html"
+        data-track-kind="graphics" data-start="2.99" data-duration="6.27" data-track-index="2"
+        data-width="1080" data-height="1920" style="z-index:2"></div>
+      <!-- C · los dos pasos y el cierre (blanco) -->
+      <div id="escena-pasos" data-composition-id="escena-pasos" data-composition-src="compositions/escena-pasos.html"
+        data-track-kind="graphics" data-start="8.46" data-duration="10.44" data-track-index="1"
+        data-width="1080" data-height="1920" style="z-index:3"></div>
+      <!-- sello, todo el video -->
+      <div id="sello-envivo" data-composition-id="sello-envivo" data-composition-src="compositions/sello-envivo.html"
+        data-track-kind="graphics" data-start="0" data-duration="18.9" data-track-index="3"
+        data-width="1080" data-height="1920" style="z-index:10"></div>
+
+      <!-- VOZ · Carlos (ElevenLabs); la 5 es la toma de cierre aprobada del video principal -->
+      <audio id="voz-1" src="assets/mezcla/voz-1.wav" data-start="0.30" data-duration="2.69" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-2" src="assets/mezcla/voz-2.wav" data-start="3.44" data-duration="5.02" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-3" src="assets/mezcla/voz-3.wav" data-start="8.91" data-duration="3.16" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-4" src="assets/mezcla/voz-4.wav" data-start="12.42" data-duration="2.93" data-track-index="10" data-volume="1"></audio>
+      <audio id="voz-5" src="assets/mezcla/voz-5.wav" data-start="15.70" data-duration="2.32" data-track-index="10" data-volume="1"></audio>
+
+      <!-- EFECTOS -->
+      <audio id="sfx-golpe-1" src="assets/sfx/golpe.mp3" data-start="0.35" data-duration="1.50" data-track-index="11" data-volume="0.45"></audio>
+      <audio id="sfx-cortina-1" src="assets/sfx/cortina.mp3" data-start="3.04" data-duration="1.00" data-track-index="11" data-volume="0.35"></audio>
+      <audio id="sfx-hoja-1" src="assets/sfx/hoja.mp3" data-start="3.54" data-duration="0.90" data-track-index="12" data-volume="0.45"></audio>
+      <audio id="sfx-pop-1" src="assets/sfx/pop.mp3" data-start="6.38" data-duration="0.50" data-track-index="11" data-volume="0.30"></audio>
+      <audio id="sfx-cortina-2" src="assets/sfx/cortina.mp3" data-start="8.51" data-duration="1.00" data-track-index="11" data-volume="0.35"></audio>
+      <audio id="sfx-pop-2" src="assets/sfx/pop.mp3" data-start="9.06" data-duration="0.50" data-track-index="12" data-volume="0.40"></audio>
+      <audio id="sfx-pop-3" src="assets/sfx/pop.mp3" data-start="13.41" data-duration="0.50" data-track-index="11" data-volume="0.35"></audio>
+      <audio id="sfx-brillo-1" src="assets/sfx/brillo.mp3" data-start="15.60" data-duration="1.60" data-track-index="11" data-volume="0.40"></audio>
+
+      <!-- MUSICA · la cama del video principal, baja bajo la voz -->
+      <audio id="musica-cama" src="assets/musica/cama.mp3" data-start="0" data-duration="18.9" data-track-index="13" data-volume="1"
+        data-automation="{&quot;version&quot;:1,&quot;lanes&quot;:[{&quot;target&quot;:&quot;volume&quot;,&quot;points&quot;:[{&quot;t&quot;:0.0,&quot;v&quot;:0.0},{&quot;t&quot;:0.25,&quot;v&quot;:0.14},{&quot;t&quot;:18.02,&quot;v&quot;:0.14},{&quot;t&quot;:18.32,&quot;v&quot;:0.3},{&quot;t&quot;:18.8,&quot;v&quot;:0.0}]}]}"></audio>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js" integrity="sha384-sG0Hv1tP1lZCk9KQmrIbY/XNwi+OY84GQqhMscbnsoBFqAz8KNCil1kvfL3Hbbk2" crossorigin="anonymous"></script>
+    <style>
+      /* RiskMann · Modulo Capacitaciones — promo vertical. Generado por tools/construir.py.
+         Fuente: riskmann.com/capacitaciones. Identidad de la landing: negro + dorado #AC841D,
+         Montserrat + Open Sans. Una fila por escena en el Studio; el apilado lo da el z-index. */
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #040404; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #040404; }
+      #root > div { position: absolute; inset: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="39.3" data-width="1080" data-height="1920">
+      <!-- fondo persistente: negro, resplandor dorado, fichas flotando -->
+      <div id="fondo" data-composition-id="fondo" data-composition-src="compositions/fondo.html"
+        data-track-kind="graphics" data-start="0" data-duration="39.3" data-track-index="1"
+        data-width="1080" data-height="1920" style="z-index:1"></div>
+      <!-- 1 · gancho -->
+      <div id="escena-gancho" data-composition-id="escena-gancho" data-composition-src="compositions/escena-gancho.html"
+        data-track-kind="graphics" data-start="0.0" data-duration="3.87" data-track-index="2"
+        data-width="1080" data-height="1920" style="z-index:10"></div>
+      <!-- 2 · problema -->
+      <div id="escena-problema" data-composition-id="escena-problema" data-composition-src="compositions/escena-problema.html"
+        data-track-kind="graphics" data-start="3.87" data-duration="5.02" data-track-index="2"
+        data-width="1080" data-height="1920" style="z-index:11"></div>
+      <!-- 3 · armar -->
+      <div id="escena-armar" data-composition-id="escena-armar" data-composition-src="compositions/escena-armar.html"
+        data-track-kind="graphics" data-start="8.89" data-duration="4.23" data-track-index="2"
+        data-width="1080" data-height="1920" style="z-index:12"></div>
+      <!-- 4 · tomar -->
+      <div id="escena-tomar" data-composition-id="escena-tomar" data-composition-src="compositions/escena-tomar.html"
+        data-track-kind="graphics" data-start="13.12" data-duration="3.85" data-track-index="2"
+        data-width="1080" data-height="1920" style="z-index:13"></div>
+      <!-- 5 · certificado -->
+      <div id="escena-certificado" data-composition-id="escena-certificado" data-composition-src="compositions/escena-certificado.html"
+        data-track-kind="graphics" data-start="16.97" data-duration="7.29" data-track-index="2"
+        data-width="1080" data-height="1920" style="z-index:14"></div>
+      <!-- 6 · registro -->
+      <div id="escena-registro" data-composition-id="escena-registro" data-composition-src="compositions/escena-registro.html"
+        data-track-kind="graphics" data-start="24.26" data-duration="6.93" data-track-index="2"
+        data-width="1080" data-height="1920" style="z-index:15"></div>
+      <!-- 7 · cierre -->
+      <div id="escena-cierre" data-composition-id="escena-cierre" data-composition-src="compositions/escena-cierre.html"
+        data-track-kind="graphics" data-start="31.19" data-duration="8.11" data-track-index="2"
+        data-width="1080" data-height="1920" style="z-index:16"></div>
+
+      <!-- VOZ · Carlos (ElevenLabs, eleven_multilingual_v2, semilla fija), tomas niveladas -->
+      <audio id="voz-1" src="assets/mezcla/voz-1.wav" data-start="0.50" data-duration="3.02" data-track-index="10" data-volume="1.00"></audio>
+      <audio id="voz-2" src="assets/mezcla/voz-2.wav" data-start="4.17" data-duration="4.37" data-track-index="10" data-volume="1.00"></audio>
+      <audio id="voz-3" src="assets/mezcla/voz-3.wav" data-start="9.19" data-duration="3.58" data-track-index="10" data-volume="1.00"></audio>
+      <audio id="voz-4" src="assets/mezcla/voz-4.wav" data-start="13.42" data-duration="3.20" data-track-index="10" data-volume="1.00"></audio>
+      <audio id="voz-5" src="assets/mezcla/voz-5.wav" data-start="17.27" data-duration="1.72" data-track-index="10" data-volume="1.00"></audio>
+      <audio id="voz-6" src="assets/mezcla/voz-6.wav" data-start="19.27" data-duration="4.64" data-track-index="10" data-volume="1.00"></audio>
+      <audio id="voz-7" src="assets/mezcla/voz-7.wav" data-start="24.56" data-duration="3.85" data-track-index="10" data-volume="1.00"></audio>
+      <audio id="voz-8" src="assets/mezcla/voz-8.wav" data-start="28.70" data-duration="2.14" data-track-index="10" data-volume="1.00"></audio>
+      <audio id="voz-9" src="assets/mezcla/voz-9.wav" data-start="31.49" data-duration="3.81" data-track-index="10" data-volume="1.00"></audio>
+      <audio id="voz-10" src="assets/mezcla/voz-10.wav" data-start="35.58" data-duration="2.32" data-track-index="10" data-volume="1.00"></audio>
+
+      <!-- EFECTOS · ElevenLabs -->
+      <audio id="sfx-golpe-1" src="assets/sfx/golpe.mp3" data-start="0.45" data-duration="1.50" data-track-index="11" data-volume="0.45"></audio>
+      <audio id="sfx-whoosh-1" src="assets/sfx/whoosh.mp3" data-start="3.62" data-duration="1.00" data-track-index="11" data-volume="0.30"></audio>
+      <audio id="sfx-papel-1" src="assets/sfx/papel.mp3" data-start="5.90" data-duration="0.90" data-track-index="11" data-volume="0.40"></audio>
+      <audio id="sfx-whoosh-2" src="assets/sfx/whoosh.mp3" data-start="8.64" data-duration="1.00" data-track-index="11" data-volume="0.30"></audio>
+      <audio id="sfx-tecla-1" src="assets/sfx/tecla.mp3" data-start="10.54" data-duration="0.50" data-track-index="11" data-volume="0.35"></audio>
+      <audio id="sfx-tecla-2" src="assets/sfx/tecla.mp3" data-start="11.05" data-duration="0.50" data-track-index="11" data-volume="0.35"></audio>
+      <audio id="sfx-tecla-3" src="assets/sfx/tecla.mp3" data-start="11.77" data-duration="0.50" data-track-index="11" data-volume="0.35"></audio>
+      <audio id="sfx-whoosh-3" src="assets/sfx/whoosh.mp3" data-start="12.87" data-duration="1.00" data-track-index="11" data-volume="0.30"></audio>
+      <audio id="sfx-whoosh-4" src="assets/sfx/whoosh.mp3" data-start="16.72" data-duration="1.00" data-track-index="11" data-volume="0.30"></audio>
+      <audio id="sfx-visto-1" src="assets/sfx/visto.mp3" data-start="17.87" data-duration="0.80" data-track-index="11" data-volume="0.45"></audio>
+      <audio id="sfx-brillo-1" src="assets/sfx/brillo.mp3" data-start="19.12" data-duration="1.60" data-track-index="11" data-volume="0.35"></audio>
+      <audio id="sfx-whoosh-5" src="assets/sfx/whoosh.mp3" data-start="24.01" data-duration="1.00" data-track-index="11" data-volume="0.30"></audio>
+      <audio id="sfx-pop-1" src="assets/sfx/pop.mp3" data-start="24.51" data-duration="0.50" data-track-index="12" data-volume="0.30"></audio>
+      <audio id="sfx-pop-2" src="assets/sfx/pop.mp3" data-start="25.35" data-duration="0.50" data-track-index="11" data-volume="0.30"></audio>
+      <audio id="sfx-pop-3" src="assets/sfx/pop.mp3" data-start="26.18" data-duration="0.50" data-track-index="11" data-volume="0.30"></audio>
+      <audio id="sfx-pop-4" src="assets/sfx/pop.mp3" data-start="27.36" data-duration="0.50" data-track-index="11" data-volume="0.35"></audio>
+      <audio id="sfx-whoosh-6" src="assets/sfx/whoosh.mp3" data-start="30.94" data-duration="1.00" data-track-index="11" data-volume="0.30"></audio>
+      <audio id="sfx-brillo-2" src="assets/sfx/brillo.mp3" data-start="32.56" data-duration="1.60" data-track-index="11" data-volume="0.40"></audio>
+      <audio id="sfx-pop-5" src="assets/sfx/pop.mp3" data-start="33.06" data-duration="0.50" data-track-index="12" data-volume="0.35"></audio>
+
+      <!-- MUSICA · generada para esta pieza; baja bajo la voz y sube al final -->
+      <audio id="musica-cama" src="assets/musica/cama.mp3" data-start="0" data-duration="39.3" data-track-index="14" data-volume="1"
+        data-automation="{&quot;version&quot;:1,&quot;lanes&quot;:[{&quot;target&quot;:&quot;volume&quot;,&quot;points&quot;:[{&quot;t&quot;:0.0,&quot;v&quot;:0.0},{&quot;t&quot;:0.2,&quot;v&quot;:0.12},{&quot;t&quot;:37.9,&quot;v&quot;:0.12},{&quot;t&quot;:38.25,&quot;v&quot;:0.28},{&quot;t&quot;:39.2,&quot;v&quot;:0.0}]}]}"></audio>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

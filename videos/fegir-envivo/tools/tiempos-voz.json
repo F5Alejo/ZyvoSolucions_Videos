@@ -51,18 +51,21 @@
   "n": 4,
   "frames": [
    "fecha",
-   "hora"
+   "hora",
+   "canales"
   ],
   "frases": [
    "Este sábado tres de octubre",
-   "a las diez de la mañana."
+   "a las diez de la mañana",
+   "por Instagram, TikTok y YouTube."
   ],
   "inicios": [
    0.0,
-   1.614,
-   2.833
+   1.591,
+   2.763,
+   4.923
   ],
-  "duracion": 2.833
+  "duracion": 4.923
  },
  {
   "n": 5,

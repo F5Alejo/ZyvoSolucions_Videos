@@ -186,3 +186,14 @@ videos/riskmann-pesv-v2/renders/
 
 # Renders del promo de Yezid: se rehacen con npm run render
 videos/yezid-envivo-pesv-autogestion/renders/
+
+# Proyectos anidados (series generadas: videos/<serie>/<N-variante>/): los mismos
+# patrones de arriba, un nivel mas abajo
+videos/*/*/renders/
+videos/*/*/snapshots/
+videos/*/*/assets/voz/
+videos/*/*/.hyperframes/
+videos/*/*/capture/
+
+# Cache de formas de onda que escribe el Studio al abrir un proyecto
+**/.waveform-cache/

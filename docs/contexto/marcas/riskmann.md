@@ -49,7 +49,8 @@
   - La receta **`riskmann-hud`** (que `CLAUDE.md` recomienda) **no corresponde al manual**.
   - La **landing de capacitaciones** usa negro + dorado **`#AC841D`** con Montserrat + Open
     Sans; el manual fija dorado `#c8951a` y Dubai. El promo y la serie de capacitaciones
-    (26-sep) siguen la landing. ⚠ Decidir cuál manda.
+    (26-sep) siguen la landing **por decisión del cliente para esas piezas**; sigue abierto
+    cuál manda en general.
 
 ## 5. Voz y tono
 
@@ -81,8 +82,8 @@
 | `riskmann-pesv-v2/` | Lente como cámara continua | 34 s | Esqueleto verificado | — |
 | `riskmann-pesv-publicitario/` | 8 escenas | ~36 s | Programado | — |
 | `riskmann-inspecciones-ads/` | 3 anuncios, lienzo propio | 3 × 12 s | ⚠ estado por confirmar | — |
-| `riskmann-capacitaciones-promo/` | HyperFrames | — | **En curso (26-sep), sin guardar en git** | — |
-| `riskmann-capacitaciones-serie/` | 4 anuncios verticales | 12–15 s | **En curso (26-sep), sin guardar en git** | — |
+| `riskmann-capacitaciones-promo/` | HyperFrames 9:16, 7 escenas, QR oficial | 39,3 s | Entregado (V2, 26-sep) | `ENTREGABLES-VIDEO/riskmann-capacitaciones/` |
+| `riskmann-capacitaciones-serie/` | 4 anuncios verticales gancho / valor / cta | 15,5–17,4 s | Entregados (26-sep) | `ENTREGABLES-VIDEO/riskmann-capacitaciones/serie/` |
 
 ## 8. Decisiones tomadas
 
@@ -92,6 +93,8 @@
 | 2026-09-17 | La identidad se construye contra el manual en PDF, no contra `riskmann-hud` | La receta no coincide con el manual | Alejandro |
 | 2026-09-17 | Música de catálogo con licencia sin restricción de plataforma (Mixkit, Pixabay) | Las piezas van a Reels y TikTok | Alejandro |
 | 2026-09-18 | Rojo reservado para «peligro» | Entrega del 18-sep | Cliente |
+| 2026-09-26 | El promo y la serie de Capacitaciones usan la identidad de **la landing** (negro + `#AC841D`, Montserrat + Open Sans) | Quien vea el video y entre a la página la reconoce | Cliente |
+| 2026-09-26 | El QR `qr-app-riskmann-com` (→ `app.riskmann.com/entrada`) es el mismo del brochure; va en el cierre de las piezas de Capacitaciones | Vía secundaria al botón cuando el video se proyecta | Equipo `fegir` |
 
 ## 9. Pendientes y ⚠ por confirmar
 
@@ -100,7 +103,8 @@
 - [ ] Manual frente a landing de capacitaciones: qué dorado y qué tipografía mandan.
 - [ ] Elegir la voz oficial.
 - [ ] Corregir o retirar «Sala de control».
-- [ ] Guardar en git el promo y la serie de capacitaciones.
+- [x] Guardar en git el promo y la serie de capacitaciones (26-sep).
+- [ ] Respuestas de las preguntas frecuentes de la landing de Capacitaciones (precio, validez del certificado).
 
 ## 10. Qué hay que pedirle al cliente
 

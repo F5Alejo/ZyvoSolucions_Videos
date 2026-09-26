@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es">
+  <head><meta charset="UTF-8"><title>escena-1-titular</title></head>
+  <body>
+    <template>
+      <style>
+        @font-face { font-family: "Montserrat"; font-weight: 100 900; font-display: block;
+          src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+          unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+        @font-face { font-family: "Montserrat"; font-weight: 100 900; font-display: block;
+          src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+          unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+        @font-face { font-family: "Open Sans"; font-weight: 400; font-display: block;
+          src: url("assets/fonts/open-sans-latin-400.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+20AC, U+2122, U+FEFF; }
+        @font-face { font-family: "Open Sans"; font-weight: 400; font-display: block;
+          src: url("assets/fonts/open-sans-latin-ext-400.woff2") format("woff2"); unicode-range: U+0100-02BA, U+1E00-1E9F, U+2C60-2C7F, U+A720-A7FF; }
+        @font-face { font-family: "Open Sans"; font-weight: 600; font-display: block;
+          src: url("assets/fonts/open-sans-latin-600.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+20AC, U+2122, U+FEFF; }
+        @font-face { font-family: "Open Sans"; font-weight: 600; font-display: block;
+          src: url("assets/fonts/open-sans-latin-ext-600.woff2") format("woff2"); unicode-range: U+0100-02BA, U+1E00-1E9F, U+2C60-2C7F, U+A720-A7FF; }
+        @font-face { font-family: "Open Sans"; font-weight: 700; font-display: block;
+          src: url("assets/fonts/open-sans-latin-700.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+20AC, U+2122, U+FEFF; }
+        @font-face { font-family: "Open Sans"; font-weight: 700; font-display: block;
+          src: url("assets/fonts/open-sans-latin-ext-700.woff2") format("woff2"); unicode-range: U+0100-02BA, U+1E00-1E9F, U+2C60-2C7F, U+A720-A7FF; }
+        #root {
+          position: absolute; inset: 0; overflow: hidden; background: transparent;
+          font-family: "Open Sans", sans-serif; color: #fff;
+          --negro: #040404; --negro2: #0A0A0A; --tarjeta: #121212; --borde: #262626;
+          --dorado: #AC841D; --dorado-claro: #d9b04a; --gris: #F5F5F5; --texto2: #b9b9b9; --marino: #192744;
+        }
+        .t { font-family: "Montserrat", sans-serif; font-weight: 800; letter-spacing: -0.02em; line-height: 1.12; }
+        .oro { color: var(--dorado-claro); }
+        .l { display: block; overflow: hidden; padding-bottom: 6px; }
+        .l > span { display: inline-block; }
+        #c { position: absolute; inset: 0; }
+        .card { background: linear-gradient(160deg, #161616, #0e0e0e); border: 1px solid var(--borde); border-radius: 28px;
+          box-shadow: 0 30px 70px rgba(0,0,0,0.55); }
+        .chip { display: inline-flex; align-items: center; gap: 14px; padding: 14px 30px; border-radius: 100px;
+          border: 1px solid rgba(172,132,29,0.55); background: rgba(172,132,29,0.10); color: var(--dorado-claro);
+          font-family: "Montserrat", sans-serif; font-weight: 700; font-size: 26px; letter-spacing: 0.14em; text-transform: uppercase; }
+        .num { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--dorado); color: var(--dorado-claro);
+          display: flex; align-items: center; justify-content: center; font-family: "Montserrat", sans-serif; font-weight: 800; font-size: 30px;
+          background: rgba(172,132,29,0.12); flex-shrink: 0; }
+        #tt { position: absolute; left: 108px; top: 824px; width: 864px; font-size: 73px; }
+
+      </style>
+      <div id="root" data-composition-id="escena-1-titular" data-width="1080" data-height="1920">
+        <div id="c">
+          <div id="tt" class="t">
+          <div class="l "><span>Capacita a tu gente</span></div>
+          <div class="l "><span>con la misma cuenta</span></div>
+          <div class="l "><span>de <span class="oro">RiskMann</span></span></div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        window.__timelines = window.__timelines || {};
+        var tl = gsap.timeline({ paused: true });
+        /* TIEMPOS globales (s), de tools/tiempos-voz.json. S = data-start de esta escena en index.html. */
+        var S = 0.0, FINE = 3.82, ULTIMA = false;
+        var L = function (g) { return g - S; };
+        var a = 0.5;   // 1a marca
+        var b = 1.742;   // 2a marca
+
+        var spans = gsap.utils.toArray("#tt .l > span");
+        var mitad = Math.ceil(spans.length / 2);
+        tl.fromTo(spans.slice(0, mitad), { yPercent: 115 }, { yPercent: 0, duration: 0.75, ease: "expo.out", stagger: 0.14 }, L(a) - 0.05);
+        tl.fromTo(spans.slice(mitad), { yPercent: 115 }, { yPercent: 0, duration: 0.75, ease: "expo.out", stagger: 0.14 }, L(b) - 0.05);
+        if (!ULTIMA) tl.to("#c", { opacity: 0, y: -90, duration: 0.35, ease: "power2.in" }, L(FINE) - 0.35);
+        window.__timelines["escena-1-titular"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>

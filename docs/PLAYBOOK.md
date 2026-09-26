@@ -40,7 +40,10 @@
 | RiskMann · PESV v2 y publicitario | Manual oficial | «La lente del manual como cámara continua»; publicitario de 8 escenas | Esqueleto verificado; publicitario ~36 s programado | `videos/riskmann-pesv-v2/`, `videos/riskmann-pesv-publicitario/` |
 | Yezid Ricaurte · En Vivo | Página del evento + manual de Yezid | Promo vertical, HyperFrames, rejilla de tempo | 15 s 9:16, voz + efectos + música | `videos/yezid-envivo-pesv-autogestion/` |
 | Yezid Ricaurte · campañas del En Vivo | Correos de la campaña + web + manual | **Lienzo propio** (Three.js + GSAP + puppeteer), una composición y varias variantes | 15 s; campañas de 3 videos de 12 s (pocos días / mañana / hoy) | `videos/yezid-envivo-15s/`, `-campana[-v2]/`, `-estudio/`, `-premium/` |
-| FEGIR · En Vivo | Mismo evento, firmado por la Fundación FEGIR | HyperFrames, reorganizado para editar en el Studio | 5 escenas con voz, efectos y música generada; `fegir-envivo-pesv` es una variante en curso (fondo `aurora-drift` y narración) | `videos/fegir-envivo/`, `videos/fegir-envivo-pesv/` |
+| FEGIR · En Vivo | Mismo evento, firmado **solo** por la Fundación FEGIR + manual de FEGIR | HyperFrames, reorganizado para editar en el Studio | 21,9 s 9:16, 5 escenas, voz + efectos + música generada (V4 vigente). `fegir-envivo-pesv` fue la versión combinada con Yezid: **descartada** | `videos/fegir-envivo/` |
+| FEGIR · recordatorios del En Vivo | Correos de la campaña (solo estructura y datos) | 3 proyectos HyperFrames generados por `serie.py` | 3 × 15–19 s (pocos días / mañana / hoy) | `videos/fegir-recordatorios/` |
+| RiskMann · Capacitaciones, promo | Solo la landing `riskmann.com/capacitaciones` | HyperFrames generado (`tools/construir.py`), identidad de la landing | 39,3 s 9:16, 7 escenas, QR oficial | `videos/riskmann-capacitaciones-promo/` |
+| RiskMann · Capacitaciones, serie | La misma landing | 4 anuncios `gancho / valor / cta` generados por `serie.py` (importa las plantillas del promo) | 4 × 15–17 s 9:16 | `videos/riskmann-capacitaciones-serie/` |
 | RiskMann · «Inspecciones gratis» | Solo la landing `riskmann.com/inspecciones-gratis/` | Lienzo propio, 3 anuncios `hook / valor / cta` | 3 × 12 s 9:16, `eleven_v3` | `videos/riskmann-inspecciones-ads/` |
 
 Todas las entregas finales están en `../videos-finales/` (con su `LEEME.txt`) y en la
@@ -65,6 +68,11 @@ carpeta de Drive enlazada en el [README](../README.md).
    para ElevenLabs (`…` como pausa, siglas deletreadas).
 8. **Anuncios de landing** — una sola URL como fuente y tres ángulos (`hook / valor / cta`)
    sobre la misma composición: la campaña corta se vuelve configuración (`js/config.js`).
+9. **FEGIR sola y Capacitaciones (26-sep)** — la pieza de FEGIR recoloreada sobre la de
+   Yezid se rechazó por «dependiente»: una marca por video, también en el color y la
+   estructura. Las series pasaron a ser **HyperFrames generado**: un script pide la voz con
+   semilla fija, lee sus tiempos y escribe `index.html` + una sub-composición por escena,
+   editables en el Studio (`serie.py`, `construir.py`).
 
 **La lección de fondo:** el primer video de un formato cuesta un día; el segundo, una
 hora; con el formato convertido en generador, un módulo cuesta lo que tarda su render.
@@ -151,6 +159,8 @@ Estas nueve prácticas son las que más tiempo ahorraron. Ninguna depende de Ris
 | Vertical RiskMann con ElevenLabs | `videos/riskmann-consulta-pesv-vertical/` | `SCRIPT.md`, `tools/narracion.json`, `SFX-CUES.md`, `tools/final-A.json` |
 | Promo de evento (HyperFrames) | `videos/yezid-envivo-pesv-autogestion/` | `tools/narracion.json`, `--brand` del fondo `aurora-drift`, rejilla de tempo |
 | Promo editable en el Studio | `videos/fegir-envivo/` | `compositions/escena-*.html` (ver su `EDITAR.md`); **no** volver a correr `tools/estudio.py` |
+| Promo de landing generado desde la voz | `videos/riskmann-capacitaciones-promo/` | `GUION` y `ESCENAS` de `tools/construir.py`; `voz` → `musica` → `construir` |
+| Serie de N variantes, editable en el Studio | `videos/fegir-recordatorios/` o `videos/riskmann-capacitaciones-serie/` | la lista `SERIE` de `serie.py`; `python serie.py voz` + `construir` (reescribe las N carpetas) |
 | Campaña de variantes (lienzo propio) | `videos/yezid-envivo-premium/` | `js/config.js` (textos, colores y tiempos por variante) |
 | Anuncios de una landing | `videos/riskmann-inspecciones-ads/` | `js/ads.js → SCRIPTS`, la URL fuente en `GUIONES.md` |
 
@@ -236,7 +246,7 @@ de ElevenLabs, efectos y música. El detalle técnico está en
 
 | | HyperFrames | Lienzo propio |
 | --- | --- | --- |
-| Proyectos | `riskmann-consulta-pesv-vertical`, `yezid-envivo-pesv-autogestion`, `fegir-envivo` | `yezid-envivo-15s`, `-campana[-v2]`, `-estudio`, `-premium`, `riskmann-inspecciones-ads` |
+| Proyectos | `riskmann-consulta-pesv-vertical`, `yezid-envivo-pesv-autogestion`, `fegir-envivo`, `fegir-recordatorios/*`, `riskmann-capacitaciones-promo`, `riskmann-capacitaciones-serie/*` | `yezid-envivo-15s`, `-campana[-v2]`, `-estudio`, `-premium`, `riskmann-inspecciones-ads` |
 | Motor | `data-*` + GSAP, `npm run check` / `render` | HTML + GSAP + Three.js; `window.seekTo(t)` y `tools/render.mjs` (puppeteer-core + Chrome del sistema → ffmpeg) |
 | Preview | `npx hyperframes preview` | `python -m http.server <puerto>` + `?ad=` / `?v=` |
 | Cuándo | Una pieza que alguien seguirá editando en el Studio | Varias variantes de la misma pieza, o 3D/shaders que no caben en una composición |
@@ -260,6 +270,13 @@ ni `repeat:-1`): el render busca por tiempo.
   palabra en MAYÚSCULAS por anuncio con `eleven_v3`; «vivo» nunca cierra frase.
 - **El acento es propiedad de la voz**, no un parámetro. Y la misma frase dura
   6.5–9.9 s según la voz: cambiarla obliga a recolocar las animaciones.
+- **Una sigla que suena distinta en cada frase:** escribirla con el nombre de las letras.
+  Medido con la misma semilla en dos frases: «pe e ese ve» dura 0,75 / 0,76 s (igual en las
+  dos) frente a `P-E-S-V` 0,62 / 0,56, `P.E.S.V.` 0,51 / 0,61 y `pe-e-ese-ve` 0,84 / 0,71
+  (`fegir-envivo/tools/prueba-sigla.py`). Igual «pe de efe» para PDF.
+- **Semilla fija** (`"seed": 20261003` en el cuerpo): el mismo texto da la misma toma. Con
+  ella se regenera **solo** la frase que cambia (`voz-eleven.py … 1,3`, `serie.py voz
+  carpeta:2`) y las demás siguen siendo las aprobadas.
 - El cuerpo de la petición en **UTF-8 desde Python**: con `curl` y tildes, `400 invalid_unicode`.
 - La clave se lee de `ELEVENLABS_API_KEY`, nunca se escribe en el repo.
 
@@ -298,7 +315,8 @@ contenido con `ease: "none"`. En la consulta PESV: de 44 ventanas muertas de 76 
 | --- | --- | --- |
 | RiskMann | `docs/marca/` (PDF oficial) | `#020202`, dorado `#c8951a`, cian `#06c7fb`; Dubai; caballero y dos anillos cian + dorado; pesos mezclados en una frase |
 | Yezid Ricaurte | Manual de Yezid + `yezidricaurte.com` + correos | Petróleo `#001f26`, verde `#336666`, dorado `#d2b96a`, pálido `#f1ecb0`, botón coral `#f06e49` de los correos; firma oficial en negativo, **sin redibujar**; **sin rojo** (reservado para «peligro») |
-| FEGIR | Brief | Verde `#45a035`; CTA a `fegir.org`; logos en `videos/fegir-envivo/assets/logo/` (origen por confirmar) |
+| FEGIR | `docs/marca/fegir/manual-identidad-fegir.pdf` + web de FEGIR | Verde `#45a035`, verde claro `#a8c875`, crema `#f1ecb0`; banda del manual `#50cd72 → #4ecd25` (muestreada); Segoe UI (la del manual); logo **extraído de los vectores del manual** (`docs/marca/fegir/logos-extraidos/`); planos alternos verde/blanco y la foto de portada del manual en duotono; **nada de Yezid** |
+| RiskMann · landing de Capacitaciones | La landing (decisión del cliente, 26-sep, **solo para esa landing**) | Negro `#040404`, dorado `#AC841D` (el botón empieza en él, nunca más claro), Montserrat + Open Sans; logo oficial; QR oficial → `app.riskmann.com/entrada` |
 
 La ficha completa de cada marca está en [`contexto/marcas/`](contexto/marcas/).
 
@@ -306,8 +324,9 @@ La ficha completa de cada marca está en [`contexto/marcas/`](contexto/marcas/).
   (oliva `#80804a` = 1.75:1): variantes aclaradas **solo para texto**, el color de marca
   intacto en acentos.
 - Dubai necesita `line-height` ≥ 1.5.
-- En las piezas de Yezid, FEGIR no aparece en pantalla, y en las de FEGIR el CTA es
-  `fegir.org`: son dos entregas distintas del mismo evento.
+- En las piezas de Yezid, FEGIR no aparece en pantalla, y en las de FEGIR no aparece Yezid
+  (ni su nombre, ni su web, ni su paleta): son dos entregas distintas del mismo evento. La
+  versión FEGIR recoloreada sobre la de Yezid se rechazó el 26-sep por verse «dependiente».
 
 ---
 
@@ -370,6 +389,13 @@ La lista completa está en [`ARRANQUE-EN-OTRO-EQUIPO.md`](ARRANQUE-EN-OTRO-EQUIP
 | 18 | Suprimir avisos del verificador en bloque (40 `content_overlap` eran ciertos) | Quitar las supresiones y ver si el error vuelve |
 | 19 | Re-correr un generador de un solo uso (`fegir-envivo/tools/estudio.py`) | Borra lo editado en el Studio: después del primer uso, la fuente es `index.html` + `compositions/` |
 | 20 | OneDrive borra o revierte el repo en caliente | Clonar fuera de OneDrive; commit y push antes de renderizar |
+| 21 | `data-volume` > 1 en un `<audio>`: no sube la toma | Nivelar la toma **a disco** midiendo su LUFS y aplicando la ganancia exacta que falta |
+| 22 | Curva `data-automation` generada con `max()`/solapes: puntos fuera de orden en el tiempo | Ordenar y comprobar (`assert`) antes de escribir; en huecos < 0,6 s la cama se queda baja |
+| 23 | Texto dentro de un elemento girado (certificado inclinado): decenas de `content_overlap` falsos | Girarlo solo en la entrada; en reposo, derecho |
+| 24 | Botón dorado con degradado que empieza más claro que `#AC841D`: 2,97:1 con blanco | Empezar en `#AC841D` y oscurecer hacia el otro extremo |
+| 25 | Aparecer con fundido lento: `check` mide el contraste a medio fundido y falla | Aparecer de golpe (0,01 s) mientras el elemento se desplaza |
+| 26 | Parche con `assert` que falla a medias y luego se corre la herramienta sin el parche: regeneró las 6 tomas | Parchear con el editor; copiar antes las tomas aprobadas; la fuente de verdad son las niveladas (`assets/mezcla/`) |
+| 27 | `.gitignore` con `videos/*/…` no cubre las series anidadas (`videos/<serie>/<N>/`) | Patrones `videos/*/*/…` (ya añadidos) |
 
 ---
 
@@ -401,9 +427,18 @@ La lista completa está en [`ARRANQUE-EN-OTRO-EQUIPO.md`](ARRANQUE-EN-OTRO-EQUIP
 - **La misma herramienta copiada en cada proyecto:** `tools/render.mjs` (seis proyectos) y
   `tools/audio.py` (cinco) viven copiados en cada proyecto de lienzo propio. Igual que
   con `moto.py`/`csm.py`, el siguiente proyecto debería sacarlos a `tools/`.
-- **Logos de FEGIR sin origen confirmado:** están en `videos/fegir-envivo/assets/logo/`
-  (color, blanco y escudo), pero no hay manual de FEGIR en el repo que diga si son los
-  oficiales ni sus reglas de uso.
+- ~~Logos de FEGIR sin origen confirmado~~ **Resuelto (26-sep):** el manual de FEGIR está
+  en `docs/marca/fegir/` y los logos se extrajeron de sus vectores (sin redibujar). En la
+  versión blanca, el centro del escudo va al 50 % de opacidad, como se ve en el manual
+  sobre verde: es lo único interpretado.
+- **FEGIR:** confirmar que el cupo se reserva en `fegir.org` (se dedujo del nombre de la
+  carpeta que entregó el cliente) y cuál es el enlace del grupo de WhatsApp del evento (los
+  correos y la web de Yezid usan dos distintos).
+- **RiskMann Capacitaciones:** las respuestas de las preguntas frecuentes de la landing no
+  se capturaron (estaban cerradas): por eso ninguna pieza habla de precio ni de la validez
+  del certificado.
+- **La clave de ElevenLabs actual** no tiene los permisos `music_generation` ni
+  `user_read`: la música sale de `sound-generation` en bucle.
 - **Varias variantes de la campaña de Yezid** (`-campana`, `-campana-v2`, `-estudio`,
   `-premium`, `-15s`) conviven sin un documento que diga cuál se aprobó. Anotarlo en un
   `LEEME` o retirar las descartadas.

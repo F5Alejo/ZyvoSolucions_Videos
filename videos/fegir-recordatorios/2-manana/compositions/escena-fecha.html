@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+  <head><meta charset="UTF-8"><title>escena-fecha</title></head>
+  <body>
+    <template>
+      <style>
+        @font-face { font-family: "FEGIR Sans"; font-weight: 300; src: url("assets/fonts/segoeuil.ttf") format("truetype"); }
+        @font-face { font-family: "FEGIR Sans"; font-weight: 400; src: url("assets/fonts/segoeui.ttf") format("truetype"); }
+        @font-face { font-family: "FEGIR Sans"; font-weight: 600; src: url("assets/fonts/segoeuisb.ttf") format("truetype"); }
+        @font-face { font-family: "FEGIR Sans"; font-weight: 700; src: url("assets/fonts/segoeuib.ttf") format("truetype"); }
+        #root {
+          position: absolute; inset: 0; overflow: hidden; background: transparent;
+          font-family: "FEGIR Sans", sans-serif; color: #fff;
+          --verde: #45a035; --verde-claro: #a8c875; --crema: #f1ecb0;
+          --banda-a: #50cd72; --banda-b: #4ecd25; --verde-fondo: #3a8f2c;
+          --verde-hondo: #22621a; --tinta: #1d2b1a;
+        }
+        .capa { position: absolute; inset: 0; }
+        .cortina { position: absolute; left: -400px; top: -300px; width: 1900px; height: 2600px; transform-origin: 50% 50%; }
+        .filo { position: absolute; left: 0; top: 0; width: 100%; height: 38px; }
+        #cortina-verde { background: linear-gradient(135deg, var(--banda-b) 0%, var(--verde-fondo) 34%, #2e7a22 100%); }
+        #cortina-verde .filo { background: var(--verde-claro); }
+        #cal-rot { position: absolute; left: 0; top: 400px; width: 1080px; text-align: center;
+          font-size: 64px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--crema); }
+        #cal { position: absolute; left: 50%; top: 520px; width: 540px; margin-left: -270px;
+          border-radius: 40px; overflow: hidden; background: #fff; box-shadow: 0 40px 90px rgba(10,40,8,0.40); }
+        #cal-cab { background: var(--crema); color: var(--verde-hondo); text-align: center;
+          font-size: 38px; font-weight: 700; letter-spacing: 0.3em; padding: 26px 0 22px; }
+        #cal-num { text-align: center; font-size: 260px; font-weight: 700; line-height: 1.2; color: var(--tinta); letter-spacing: -0.04em; }
+        #cal-mes { text-align: center; font-size: 48px; font-weight: 700; letter-spacing: 0.22em; color: var(--verde-hondo); padding: 0 0 38px; }
+        #hora { position: absolute; left: 0; top: 1150px; width: 1080px; text-align: center;
+          font-size: 96px; font-weight: 700; letter-spacing: -0.01em; }
+        #zona { position: absolute; left: 0; top: 1285px; width: 1080px; text-align: center;
+          font-size: 30px; font-weight: 600; letter-spacing: 0.26em; text-transform: uppercase; color: var(--crema); }
+        #canales { position: absolute; left: 0; top: 1400px; width: 1080px; display: flex; justify-content: center; gap: 20px; }
+        .ch { padding: 16px 34px; border-radius: 100px; background: #1f5a17; color: #fff;
+          font-size: 34px; font-weight: 700; }
+
+      </style>
+
+      <div id="root" data-composition-id="escena-fecha" data-width="1080" data-height="1920">
+        <div id="cortina-verde" class="cortina"><div class="filo"></div></div>
+        <div id="cal-rot">Mañana</div>
+        <div id="cal">
+          <div id="cal-cab">SÁBADO</div>
+          <div id="cal-num">3</div>
+          <div id="cal-mes">OCTUBRE</div>
+        </div>
+        <div id="hora">10:00 a. m.</div>
+        <div id="zona">Hora Colombia</div>
+        <div id="canales"><span class="ch">Instagram</span><span class="ch">TikTok</span><span class="ch">YouTube</span></div>
+
+      </div>
+
+      <script>
+      (function () {
+        window.__timelines = window.__timelines || {};
+        var tl = gsap.timeline({ paused: true });
+        /* TIEMPOS globales (s). V: inicio de cada frase de voz; S: inicio de esta escena
+           (su data-start en index.html). Si mueves la escena, cambia S tambien. */
+        var V = {"f1": 0.3, "f2": 2.98, "f3": 6.63, "f4": 9.91, "f5": 13.37};
+        var S = 2.53;
+        var L = function (t) { return t - S; };
+        var hora = 2.88;   // 'a las diez'
+        var canal = 4.164;   // 'por Instagram'
+
+        tl.fromTo("#cortina-verde", { rotation: -32, yPercent: 105 },
+          { rotation: -32, yPercent: 0, duration: 0.75, ease: "power3.inOut" }, L(V.f2) - 0.4);
+        tl.fromTo("#cortina-verde", { rotation: -32 }, { rotation: 0, immediateRender: false, duration: 0.9, ease: "power2.out" }, L(V.f2 + 0.2));
+        tl.fromTo("#cal-rot", { opacity: 0, scale: 1.4 }, { opacity: 1, scale: 1, duration: 0.55, ease: "power4.out" }, L(V.f2 - 0.05));
+        tl.fromTo("#cal", { opacity: 0, y: -260, rotation: -8 },
+          { opacity: 1, y: 0, rotation: 0, duration: 0.9, ease: "back.out(1.4)" }, L(V.f2 + 0.1));
+        tl.fromTo("#cal-num", { scale: 0.4 }, { scale: 1, duration: 0.7, ease: "back.out(2.4)" }, L(V.f2 + 0.55));
+        tl.fromTo("#hora", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, L(hora));
+        tl.fromTo("#zona", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, L(hora + 0.25));
+        tl.fromTo("#canales .ch", { opacity: 0, y: 30, scale: 0.8 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(2)", stagger: 0.18 }, L(canal));
+        // el texto blanco se va mientras sube la cortina blanca de la escena siguiente
+        tl.to(["#hora", "#zona", "#canales"], { opacity: 0, duration: 0.25, ease: "power2.in" }, L(V.f3) - 0.4);
+        window.__timelines["escena-fecha"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>

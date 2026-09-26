@@ -1,0 +1,31 @@
+[
+ {
+  "n": 1,
+  "texto": "Una lista firmada en papel... no alcanza.",
+  "dur": 2.368,
+  "marcas": {
+   "Una lista": 0.0,
+   "no alcanza": 1.498
+  }
+ },
+ {
+  "n": 2,
+  "texto": "Cada vez que alguien presenta una evaluación, la plataforma guarda el resultado, los intentos y la fecha.",
+  "dur": 6.594,
+  "marcas": {
+   "Cada vez": 0.0,
+   "el resultado": 4.18,
+   "los intentos": 5.027,
+   "y la fecha": 5.793
+  }
+ },
+ {
+  "n": 3,
+  "texto": "Deja de capacitar con papel y Word... actívalo gratis.",
+  "dur": 3.39,
+  "marcas": {
+   "Deja de": 0.0,
+   "actívalo": 2.171
+  }
+ }
+]

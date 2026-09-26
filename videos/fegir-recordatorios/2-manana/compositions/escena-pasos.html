@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es">
+  <head><meta charset="UTF-8"><title>escena-pasos</title></head>
+  <body>
+    <template>
+      <style>
+        @font-face { font-family: "FEGIR Sans"; font-weight: 300; src: url("assets/fonts/segoeuil.ttf") format("truetype"); }
+        @font-face { font-family: "FEGIR Sans"; font-weight: 400; src: url("assets/fonts/segoeui.ttf") format("truetype"); }
+        @font-face { font-family: "FEGIR Sans"; font-weight: 600; src: url("assets/fonts/segoeuisb.ttf") format("truetype"); }
+        @font-face { font-family: "FEGIR Sans"; font-weight: 700; src: url("assets/fonts/segoeuib.ttf") format("truetype"); }
+        #root {
+          position: absolute; inset: 0; overflow: hidden; background: transparent;
+          font-family: "FEGIR Sans", sans-serif; color: #fff;
+          --verde: #45a035; --verde-claro: #a8c875; --crema: #f1ecb0;
+          --banda-a: #50cd72; --banda-b: #4ecd25; --verde-fondo: #3a8f2c;
+          --verde-hondo: #22621a; --tinta: #1d2b1a;
+        }
+        .capa { position: absolute; inset: 0; }
+        .cortina { position: absolute; left: -400px; top: -300px; width: 1900px; height: 2600px; transform-origin: 50% 50%; }
+        .filo { position: absolute; left: 0; top: 0; width: 100%; height: 38px; }
+        #cortina-blanca { background: #ffffff; }
+        #cortina-blanca .filo { background: var(--crema); }
+        .paso { position: absolute; left: 0; width: 1080px; display: flex; justify-content: center; align-items: center; gap: 18px;
+          font-size: 34px; font-weight: 600; color: var(--verde-hondo); }
+        .num { width: 54px; height: 54px; border-radius: 50%; background: var(--verde-hondo); color: #fff;
+          display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 700; flex-shrink: 0; }
+        #paso1 { top: 420px; }
+        #boton { position: absolute; left: 50%; top: 510px; transform: translateX(-50%); white-space: nowrap;
+          padding: 36px 70px; border-radius: 100px; background: linear-gradient(135deg, #3f9a30, #2e7a22); color: #fff;
+          font-size: 50px; font-weight: 700; box-shadow: 0 26px 60px rgba(46,122,34,0.40), inset 0 2px 0 rgba(255,255,255,0.25); }
+        #paso2 { top: 810px; }
+        #web { position: absolute; left: 0; top: 890px; width: 1080px; text-align: center;
+          font-size: 84px; font-weight: 700; color: var(--tinta); letter-spacing: -0.01em; }
+        #logo-color { position: absolute; left: 50%; top: 1270px; width: 720px; margin-left: -360px; height: auto; }
+        #lema { position: absolute; left: 0; top: 1600px; width: 1080px; text-align: center;
+          font-size: 50px; font-weight: 700; color: var(--verde-hondo); letter-spacing: -0.01em; }
+
+      </style>
+
+      <div id="root" data-composition-id="escena-pasos" data-width="1080" data-height="1920">
+        <div id="cortina-blanca" class="cortina"><div class="filo"></div></div>
+        <div id="paso1" class="paso"><span class="num">1</span><span>Los enlaces van por el grupo oficial</span></div>
+        <div id="boton">Entrar al grupo de WhatsApp</div>
+        <div id="paso2" class="paso"><span class="num">2</span><span>Ten lista tu cuenta en</span></div>
+        <div id="web">app.riskmann.com</div>
+        <img id="logo-color" src="assets/logo/fegir-logo-color.png" alt="FEGIR - Fundación Especializada en Gestión Integral del Riesgo">
+        <div id="lema">¡Tu seguridad, nuestra prioridad!</div>
+      </div>
+
+      <script>
+      (function () {
+        window.__timelines = window.__timelines || {};
+        var tl = gsap.timeline({ paused: true });
+        /* TIEMPOS globales (s). V: inicio de cada frase de voz; S: inicio de esta escena
+           (su data-start en index.html). Si mueves la escena, cambia S tambien. */
+        var V = {"f1": 0.3, "f2": 2.98, "f3": 6.63, "f4": 9.91, "f5": 13.37};
+        var S = 6.18;
+        var L = function (t) { return t - S; };
+        var web = 11.056;   // 'app punto'
+        var lema = 14.043;   // 'tu seguridad'
+        var FIN = 16.6;   // fin del video
+
+        tl.fromTo("#cortina-blanca", { rotation: 28, yPercent: 105 },
+          { rotation: 28, yPercent: 0, duration: 0.75, ease: "power3.inOut" }, L(V.f3) - 0.4);
+        tl.fromTo("#cortina-blanca", { rotation: 28 }, { rotation: 0, immediateRender: false, duration: 0.9, ease: "power2.out" }, L(V.f3 + 0.2));
+        tl.fromTo("#paso1", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, L(V.f3));
+        tl.fromTo("#boton", { opacity: 0, scale: 0.55 }, { opacity: 1, scale: 1, duration: 0.75, ease: "back.out(1.9)" }, L(V.f3 + 0.15));
+        tl.fromTo("#paso2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, L(V.f4));
+        tl.fromTo("#web", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, L(web));
+        tl.fromTo("#logo-color", { opacity: 0, y: 40, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: "expo.out" }, L(V.f5 - 0.10));
+        tl.fromTo("#lema", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, L(lema));
+        // el boton respira hasta el final (tweens explicitos, seek-safe)
+        for (var b = 0; V.f3 + 1.2 + b * 1.2 < FIN - 0.6; b++) {
+          var tb = V.f3 + 1.2 + b * 1.2;
+          tl.to("#boton", { scale: 1.045, duration: 0.6, ease: "sine.inOut" }, L(tb));
+          tl.to("#boton", { scale: 1.0, duration: 0.6, ease: "sine.inOut" }, L(tb + 0.6));
+        }
+        window.__timelines["escena-pasos"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>

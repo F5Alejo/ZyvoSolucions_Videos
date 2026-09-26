@@ -29,20 +29,23 @@
 
 | Fuente | Tipo | Qué fija | Dónde está | Fecha |
 | --- | --- | --- | --- | --- |
-| Logos (color, blanco, escudo) | PNG | Marca | `videos/fegir-envivo/assets/logo/` | ≤ 2026-09-26 ⚠ origen por confirmar |
-| Portada del manual (vertical) | imagen | Foto de apertura | `videos/fegir-envivo/assets/fotos/portada-manual-vertical.jpg` | ⚠ el manual completo no está en el repo |
-| Brief de la campaña | brief | Verde `#45a035`, destellos `#f1ecb0` | ⚠ el archivo del brief no está en el repo | — |
+| **Manual de identidad FEGIR** | PDF (1 página) | Paleta, logo primario, favicon, espacio de respeto, usos incorrectos | `docs/marca/fegir/manual-identidad-fegir.pdf` | entregado 2026-09-25 |
+| Logos (color, blanco, escudo) | SVG + PNG 600 ppp | Marca | `docs/marca/fegir/logos-extraidos/` (extraídos de los **vectores** del manual) | 2026-09-25 |
+| Web de FEGIR (captura) | PDF | Servicios, titular «¡Tu seguridad, nuestra prioridad!», anuncio del En Vivo | `docs/marca/fegir/web-fegir-captura.pdf` | 2026-09-25 |
+| Portada del manual (vertical) | imagen | Foto de apertura | `videos/fegir-envivo/assets/fotos/portada-manual-vertical.jpg` (recorte de la foto del manual) | 2026-09-25 |
 | Correos del En Vivo | correo | Datos del evento y pasos | `Documentos_contexto/correos-en-vivo-pesv/` (**fuera del repo**: datos personales) | — |
 
 ## 4. Identidad visual
 
-- **Paleta** (usada en `fegir-envivo`): verde `#45a035` (brief) y su familia `#2e7a22`,
-  `#3a8f2c`, `#4ecd25`, `#50cd72`, `#a8c875`; pálido `#f1ecb0`; blanco.
-  ⚠ Solo `#45a035` y `#f1ecb0` tienen fuente (el brief); el resto son derivados de producción.
+- **Paleta del manual (s.2):** verde `#45a035`, verde claro `#a8c875`, crema `#f1ecb0`.
+  Banda verde del manual muestreada: `#50cd72 → #4ecd25`. Derivados de producción para
+  contraste: `#3a8f2c` (fondo bajo texto blanco, 3,9:1), `#22621a` (texto verde sobre
+  blanco), `#2e7a22`.
 - **Tipografía:** Segoe UI (declarada como «FEGIR Sans»).
   ⚠ **Segoe UI es de Microsoft**: confirmar licencia o cambiar a una fuente libre.
-- **Logo:** `fegir-logo-color.png`, `fegir-logo-blanco.png`, `fegir-escudo-color.png`.
-  ⚠ Confirmar que son los archivos oficiales y pedir reglas de uso.
+- **Logo:** `fegir-logo-color` (primario, sobre claro), `fegir-logo-blanco` (sobre verde u
+  oscuro), `fegir-escudo-color` (favicon). Reglas del manual: no aplastar, alargar, girar ni
+  cambiar color; nada encima; sin fondos; respetar el kerning.
 - **Contradicciones:** ninguna registrada.
 
 ## 5. Voz y tono
@@ -62,9 +65,9 @@
 
 | Proyecto | Formato | Duración | Estado | Dónde |
 | --- | --- | --- | --- | --- |
-| `videos/fegir-envivo/` | 9:16, HyperFrames, editable en el Studio | 5 escenas | **Aprobado** (así lo llama `fegir-recordatorios/serie.py`); con cambios sin guardar el 26-sep | — |
-| `videos/fegir-envivo-pesv/` | Variante con fondo `aurora-drift` | — | En curso | — |
-| `videos/fegir-recordatorios/` | 3 videos: pocos días / mañana / hoy | — | **En curso (26-sep), sin guardar en git** | — |
+| `videos/fegir-envivo/` | 9:16, HyperFrames, editable en el Studio | 21,9 s | **Aprobado** (V4, 26-sep: con redes Instagram · TikTok · YouTube) | `ENTREGABLES-VIDEO/fegir-envivo/` |
+| `videos/fegir-envivo-pesv/` | Versión combinada con Yezid (paleta y montaje de su invitación) | 18 s | **Descartada** (26-sep): «debe ser independiente» | `ENTREGABLES-VIDEO/fegir-envivo-pesv/` |
+| `videos/fegir-recordatorios/` | 3 videos: pocos días / mañana / hoy | 18,9 / 16,6 / 15,5 s | Entregados (26-sep) | `ENTREGABLES-VIDEO/fegir-recordatorios/` |
 
 ## 8. Decisiones tomadas
 
@@ -72,11 +75,14 @@
 | --- | --- | --- | --- |
 | ≤ 2026-09-26 | Las piezas de FEGIR no llevan nada de la marca de Yezid; del correo solo se toman datos del evento | Son dos entregas distintas del mismo evento | Equipo `fegir` |
 | ≤ 2026-09-26 | Recordatorios heredan identidad y escenas de `fegir-envivo` | Es la pieza aprobada | Equipo `fegir` |
+| 2026-09-26 | Identidad propia del manual de FEGIR (verde vivo, planos verde/blanco), no la paleta de Yezid | La V1 recoloreada «parecía dependiente» | Cliente |
+| 2026-09-26 | Sigla escrita «pe e ese ve»; redes (Instagram · TikTok · YouTube) en todas las piezas | Sonaba distinta en cada frase; las redes solo salían en «Hoy» | Cliente |
 
 ## 9. Pendientes y ⚠ por confirmar
 
 - [ ] Licencia de Segoe UI (o cambio de fuente).
-- [ ] Origen oficial de los tres logos.
+- [x] Origen oficial de los tres logos: extraídos del manual (26-sep).
+- [ ] Que el cupo se reserve en `fegir.org` y cuál es el enlace del grupo de WhatsApp.
 - [ ] Qué hace FEGIR, a quién le habla, y su relación con SOFU/RiskMann y con el Dr. Yezid.
 - [ ] Guardar en git los cambios de `fegir-envivo` y la serie de recordatorios.
 

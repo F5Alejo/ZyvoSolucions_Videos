@@ -249,6 +249,57 @@ demás planos, y vuelve a sacar capturas de ese plano antes de renderizar.
 
 ---
 
+### 2.6 — La misma pieza para otra marca, sin que dependa de la primera
+
+**Consigues:** la versión de un evento para una segunda marca, con identidad propia. Nació de
+FEGIR: la primera versión recoloreó la invitación de Yezid y el cliente la rechazó.
+
+```
+<ruta al manual de la marca> ahí está todo. La pieza debe ser solo de <marca>:
+nada de <otra marca> (nombre, web, paleta ni estructura). Saca la identidad del
+manual —colores muestreados, logo desde sus vectores— y dime qué datos del
+evento vas a usar y de dónde sale cada uno.
+```
+
+**Te devuelve:** logos extraídos del PDF (SVG + PNG), la paleta real y una composición nueva.
+**Tarda:** ~1 h con voz, música y render.
+
+> **Lo que lo hizo funcionar:** pedir el manual antes de construir y decir «solo de
+> <marca>» desde el principio. «Con los colores de X» no basta: la estructura heredada
+> también se lee como dependencia.
+
+### 2.7 — Una serie de variantes a partir de una secuencia de correos o de una landing
+
+```
+Necesito ahora las versiones <recordatorio / es mañana / es hoy>: en <ruta> está
+la estructura de los correos que se van a enviar esos días.
+```
+
+o, para una landing:
+
+```
+Ahora quiero la serie de videos cortos: uno por idea de la landing, cada uno
+gancho → valor → CTA con un botón literal de la página.
+```
+
+**Te devuelve:** un `serie.py` que genera N proyectos HyperFrames editables en el Studio,
+con la voz pedida con semilla fija y cada aparición sobre su palabra.
+**Tarda:** ~40 min las voces y la construcción; ~30 s de render por pieza.
+
+> **Cambiar una frase después** cuesta un comando: `python serie.py voz <carpeta>:<n>`
+> regenera solo esa frase y `construir` recoloca las escenas. Ojo: `construir` reescribe
+> lo editado a mano en el Studio.
+
+### 2.8 — Dejar un proyecto listo para editarlo en la interfaz de HyperFrames
+
+```
+Lo quiero editar localmente con la interfaz de HyperFrames.
+```
+
+**Te devuelve:** cada escena como sub-composición (una fila en la línea de tiempo), la voz,
+los efectos y la música como pistas `<audio>` con la curva de volumen editable, y el Studio
+abierto en `localhost:3002`.
+
 # 3 · Audio
 
 ### 3.1 — Narración gratuita e ilimitada en español
@@ -342,6 +393,17 @@ por bandas.
 
 ---
 
+### 3.7 — Una sigla que suena rara o distinta cada vez
+
+```
+ElevenLabs no pronuncia bien "<SIGLA>" y en las dos frases la dice distinto.
+```
+
+**Qué hace el agente:** genera las dos frases con la misma semilla escribiendo la sigla de
+4 maneras, **mide** cuánto dura la sigla en cada frase (alineamiento por carácter) y se queda
+con la que dura igual en ambas. Para PESV ganó «pe e ese ve» (0,75 / 0,76 s). Deja los 4 MP3
+para que tú elijas de oído y regenera **solo** las frases con la sigla.
+
 # 4 · Verificar
 
 ### 4.1 — La verificación de audio que evita un desastre
@@ -406,6 +468,10 @@ revisa la hoja de contactos antes de renderizar.
 | PESV Módulo 01 refactor — *«muy básico»* | 2 min 28 s | ~1 h, con muestra previa | 10 min 08 s | 44.6 MB |
 | PESV Módulo 01 «Centro de mando» — *dirección aprobada* | 2 min 31 s | muestra 16 s + ~2 h el resto, con voz/efectos/cama | ~9 min 30 s | 39.1 MB (11.4 MB copia de vista) |
 | PESV Módulo 01 «Ritmo» — *aprobado sin cambios* | 1 min 00 s | muestra 16 s + ~1 h el resto, pista rítmica y efectos | 4 min 02 s | 15.3 MB |
+| FEGIR En Vivo (identidad propia, editable en el Studio) | 21,9 s | ~1 h + ajustes | 36 s | 8,6 MB |
+| FEGIR recordatorios (3 variantes generadas) | 3 × 15–19 s | ~40 min | ~30 s c/u | 7–8 MB c/u |
+| RiskMann Capacitaciones, promo generado | 39,3 s | ~1,5 h con correcciones | 38 s | 15,3 MB |
+| RiskMann Capacitaciones, serie de 4 (reutiliza el promo) | 4 × 15–17 s | ~40 min | ~30 s c/u | 7–8 MB c/u |
 
 **La lectura útil:** el primer video de una serie cuesta un día porque hay que inventar el
 sistema. El segundo cuesta una hora porque el sistema ya existe. Ahí está el retorno.

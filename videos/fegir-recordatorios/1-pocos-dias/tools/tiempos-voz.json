@@ -1,0 +1,38 @@
+[
+ {
+  "n": 1,
+  "texto": "Faltan pocos días para el en vivo pe e ese ve.",
+  "marcas": {
+   "Faltan pocos días": 0.0,
+   "para el en vivo": 1.033
+  },
+  "dur": 2.694
+ },
+ {
+  "n": 2,
+  "texto": "Sábado tres de octubre, a las diez de la mañana, por Instagram, TikTok y YouTube.",
+  "marcas": {
+   "Sábado tres de octubre": 0.0,
+   "a las diez": 1.741,
+   "por Instagram": 2.937
+  },
+  "dur": 5.016
+ },
+ {
+  "n": 3,
+  "texto": "Entra al grupo oficial de WhatsApp: allí van los enlaces.",
+  "marcas": {
+   "Entra al grupo": 0.0
+  },
+  "dur": 3.158
+ },
+ {
+  "n": 4,
+  "texto": "Y crea tu cuenta en app punto riskmann punto com.",
+  "marcas": {
+   "Y crea tu cuenta": 0.0,
+   "app punto": 1.045
+  },
+  "dur": 2.926
+ }
+]

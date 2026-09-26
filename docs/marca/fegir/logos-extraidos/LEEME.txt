@@ -1,0 +1,25 @@
+LOGOS FEGIR - extraidos del "Manual identidad FEGIR.pdf"
+=========================================================
+
+Salen de los VECTORES del propio manual (no son capturas): se pueden
+ampliar sin perder calidad. PNG a 600 ppp con fondo transparente.
+
+  fegir-logo-color.svg / .png    Logo primario a color (fondos claros)
+  fegir-escudo-color.svg / .png  Solo el escudo (favicon del manual)
+  fegir-logo-blanco.svg / .png   Version blanca (fondos oscuros o verdes),
+                                 la de "Espacio de respeto" del manual
+  verificar-logos.png            Como se ven sobre claro y sobre oscuro
+
+COLORES OFICIALES (manual, seccion 2)
+  #45a035  verde      R69 G160 B53    C75 M10 Y100 K0
+  #a8c875  verde claro R168 G200 B117  C42 M4 Y67 K0
+  #f1ecb0  crema      R241 G236 B176  C8 M2 Y50 K0
+
+REGLAS DEL MANUAL
+  No aplastar, no alargar, no girar, no cambiar color, no poner nada
+  encima, no ponerle fondos, no cambiar tamanos relativos, ojo con el
+  kerning.
+
+NOTA
+  En la version blanca, el centro del escudo va translucido (50 %), que
+  es como se ve en el manual sobre el verde. Es lo unico interpretado.

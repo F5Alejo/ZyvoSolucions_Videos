@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+  <head><meta charset="UTF-8"><title>escena-2-registro</title></head>
+  <body>
+    <template>
+      <style>
+        @font-face { font-family: "Montserrat"; font-weight: 100 900; font-display: block;
+          src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+          unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+        @font-face { font-family: "Montserrat"; font-weight: 100 900; font-display: block;
+          src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+          unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+        @font-face { font-family: "Open Sans"; font-weight: 400; font-display: block;
+          src: url("assets/fonts/open-sans-latin-400.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+20AC, U+2122, U+FEFF; }
+        @font-face { font-family: "Open Sans"; font-weight: 400; font-display: block;
+          src: url("assets/fonts/open-sans-latin-ext-400.woff2") format("woff2"); unicode-range: U+0100-02BA, U+1E00-1E9F, U+2C60-2C7F, U+A720-A7FF; }
+        @font-face { font-family: "Open Sans"; font-weight: 600; font-display: block;
+          src: url("assets/fonts/open-sans-latin-600.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+20AC, U+2122, U+FEFF; }
+        @font-face { font-family: "Open Sans"; font-weight: 600; font-display: block;
+          src: url("assets/fonts/open-sans-latin-ext-600.woff2") format("woff2"); unicode-range: U+0100-02BA, U+1E00-1E9F, U+2C60-2C7F, U+A720-A7FF; }
+        @font-face { font-family: "Open Sans"; font-weight: 700; font-display: block;
+          src: url("assets/fonts/open-sans-latin-700.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+20AC, U+2122, U+FEFF; }
+        @font-face { font-family: "Open Sans"; font-weight: 700; font-display: block;
+          src: url("assets/fonts/open-sans-latin-ext-700.woff2") format("woff2"); unicode-range: U+0100-02BA, U+1E00-1E9F, U+2C60-2C7F, U+A720-A7FF; }
+        #root {
+          position: absolute; inset: 0; overflow: hidden; background: transparent;
+          font-family: "Open Sans", sans-serif; color: #fff;
+          --negro: #040404; --negro2: #0A0A0A; --tarjeta: #121212; --borde: #262626;
+          --dorado: #AC841D; --dorado-claro: #d9b04a; --gris: #F5F5F5; --texto2: #b9b9b9; --marino: #192744;
+        }
+        .t { font-family: "Montserrat", sans-serif; font-weight: 800; letter-spacing: -0.02em; line-height: 1.12; }
+        .oro { color: var(--dorado-claro); }
+        .l { display: block; overflow: hidden; padding-bottom: 6px; }
+        .l > span { display: inline-block; }
+        #c { position: absolute; inset: 0; }
+        .card { background: linear-gradient(160deg, #161616, #0e0e0e); border: 1px solid var(--borde); border-radius: 28px;
+          box-shadow: 0 30px 70px rgba(0,0,0,0.55); }
+        .chip { display: inline-flex; align-items: center; gap: 14px; padding: 14px 30px; border-radius: 100px;
+          border: 1px solid rgba(172,132,29,0.55); background: rgba(172,132,29,0.10); color: var(--dorado-claro);
+          font-family: "Montserrat", sans-serif; font-weight: 700; font-size: 26px; letter-spacing: 0.14em; text-transform: uppercase; }
+        .num { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--dorado); color: var(--dorado-claro);
+          display: flex; align-items: center; justify-content: center; font-family: "Montserrat", sans-serif; font-weight: 800; font-size: 30px;
+          background: rgba(172,132,29,0.12); flex-shrink: 0; }
+        #tit { position: absolute; left: 108px; top: 330px; width: 864px; font-size: 64px; }
+        #tabla { position: absolute; left: 60px; top: 640px; width: 960px; padding: 16px 0; }
+        .th, .tr { display: grid; grid-template-columns: 1.35fr 1.1fr 0.75fr 1.2fr; align-items: center; padding: 24px 30px; gap: 10px; }
+        .th { font-family: "Montserrat"; font-weight: 700; font-size: 22px; letter-spacing: 0.12em; color: var(--texto2); text-transform: uppercase; border-bottom: 1px solid var(--borde); }
+        .tr { font-size: 30px; font-weight: 600; border-bottom: 1px solid #1c1c1c; }
+        .c2 { text-align: center; } .c3 { color: var(--texto2); font-size: 26px; }
+        .est { font-family: "Montserrat"; font-weight: 800; font-size: 24px; padding: 8px 20px; border-radius: 100px; }
+        .ap { background: rgba(172,132,29,0.9); color: #111; } .re { background: #2a2a2a; color: #eee; border: 1px solid #444; }
+        .col { opacity: 0.25; }
+        #pie { position: absolute; left: 108px; top: 1180px; width: 864px; font-size: 36px; color: var(--texto2); line-height: 1.45; }
+
+      </style>
+      <div id="root" data-composition-id="escena-2-registro" data-width="1080" data-height="1920">
+        <div id="c">
+          <div id="tit" class="t">
+          <div class="l "><span>La plataforma</span></div>
+          <div class="l "><span><span class="oro">guarda todo</span></span></div>
+          </div>
+          <div id="tabla" class="card">
+            <div class="th"><span>Colaborador</span><span class="h1">Resultado</span><span class="h2" style="text-align:center">Intentos</span><span class="h3">Fecha</span></div>
+            <div class="tr"><span class="nom">Colaborador 1</span><span class="c1"><b class="est ap">Aprobó</b></span><span class="c2">1</span><span class="c3">dd/mm/aaaa</span></div>
+            <div class="tr"><span class="nom">Colaborador 2</span><span class="c1"><b class="est re">Reprobó</b></span><span class="c2">2</span><span class="c3">dd/mm/aaaa</span></div>
+            <div class="tr"><span class="nom">Colaborador 3</span><span class="c1"><b class="est ap">Aprobó</b></span><span class="c2">2</span><span class="c3">dd/mm/aaaa</span></div>
+          </div>
+          <div id="pie">No tienes que pasar nada a limpio.</div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        window.__timelines = window.__timelines || {};
+        var tl = gsap.timeline({ paused: true });
+        /* TIEMPOS globales (s), de tools/tiempos-voz.json. S = data-start de esta escena en index.html. */
+        var S = 3.22, FINE = 10.46, ULTIMA = false;
+        var L = function (g) { return g - S; };
+        var a = 3.52;   // 'Cada vez'
+        var r = 7.7;   // 'el resultado'
+        var i = 8.547;   // 'los intentos'
+        var f = 9.313;   // 'y la fecha'
+
+        tl.fromTo("#tit .l > span", { yPercent: 115 }, { yPercent: 0, duration: 0.7, ease: "expo.out", stagger: 0.14 }, L(a) - 0.1);
+        tl.fromTo("#tabla", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, L(a) + 0.4);
+        tl.fromTo(".tr .nom", { opacity: 0 }, { opacity: 1, duration: 0.3, stagger: 0.08 }, L(a) + 0.6);
+        [["c1", "h1", r], ["c2", "h2", i], ["c3", "h3", f]].forEach(function (x) {
+          tl.fromTo(".tr ." + x[0], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, ease: "back.out(1.8)", stagger: 0.08 }, L(x[2]) - 0.05);
+          tl.fromTo(".th ." + x[1], { color: "#b9b9b9" }, { color: "#d9b04a", duration: 0.3 }, L(x[2]) - 0.05);
+        });
+        tl.fromTo("#pie", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, L(f) + 0.5);
+        if (!ULTIMA) tl.to("#c", { opacity: 0, y: -90, duration: 0.35, ease: "power2.in" }, L(FINE) - 0.35);
+        window.__timelines["escena-2-registro"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>

@@ -52,6 +52,8 @@
         position: absolute; left: 0; top: 1290px; width: 1080px; text-align: center;
         font-size: 84px; font-weight: 700; letter-spacing: -0.01em;
       }
+      #canales { position: absolute; left: 0; top: 1500px; width: 1080px; display: flex; justify-content: center; gap: 20px; }
+      .ch { padding: 16px 34px; border-radius: 100px; background: #1f5a17; color: #fff; font-size: 34px; font-weight: 700; }
       #zona {
         position: absolute; left: 0; top: 1408px; width: 1080px; text-align: center;
         font-size: 30px; font-weight: 600; letter-spacing: 0.26em; text-transform: uppercase; color: var(--crema);
@@ -67,6 +69,7 @@
         </div>
         <div data-hf-id="hf-j3tw" id="hora">10:00 a. m.</div>
         <div data-hf-id="hf-mfpv" id="zona">Hora Colombia</div>
+        <div data-hf-id="hf-0n02" id="canales"><span data-hf-id="hf-w8wg" class="ch">Instagram</span><span data-hf-id="hf-uigm" class="ch">TikTok</span><span data-hf-id="hf-f4hh" class="ch">YouTube</span></div>
       </div>
 
       <script>
@@ -78,7 +81,7 @@
            V: inicio de cada toma de voz (tools/tiempos-voz.json + index.html).
            S: inicio de ESTA escena (su data-start en index.html).
            Si mueves la escena en el Studio, cambia S aqui tambien. */
-        var V = { f1: 0.30, f2: 3.95, f3: 7.25, f4: 10.85, f5: 14.10, f6: 16.60 };
+        var V = { f1: 0.30, f2: 3.95, f3: 7.25, f4: 10.85, f5: 16.20, f6: 18.70 };
         var CORT = 0.40;   // la cortina entra 0.40 s antes de su frase
         var S = 10.40;
         var L = function (t) { return t - S; };   // global -> local
@@ -87,14 +90,17 @@
           { rotation: -32, yPercent: 0, duration: 0.75, ease: "power3.inOut" }, L(V.f4 - CORT));
         tl.fromTo("#cortina-verde2", { rotation: -32 }, { rotation: 0, immediateRender: false, duration: 0.9, ease: "power2.out" }, L(V.f4 + 0.2));
 
-        var hora = V.f4 + 1.55;   // "a las diez" en +1.614
+        var hora = V.f4 + 1.50;   // "a las diez" en +1.591
+        var canal = V.f4 + 2.76;  // "por Instagram" en +2.763
         tl.fromTo("#cal", { opacity: 0, y: -260, rotation: -8 },
           { opacity: 1, y: 0, rotation: 0, duration: 0.9, ease: "back.out(1.4)" }, L(V.f4 + 0.1));
         tl.fromTo("#cal-num", { scale: 0.4 }, { scale: 1, duration: 0.7, ease: "back.out(2.4)" }, L(V.f4 + 0.55));
         tl.fromTo("#hora", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, L(hora));
         tl.fromTo("#zona", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, L(hora + 0.25));
         // salida: el texto blanco se va mientras sube la cortina blanca de la escena siguiente
-        tl.to(["#hora", "#zona"], { opacity: 0, duration: 0.25, ease: "power2.in" }, L(V.f5 - CORT));
+        tl.fromTo("#canales .ch", { opacity: 0, y: 30, scale: 0.8 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(2)", stagger: 0.18 }, L(canal));
+        tl.to(["#hora", "#zona", "#canales"], { opacity: 0, duration: 0.25, ease: "power2.in" }, L(V.f5 - CORT));
         window.__timelines["escena-fecha"] = tl;
       })();
       </script>

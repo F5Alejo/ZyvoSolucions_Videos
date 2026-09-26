@@ -1,0 +1,106 @@
+[
+ {
+  "n": 1,
+  "texto": "La capacitación ocurrió... ¿Pero puedes demostrarlo?",
+  "fuente": "hero: «La capacitación ocurrió. ¿Pero puedes demostrarlo?»",
+  "dur": 3.019,
+  "marcas": {
+   "La capacitación": 0.0,
+   "¿Pero puedes": 1.509
+  }
+ },
+ {
+  "n": 2,
+  "texto": "Una lista firmada en papel no alcanza. Un certificado en Word, tampoco.",
+  "fuente": "hero: «Una lista firmada en papel no alcanza. Un certificado en Word tampoco.»",
+  "dur": 4.365,
+  "marcas": {
+   "Una lista": 0.0,
+   "Un certificado": 2.276
+  }
+ },
+ {
+  "n": 3,
+  "texto": "Armas el curso con videos de YouTube, pe de efe o Google Drive.",
+  "fuente": "paso 1: «Agrega videos de YouTube, documentos PDF o archivos de Google Drive»",
+  "dur": 3.576,
+  "marcas": {
+   "Armas": 0.0,
+   "YouTube": 1.451,
+   "pe de efe": 1.962,
+   "Google Drive": 2.682
+  }
+ },
+ {
+  "n": 4,
+  "texto": "Tu gente lo toma desde el celular o el computador.",
+  "fuente": "paso 2: «Tu gente lo toma cuando puede. Desde el celular o el computador»",
+  "dur": 3.204,
+  "marcas": {
+   "Tu gente": 0.0,
+   "desde el celular": 1.01
+  }
+ },
+ {
+  "n": 5,
+  "texto": "La plataforma califica sola.",
+  "fuente": "paso 3: «La plataforma califica sola»",
+  "dur": 1.718,
+  "marcas": {
+   "La plataforma": 0.0
+  }
+ },
+ {
+  "n": 6,
+  "texto": "Y queda el certificado en pe de efe, con nombre, documento, curso y fecha.",
+  "fuente": "paso 4: «Un PDF con el nombre y el documento de la persona, el curso y la fecha de aprobación»",
+  "dur": 4.644,
+  "marcas": {
+   "Y queda": 0.0,
+   "con nombre": 2.322,
+   "documento": 2.914,
+   "curso y": 3.553,
+   "fecha": 3.971
+  }
+ },
+ {
+  "n": 7,
+  "texto": "Quién aprobó, quién reprobó, quién está pendiente... todo en Excel.",
+  "fuente": "«el registro se arma solo» + Reportes en Excel: «quién aprobó, quién reprobó, quién está pendiente»",
+  "dur": 3.855,
+  "marcas": {
+   "Quién aprobó": 0.0,
+   "quién reprobó": 0.836,
+   "quién está": 1.672,
+   "todo en Excel": 2.798
+  }
+ },
+ {
+  "n": 8,
+  "texto": "Todo con la misma cuenta de RiskMann.",
+  "fuente": "«Todo con la misma cuenta de RiskMann»",
+  "dur": 2.136,
+  "marcas": {
+   "Todo con": 0.0
+  }
+ },
+ {
+  "n": 9,
+  "texto": "Actívalo gratis hasta el primero de enero de dos mil veintisiete.",
+  "fuente": "«Módulo Capacitaciones · Gratis hasta el 1 de enero de 2027» + botón «Activar ahora»",
+  "dur": 3.808,
+  "marcas": {
+   "Actívalo": 0.0,
+   "hasta el primero": 1.068
+  }
+ },
+ {
+  "n": 10,
+  "texto": "Deja de capacitar con papel y Word.",
+  "fuente": "cierre: «Deja de capacitar con papel y Word.»",
+  "dur": 2.322,
+  "marcas": {
+   "Deja de": 0.0
+  }
+ }
+]

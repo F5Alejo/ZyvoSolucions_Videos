@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+  <head><meta charset="UTF-8"><title>escena-2-pasos</title></head>
+  <body>
+    <template>
+      <style>
+        @font-face { font-family: "Montserrat"; font-weight: 100 900; font-display: block;
+          src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+          unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+        @font-face { font-family: "Montserrat"; font-weight: 100 900; font-display: block;
+          src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+          unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+        @font-face { font-family: "Open Sans"; font-weight: 400; font-display: block;
+          src: url("assets/fonts/open-sans-latin-400.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+20AC, U+2122, U+FEFF; }
+        @font-face { font-family: "Open Sans"; font-weight: 400; font-display: block;
+          src: url("assets/fonts/open-sans-latin-ext-400.woff2") format("woff2"); unicode-range: U+0100-02BA, U+1E00-1E9F, U+2C60-2C7F, U+A720-A7FF; }
+        @font-face { font-family: "Open Sans"; font-weight: 600; font-display: block;
+          src: url("assets/fonts/open-sans-latin-600.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+20AC, U+2122, U+FEFF; }
+        @font-face { font-family: "Open Sans"; font-weight: 600; font-display: block;
+          src: url("assets/fonts/open-sans-latin-ext-600.woff2") format("woff2"); unicode-range: U+0100-02BA, U+1E00-1E9F, U+2C60-2C7F, U+A720-A7FF; }
+        @font-face { font-family: "Open Sans"; font-weight: 700; font-display: block;
+          src: url("assets/fonts/open-sans-latin-700.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+20AC, U+2122, U+FEFF; }
+        @font-face { font-family: "Open Sans"; font-weight: 700; font-display: block;
+          src: url("assets/fonts/open-sans-latin-ext-700.woff2") format("woff2"); unicode-range: U+0100-02BA, U+1E00-1E9F, U+2C60-2C7F, U+A720-A7FF; }
+        #root {
+          position: absolute; inset: 0; overflow: hidden; background: transparent;
+          font-family: "Open Sans", sans-serif; color: #fff;
+          --negro: #040404; --negro2: #0A0A0A; --tarjeta: #121212; --borde: #262626;
+          --dorado: #AC841D; --dorado-claro: #d9b04a; --gris: #F5F5F5; --texto2: #b9b9b9; --marino: #192744;
+        }
+        .t { font-family: "Montserrat", sans-serif; font-weight: 800; letter-spacing: -0.02em; line-height: 1.12; }
+        .oro { color: var(--dorado-claro); }
+        .l { display: block; overflow: hidden; padding-bottom: 6px; }
+        .l > span { display: inline-block; }
+        #c { position: absolute; inset: 0; }
+        .card { background: linear-gradient(160deg, #161616, #0e0e0e); border: 1px solid var(--borde); border-radius: 28px;
+          box-shadow: 0 30px 70px rgba(0,0,0,0.55); }
+        .chip { display: inline-flex; align-items: center; gap: 14px; padding: 14px 30px; border-radius: 100px;
+          border: 1px solid rgba(172,132,29,0.55); background: rgba(172,132,29,0.10); color: var(--dorado-claro);
+          font-family: "Montserrat", sans-serif; font-weight: 700; font-size: 26px; letter-spacing: 0.14em; text-transform: uppercase; }
+        .num { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--dorado); color: var(--dorado-claro);
+          display: flex; align-items: center; justify-content: center; font-family: "Montserrat", sans-serif; font-weight: 800; font-size: 30px;
+          background: rgba(172,132,29,0.12); flex-shrink: 0; }
+        #lista { position: absolute; left: 90px; top: 420px; width: 900px; display: flex; flex-direction: column; gap: 30px; }
+        .paso { display: flex; align-items: center; gap: 30px; padding: 36px 40px; }
+        .pt { font-family: "Montserrat"; font-weight: 800; font-size: 44px; line-height: 1.15; }
+        .pd { font-size: 30px; color: var(--texto2); margin-top: 8px; }
+
+      </style>
+      <div id="root" data-composition-id="escena-2-pasos" data-width="1080" data-height="1920">
+        <div id="c">
+          <div id="lista">
+            <div class="paso card" id="p1"><div class="num">1</div><div><div class="pt">Armas el curso</div><div class="pd">Videos de YouTube, PDF o Google Drive.</div></div></div>
+            <div class="paso card" id="p2"><div class="num">2</div><div><div class="pt">Tu gente lo toma cuando puede</div><div class="pd">Desde el celular o el computador.</div></div></div>
+            <div class="paso card" id="p3"><div class="num">3</div><div><div class="pt">La plataforma califica sola</div><div class="pd">No revisas examen por examen.</div></div></div>
+            <div class="paso card" id="p4"><div class="num">4</div><div><div class="pt">Y queda el certificado</div><div class="pd">Un PDF listo para mostrar.</div></div></div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        window.__timelines = window.__timelines || {};
+        var tl = gsap.timeline({ paused: true });
+        /* TIEMPOS globales (s), de tools/tiempos-voz.json. S = data-start de esta escena en index.html. */
+        var S = 3.82, FINE = 10.88, ULTIMA = false;
+        var L = function (g) { return g - S; };
+        var p1 = 4.12;   // 'Armas'
+        var p2 = 5.699;   // 'Tu gente'
+        var p3 = 7.197;   // 'La plataforma'
+        var p4 = 9.043;   // 'Y queda'
+
+        [["#p1", p1], ["#p2", p2], ["#p3", p3], ["#p4", p4]].forEach(function (x, k) {
+          tl.fromTo(x[0], { opacity: 0, x: k % 2 ? 160 : -160, scale: 0.94 }, { opacity: 1, x: 0, scale: 1, duration: 0.55, ease: "back.out(1.6)" }, L(x[1]) - 0.1);
+          tl.fromTo(x[0] + " .num", { backgroundColor: "rgba(172,132,29,0.12)" }, { backgroundColor: "rgba(172,132,29,0.85)", color: "#111", duration: 0.3 }, L(x[1]));
+        });
+        if (!ULTIMA) tl.to("#c", { opacity: 0, y: -90, duration: 0.35, ease: "power2.in" }, L(FINE) - 0.35);
+        window.__timelines["escena-2-pasos"] = tl;
+      })();
+      </script>
+    </template>
+  </body>
+</html>
