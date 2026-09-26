@@ -1,10 +1,10 @@
 # Ruta Segura · Módulo 4 — dirección
 
-Cuarto y último video del curso. Cubre las láminas 26 a 33 del PPTX: evaluación
-final en cuatro partes, compromiso individual, clave de respuestas, cierre y
-fuentes.
+Cuarto y último video del curso. Cubre las láminas 32 y 33 del PPTX: cierre y
+fuentes. La evaluación final, el compromiso y la clave (láminas 26 a 31) van en la
+plataforma, no en el video; sus generadores siguen en `tools/` como referencia.
 
-- **Formato:** 1920×1080 · **7:54** · con locución.
+- **Formato:** 1920×1080 · **2:08** · con locución.
 - **Identidad, encuadre y reglas:** las del módulo 1
   ([`../ruta-segura-m1/DIRECCION.md`](../ruta-segura-m1/DIRECCION.md)).
 - **Procedimiento:** §14 de `../../PRODUCCION-VIDEOS.md`.

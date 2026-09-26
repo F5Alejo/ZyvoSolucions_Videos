@@ -4,7 +4,7 @@ Tercer video del curso **«Ruta Segura · cada pedaleo cuenta»**. Cubre el **m�
 3** del PPTX de origen (láminas 19 a 25): anticipación, maniobra, inspección de
 ruta y estado personal, y respuesta ante un siniestro.
 
-- **Formato:** 1920×1080 · **7:08** · con locución.
+- **Formato:** 1920×1080 · **3:43** · con locución. Sin quiz: las láminas 23 a 25 van en la plataforma.
 - **Identidad, encuadre y reglas:** las del módulo 1
   ([`../ruta-segura-m1/DIRECCION.md`](../ruta-segura-m1/DIRECCION.md)).
 - **Procedimiento:** §14 de `../../PRODUCCION-VIDEOS.md`.

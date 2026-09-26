@@ -6,7 +6,8 @@ propio proyecto bajo `videos/`.
 
 ## Antes de tocar nada
 
-**Lee [`PRODUCCION-VIDEOS.md`](PRODUCCION-VIDEOS.md) completo.** Es el estándar de
+Para orientarte (qué se ha hecho, qué formato elegir, qué copiar) empieza por
+[`docs/PLAYBOOK.md`](docs/PLAYBOOK.md). Luego **lee [`PRODUCCION-VIDEOS.md`](PRODUCCION-VIDEOS.md) completo.** Es el estándar de
 producción de la serie: identidad visual con valores exactos, estructura narrativa,
 reglas técnicas duras, procedimiento y trampas ya documentadas. No es una guía
 opcional — los nueve planos del primer video se ven como una sola pieza solo porque
@@ -76,6 +77,20 @@ En una máquina con poca RAM el render va por partes y **reanudable**:
 ```bash
 python tools/render-partes.py videos/<proyecto> [...]   # salta las partes ya hechas
 python tools/unir-curso.py <carpeta-de-entrega> <salida.mp4>
+```
+
+## Curso grande a partir de un PPTX (generado por plantillas)
+
+Cuando el PPTX tiene muchas láminas con la misma anatomía, el curso se genera: la
+plantilla es `videos/csm-curso/` (o `videos/moto-curso/`) y el procedimiento es **§15**
+de `PRODUCCION-VIDEOS.md`.
+
+```bash
+python videos/csm-curso/tools/csm.py voz <clave>              # locución + tiempos por frase
+python videos/csm-curso/tools/csm.py construir <clave>        # genera videos/csm-<clave>/; validar aquí
+python videos/csm-curso/tools/csm.py construir <clave> --tramos
+python tools/render-partes.py videos/csm-<clave>
+python videos/csm-curso/tools/csm.py montar <clave>           # pega la voz y verifica duraciones
 ```
 
 ## Empezar un video de marketing nuevo

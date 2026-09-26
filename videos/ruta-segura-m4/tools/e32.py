@@ -61,7 +61,6 @@ CUERPO = chrome("32", "CIERRE", "Una ruta segura <b style=\"color:#D4A62B\">se d
       <div class="x-limite" id="x-limite">Capacitar <b>no reemplaza</b> esos controles materiales.</div>
       <div class="x-tampoco" id="x-tampoco">Tampoco reemplaza una evaluación de aptitud médica, un curso certificado
         de primeros auxilios ni la práctica presencial.</div>
-      <div class="x-cierre" id="x-cierre">Repite en voz alta tu compromiso de treinta días e identifica el primer control que aplicarás.</div>
     </div>
 """
 
@@ -84,8 +83,6 @@ TL += """
       /* 44.79 · ni la aptitud médica, ni los primeros auxilios, ni la práctica */
       tl.fromTo("#x-tampoco", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 44.89);
 
-      /* 54.26 · la última invitación */
-      tl.fromTo("#x-cierre", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 54.36);
 """
 
 

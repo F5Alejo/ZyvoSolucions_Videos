@@ -17,7 +17,7 @@ VOZ = os.path.join(RAIZ, "assets", "voz")
 # tarda mas de los 10 s que da `check` en cargarlo antes de la primera muestra.
 SALIDA = os.path.join(VOZ, "modulo-4.mp3")
 
-import construir
+import construir, cronometro
 
 
 def duracion(ruta):
@@ -35,6 +35,32 @@ def volumen(ruta):
     return "?"
 
 
+def recortar(n, mp3):
+    """Quita de la locución de la lámina los tramos de `cronometro.tramos(n)`.
+
+    Devuelve la ruta a usar: el MP3 original si no hay cortes, o un WAV con los
+    tramos que quedan unidos. Los cortes caen en el silencio entre frases.
+    """
+    tramos = cronometro.tramos(n)
+    if not tramos:
+        return mp3
+    fin = duracion(mp3)
+    quedan, t = [], 0.0
+    for a, b in tramos:
+        if a > t:
+            quedan.append((t, a))
+        t = b
+    if t < fin:
+        quedan.append((t, fin))
+    partes = "".join("[0:a]atrim=%.3f:%.3f,asetpts=PTS-STARTPTS[p%d];" % (a, b, i)
+                     for i, (a, b) in enumerate(quedan))
+    cadena = partes + "".join("[p%d]" % i for i in range(len(quedan))) + "concat=n=%d:v=0:a=1[out]" % len(quedan)
+    salida = os.path.join(VOZ, "s%02d-recortada.wav" % n)
+    subprocess.check_call(["ffmpeg", "-v", "error", "-y", "-i", mp3, "-filter_complex", cadena,
+                           "-map", "[out]", salida])
+    return salida
+
+
 def main():
     escenas, total = construir.plan()
     entradas, filtros, etiquetas = [], [], []
@@ -44,6 +70,7 @@ def main():
         mp3 = os.path.join(VOZ, "s%02d.mp3" % e["lamina"])
         if not os.path.exists(mp3):
             raise SystemExit("falta %s — corre antes tools/voz-eleven.py" % mp3)
+        mp3 = recortar(e["lamina"], mp3)
         d = duracion(mp3)
         if d > e["dura"]:
             raise SystemExit("lámina %d: la locución dura %.2f s y su plano %.2f s"

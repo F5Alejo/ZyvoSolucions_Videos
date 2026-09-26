@@ -72,7 +72,7 @@ CUERPO = """    <div class="clip capa" data-start="0" data-duration="{d}" data-t
       <div class="q-velo" data-layout-ignore></div>
     </div>
 
-""" + chrome("02", "PREGUNTA INICIAL", "Cinco fallas. <b style=\"color:#D4A62B\">Una sola salida.</b>") + """
+""" + chrome("02", "SITUACIÓN REAL", "Cinco fallas. <b style=\"color:#D4A62B\">Una sola salida.</b>") + """
 
     <div class="clip capa" data-start="0" data-duration="{d}" data-track-index="3">
       <div class="q-fila">
@@ -80,11 +80,7 @@ CUERPO = """    <div class="clip capa" data-start="0" data-duration="{d}" data-t
       <div class="q-cadena" id="q-cadena">NO SON PROBLEMAS AISLADOS: FORMAN UNA CADENA</div>
       <div class="q-tags" id="q-tags">
 """ + TG + """      </div>
-      <div class="q-preg" id="q-preg">¿Pedaleas, corriges o detienes la misión?</div>
-      <div class="q-escudo" id="q-escudo">
-        <div class="q-escudo-n">+80</div><div class="q-escudo-t">RETO RISKMANN</div>
-      </div>
-""" + CT + """      <div class="q-final" id="q-final">No busques culpables: busca barreras que rompan la cadena antes de la salida.</div>
+      <div class="q-final" id="q-final">No busques culpables: busca barreras que rompan la cadena antes de la salida.</div>
     </div>
 
 """ + PAUSA_HTML
@@ -114,18 +110,10 @@ for _i, _t in enumerate([23.20, 24.20, 25.20, 26.20]):
 
 TL += """
       /* 29.92 · «¿existen condiciones suficientes para hacerlo sin trasladar el riesgo?» */
-      tl.fromTo("#q-preg", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.62, ease: "power3.out" }, 30.10);
-      tl.fromTo("#q-escudo", { opacity: 0, scale: 0.8, transformOrigin: "50% 50%" },
-        { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, 31.20);
 
 """ + pausa_tl(39.60) + """
-      /* 43.40 · «propone por lo menos tres controles» */
-      tl.fromTo("#q-c1", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.45, ease: "power2.out" }, 44.00);
-      tl.fromTo("#q-c2", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.45, ease: "power2.out" }, 48.30);
-      tl.fromTo("#q-c3", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.45, ease: "power2.out" }, 50.30);
 
       /* 52.72 · «No busques culpables. Busca barreras…» */
-      tl.to("#pausa", { opacity: 0, duration: 0.4, ease: "power1.in" }, 52.40);
       tl.fromTo("#q-final", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 52.90);
 """
 

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #F3F0E8; }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #F3F0E8; }
+      .escena { position: absolute; inset: 0; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="163.1"
+         data-width="1920" data-height="1080">
+      <div id="el-l54-foto" class="escena" data-composition-id="l54-foto"
+           data-composition-src="compositions/l54-foto.html"
+           data-start="0" data-duration="34.62" data-track-index="1"></div>
+      <div id="el-l55-escalera" class="escena" data-composition-id="l55-escalera"
+           data-composition-src="compositions/l55-escalera.html"
+           data-start="34.62" data-duration="35.5" data-track-index="1"></div>
+      <div id="el-l56-diana" class="escena" data-composition-id="l56-diana"
+           data-composition-src="compositions/l56-diana.html"
+           data-start="70.12" data-duration="29.34" data-track-index="1"></div>
+      <div id="el-l57-barras" class="escena" data-composition-id="l57-barras"
+           data-composition-src="compositions/l57-barras.html"
+           data-start="99.46" data-duration="34.06" data-track-index="1"></div>
+      <div id="el-l58-escalera" class="escena" data-composition-id="l58-escalera"
+           data-composition-src="compositions/l58-escalera.html"
+           data-start="133.52" data-duration="29.58" data-track-index="1"></div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

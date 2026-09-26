@@ -5,6 +5,7 @@ Repositorio dedicado a la elaboración de videos para presentaciones, marketing 
 
 | Documento | Para quién | Qué contiene |
 | --- | --- | --- |
+| [`docs/PLAYBOOK.md`](docs/PLAYBOOK.md) | Quien arranca un proyecto nuevo | Qué se hizo, qué formato elegir, qué copiar, trampas principales y huecos conocidos |
 | [`docs/POC-SEGURIDAD-VIAL-PASAJEROS.md`](docs/POC-SEGURIDAD-VIAL-PASAJEROS.md) | Revisión del PoC | Entregable, checklist del issue, criterios de aceptación, viabilidad y pendientes |
 | [`GUIA-PROMPTS.md`](GUIA-PROMPTS.md) | Quien pide los videos (marketing, gerencia) | «Con este prompt consigo esto»: instrucciones probadas, tiempos y lo que no funciona |
 | [`PRODUCCION-VIDEOS.md`](PRODUCCION-VIDEOS.md) | Quien los produce (persona o agente) | El estándar: veracidad, marca, identidad visual, formatos, procedimiento, audio, trampas |
@@ -28,11 +29,15 @@ videos/
   sofu-comercial/        comercial de SOFU BIC S.A.S. (68 s, 16:9)
   sofu-comercial-v2/     el comercial rehecho con gancho, golpe inicial y cierre (52 s, 16:9)
   sofu-comercial-v2-vertical/  la versión v2 en 9:16 para redes
-  ruta-segura-m1/        curso «Ruta Segura» · apertura + módulo 1 (10:57)
-  ruta-segura-m2/        curso «Ruta Segura» · módulo 2, bicicleta lista (6:52)
-  ruta-segura-m3/        curso «Ruta Segura» · módulo 3, misión segura (6:48)
-  ruta-segura-m4/        curso «Ruta Segura» · módulo 4, evaluación y cierre (7:41)
+  ruta-segura-m1/        curso «Ruta Segura» · apertura + módulo 1 (6:48)
+  ruta-segura-m2/        curso «Ruta Segura» · módulo 2, bicicleta lista (3:43)
+  ruta-segura-m3/        curso «Ruta Segura» · módulo 3, misión segura (3:43)
+  ruta-segura-m4/        curso «Ruta Segura» · módulo 4, cierre y fuentes (2:08)
   riskmann-sala-de-control/  video de marketing de la plataforma (68 s)
+  moto-curso/            generador del curso «Motociclista laboral seguro» (datos + plantillas)
+  moto-apertura … moto-cierre/  los 15 videos generados de ese curso (40:47)
+  csm-curso/             generador del curso «Conducción Segura y Manejo Defensivo»
+  csm-apertura … csm-cierre/    los 15 videos generados de ese curso (~33 min)
 ```
 
 ## Videos
@@ -52,11 +57,12 @@ Todos los videos terminados están en la carpeta compartida de Drive:
 | 05 | `SOFU BIC SAS - Presentacion comercial de la empresa (1m08)` | Comercial de la casa matriz SOFU, a partir de su guion | `videos/sofu-comercial/` |
 | 06 | `SOFU BIC SAS - Comercial dinamico (52s)` | El comercial rehecho: gancho, golpe inicial y cierre | `videos/sofu-comercial-v2/` |
 | 06b | `SOFU BIC SAS - Comercial dinamico vertical para redes (52s)` | El mismo 06 en 9:16 | `videos/sofu-comercial-v2-vertical/` |
-| 07 | `Ruta Segura - Modulo 1 Actor vial y Sistema Seguro - Narrado (10m57)` | Curso de ciclistas: apertura + módulo 1 | `videos/ruta-segura-m1/` |
-| 08 | `Ruta Segura - Modulo 2 Bicicleta lista - Narrado (6m52)` | Inspección, clasificación, protección y visibilidad | `videos/ruta-segura-m2/` |
-| 09 | `Ruta Segura - Modulo 3 Mision segura - Narrado (6m48)` | Anticipación, maniobra, ruta y estado, respuesta | `videos/ruta-segura-m3/` |
-| 10 | `Ruta Segura - Modulo 4 Evaluacion final y cierre - Narrado (7m41)` | Evaluación, compromiso, clave, cierre y fuentes | `videos/ruta-segura-m4/` |
-| — | `Ruta Segura - CURSO COMPLETO NARRADO (32m18)` | Los cuatro seguidos, unidos sin recodificar | `tools/unir-curso.py` |
+| 07 | `Ruta Segura - Modulo 1 Actor vial y Sistema Seguro - Narrado (6m48)` | Curso de ciclistas: apertura + módulo 1 | `videos/ruta-segura-m1/` |
+| 08 | `Ruta Segura - Modulo 2 Bicicleta lista - Narrado (3m43)` | Inspección, clasificación, protección y visibilidad | `videos/ruta-segura-m2/` |
+| 09 | `Ruta Segura - Modulo 3 Mision segura - Narrado (3m43)` | Anticipación, maniobra, ruta y estado, respuesta | `videos/ruta-segura-m3/` |
+| 10 | `Ruta Segura - Modulo 4 Cierre - Narrado (2m08)` | Cierre y fuentes | `videos/ruta-segura-m4/` |
+| — | `curso-motociclista/00 … 14` | Curso «Motociclista laboral seguro», 15 videos | `videos/moto-*` (generados por `videos/moto-curso/`) |
+| — | `curso-conduccion-segura/00-1 … 13-1` | Curso «Conducción Segura y Manejo Defensivo», 15 videos | `videos/csm-*` (generados por `videos/csm-curso/`) |
 
 El curso completo va con **locución sintética en voz colombiana** (ElevenLabs, «Carlos»,
 `eleven_v3`). Cada módulo trae su copia liviana (`Nb`) y su `GUION-VOZ-modulo-N.md` con la
@@ -92,6 +98,7 @@ python tools/descargar-voz.py     # una vez: baja la voz aprobada (60 MB, fuera 
 | `tools/voz.py` | Locución con la voz aprobada desde un guion JSON; avisa si una frase no cabe en su plano |
 | `tools/ritmo.py` | Pista rítmica sintetizada (bombo, platillos, palmas, bajo, acordes) a un BPM dado, para videos sin voz |
 | `tools/mezcla.py` | Mezcla voz, pistas, cama y efectos desde un JSON; normaliza a −16 LUFS y verifica que el audio llegó |
+| `tools/cortar-laminas.py` | Parte el MP4 de un módulo en piezas de ~1 min, cortando solo en frontera de lámina |
 | `tools/unir-curso.py` | Une los módulos de un curso en un máster continuo, sin recodificar; avisa de los que van mudos |
 | `tools/render-partes.py` | Renderiza las partes que faltan y salta las hechas: hace el lote reanudable en máquinas con poca RAM |
 | `videos/ruta-segura-m1/tools/voz-eleven.py` | Locución con ElevenLabs (`eleven_v3`) pidiendo timestamps por carácter |

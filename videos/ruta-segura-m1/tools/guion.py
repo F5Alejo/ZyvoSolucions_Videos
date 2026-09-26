@@ -15,7 +15,7 @@ import construir, cronometro
 
 TITULOS = {1: "Portada · Ruta Segura", 2: "Pregunta inicial · cinco fallas",
            3: "Propósito · los cuatro verbos", 4: "Ruta de aprendizaje · tres módulos",
-           5: "Módulo 1 · ¿ser cuidadoso basta?", 6: "Módulo 1 · Sistema Seguro",
+           5: "Módulo 1 · ser cuidadoso no basta", 6: "Módulo 1 · Sistema Seguro",
            7: "Módulo 1 · reglas en la vía", 8: "Caso práctico · ruta inundada",
            9: "Reto RiskMann · dos decisiones", 10: "Retroalimentación · respuestas",
            11: "Repaso · tres preguntas"}
@@ -44,8 +44,7 @@ def main():
            "",
            "- **Voz:** colombiana, primera persona, tono de instructor — ni locutor comercial ni lectura plana.",
            "- **Silencio:** 0,4 s entre frases y 1 s antes de cambiar de lámina.",
-           "- **Cifras:** se leen completas. En este módulo solo hay una: «Ley dos mil cuatrocientos",
-           "  sesenta y seis de dos mil veinticinco».",
+           "- **Cifras:** se leen completas cuando las haya.",
            "",
            "| Lámina | Entra | Sale | Narración | Aire |",
            "|---|---|---|---|---|"]
@@ -67,24 +66,22 @@ def main():
         if n is None:
             continue
         frases = laminas[n]["frases"]
-        ini = cronometro.VOZ[n] if voz else cronometro.REF[n]
+        oidas = cronometro.vigentes(n, frases)
         out += ["## Lámina %02d · %s" % (n, TITULOS[n]),
                 "",
                 "**%s → %s** · narración %.1f s de %.1f s disponibles."
-                % (tc(e["inicio"]), tc(e["inicio"] + e["dura"]), ini[-1], e["dura"]),
+                % (tc(e["inicio"]), tc(e["inicio"] + e["dura"]), cronometro.narracion(n), e["dura"]),
                 ""]
-        for i, f in enumerate(frases):
-            out.append("- `+%05.1f s` %s" % (ini[i], f))
+        for t, f in oidas:
+            out.append("- `+%05.1f s` %s" % (t, f))
         out.append("")
 
     out += ["---", "",
             "## Qué queda fuera del video",
             "",
-            "- No se locuta el rótulo «GUION DE VOZ — PRIMERA PERSONA» que traen las notas de las",
-            "  láminas 7 y 11 en el PPTX: es una marca del documento, no narración.",
-            "- Las cifras de escudos (100 / 80 / 40 / +80 / +200) y la mención a la Ley 2466 de 2025",
-            "  vienen del PPTX de origen. Si el cliente las ajusta, se cambian en `tools/narracion.json`",
-            "  y en la lámina correspondiente, y se vuelve a construir.",
+            "- Las láminas 9 a 11 del PPTX (reto, retroalimentación, repaso y evaluación):",
+            "  los quiz se implementan en la plataforma después de ver el video.",
+            "- No se locutan los rótulos del documento que traen algunas notas del PPTX.",
             ""]
 
     io.open(os.path.join(RAIZ, "GUION-VOZ.md"), "w", encoding="utf-8", newline="\n").write("\n".join(out))

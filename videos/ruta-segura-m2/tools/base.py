@@ -63,15 +63,18 @@ CHROME_CSS = """
 
 
 def chrome(numero, ceja, titulo, fuente="Documento fuente: Ruta Segura, sep. 2026"):
-    """Cabecera común de escena. `titulo` admite <br> y <b>."""
+    """Cabecera común de escena. `titulo` admite <br> y <b>.
+
+    `fuente` ya no se muestra: el video es informativo y va sin línea de fuente.
+    Se conserva el parámetro para no tocar las láminas que lo pasan.
+    """
     return """    <div id="ch" class="clip capa" data-start="0" data-duration="{d}" data-track-index="2">
       <div class="marco" id="ch-marco" data-layout-ignore></div>
       <div class="ceja" id="ch-ceja">{ceja}</div>
       <div class="lamina" id="ch-lamina">{num}</div>
       <div class="titulo" id="ch-titulo">{tit}</div>
       <div class="regla" id="ch-regla" data-layout-ignore></div>
-      <div class="fuente" id="ch-fuente">{fte}</div>
-    </div>""".replace("{ceja}", ceja).replace("{num}", numero).replace("{tit}", titulo).replace("{fte}", fuente)
+    </div>""".replace("{ceja}", ceja).replace("{num}", numero).replace("{tit}", titulo)
 
 
 CHROME_TL = """      /* cabecera: entra siempre igual, en los primeros 1.2 s */
@@ -80,7 +83,6 @@ CHROME_TL = """      /* cabecera: entra siempre igual, en los primeros 1.2 s */
       tl.fromTo("#ch-titulo", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.62, ease: "power3.out" }, 0.18);
       tl.fromTo("#ch-regla", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power2.out" }, 0.42);
       tl.fromTo("#ch-marco", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power1.out" }, 0);
-      tl.fromTo("#ch-fuente", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power1.out" }, 0.7);
 """
 
 
@@ -152,8 +154,10 @@ def envoltura(cid, dur, css, cuerpo, tl, con_chrome=True, con_cola=True, lamina=
            chrome_tl=CHROME_TL if con_chrome else "", tl=tl + cola)
 
 
-PAUSA_HTML = """      <div class="pausa" id="pausa"><span class="pausa-icono" data-layout-ignore></span>PAUSA EL VIDEO Y RESPONDE</div>"""
+# La pastilla «PAUSA EL VIDEO Y RESPONDE» ya no va en el video: la actividad
+# se hace en la plataforma. Quedan vacías para no tocar las láminas que las usan.
+PAUSA_HTML = ""
 
 
 def pausa_tl(t):
-    return ('      tl.fromTo("#pausa", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, %.2f);\n' % t)
+    return ""

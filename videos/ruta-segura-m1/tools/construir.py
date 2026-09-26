@@ -11,8 +11,9 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
 RAIZ = os.path.dirname(AQUI)
 
-MODULOS = ["e01", "e02", "e03", "e04", "e05", "e06",
-           "e07", "e08", "e09", "e10", "e11", "e12"]
+# Los quiz (reto, retroalimentación, repaso y evaluación) no van en el video:
+# se implementan en la plataforma después de verlo.
+MODULOS = ["e01", "e02", "e03", "e04", "e05", "e06", "e07", "e08", "e12"]
 
 INDEX = """<!doctype html>
 <html lang="es">
@@ -30,13 +31,6 @@ INDEX = """<!doctype html>
       .sello {{ position: absolute; right: 118px; bottom: 24px; width: 186px; height: 62px;
                 border-radius: 34px; background: #FFFFFF; }}
       .sello img {{ position: absolute; left: 20px; top: 9px; width: 120px; height: 45px; }}
-      /* barra de avance del módulo: se llena a lo largo de los {mins} minutos */
-      .barra {{ position: absolute; left: 120px; bottom: 44px; width: 1520px; height: 5px;
-                border-radius: 3px; background: rgba(174,188,214,0.22); overflow: hidden; }}
-      .barra-fill {{ position: absolute; inset: 0; background: #AC841D;
-                     transform: scaleX(0); transform-origin: 0 50%; }}
-      .marca {{ position: absolute; bottom: 38px; width: 2px; height: 17px;
-                border-radius: 1px; background: rgba(174,188,214,0.45); }}
     </style>
   </head>
   <body>
@@ -44,16 +38,13 @@ INDEX = """<!doctype html>
          data-width="1920" data-height="1080">
 {escenas}
       <div id="chrome" class="clip chrome" data-start="0" data-duration="{total}" data-track-index="6">
-        <div class="barra"><div class="barra-fill" id="barra-fill"></div></div>
-{marcas}
         <div class="sello" id="sello"><img src="assets/marca/riskmann_logo_color.png" alt="RiskMann by SOFU" /></div>
       </div>
 {audio}    </div>
     <script>
       window.__timelines = window.__timelines || {{}};
       var tl = gsap.timeline({{ paused: true }});
-      /* la barra avanza sin pausa: da al espectador la medida del módulo */
-{barra}      window.__timelines["main"] = tl;
+      window.__timelines["main"] = tl;
     </script>
   </body>
 </html>
@@ -97,9 +88,7 @@ def plan():
 def escribir(ruta, escenas, total, desde, hasta, ultima, con_audio=True):
     """Escribe un index con las escenas dadas, rebasadas a su propio cero.
 
-    `desde`/`hasta` son los segundos que ese trozo ocupa dentro del máster: con
-    ellos la barra de avance sigue midiendo el módulo completo aunque el archivo
-    solo contenga una parte.
+    `desde`/`hasta` son los segundos que ese trozo ocupa dentro del máster.
     """
     dur = round(hasta - desde, 3)
     filas = []
@@ -111,20 +100,9 @@ def escribir(ruta, escenas, total, desde, hasta, ultima, con_audio=True):
             '           data-start="%g" data-duration="%g" data-track-index="1"></div>'
             % (cid[:3], cid, cid, round(e["inicio"] - desde, 3), e["dura"]))
 
-    marcas = [x["inicio"] for x in TODAS[1:]]
-    mrc = "\n".join('        <div class="marca" style="left: %.1fpx"></div>'
-                    % (120 + 1520 * (x / total)) for x in marcas)
-
-    barra = ('      tl.fromTo("#barra-fill", { scaleX: %.5f }, { scaleX: %.5f, duration: %g, ease: "none" }, 0);\n'
-             % (desde / total, hasta / total, dur))
-    if ultima:
-        barra += ('      tl.to(".barra, .marca", { opacity: 0, duration: 0.8, ease: "power1.in" }, %g);\n'
-                  % round(dur - 0.9, 2))
-
     io.open(ruta, "w", encoding="utf-8", newline="\n").write(
-        INDEX.format(total=dur, escenas="\n".join(filas), marcas=mrc,
-                     audio=audio(dur) if con_audio else "", barra=barra,
-                     mins="%.1f" % (total / 60.0)))
+        INDEX.format(total=dur, escenas="\n".join(filas),
+                     audio=audio(dur) if con_audio else ""))
 
 
 TODAS = []

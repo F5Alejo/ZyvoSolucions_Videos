@@ -5,7 +5,7 @@ Segundo video del curso **«Ruta Segura · cada pedaleo cuenta»**. Cubre el
 a 18): inspección preoperacional, clasificación de la bicicleta, protección y
 visibilidad.
 
-- **Formato:** 1920×1080 · **7:20** · con locución.
+- **Formato:** 1920×1080 · **3:43** · con locución. Sin quiz: las láminas 16 a 18 van en la plataforma.
 - **Identidad, encuadre y reglas de composición:** las mismas del módulo 1. La
   referencia es [`../ruta-segura-m1/DIRECCION.md`](../ruta-segura-m1/DIRECCION.md);
   aquí solo se anota lo propio de este módulo.

@@ -4,7 +4,8 @@ Primer video del curso **«Ruta Segura · cada pedaleo cuenta»** (trabajadores
 ciclistas). Cubre la **apertura + el módulo 1** del PPTX de origen
 (`diapositiva/actor ciclista ..pptx`, láminas 1 a 11).
 
-- **Formato:** 1920×1080 · **11:35** · con locución.
+- **Formato:** 1920×1080 · **6:48** · con locución. Sin barra de avance ni quiz: las láminas 9 a 11
+  (reto, retroalimentación y repaso) van en la plataforma, no en el video.
 - **Voz:** sintética colombiana — ElevenLabs «Carlos» `4PN5DHmrfIgZksvIrawS`, modelo `eleven_v3`. El libreto con la ventana de cada
   lámina está en [`GUION-VOZ.md`](GUION-VOZ.md): sirve para volver a grabarla con
   una persona sin tocar el montaje.
@@ -51,13 +52,15 @@ Logo RiskMann: archivo oficial, sin redibujar.
 
 **Encuadre común** (`tools/base.py` → `CHROME_CSS`), idéntico en las once láminas:
 ceja a 112, número de lámina arriba a la derecha, título a 150 (máx. dos
-renglones, 50 px), regla dorada a 272, contenido desde 296 y línea de fuente
-documental a 946. Nada puede invadir esa línea: es el error que más veces
+renglones, 50 px), regla dorada a 272, contenido desde 296 y nada por debajo de
+946 (ahí iba la línea de fuente, que ya no se muestra). Invadir esa franja es el error que más veces
 apareció al componer.
 
-El único elemento que le pide algo al espectador es la pastilla cian
-**PAUSA EL VIDEO Y RESPONDE**, y solo en las láminas donde la narración lo pide
-(1, 2, 5, 8, 9 y 11).
+El video es **informativo**: acompaña el quiz de la plataforma, no lo reemplaza. No
+lleva pastilla de pausa, escudos del Reto RiskMann, preguntas al espectador ni línea
+de fuente. Las frases de la locución que invitaban a pausar o responder se recortan
+del audio (`CORTES` en `tools/cronometro.py`); la lámina 4 quedó solo con los tres
+módulos.
 
 ## Cómo se construye
 
@@ -89,7 +92,7 @@ los tiempos de referencia y sale mudo, que es como se entregó la primera versi�
 - `tools/eNN.py` — una lámina por archivo: su CSS, su cuerpo y su línea de tiempo,
   con la marca de tiempo de la frase que dispara cada aparición en el comentario.
 - `tools/construir.py` — encadena las láminas, calcula los inicios y arma el
-  `index.html` con la barra de avance, el sello de marca y la pista de voz.
+  `index.html` con el sello de marca y la pista de voz.
 - `tools/cronometro.py` — el mapa entre la locución de referencia y la vigente.
 - `tools/voz-eleven.py` — pide la locución con timestamps y escribe `tiempos-voz.json`.
 - `tools/pista.py` — coloca cada lámina en su sitio del máster y normaliza a −16 LUFS.

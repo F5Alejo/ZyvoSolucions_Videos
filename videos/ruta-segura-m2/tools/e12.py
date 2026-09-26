@@ -72,7 +72,7 @@ CUERPO = """    <div class="clip capa" data-start="0" data-duration="{d}" data-t
 """ + chrome("12", "MÓDULO 2", "Bicicleta lista, <b style=\"color:#D4A62B\">protección y visibilidad</b>") + """
 
     <div class="clip capa" data-start="0" data-duration="{d}" data-track-index="3">
-      <div class="b-preg" id="b-preg">¿Qué defecto obliga a no salir?</div>
+      <div class="b-preg" id="b-preg">Hay defectos que obligan a no salir.</div>
       <div class="b-no" id="b-no" data-layout-allow-occlusion>«Una lista para marcar rápidamente.»</div>
       <div class="b-tacha" id="b-tacha" data-layout-ignore></div>
       <div class="b-si" id="b-si">Es un proceso de decisión.</div>
@@ -85,9 +85,6 @@ CUERPO = """    <div class="clip capa" data-start="0" data-duration="{d}" data-t
       <div class="b-ex-tacha" id="b-ex-tacha" data-layout-ignore></div>
 
       <div class="b-control" id="b-control">Retirarla no es incumplir la misión: es <b>aplicar un control preventivo</b>.</div>
-      <div class="b-escudo" id="b-escudo">
-        <div class="b-escudo-n">+80</div><div class="b-escudo-t">RETO RISKMANN</div>
-      </div>
       <div class="b-final" id="b-final">Una secuencia que puedes repetir antes de cada uso.</div>
     </div>
 
@@ -121,12 +118,9 @@ TL += """      tl.fromTo("#b-veredicto", { opacity: 0, y: 18 }, { opacity: 1, y:
 
       /* 38.00 · «retirarla no significa incumplir la misión» */
       tl.fromTo("#b-control", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 38.10);
-      tl.fromTo("#b-escudo", { opacity: 0, scale: 0.82, transformOrigin: "50% 50%" },
-        { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, 39.20);
 
 """ + pausa_tl(45.45) + """
       /* 53.55 · «una secuencia que puedes repetir antes de cada uso» */
-      tl.to("#pausa", { opacity: 0, duration: 0.4, ease: "power1.in" }, 53.10);
       tl.fromTo("#b-final", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 53.65);
 """
 
