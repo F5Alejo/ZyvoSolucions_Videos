@@ -269,9 +269,8 @@ servicio asistido. **Criterio:** un cliente externo lo usa sin ayuda.
 
 1. ~~¿El producto es para **uso interno** o para **vender a terceros**?~~ **Resuelta en
    D-02: las dos.** Se abren estas otras:
-   - ¿Quién será el primer tercero del piloto (fase 3)? ¿Algún cliente actual de SOFU?
-   - ¿Se vende por video, por curso, por suscripción o por minuto producido?
-   - ¿Bajo qué nombre se ofrece a terceros: SOFU, RiskMann o una marca propia?
+   - *Aparcadas por D-03:* ¿quién será el primer tercero del piloto?, ¿se vende por
+     video, curso, suscripción o minuto?, ¿bajo qué nombre se ofrece?
 2. ¿RiskMann Campus es el destino principal de los cursos? ¿Qué formato de preguntas acepta?
 3. ¿Quién aprueba una pieza en cada marca, y cómo se registra hoy esa aprobación?
 4. ¿Se acepta depender de ElevenLabs, o la voz local (Piper) debe ser una alternativa
@@ -311,3 +310,4 @@ servicio asistido. **Criterio:** un cliente externo lo usa sin ayuda.
 | --- | --- | --- | --- | --- |
 | D-01 | 2026-09-26 | Documentar la visión de plataforma en este archivo, separada del playbook | El playbook describe lo que existe; este documento, lo que se propone | — |
 | D-02 | 2026-09-26 | Se mantienen **las dos ofertas**: uso interno y venta a terceros | Decisión del equipo `fegir`. Consecuencias en §3.9: licencias, datos, aislamiento por cliente y costo por video pasan a ser requisitos; se añade un piloto con un tercero (fase 3) antes de la API | Equipo `fegir` |
+| D-03 | 2026-09-26 | **Modelo de negocio y clientes nuevos, aparcados.** Primero, documentación y contexto muy específicos de las cuatro marcas actuales (SOFU, RiskMann, FEGIR, Dr. Yezid) y una ruta paso a paso antes de materializar | Construir sobre contexto completo, no sobre supuestos. La ruta está en [`PASO-A-PASO.md`](PASO-A-PASO.md) y el contexto en [`contexto/`](contexto/) | Equipo `fegir` |

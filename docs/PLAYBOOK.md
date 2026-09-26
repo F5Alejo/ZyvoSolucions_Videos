@@ -298,7 +298,9 @@ contenido con `ease: "none"`. En la consulta PESV: de 44 ventanas muertas de 76 
 | --- | --- | --- |
 | RiskMann | `docs/marca/` (PDF oficial) | `#020202`, dorado `#c8951a`, cian `#06c7fb`; Dubai; caballero y dos anillos cian + dorado; pesos mezclados en una frase |
 | Yezid Ricaurte | Manual de Yezid + `yezidricaurte.com` + correos | Petróleo `#001f26`, verde `#336666`, dorado `#d2b96a`, pálido `#f1ecb0`, botón coral `#f06e49` de los correos; firma oficial en negativo, **sin redibujar**; **sin rojo** (reservado para «peligro») |
-| FEGIR | Brief | Verde `#45a035`; CTA a `fegir.org`. **No hay logo oficial en el repo** |
+| FEGIR | Brief | Verde `#45a035`; CTA a `fegir.org`; logos en `videos/fegir-envivo/assets/logo/` (origen por confirmar) |
+
+La ficha completa de cada marca está en [`contexto/marcas/`](contexto/marcas/).
 
 - Los colores de un manual pensado para papel pueden no pasar contraste en pantalla
   (oliva `#80804a` = 1.75:1): variantes aclaradas **solo para texto**, el color de marca
@@ -399,8 +401,9 @@ La lista completa está en [`ARRANQUE-EN-OTRO-EQUIPO.md`](ARRANQUE-EN-OTRO-EQUIP
 - **La misma herramienta copiada en cada proyecto:** `tools/render.mjs` (seis proyectos) y
   `tools/audio.py` (cinco) viven copiados en cada proyecto de lienzo propio. Igual que
   con `moto.py`/`csm.py`, el siguiente proyecto debería sacarlos a `tools/`.
-- **FEGIR no tiene logo oficial en el repo.** Si una pieza debe firmarla la Fundación,
-  hace falta su archivo.
+- **Logos de FEGIR sin origen confirmado:** están en `videos/fegir-envivo/assets/logo/`
+  (color, blanco y escudo), pero no hay manual de FEGIR en el repo que diga si son los
+  oficiales ni sus reglas de uso.
 - **Varias variantes de la campaña de Yezid** (`-campana`, `-campana-v2`, `-estudio`,
   `-premium`, `-15s`) conviven sin un documento que diga cuál se aprobó. Anotarlo en un
   `LEEME` o retirar las descartadas.
