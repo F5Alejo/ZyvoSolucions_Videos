@@ -1,0 +1,77 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden;
+            font-family: "Montserrat", sans-serif; background: #F4F6FB; color: #14193F; }
+    .capa { position: absolute; inset: 0; }
+    .fondo { background: #F4F6FB; }
+    .sello { position: absolute; right: 60px; bottom: 36px; width: 170px; height: 56px; border-radius: 28px;
+             background: #FFFFFF; opacity: 0; box-shadow: 0 4px 14px rgba(20, 25, 63, 0.12); }
+    .sello img { position: absolute; left: 20px; top: 8px; height: 40px; }
+
+
+    .p-marco { position: absolute; inset: 0; overflow: hidden; }
+    .p-img { position: absolute; left: -60px; top: -40px; width: 2040px; height: 1160px; object-fit: cover; }
+    .p-velo { position: absolute; inset: 0;
+              background: linear-gradient(90deg, rgba(20,25,63,0.96) 0%, rgba(20,25,63,0.88) 42%, rgba(20,25,63,0.35) 100%); }
+    .p-kick { position: absolute; left: 110px; top: 250px; padding: 10px 22px; background: #FFC300; font-size: 22px;
+              font-weight: 900; letter-spacing: 0.12em; color: #14193F; opacity: 0; }
+    .p-lin { position: absolute; left: 110px; font-size: 84px; font-weight: 800; line-height: 1.06; color: #FFFFFF;
+             white-space: nowrap; opacity: 0; }
+    .p-sub { position: absolute; left: 110px; width: 1100px; font-size: 30px; font-weight: 600; line-height: 1.35;
+             color: #FFFFFF; opacity: 0; }
+    .p-amar { position: absolute; left: 110px; font-size: 24px; font-weight: 800; color: #FFC300; opacity: 0; }
+    .p-peq { position: absolute; left: 110px; font-size: 22px; font-weight: 600; color: #CADCFC; opacity: 0; }
+    .p-sello { position: absolute; left: 110px; top: 930px; width: 190px; height: 62px; border-radius: 31px;
+               background: #FFFFFF; opacity: 0; }
+    .p-sello img { position: absolute; left: 22px; top: 9px; height: 44px; }
+
+  </style>
+
+  <div id="root" data-composition-id="l01-portada" data-start="0" data-duration="63.74" data-width="1920" data-height="1080">
+    <div id="capa-fondo" class="clip capa fondo" data-start="0" data-duration="63.74" data-track-index="0"></div>
+    <div id="capa-1" class="clip capa" data-start="0" data-duration="63.74" data-track-index="1">
+      <div class="p-marco" data-layout-ignore><img class="p-img" id="p-img" src="assets/fotos/image1.jpg" alt="" /></div>
+      <div class="p-velo" data-layout-ignore></div>
+    </div>
+    <div id="capa-2" class="clip capa" data-start="0" data-duration="63.74" data-track-index="2">
+      <div class="p-kick" id="p-kick">CURSO VIRTUAL</div>
+      <div class="p-lin" id="p-l1" style="top: 320px">Conducción Segura</div>
+      <div class="p-lin" id="p-l2" style="top: 412px">y Manejo Defensivo</div>
+      <div class="p-sub" id="p-sub" style="top: 544px">Para conductores de vehículos automotores en actividades laborales</div>
+      <div class="p-amar" id="p-amar" style="top: 614px">PESV · SG-SST · Prevención de siniestros viales · Gestión del riesgo vial</div>
+      <div class="p-peq" id="p-peq" style="top: 668px">12 módulos · Evaluación por módulo · Caso integrador final</div>
+      <div class="p-sello" id="p-sello"><img src="assets/marca/riskmann_logo_color.png" alt="RiskMann" /></div>
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      tl.fromTo("#p-img", { scale: 1.1, x: 30 }, { scale: 1, x: 0, duration: 63.7, ease: "none" }, 0.00);
+      tl.fromTo("#p-kick", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 0.40);
+      tl.fromTo("#p-l1", { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.7, ease: "power4.out" }, 0.70);
+      tl.fromTo("#p-l2", { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.7, ease: "power4.out" }, 0.95);
+      tl.fromTo("#p-sub", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 1.60);
+      tl.fromTo("#p-amar", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 21.28);
+      tl.fromTo("#p-peq", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 43.44);
+      tl.fromTo("#p-sello", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.8)" }, 2.20);
+      tl.to(".capa:not(.fondo)", { opacity: 0, duration: 0.5, ease: "power1.in" }, 63.14);
+
+      window.__timelines["l01-portada"] = tl;
+    })();
+  </script>
+</template>

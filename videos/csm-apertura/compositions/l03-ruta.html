@@ -1,0 +1,84 @@
+<template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: block;
+      src: url("assets/fonts/montserrat-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden;
+            font-family: "Montserrat", sans-serif; background: #F4F6FB; color: #14193F; }
+    .capa { position: absolute; inset: 0; }
+    .fondo { background: #F4F6FB; }
+    .sello { position: absolute; right: 60px; bottom: 36px; width: 170px; height: 56px; border-radius: 28px;
+             background: #FFFFFF; opacity: 0; box-shadow: 0 4px 14px rgba(20, 25, 63, 0.12); }
+    .sello img { position: absolute; left: 20px; top: 8px; height: 40px; }
+
+
+    .r-fondo { position: absolute; inset: 0; background: #14193F; }
+    .r-tit { position: absolute; left: 90px; top: 80px; font-size: 60px; font-weight: 800; color: #FFFFFF; }
+    .r-tit .p { display: inline-block; opacity: 0; }
+    .r-sub { position: absolute; left: 90px; top: 168px; width: 1500px; font-size: 24px; font-weight: 500; color: #CADCFC; opacity: 0; }
+    .r-tile { position: absolute; width: 420px; height: 190px; background: #1E2761; border-radius: 6px; overflow: hidden; opacity: 0; }
+    .r-tile .n { position: absolute; left: 0; top: 0; width: 88px; height: 190px; background: #FFC300; }
+    .r-tile .n span { position: absolute; left: 0; top: 70px; width: 88px; text-align: center; font-size: 36px;
+                      font-weight: 900; color: #14193F; }
+    .r-tile .l { position: absolute; left: 116px; top: 50%; width: 280px; transform: translateY(-50%); font-size: 26px;
+                 font-weight: 800; line-height: 1.2; color: #FFFFFF; }
+
+  </style>
+
+  <div id="root" data-composition-id="l03-ruta" data-start="0" data-duration="65.98" data-width="1920" data-height="1080">
+    <div id="capa-fondo" class="clip capa fondo" data-start="0" data-duration="65.98" data-track-index="0"></div>
+    <div id="capa-1" class="clip capa r-fondo" data-start="0" data-duration="65.98" data-track-index="1"></div>
+    <div id="capa-2" class="clip capa" data-start="0" data-duration="65.98" data-track-index="2">
+      <div class="r-tit" id="r-tit"><span class="p">Ruta</span> <span class="p">formativa:</span> <span class="p">12</span> <span class="p">módulos</span></div>
+      <div class="r-sub" id="r-sub">Cada módulo combina caso real, concepto técnico, norma aplicable, técnica segura y evaluación con retroalimentación inmediata.</div>
+      <div class="r-tile" id="r-t1" style="left: 90px; top: 280px"><div class="n"><span>01</span></div><div class="l">Riesgo vial laboral</div></div>
+      <div class="r-tile" id="r-t2" style="left: 535px; top: 280px"><div class="n"><span>02</span></div><div class="l">Responsabilidad legal</div></div>
+      <div class="r-tile" id="r-t3" style="left: 980px; top: 280px"><div class="n"><span>03</span></div><div class="l">Inspección preoperacional</div></div>
+      <div class="r-tile" id="r-t4" style="left: 1425px; top: 280px"><div class="n"><span>04</span></div><div class="l">Posición y control</div></div>
+      <div class="r-tile" id="r-t5" style="left: 90px; top: 505px"><div class="n"><span>05</span></div><div class="l">Manejo defensivo</div></div>
+      <div class="r-tile" id="r-t6" style="left: 535px; top: 505px"><div class="n"><span>06</span></div><div class="l">Velocidad y distancia</div></div>
+      <div class="r-tile" id="r-t7" style="left: 980px; top: 505px"><div class="n"><span>07</span></div><div class="l">Intersecciones y adelantamiento</div></div>
+      <div class="r-tile" id="r-t8" style="left: 1425px; top: 505px"><div class="n"><span>08</span></div><div class="l">Distracciones</div></div>
+      <div class="r-tile" id="r-t9" style="left: 90px; top: 730px"><div class="n"><span>09</span></div><div class="l">Fatiga y sueño</div></div>
+      <div class="r-tile" id="r-t10" style="left: 535px; top: 730px"><div class="n"><span>10</span></div><div class="l">Alcohol, drogas y medicamentos</div></div>
+      <div class="r-tile" id="r-t11" style="left: 980px; top: 730px"><div class="n"><span>11</span></div><div class="l">Condiciones adversas</div></div>
+      <div class="r-tile" id="r-t12" style="left: 1425px; top: 730px"><div class="n"><span>12</span></div><div class="l">Emergencias y siniestros</div></div>
+      <div class="sello" id="sello"><img src="assets/marca/riskmann_logo_color.png" alt="RiskMann" /></div>
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      tl.fromTo("#r-tit .p", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out", stagger: 0.07 }, 0.3);
+      tl.fromTo("#r-sub", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 1.00);
+      tl.fromTo("#r-t1", { opacity: 0, y: 40, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 11.14);
+      tl.fromTo("#r-t2", { opacity: 0, y: 40, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 12.29);
+      tl.fromTo("#r-t3", { opacity: 0, y: 40, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 13.44);
+      tl.fromTo("#r-t4", { opacity: 0, y: 40, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 14.59);
+      tl.fromTo("#r-t5", { opacity: 0, y: 40, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 22.64);
+      tl.fromTo("#r-t6", { opacity: 0, y: 40, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 23.78);
+      tl.fromTo("#r-t7", { opacity: 0, y: 40, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 24.93);
+      tl.fromTo("#r-t8", { opacity: 0, y: 40, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 30.65);
+      tl.fromTo("#r-t9", { opacity: 0, y: 40, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 33.58);
+      tl.fromTo("#r-t10", { opacity: 0, y: 40, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 36.50);
+      tl.fromTo("#r-t11", { opacity: 0, y: 40, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 39.43);
+      tl.fromTo("#r-t12", { opacity: 0, y: 40, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 42.35);
+      tl.fromTo("#sello", { opacity: 0 }, { opacity: 1, duration: 0.6 }, 58.21);
+      tl.to(".capa:not(.fondo)", { opacity: 0, duration: 0.5, ease: "power1.in" }, 65.38);
+
+      window.__timelines["l03-ruta"] = tl;
+    })();
+  </script>
+</template>

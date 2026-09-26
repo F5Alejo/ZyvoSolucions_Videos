@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #F4F6FB; }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #F4F6FB; }
+      .escena { position: absolute; inset: 0; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="144.18"
+         data-width="1920" data-height="1080">
+      <div id="el-l20-parte" class="escena" data-composition-id="l20-parte"
+           data-composition-src="compositions/l20-parte.html"
+           data-start="0" data-duration="90.46" data-track-index="1"></div>
+      <div id="el-l21-parte" class="escena" data-composition-id="l21-parte"
+           data-composition-src="compositions/l21-parte.html"
+           data-start="90.46" data-duration="30.54" data-track-index="1"></div>
+      <div id="el-l22-parte" class="escena" data-composition-id="l22-parte"
+           data-composition-src="compositions/l22-parte.html"
+           data-start="121" data-duration="23.18" data-track-index="1"></div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>
