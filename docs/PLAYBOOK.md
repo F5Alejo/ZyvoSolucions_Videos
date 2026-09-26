@@ -23,7 +23,7 @@
 | PESV «Pasajero seguro» · M01 | PDF de diapositivas | «Centro de mando» (voz Piper) | 2:31 — **entregable del PoC** | `videos/pesv-m01-mando/` |
 | PESV · M01 corto | El mismo PDF | «Ritmo» (sin voz, 120 BPM) | 60 s, 16:9 y 9:16 | `videos/pesv-m01-ritmo[-vertical]/` |
 | PESV · exploración | El mismo PDF | Partículas GPU + 3D | Apertura aprobada, resto sin construir | `videos/pesv-m01-profundidad[-vertical]/` |
-| SOFU BIC S.A.S. | Guion de la empresa | Comercial | 68 s; v2 dinámica 52 s (16:9 y 9:16) | `videos/sofu-comercial/`; v2 en la rama `juan/sofu-comercial-v2` |
+| SOFU BIC S.A.S. | Guion de la empresa | Comercial | 68 s; v2 dinámica 52 s (16:9 y 9:16) | `videos/sofu-comercial/`, `videos/sofu-comercial-v2[-vertical]/` |
 | «Ruta Segura» (ciclistas) | PPTX de 33 láminas con notas | Curso lámina a lámina, láminas escritas a mano (`eNN.py`) | 4 módulos, 16 min, cortados en piezas de 1–2 min | `videos/ruta-segura-m1…m4/` |
 | «Motociclista laboral seguro» | PPTX de 88 láminas con **formas con nombre** | Curso **generado** por plantillas | 15 videos, 40:47 | `videos/moto-curso/` → `moto-*` |
 | «Conducción Segura y Manejo Defensivo» | PPTX de 55 láminas | Curso **generado** por plantillas | 15 videos, ~33 min + banco de preguntas | `videos/csm-curso/` → `csm-*` |
@@ -231,8 +231,6 @@ La lista completa está en PRODUCCION §7 y GUIA-PROMPTS §5. Si solo lees diez:
 - **El extractor PPTX → `curso.json` no está en el repositorio.** Los `curso.json` de
   moto y csm existen, pero el script que los produjo no. Es la primera pieza a recuperar o
   reescribir (con `python-pptx`: nombre de forma → texto, notas → frases, medios → fotos).
-- **«SOFU comercial v2» vive en otra rama** (`juan/sofu-comercial-v2`, sin fusionar): en
-  esta rama `videos/sofu-comercial-v2*/` solo tiene renders.
 - **La evaluación del curso de moto** (`Evaluacion-por-modulo.html`,
   `Preguntas-plataforma-Motociclista.xlsx`) se entregó sin su generador en el repo; el de
   csm sí está (`banco_html.py`, que además depende de un CSS de referencia externo).

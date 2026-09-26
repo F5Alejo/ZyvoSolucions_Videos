@@ -1,0 +1,11 @@
+{
+  "bpm": 120, "duracion": 68, "salida": "assets/ritmo-sofu.wav",
+  "secciones": [
+    { "desde": 0,  "hasta": 2,  "bombo": true, "platillo": true },
+    { "desde": 2,  "hasta": 8,  "bombo": true, "platillo": true, "palmas": true, "bajo": true },
+    { "desde": 8,  "hasta": 46, "bombo": true, "platillo": true, "palmas": true, "bajo": true, "acordes": true },
+    { "desde": 46, "hasta": 58, "bombo": true, "platillo": true, "palmas": true, "bajo": true, "acordes": true },
+    { "desde": 58, "hasta": 66, "bajo": true, "acordes": true, "platillo": true }
+  ],
+  "subidas": [8.0, 18.0, 34.0, 46.0, 58.0]
+}
