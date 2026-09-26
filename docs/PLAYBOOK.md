@@ -15,6 +15,7 @@
 > | [`ARRANQUE-EN-OTRO-EQUIPO.md`](ARRANQUE-EN-OTRO-EQUIPO.md) | ¿Qué instalo en un equipo nuevo y qué errores de audio, GSAP y verificador ya se pagaron? |
 > | [`BITACORA-2026-09-17-18.md`](BITACORA-2026-09-17-18.md) | ¿Qué se decidió en las piezas verticales de RiskMann y Yezid, y qué quedó abierto? |
 > | [`marca/LEEME.md`](marca/LEEME.md) | ¿Qué fija el manual oficial de RiskMann (y qué solo se ve mirando las páginas)? |
+> | [`PLATAFORMA.md`](PLATAFORMA.md) | ¿Hacia dónde evoluciona esto, qué ideas hay sobre la mesa y qué se decidió? |
 >
 > **Tres líneas de trabajo** alimentan este documento: la de cursos y PoC (Juan), la de
 > piezas verticales con ElevenLabs y manual de marca (Alejandro) y la de campañas de En
