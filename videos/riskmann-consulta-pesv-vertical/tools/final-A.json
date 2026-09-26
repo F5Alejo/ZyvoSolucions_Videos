@@ -1,12 +1,12 @@
 {
- "duracion": 37.5,
+ "duracion": 33.3,
  "salida": "assets/mezcla-A.wav",
  "pasa_altos": 90,
  "musica": [
   {
    "archivo": "assets/musica-mixkit-hip-hop-02.mp3",
    "en": 0,
-   "ganancia": 0.46,
+   "ganancia": 0.4,
    "hueco_voz": -4.5,
    "hueco_hz": 1900,
    "entrada": 0.6,
@@ -14,10 +14,10 @@
   }
  ],
  "ducking": {
-  "umbral": 0.055,
-  "ratio": 4,
-  "ataque": 12,
-  "reposo": 380
+  "umbral": 0.045,
+  "ratio": 5,
+  "ataque": 5,
+  "reposo": 400
  },
  "pistas": [
   {
@@ -39,27 +39,27 @@
   },
   {
    "archivo": "assets/voz-nivelada/f02.wav",
-   "en": 6.5,
+   "en": 3.9,
    "ganancia": 1.0
   },
   {
    "archivo": "assets/voz-nivelada/f03.wav",
-   "en": 13.0,
+   "en": 10.2,
    "ganancia": 1.0
   },
   {
    "archivo": "assets/voz-nivelada/f04.wav",
-   "en": 19.5,
+   "en": 16.6,
    "ganancia": 1.0
   },
   {
    "archivo": "assets/voz-nivelada/f05.wav",
-   "en": 26.0,
+   "en": 23.0,
    "ganancia": 1.0
   },
   {
    "archivo": "assets/voz-nivelada/f06.wav",
-   "en": 31.5,
+   "en": 27.9,
    "ganancia": 1.0
   }
  ]

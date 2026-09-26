@@ -1,12 +1,14 @@
 {
- "duracion": 37.5,
+ "duracion": 33.3,
  "salida": "assets/mezcla-C.wav",
  "pasa_altos": 90,
- "pistas": [
+ "musica": [
   {
-   "archivo": "assets/ritmo.wav",
+   "archivo": "assets/musica-mixkit-hip-hop-02.mp3",
    "en": 0,
-   "ganancia": 1.0
+   "ganancia": 0.95,
+   "entrada": 0.6,
+   "salida": 2.2
   }
  ]
 }

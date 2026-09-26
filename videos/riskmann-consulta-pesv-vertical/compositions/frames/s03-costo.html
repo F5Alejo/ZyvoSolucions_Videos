@@ -37,11 +37,11 @@
     .s3-legal { position: absolute; left: 84px; top: 1475px; width: 912px; text-align: center; font-size: 30px; font-weight: 400; line-height: 1.5; color: #999999; opacity: 0; }
   </style>
 
-  <div id="root" data-composition-id="s03-costo" data-start="0" data-duration="6.5" data-width="1080" data-height="1920">
-    <div id="s3-ground" class="clip s3-layer s3-ground" data-start="0" data-duration="6.5" data-track-index="0"></div>
-    <div id="s3-pulse" class="clip s3-pulse" data-layout-allow-overflow data-start="0" data-duration="6.5" data-track-index="1"></div>
+  <div id="root" data-composition-id="s03-costo" data-start="0" data-duration="6.4" data-width="1080" data-height="1920">
+    <div id="s3-ground" class="clip s3-layer s3-ground" data-start="0" data-duration="6.4" data-track-index="0"></div>
+    <div id="s3-pulse" class="clip s3-pulse" data-layout-allow-overflow data-start="0" data-duration="6.4" data-track-index="1"></div>
 
-    <div id="s3-stage" class="clip s3-layer" data-start="0" data-duration="6.5" data-track-index="2">
+    <div id="s3-stage" class="clip s3-layer" data-start="0" data-duration="6.4" data-track-index="2">
       <div class="s3-ring" id="s3-ring" aria-hidden="true" data-layout-ignore></div>
 
       <div class="s3-kicker" id="s3-kicker"><span class="w">No</span> <span class="w">cumplir</span> <span class="w">cuesta</span> <span class="w">hasta</span></div>
@@ -100,8 +100,19 @@
 
       /* 5.55 · salida */
       tl.to(["#s3-hero", "#s3-unit", "#s3-chip", "#s3-kicker", "#s3-legal"],
-        { scale: 1.5, opacity: 0, filter: "blur(9px)", duration: 0.95, ease: "expo.in", stagger: 0.04 }, 5.55);
-      tl.to("#s3-pulse", { opacity: 0, duration: 0.8, ease: "power2.in" }, 5.7);
+        { scale: 1.5, opacity: 0, filter: "blur(9px)", duration: 0.95, ease: "power2.in", stagger: 0.04 }, 5.45);
+      tl.to("#s3-pulse", { opacity: 0, duration: 0.8, ease: "power2.in" }, 5.6);
+
+
+      /* deriva continua del fondo: sin esto el plano se congela entre
+         golpe y golpe. Medido, 44 de 76 ventanas estaban paradas. */
+      tl.fromTo("#s3-ground", { scale: 1, y: 0 },
+        { scale: 1.24, y: -70, duration: 6.4, ease: "none" }, 0);
+
+
+      /* deriva continua del contenido. El fondo solo no alcanza: un
+         degradado suave casi no cambia pixel a pixel, y el texto si. */
+      tl.to("#s3-stage", { scale: 1.07, y: -30, duration: 5.65, ease: "none" }, 0.75);
 
       window.__timelines["s03-costo"] = tl;
     })();

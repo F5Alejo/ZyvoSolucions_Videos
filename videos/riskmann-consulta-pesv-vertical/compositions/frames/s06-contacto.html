@@ -32,11 +32,11 @@
     .s6-url { position: absolute; left: 84px; top: 1460px; width: 912px; text-align: center; font-size: 34px; font-weight: 500; color: #FFFFFF; letter-spacing: 0.06em; opacity: 0; }
   </style>
 
-  <div id="root" data-composition-id="s06-contacto" data-start="0" data-duration="6" data-width="1080" data-height="1920">
-    <div id="s6-ground" class="clip s6-layer s6-ground" data-start="0" data-duration="6" data-track-index="0"></div>
-    <div id="s6-halo" class="clip s6-halo" data-layout-allow-overflow data-start="0" data-duration="6" data-track-index="1"></div>
+  <div id="root" data-composition-id="s06-contacto" data-start="0" data-duration="5.4" data-width="1080" data-height="1920">
+    <div id="s6-ground" class="clip s6-layer s6-ground" data-start="0" data-duration="5.4" data-track-index="0"></div>
+    <div id="s6-halo" class="clip s6-halo" data-layout-allow-overflow data-start="0" data-duration="5.4" data-track-index="1"></div>
 
-    <div id="s6-stage" class="clip s6-layer" data-start="0" data-duration="6" data-track-index="2">
+    <div id="s6-stage" class="clip s6-layer" data-start="0" data-duration="5.4" data-track-index="2">
       <div class="s6-q" id="s6-q"><span class="w">¿Quieres</span> <span class="w">saber</span> <span class="w">si</span> <span class="w">te</span> <span class="w">aplica?</span></div>
 
       <img class="s6-logo" id="s6-logo" src="assets/riskmann_logo_blanco.png" alt="RiskMann" />
@@ -90,6 +90,17 @@
       tl.to("#s6-halo", { opacity: 0.5, scale: 1, duration: 1.3, ease: "sine.inOut" }, 4.7);
       tl.to("#s6-logo", { y: -12, duration: 2.6, ease: "sine.inOut" }, 3.2);
       tl.to("#s6-q", { y: -16, duration: 2.6, ease: "sine.inOut" }, 3.2);
+
+
+      /* deriva continua del fondo: sin esto el plano se congela entre
+         golpe y golpe. Medido, 44 de 76 ventanas estaban paradas. */
+      tl.fromTo("#s6-ground", { scale: 1, y: 0 },
+        { scale: 1.24, y: -70, duration: 5.4, ease: "none" }, 0);
+
+
+      /* deriva continua del contenido. El fondo solo no alcanza: un
+         degradado suave casi no cambia pixel a pixel, y el texto si. */
+      tl.to("#s6-stage", { scale: 1.07, y: -30, duration: 4.65, ease: "none" }, 0.75);
 
       window.__timelines["s06-contacto"] = tl;
     })();

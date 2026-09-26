@@ -1,0 +1,129 @@
+<template>
+  <!-- ==================================================================
+       Scene06_GiroAlivio · 5 s
+       VO: "...o lo consultas en un clic." [alivio, calido, pausado]
+       Fuente: la landing dice "¿Lo reconstruyes bajo presion, o lo consultas
+       en un clic?" y "No tienes que memorizar la norma. RiskMann ya la tiene
+       incorporada."
+       Salida: crossfade (350 ms) hacia la 7
+
+       El giro se cuenta con CIAN, no con verde: RiskMann no tiene verde en su
+       paleta y el manual asigna #06c7fb a graficos de acento. Ver BRIEF.md.
+       Todo el movimiento va en ease-in-out y mas lento que en las 5 anteriores.
+       ================================================================== -->
+  <style>
+    #root { position: relative; width: 1080px; height: 1920px; overflow: hidden;
+            background: var(--blanco); font-family: var(--fuente); color: var(--negro); }
+    .s6-capa { position: absolute; inset: 0; }
+
+    #s6-fondo { background: var(--blanco); }
+    #s6-halo {
+      position: absolute; left: 50%; top: 1000px; width: 1200px; height: 1200px;
+      margin-left: -600px; margin-top: -600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(6,199,251,0.16) 0%, rgba(255,255,255,0) 64%);
+      opacity: 0;
+    }
+
+    #s6-app {
+      position: absolute; left: 130px; top: 560px; width: 820px; height: 900px;
+      border-radius: 30px; background: var(--blanco); opacity: 0;
+      border: 2px solid rgba(2,2,2,0.10);
+      box-shadow: 0 40px 100px rgba(2,2,2,0.18);
+      overflow: hidden;
+    }
+    #s6-barra { position: absolute; left: 0; top: 0; width: 820px; height: 76px;
+                background: var(--azul); }
+    .s6-fila { position: absolute; left: 52px; width: 716px; height: 16px; border-radius: 8px;
+               background: rgba(2,2,2,0.10); transform-origin: left center; }
+    .s6-pill { position: absolute; left: 52px; width: 280px; height: 58px; border-radius: 12px;
+               background: rgba(6,199,251,0.16); border: 1px solid rgba(6,199,251,0.45); }
+
+    #s6-boton {
+      position: absolute; left: 50%; top: 1560px; transform: translateX(-50%);
+      padding: 34px 88px; border-radius: 100px; white-space: nowrap; opacity: 0;
+      background: var(--azul); color: var(--blanco);
+      font-size: var(--ui); font-weight: 700; letter-spacing: 0.06em;
+      box-shadow: 0 26px 60px rgba(38,54,125,0.36);
+    }
+    #s6-ripple {
+      position: absolute; left: 50%; top: 1608px; width: 280px; height: 280px;
+      margin-left: -140px; margin-top: -140px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(6,199,251,0.55) 0%, rgba(6,199,251,0) 70%);
+      opacity: 0;
+    }
+    #s6-nota {
+      position: absolute; left: 90px; top: 1740px; width: 900px; text-align: center;
+      font-size: 30px; font-weight: 300; color: #5d5d5b; opacity: 0;
+    }
+    #s6-fundido { position: absolute; inset: 0; background: var(--blanco); opacity: 0; }
+  </style>
+
+  <div id="root" data-composition-id="scene06-alivio" data-start="0" data-duration="5"
+       data-width="1080" data-height="1920">
+
+    <div class="clip s6-capa" id="s6-fondo" data-start="0" data-duration="5" data-track-index="0"></div>
+    <div class="clip" id="s6-halo" data-layout-allow-overflow data-start="0" data-duration="5" data-track-index="1"></div>
+
+    <div class="clip" id="s6-app" data-start="0" data-duration="5" data-track-index="2">
+      <div id="s6-barra" aria-hidden="true" data-layout-ignore></div>
+      <div class="s6-pill" id="s6-pill" style="top: 140px" aria-hidden="true" data-layout-ignore></div>
+      <div class="s6-fila" id="s6-f0" style="top: 270px" aria-hidden="true" data-layout-ignore></div>
+      <div class="s6-fila" id="s6-f1" style="top: 340px" aria-hidden="true" data-layout-ignore></div>
+      <div class="s6-fila" id="s6-f2" style="top: 410px" aria-hidden="true" data-layout-ignore></div>
+      <div class="s6-fila" id="s6-f3" style="top: 480px" aria-hidden="true" data-layout-ignore></div>
+    </div>
+
+    <div class="clip" id="s6-ripple" data-layout-allow-overflow data-start="0" data-duration="5"
+         data-track-index="3" aria-hidden="true" data-layout-ignore></div>
+    <div class="clip" id="s6-boton" data-start="0" data-duration="5" data-track-index="4">Consultar PESV</div>
+    <div class="clip" id="s6-nota" data-start="0" data-duration="5" data-track-index="5">
+      No tienes que memorizar la norma.
+    </div>
+    <div class="clip s6-capa" id="s6-fundido" data-start="0" data-duration="5" data-track-index="6"
+         aria-hidden="true" data-layout-ignore></div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var RM = window.RM;
+
+      /* Todo en ease-in-out y mas lento: el contraste con las cinco escenas
+         anteriores es lo que hace que esto se sienta como alivio. */
+      tl.fromTo("#s6-halo", { opacity: 0, scale: 0.7 },
+        { opacity: 1, scale: 1, duration: 1.6, ease: "sine.inOut" }, 0.10);
+
+      /* el mockup entra: fade + translateY 20 -> 0 en 400 ms */
+      tl.fromTo("#s6-app", { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.40, ease: "power2.inOut" }, 0.20);
+
+      /* las filas de la interfaz se dibujan de izquierda a derecha */
+      tl.fromTo("#s6-pill", { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.5, ease: "power2.inOut" }, 0.62);
+      for (var i = 0; i < 4; i++) {
+        tl.fromTo("#s6-f" + i, { scaleX: 0 },
+          { scaleX: 1, duration: 0.55, ease: "power2.inOut" }, 0.80 + i * 0.12);
+      }
+
+      tl.fromTo("#s6-boton", { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.55, ease: "power2.inOut" }, 1.45);
+
+      /* 2.5 s · el ripple simula el toque sobre el boton */
+      RM.ripple(tl, "#s6-ripple", 0.95, 2.50);
+      tl.to("#s6-boton", { scale: 0.96, duration: 0.10, ease: "power2.inOut" }, 2.50);
+      tl.to("#s6-boton", { scale: 1, duration: 0.35, ease: "power2.inOut" }, 2.60);
+
+      tl.fromTo("#s6-nota", { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "power2.inOut" }, 3.00);
+
+      /* deriva lentisima: nada queda congelado, pero sin prisa */
+      tl.to("#s6-app", { y: -14, duration: 2.2, ease: "sine.inOut" }, 2.0);
+
+      /* 4.65 s · SALIDA crossfade de 350 ms hacia la escena 7 */
+      tl.to("#s6-fundido", { opacity: 1, duration: 0.35, ease: "power2.inOut" }, 4.65);
+
+      window.__timelines["scene06-alivio"] = tl;
+    })();
+  </script>
+</template>

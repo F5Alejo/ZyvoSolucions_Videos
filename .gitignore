@@ -157,6 +157,9 @@ videos/*/renders/
 # `python tools/voz-eleven.py <voice_id>` + `python tools/pista.py`. Los tiempos
 # sí van en git (tools/tiempos-voz.json): son de lo que depende el montaje.
 videos/*/assets/voz/
+# Derivados de esa locucion: se rehacen con tools/nivelar-voz.py
+videos/*/assets/voz-nivelada/
+videos/*/assets/voz-previa/
 
 # Capturas de revisión (se regeneran con `npx hyperframes snapshot`)
 videos/*/snapshots/
@@ -177,3 +180,9 @@ videos/*/index-parte-*.html
 # Cache de miniaturas del Studio. Sus nombres superan el limite de ruta de
 # Windows y rompen `git add` entero; ademas se regenera solo.
 **/.thumbnails/
+
+# Renders del esqueleto de la v2: se rehacen con npm run render
+videos/riskmann-pesv-v2/renders/
+
+# Renders del promo de Yezid: se rehacen con npm run render
+videos/yezid-envivo-pesv-autogestion/renders/

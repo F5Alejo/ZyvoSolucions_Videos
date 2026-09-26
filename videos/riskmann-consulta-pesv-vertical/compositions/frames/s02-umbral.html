@@ -43,22 +43,22 @@
       background: radial-gradient(circle, rgba(255,51,51,0.4) 0%, rgba(2,2,2,0) 60%); opacity: 0; }
   </style>
 
-  <div id="root" data-composition-id="s02-umbral" data-start="0" data-duration="6.5" data-width="1080" data-height="1920">
-    <div id="s2-ground" class="clip s2-layer s2-ground" data-start="0" data-duration="6.5" data-track-index="0"></div>
+  <div id="root" data-composition-id="s02-umbral" data-start="0" data-duration="6.3" data-width="1080" data-height="1920">
+    <div id="s2-ground" class="clip s2-layer s2-ground" data-start="0" data-duration="6.3" data-track-index="0"></div>
 
-    <div id="s2-stage" class="clip s2-layer" data-start="0" data-duration="6.5" data-track-index="1">
+    <div id="s2-stage" class="clip s2-layer" data-start="0" data-duration="6.3" data-track-index="1">
       <div class="s2-eyebrow" id="s2-eyebrow">
         <div class="s2-eyebrow-rule" id="s2-eyebrow-rule"></div>
         <div class="s2-eyebrow-text">Los dos umbrales</div>
       </div>
 
       <div class="s2-card s2-c1" id="s2-card-1">
-        <div class="s2-numwrap"><div class="s2-num">11</div><div class="s2-bar" id="s2-bar-1"></div></div>
+        <div class="s2-numwrap"><div class="s2-num" data-layout-allow-occlusion>11</div><div class="s2-bar" id="s2-bar-1"></div></div>
         <div class="s2-lab" id="s2-lab-1">o más vehículos</div>
       </div>
 
       <div class="s2-card s2-c2" id="s2-card-2">
-        <div class="s2-numwrap"><div class="s2-num">2</div><div class="s2-bar" id="s2-bar-2"></div></div>
+        <div class="s2-numwrap"><div class="s2-num" data-layout-allow-occlusion>2</div><div class="s2-bar" id="s2-bar-2"></div></div>
         <div class="s2-lab" id="s2-lab-2">o más conductores</div>
       </div>
 
@@ -108,7 +108,18 @@
 
       /* 5.55 · salida: atraviesa la lente */
       tl.to(["#s2-card-1", "#s2-card-2", "#s2-verdict", "#s2-eyebrow"],
-        { scale: 1.5, opacity: 0, filter: "blur(9px)", duration: 0.95, ease: "expo.in", stagger: 0.04 }, 5.55);
+        { scale: 1.5, opacity: 0, filter: "blur(9px)", duration: 0.95, ease: "power2.in", stagger: 0.04 }, 5.35);
+
+
+      /* deriva continua del fondo: sin esto el plano se congela entre
+         golpe y golpe. Medido, 44 de 76 ventanas estaban paradas. */
+      tl.fromTo("#s2-ground", { scale: 1, y: 0 },
+        { scale: 1.24, y: -70, duration: 6.3, ease: "none" }, 0);
+
+
+      /* deriva continua del contenido. El fondo solo no alcanza: un
+         degradado suave casi no cambia pixel a pixel, y el texto si. */
+      tl.to("#s2-stage", { scale: 1.07, y: -30, duration: 5.55, ease: "none" }, 0.75);
 
       window.__timelines["s02-umbral"] = tl;
     })();
