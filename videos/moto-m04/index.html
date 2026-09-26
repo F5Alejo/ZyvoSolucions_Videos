@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #F3F0E8; }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #F3F0E8; }
+      .escena { position: absolute; inset: 0; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="172.06"
+         data-width="1920" data-height="1080">
+      <div id="el-l24-foto" class="escena" data-composition-id="l24-foto"
+           data-composition-src="compositions/l24-foto.html"
+           data-start="0" data-duration="37.26" data-track-index="1"></div>
+      <div id="el-l25-escalera" class="escena" data-composition-id="l25-escalera"
+           data-composition-src="compositions/l25-escalera.html"
+           data-start="37.26" data-duration="30.46" data-track-index="1"></div>
+      <div id="el-l26-diana" class="escena" data-composition-id="l26-diana"
+           data-composition-src="compositions/l26-diana.html"
+           data-start="67.72" data-duration="35.98" data-track-index="1"></div>
+      <div id="el-l27-barras" class="escena" data-composition-id="l27-barras"
+           data-composition-src="compositions/l27-barras.html"
+           data-start="103.7" data-duration="34.22" data-track-index="1"></div>
+      <div id="el-l28-escalera" class="escena" data-composition-id="l28-escalera"
+           data-composition-src="compositions/l28-escalera.html"
+           data-start="137.92" data-duration="34.14" data-track-index="1"></div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

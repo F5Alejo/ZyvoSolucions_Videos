@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #F3F0E8; }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #F3F0E8; }
+      .escena { position: absolute; inset: 0; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="140.4"
+         data-width="1920" data-height="1080">
+      <div id="el-l19-escalera" class="escena" data-composition-id="l19-escalera"
+           data-composition-src="compositions/l19-escalera.html"
+           data-start="0" data-duration="38.78" data-track-index="1"></div>
+      <div id="el-l20-diana" class="escena" data-composition-id="l20-diana"
+           data-composition-src="compositions/l20-diana.html"
+           data-start="38.78" data-duration="31.34" data-track-index="1"></div>
+      <div id="el-l21-barras" class="escena" data-composition-id="l21-barras"
+           data-composition-src="compositions/l21-barras.html"
+           data-start="70.12" data-duration="35.26" data-track-index="1"></div>
+      <div id="el-l22-escalera" class="escena" data-composition-id="l22-escalera"
+           data-composition-src="compositions/l22-escalera.html"
+           data-start="105.38" data-duration="35.02" data-track-index="1"></div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>
