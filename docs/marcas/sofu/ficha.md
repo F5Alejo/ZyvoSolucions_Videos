@@ -20,7 +20,7 @@ Según el guion comercial que entregó SOFU (`videos/sofu-comercial/DIRECCION.md
 ## 2. Relación con las otras marcas
 
 - **RiskMann** es su producto: el logo oficial de RiskMann es el lockup «RiskMann **by SOFU**»
-  (`PRODUCCION-VIDEOS.md` §0.1; `docs/marca/LEEME.md`).
+  (`PRODUCCION-VIDEOS.md` §0.1; `docs/marcas/riskmann/LEEME.md`).
 - **FEGIR** y **Dr. Yezid Ricaurte:** ⚠ relación sin documentar. Las piezas del En Vivo PESV
   muestran grabaciones de RiskMann, pero ninguna fuente del repositorio dice qué vínculo
   hay entre SOFU y ellos.

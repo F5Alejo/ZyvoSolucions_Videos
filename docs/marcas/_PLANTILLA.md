@@ -1,6 +1,6 @@
 # Ficha de marca — <Nombre>
 
-> Copia este archivo como `docs/contexto/marcas/<marca>.md` y llénalo.
+> Copia este archivo como `docs/marcas/<marca>/ficha.md` y llénalo.
 > **Regla de la ficha:** cada dato lleva su fuente (archivo, URL o persona y fecha).
 > Lo que no tenga fuente se marca **⚠ por confirmar** y va a la sección 9.
 

@@ -1,7 +1,7 @@
 # Ecosistema — las cuatro marcas y cómo se cruzan
 
 > Mapa de a quién le hacemos videos y cómo se relacionan entre sí. El detalle de cada
-> una está en su ficha (`marcas/<marca>.md`). Lo marcado **⚠** no tiene fuente todavía.
+> una está en su ficha (`<marca>/ficha.md`). Lo marcado **⚠** no tiene fuente todavía.
 >
 > Última revisión: 2026-09-26.
 

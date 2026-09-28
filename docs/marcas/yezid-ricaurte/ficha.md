@@ -28,7 +28,7 @@
 
 | Fuente | Tipo | Qué fija | Dónde está | Fecha |
 | --- | --- | --- | --- | --- |
-| Manual de marca Yezid Ricaurte | PDF | Dubai, verde `#336666`, oliva `#80804a`, tierra `#cdb5a2`, firma | `docs/marca-yezid/manual-yezid-ricaurte.pdf` | 2026-09-18 |
+| Manual de marca Yezid Ricaurte | PDF | Dubai, verde `#336666`, oliva `#80804a`, tierra `#cdb5a2`, firma | `docs/marcas/yezid-ricaurte/manual-yezid-ricaurte.pdf` | 2026-09-18 |
 | Página web | web | Cormorant Garamond + Montserrat, `#001217`, escala dorada | `yezidricaurte.com` | — |
 | Página del En Vivo | web | Copy del evento | `yezidricaurte.com/en-vivos/pesv-informe-autogestion/` | — |
 | Correos de la campaña (3) | correo | Petróleo `#001f26`, filete `#d2b96a`, botón coral `#f06e49`, asuntos | `Documentos_contexto/correos-en-vivo-pesv/` (**fuera del repo**: datos personales) | — |

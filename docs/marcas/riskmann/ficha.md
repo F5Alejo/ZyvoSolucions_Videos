@@ -11,7 +11,7 @@
 ## 1. Quién es
 
 - «Solución digital para gestionar riesgos de forma simple, segura y conforme a la
-  normativa» (manual oficial, `docs/marca/LEEME.md`).
+  normativa» (manual oficial, `docs/marcas/riskmann/LEEME.md`).
 - **Módulos reales** (los que tienen icono de portada, `CLAUDE.md`): Espacios de trabajo,
   Control de personal, Capacitaciones/Campus y Seguridad vial.
 - «Sala de control» **no** es un módulo: es un concepto visual de un video (`CLAUDE.md`).
@@ -26,8 +26,8 @@
 
 | Fuente | Tipo | Qué fija | Dónde está | Fecha |
 | --- | --- | --- | --- | --- |
-| Manual de identidad (claro y oscuro) | PDF | Paleta, Dubai, caballero, anillos, reglas del isotipo | `docs/marca/manual-identidad*.pdf` + lectura en `docs/marca/LEEME.md` | 2026-09-17 (traído al repo) |
-| Manejo del PESV en 24 pasos | PDF | Contenido del publicitario PESV | `docs/fuentes/manejo-pesv-24-pasos.pdf` | 2026-09-18 |
+| Manual de identidad (claro y oscuro) | PDF | Paleta, Dubai, caballero, anillos, reglas del isotipo | `docs/marcas/riskmann/manual-identidad*.pdf` + lectura en `docs/marcas/riskmann/LEEME.md` | 2026-09-17 (traído al repo) |
+| Manejo del PESV en 24 pasos | PDF | Contenido del publicitario PESV | `docs/marcas/riskmann/fuentes/manejo-pesv-24-pasos.pdf` | 2026-09-18 |
 | Landing consulta PESV | web | Copy y umbral de vehículos | `https://riskmann.com/consulta-pesv/` | leída ~2026-09-17 |
 | Landing inspecciones gratis | web | Copy de 3 anuncios | `https://riskmann.com/inspecciones-gratis/` | leída 2026-09-23 |
 | Landing capacitaciones | web | Copy del promo y la serie; identidad negro + dorado | `https://riskmann.com/capacitaciones` | 2026-09-26 |

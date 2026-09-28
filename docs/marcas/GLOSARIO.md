@@ -25,7 +25,7 @@
 | **Determinismo** | El render busca cada fotograma por tiempo y siempre da lo mismo: sin `Math.random`, `Date.now` ni `repeat:-1` |
 | **Ducking** | Bajar la música automáticamente cuando habla la voz (`musica` en `mezcla.py`) |
 | **Familia A / B** | A: cursos generados por plantillas. B: piezas de marketing a medida (`PLATAFORMA.md` §3.1) |
-| **Ficha de marca** | Documento por marca en `docs/contexto/marcas/` |
+| **Ficha de marca** | Documento por marca en `docs/marcas/<marca>/ficha.md` |
 | **Hoja de contactos** | Imagen con varios fotogramas del video para revisarlo sin verlo entero |
 | **HyperFrames** | Framework de HeyGen que convierte HTML + GSAP en MP4; el motor principal del repo |
 | **Lienzo propio** | Piezas hechas en HTML + GSAP + Three.js con su propio `render.mjs` (puppeteer), sin HyperFrames |

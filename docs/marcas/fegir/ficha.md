@@ -29,9 +29,9 @@
 
 | Fuente | Tipo | Qué fija | Dónde está | Fecha |
 | --- | --- | --- | --- | --- |
-| **Manual de identidad FEGIR** | PDF (1 página) | Paleta, logo primario, favicon, espacio de respeto, usos incorrectos | `docs/marca/fegir/manual-identidad-fegir.pdf` | entregado 2026-09-25 |
-| Logos (color, blanco, escudo) | SVG + PNG 600 ppp | Marca | `docs/marca/fegir/logos-extraidos/` (extraídos de los **vectores** del manual) | 2026-09-25 |
-| Web de FEGIR (captura) | PDF | Servicios, titular «¡Tu seguridad, nuestra prioridad!», anuncio del En Vivo | `docs/marca/fegir/web-fegir-captura.pdf` | 2026-09-25 |
+| **Manual de identidad FEGIR** | PDF (1 página) | Paleta, logo primario, favicon, espacio de respeto, usos incorrectos | `docs/marcas/fegir/manual-identidad-fegir.pdf` | entregado 2026-09-25 |
+| Logos (color, blanco, escudo) | SVG + PNG 600 ppp | Marca | `docs/marcas/fegir/logos-extraidos/` (extraídos de los **vectores** del manual) | 2026-09-25 |
+| Web de FEGIR (captura) | PDF | Servicios, titular «¡Tu seguridad, nuestra prioridad!», anuncio del En Vivo | `docs/marcas/fegir/web-fegir-captura.pdf` | 2026-09-25 |
 | Portada del manual (vertical) | imagen | Foto de apertura | `videos/fegir-envivo/assets/fotos/portada-manual-vertical.jpg` (recorte de la foto del manual) | 2026-09-25 |
 | Correos del En Vivo | correo | Datos del evento y pasos | `Documentos_contexto/correos-en-vivo-pesv/` (**fuera del repo**: datos personales) | — |
 

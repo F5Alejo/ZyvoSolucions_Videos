@@ -14,7 +14,7 @@
 > | [`POC-SEGURIDAD-VIAL-PASAJEROS.md`](POC-SEGURIDAD-VIAL-PASAJEROS.md) | ¿Qué se entregó en el PoC y cómo responde al issue? |
 > | [`ARRANQUE-EN-OTRO-EQUIPO.md`](ARRANQUE-EN-OTRO-EQUIPO.md) | ¿Qué instalo en un equipo nuevo y qué errores de audio, GSAP y verificador ya se pagaron? |
 > | [`BITACORA-2026-09-17-18.md`](BITACORA-2026-09-17-18.md) | ¿Qué se decidió en las piezas verticales de RiskMann y Yezid, y qué quedó abierto? |
-> | [`marca/LEEME.md`](marca/LEEME.md) | ¿Qué fija el manual oficial de RiskMann (y qué solo se ve mirando las páginas)? |
+> | [`marcas/riskmann/LEEME.md`](marcas/riskmann/LEEME.md) | ¿Qué fija el manual oficial de RiskMann (y qué solo se ve mirando las páginas)? |
 > | [`PLATAFORMA.md`](PLATAFORMA.md) | ¿Hacia dónde evoluciona esto, qué ideas hay sobre la mesa y qué se decidió? |
 >
 > **Tres líneas de trabajo** alimentan este documento: la de cursos y PoC (Juan), la de
@@ -36,7 +36,7 @@
 | «Ruta Segura» (ciclistas) | PPTX de 33 láminas con notas | Curso lámina a lámina, láminas escritas a mano (`eNN.py`) | 4 módulos, 16 min, cortados en piezas de 1–2 min | `videos/ruta-segura-m1…m4/` |
 | «Motociclista laboral seguro» | PPTX de 88 láminas con **formas con nombre** | Curso **generado** por plantillas | 15 videos, 40:47 | `videos/moto-curso/` → `moto-*` |
 | «Conducción Segura y Manejo Defensivo» | PPTX de 55 láminas | Curso **generado** por plantillas | 15 videos, ~33 min + banco de preguntas | `videos/csm-curso/` → `csm-*` |
-| RiskMann · consulta PESV | Landing del PESV + manual oficial (`docs/marca/`) | Vertical para redes, ElevenLabs + música con ducking | 33.3 s 9:16, variantes de audio A/B/C (se entregó la A); también 16:9 | `videos/riskmann-consulta-pesv[-vertical]/` |
+| RiskMann · consulta PESV | Landing del PESV + manual oficial (`docs/marcas/riskmann/`) | Vertical para redes, ElevenLabs + música con ducking | 33.3 s 9:16, variantes de audio A/B/C (se entregó la A); también 16:9 | `videos/riskmann-consulta-pesv[-vertical]/` |
 | RiskMann · PESV v2 y publicitario | Manual oficial | «La lente del manual como cámara continua»; publicitario de 8 escenas | Esqueleto verificado; publicitario ~36 s programado | `videos/riskmann-pesv-v2/`, `videos/riskmann-pesv-publicitario/` |
 | Yezid Ricaurte · En Vivo | Página del evento + manual de Yezid | Promo vertical, HyperFrames, rejilla de tempo | 15 s 9:16, voz + efectos + música | `videos/yezid-envivo-pesv-autogestion/` |
 | Yezid Ricaurte · campañas del En Vivo | Correos de la campaña + web + manual | **Lienzo propio** (Three.js + GSAP + puppeteer), una composición y varias variantes | 15 s; campañas de 3 videos de 12 s (pocos días / mañana / hoy) | `videos/yezid-envivo-15s/`, `-campana[-v2]/`, `-estudio/`, `-premium/` |
@@ -313,12 +313,12 @@ contenido con `ease: "none"`. En la consulta PESV: de 44 ventanas muertas de 76 
 
 | Marca | Fuente | Claves |
 | --- | --- | --- |
-| RiskMann | `docs/marca/` (PDF oficial) | `#020202`, dorado `#c8951a`, cian `#06c7fb`; Dubai; caballero y dos anillos cian + dorado; pesos mezclados en una frase |
+| RiskMann | `docs/marcas/riskmann/` (PDF oficial) | `#020202`, dorado `#c8951a`, cian `#06c7fb`; Dubai; caballero y dos anillos cian + dorado; pesos mezclados en una frase |
 | Yezid Ricaurte | Manual de Yezid + `yezidricaurte.com` + correos | Petróleo `#001f26`, verde `#336666`, dorado `#d2b96a`, pálido `#f1ecb0`, botón coral `#f06e49` de los correos; firma oficial en negativo, **sin redibujar**; **sin rojo** (reservado para «peligro») |
-| FEGIR | `docs/marca/fegir/manual-identidad-fegir.pdf` + web de FEGIR | Verde `#45a035`, verde claro `#a8c875`, crema `#f1ecb0`; banda del manual `#50cd72 → #4ecd25` (muestreada); Segoe UI (la del manual); logo **extraído de los vectores del manual** (`docs/marca/fegir/logos-extraidos/`); planos alternos verde/blanco y la foto de portada del manual en duotono; **nada de Yezid** |
+| FEGIR | `docs/marcas/fegir/manual-identidad-fegir.pdf` + web de FEGIR | Verde `#45a035`, verde claro `#a8c875`, crema `#f1ecb0`; banda del manual `#50cd72 → #4ecd25` (muestreada); Segoe UI (la del manual); logo **extraído de los vectores del manual** (`docs/marcas/fegir/logos-extraidos/`); planos alternos verde/blanco y la foto de portada del manual en duotono; **nada de Yezid** |
 | RiskMann · landing de Capacitaciones | La landing (decisión del cliente, 26-sep, **solo para esa landing**) | Negro `#040404`, dorado `#AC841D` (el botón empieza en él, nunca más claro), Montserrat + Open Sans; logo oficial; QR oficial → `app.riskmann.com/entrada` |
 
-La ficha completa de cada marca está en [`contexto/marcas/`](contexto/marcas/).
+La ficha completa de cada marca está en [`marcas/<marca>/ficha.md`](marcas/).
 
 - Los colores de un manual pensado para papel pueden no pasar contraste en pantalla
   (oliva `#80804a` = 1.75:1): variantes aclaradas **solo para texto**, el color de marca
@@ -416,7 +416,7 @@ La lista completa está en [`ARRANQUE-EN-OTRO-EQUIPO.md`](ARRANQUE-EN-OTRO-EQUIP
 
 **De las piezas cortas (Alejandro y `fegir`):**
 
-- **La receta `riskmann-hud` no corresponde al manual oficial** (`docs/marca/`), y
+- **La receta `riskmann-hud` no corresponde al manual oficial** (`docs/marcas/riskmann/`), y
   `CLAUDE.md` la sigue recomendando para marketing nuevo. O se rehace contra el manual o
   se deja de recomendar.
 - **El umbral del PESV está sin confirmar:** la landing dice «11 o más vehículos» y
@@ -428,7 +428,7 @@ La lista completa está en [`ARRANQUE-EN-OTRO-EQUIPO.md`](ARRANQUE-EN-OTRO-EQUIP
   `tools/audio.py` (cinco) viven copiados en cada proyecto de lienzo propio. Igual que
   con `moto.py`/`csm.py`, el siguiente proyecto debería sacarlos a `tools/`.
 - ~~Logos de FEGIR sin origen confirmado~~ **Resuelto (26-sep):** el manual de FEGIR está
-  en `docs/marca/fegir/` y los logos se extrajeron de sus vectores (sin redibujar). En la
+  en `docs/marcas/fegir/` y los logos se extrajeron de sus vectores (sin redibujar). En la
   versión blanca, el centro del escudo va al 50 % de opacidad, como se ve en el manual
   sobre verde: es lo único interpretado.
 - **FEGIR:** confirmar que el cupo se reserva en `fegir.org` (se dedujo del nombre de la

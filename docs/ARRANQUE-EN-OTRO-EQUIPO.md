@@ -293,7 +293,7 @@ se adelantó a 1.45 s para dejar sonar «¿Seguro?» a 1.53 s.
 
 ### La identidad
 
-**Contra `docs/marca/`, nunca contra lo que hizo la pieza anterior.** La receta
+**Contra `docs/marcas/riskmann/`, nunca contra lo que hizo la pieza anterior.** La receta
 `riskmann-hud` que heredan los proyectos nuevos según `CLAUDE.md` **no
 corresponde al manual oficial**. Sigue sin resolverse.
 

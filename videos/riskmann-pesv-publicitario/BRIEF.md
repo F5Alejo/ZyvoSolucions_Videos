@@ -87,7 +87,7 @@ pisan.
 
 ---
 
-## ✅ Fuente encontrada: `docs/fuentes/manejo-pesv-24-pasos.pdf`
+## ✅ Fuente encontrada: `docs/marcas/riskmann/fuentes/manejo-pesv-24-pasos.pdf`
 
 Captura de la landing «Manejo del PESV: los 24 pasos sin improvisar». **El guion
 del prompt sale literalmente de ahí**, y con él las cifras que estaban sin

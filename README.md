@@ -5,8 +5,9 @@ Repositorio dedicado a la elaboración de videos para presentaciones, marketing 
 
 | Documento | Para quién | Qué contiene |
 | --- | --- | --- |
+| [`docs/MAESTRO.md`](docs/MAESTRO.md) | Quien quiere leerlo todo de corrido | Toda la documentación general en un solo archivo con índice (generado con `python tools/maestro.py`; no se edita) |
 | [`docs/README.md`](docs/README.md) | Todos, primero | Índice de la documentación, orden de lectura y cómo alimentarla |
-| [`docs/contexto/`](docs/contexto/) | Quien produce para una marca | Ecosistema, glosario y ficha de SOFU, RiskMann, FEGIR y Dr. Yezid Ricaurte |
+| [`docs/marcas/`](docs/marcas/) | Quien produce para una marca | Ecosistema, glosario y ficha de SOFU, RiskMann, FEGIR y Dr. Yezid Ricaurte |
 | [`docs/PLAYBOOK.md`](docs/PLAYBOOK.md) | Quien arranca un proyecto nuevo | Qué se hizo, qué formato elegir, qué copiar, trampas principales y huecos conocidos |
 | [`docs/POC-SEGURIDAD-VIAL-PASAJEROS.md`](docs/POC-SEGURIDAD-VIAL-PASAJEROS.md) | Revisión del PoC | Entregable, checklist del issue, criterios de aceptación, viabilidad y pendientes |
 | [`GUIA-PROMPTS.md`](GUIA-PROMPTS.md) | Quien pide los videos (marketing, gerencia) | «Con este prompt consigo esto»: instrucciones probadas, tiempos y lo que no funciona |

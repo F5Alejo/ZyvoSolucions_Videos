@@ -22,23 +22,25 @@
 - **Objetivo:** que cualquiera (persona o agente) pueda producir para una marca leyendo
   solo su ficha.
 - **Hace falta:** manuales, webs, guiones, correos y logos de cada marca.
-- **Entrega:** `docs/contexto/marcas/{sofu,riskmann,fegir,yezid-ricaurte}.md` con la
+- **Entrega:** `docs/marcas/<marca>/ficha.md` (sofu, riskmann, fegir, yezid-ricaurte) con la
   plantilla `_PLANTILLA.md`.
 - **Hecho cuando:** las cuatro fichas tienen todas sus secciones llenas y cada dato con
   fuente; los **⚠ por confirmar** tienen dueño y fecha.
 - **Estado 2026-09-26:** las cuatro creadas con lo que había en el repo. SOFU y FEGIR son
   las más incompletas: no hay manual de marca de ninguna de las dos en el repositorio.
+  **Actualización 2026-09-26 (tarde):** llegó el manual de FEGIR con sus logos
+  (`docs/marcas/fegir/`). SOFU sigue sin manual.
 
 ### Paso 1.2 · Ecosistema y glosario — `en curso`
 
 - **Objetivo:** entender cómo se cruzan las marcas y hablar con las mismas palabras.
-- **Entrega:** `docs/contexto/ECOSISTEMA.md` y `docs/contexto/GLOSARIO.md`.
+- **Entrega:** `docs/marcas/ECOSISTEMA.md` y `docs/marcas/GLOSARIO.md`.
 - **Hecho cuando:** las cuatro preguntas de ECOSISTEMA §4 tienen respuesta.
 
 ### Paso 1.3 · Material de los clientes dentro del repo — `pendiente`
 
 - **Objetivo:** que ninguna fuente viva solo en Drive, en un correo o en la cabeza de alguien.
-- **Entrega:** carpeta `docs/fuentes/<marca>/` con manuales, guiones, briefs y capturas
+- **Entrega:** carpeta `docs/marcas/<marca>/fuentes/` con manuales, guiones, briefs y capturas
   fechadas de las landings. Lo que tenga datos personales se queda fuera, con una nota
   que diga dónde está.
 - **Hecho cuando:** cada fila de «Fuentes oficiales» de las fichas apunta a un archivo del
@@ -50,7 +52,7 @@
 
 - **Objetivo:** saber de cada una de las 61 carpetas de `videos/` qué es, de qué marca y
   en qué estado está.
-- **Entrega:** `docs/contexto/INVENTARIO.md` (una fila por proyecto: marca, familia A/B,
+- **Entrega:** `docs/INVENTARIO.md` (una fila por proyecto: marca, familia A/B,
   motor, estado, dónde está el final) y el campo `estado` en cada `meta.json`.
 - **Hecho cuando:** ninguna carpeta queda sin estado, y la campaña de Yezid dice cuál de
   sus cinco variantes se aprobó.
@@ -62,7 +64,7 @@
 ### Paso 2.1 · Marca como datos — `pendiente`
 
 - **Objetivo:** que la identidad de cada marca se lea de un archivo, no de copias.
-- **Entrega:** `marcas/<marca>.json` (paleta, tipografías con su licencia, logos, voz, CTA,
+- **Entrega:** `docs/marcas/<marca>/marca.json` (paleta, tipografías con su licencia, logos, voz, CTA,
   prohibiciones), generado desde la ficha.
 - **Hecho cuando:** un proyecto nuevo toma su identidad de ahí sin copiar valores a mano.
 - **Depende de:** 1.1 y 1.3.
@@ -118,3 +120,4 @@ Motor por CLI → uso interno medido → piloto con un tercero → API → inter
 | Fecha | Paso | Qué se hizo | Quién |
 | --- | --- | --- | --- |
 | 2026-09-26 | 1.1, 1.2 | Creadas las fichas de las cuatro marcas, la plantilla, el ecosistema y el glosario | Equipo `fegir` (con Claude) |
+| 2026-09-28 | — | Carpetas reordenadas por marca (`docs/marcas/<marca>/`) y documento maestro generado (`docs/MAESTRO.md`, D-04) | Equipo `fegir` (con Claude) |

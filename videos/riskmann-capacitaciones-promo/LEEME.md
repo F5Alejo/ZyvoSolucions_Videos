@@ -3,7 +3,7 @@
 **Fuente única:** la landing `riskmann.com/capacitaciones` (captura del 26-sep-2026). Cada
 frase de la voz lleva su fuente en `GUION` de `tools/construir.py` y en `tools/tiempos-voz.json`.
 
-**Identidad: la de la landing**, no la del manual (`docs/marca/`), por decisión del cliente
+**Identidad: la de la landing**, no la del manual (`docs/marcas/riskmann/`), por decisión del cliente
 (26-sep): negro `#040404`, dorado `#AC841D`, Montserrat + Open Sans (los `.woff2` van en
 `assets/fonts/`). Logo oficial `riskmann_logo_blanco.png` sobre negro y
 `riskmann_logo_color.png` sobre el certificado blanco, **sin filtros**. QR oficial

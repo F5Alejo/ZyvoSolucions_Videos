@@ -229,7 +229,7 @@ Esto es lo que hace que la cámara sea continua de verdad y no un efecto:
 ## Material
 
 **Ya disponible**
-- `docs/marca/` — los dos manuales oficiales
+- `docs/marcas/riskmann/` — los dos manuales oficiales
 - `assets/public/riskmann_logo_blanco.png` — logotipo oficial, único permitido
 - `assets/fotos-pixabay/` — 10 fotos de carretera y flota ya revisadas
 - `assets/fonts/DUBAI-*.TTF` — desde la v1
@@ -245,7 +245,7 @@ Esto es lo que hace que la cámara sea continua de verdad y no un efecto:
 - La clave de ElevenLabs del issue **caduca el 21 de septiembre**. La voz no va
   en git por convención, así que sin clave nueva no se puede regenerar.
 - `riskmann-hud`, la receta que heredan los proyectos nuevos según `CLAUDE.md`,
-  **no corresponde al manual**. Esta pieza se construye contra `docs/marca/`,
+  **no corresponde al manual**. Esta pieza se construye contra `docs/marcas/riskmann/`,
   igual que la v1.
 
 ## Paleta
