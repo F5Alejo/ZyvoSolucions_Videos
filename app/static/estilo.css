@@ -289,6 +289,16 @@ label.check { flex-direction: row; align-items: center; gap: 8px; color: var(--t
 .descargas { display: flex; flex-wrap: wrap; gap: 8px; }
 .descargas .boton { padding: 6px 12px; font-size: .9rem; }
 .nota-motor { border-left: 4px solid var(--motor); background: var(--superficie); padding: 10px 14px; border-radius: 0 8px 8px 0; margin-bottom: 16px; }
+.nota-motor.aviso { border-left-color: var(--aviso); background: var(--aviso-fondo); }
+
+/* Salida del motor: cada tarjeta muestra su video, su progreso o su error */
+.videos-plan.salida-videos { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+.tarjeta-video video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #000; }
+.tarjeta-video progress { width: 100%; height: 8px; accent-color: var(--motor); }
+.tarjeta-video .tarjeta-pie form { margin: 0; }
+.tarjeta-video .qa { width: 100%; font-size: .9rem; }
+.chequeos.compactos { gap: 4px; margin: 6px 0 0; }
+.chequeos.compactos li { padding: 6px 8px; font-size: .85rem; }
 
 .videos-plan { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
 .tarjeta-video { background: var(--superficie); border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; }

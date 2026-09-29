@@ -166,23 +166,70 @@
 <section class="paso" id="sale">
   <h2><span class="num-paso">4</span> El resultado</h2>
 
-  <div class="nota-motor">
-    <strong>Todo está listo menos el render.</strong>
-    Los videos todavía no se generan desde aquí.
-    {% if t.origen.tipo == "ejemplo" %}Este curso ya se produjo aparte y sus videos están en Drive.{% endif %}
-    Cuando el generador esté conectado, cada tarjeta mostrará su video.
-  </div>
+  {% if voz_falta %}
+  <div class="nota-motor aviso"><strong>La voz {{ voz.nombre }} no se puede usar todavía.</strong> {{ voz_falta }}.
+    Elige otra en <a href="#ajustes">Marca y voz</a>: las voces Kokoro son gratuitas y se pueden entregar.</div>
+  {% elif voz_borrador %}
+  <div class="nota-motor aviso"><strong>{{ voz.nombre }} es solo para borradores.</strong>
+    Los videos salen con el sello «BORRADOR»: su licencia no permite entregarlos a un cliente.</div>
+  {% else %}
+  <div class="nota-motor">Cada video se produce en este equipo: voz, imagen, subtítulos y revisión de calidad.
+    Un video de 2 minutos tarda unos 5 minutos. Se produce uno a la vez.</div>
+  {% endif %}
 
-  <div class="videos-plan" data-videos-plan style="--c1: {{ m.paleta[0].hex }}; --c2: {{ m.paleta[1].hex }};">
+  <div class="videos-plan salida-videos" data-videos-plan data-render-url="/taller/{{ t.id }}/render"
+       style="--c1: {{ m.paleta[0].hex }}; --c2: {{ m.paleta[1].hex }};">
     {% for v in r.videos %}
-      <div class="tarjeta-video">
+      {% set e = render[v.clave] %}
+      {% set estado = e.estado if e else "nuevo" %}
+      {% set base = "/taller/" ~ t.id ~ "/salida/" ~ v.clave ~ "/" %}
+      <div class="tarjeta-video" data-render="{{ v.clave }}" data-estado="{{ estado }}">
+        {% if estado == "listo" %}
+          <video controls preload="metadata" src="{{ base }}{{ v.clave }}.mp4">
+            <track kind="subtitles" srclang="es" label="Español" src="{{ base }}{{ v.clave }}.vtt" default>
+          </video>
+        {% else %}
         <div class="pantalla">
           <span>{{ v.titulo }}</span>
           <span class="duracion">{{ v.segundos | mmss }}</span>
         </div>
+        {% endif %}
         <div class="tarjeta-pie">
           <span class="tipo">Video {{ loop.index }} · láminas {{ v.laminas | join(", ") }}</span>
-          <span class="estado estado-borrador">Por generar</span>
+          {% if estado in ("en_cola", "produciendo") %}
+            <progress max="1" value="{{ e.progreso or 0 }}" data-render-barra></progress>
+            <span class="tipo" data-render-paso aria-live="polite">{{ e.paso }}</span>
+          {% elif estado == "error" %}
+            <span class="aviso-texto">⚠ {{ e.mensaje }}</span>
+          {% elif estado == "listo" and e.informe %}
+            {% set inf = e.informe %}
+            {% set fallas = inf.chequeos | selectattr("ok", "equalto", False) | list %}
+            {% if inf.marca != t.marca or inf.voz != t.voz %}
+              <span class="aviso-texto">⚠ Se produjo con otra marca o voz: vuelve a producirlo.</span>
+            {% endif %}
+            <details class="qa">
+              <summary>{% if fallas %}<span class="aviso-texto">⚠ {{ fallas | length | cuenta("chequeo") }} por revisar</span>
+                {% else %}✓ Calidad revisada{% endif %} · {{ inf.duracion | mmss }}</summary>
+              <ul class="chequeos compactos">
+                {% for c in inf.chequeos %}
+                <li class="{{ 'ok' if c.ok == True else ('falla' if c.ok == False else 'revisar') }}">
+                  <span class="marca-chequeo" aria-hidden="true">{{ "✓" if c.ok == True else ("✗" if c.ok == False else "!") }}</span>
+                  <span><strong>{{ c.titulo }}</strong><br><span class="tipo">{{ c.detalle }}</span></span></li>
+                {% endfor %}
+              </ul>
+            </details>
+            <div class="descargas">
+              <a class="boton secundario" href="{{ base }}{{ v.clave }}.mp4?descargar=1">MP4</a>
+              <a class="boton secundario" href="{{ base }}{{ v.clave }}.vtt?descargar=1" title="Subtítulos para LMS y web">VTT</a>
+              <a class="boton secundario" href="{{ base }}{{ v.clave }}.srt?descargar=1" title="Subtítulos para YouTube">SRT</a>
+            </div>
+          {% endif %}
+          {% if estado not in ("en_cola", "produciendo") %}
+          <form method="post" action="/taller/{{ t.id }}/producir/{{ v.clave }}">
+            <button class="boton{{ ' secundario' if estado == 'listo' }}" type="submit" {% if voz_falta %}disabled{% endif %}>
+              {{ "Volver a producir" if estado in ("listo", "error") else "Producir video" }}</button>
+          </form>
+          {% endif %}
         </div>
       </div>
     {% endfor %}

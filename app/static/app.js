@@ -203,6 +203,32 @@
     $("[data-guion-cerrar]", herramientas).addEventListener("click", () => videos.forEach((d) => (d.open = false)));
   }
 
+  // ── Progreso del motor: mientras un video se produce, se consulta cada 3 s ──
+  const salida = $("[data-render-url]");
+  if (salida && $("[data-estado=en_cola], [data-estado=produciendo]", salida)) {
+    const consultar = async () => {
+      try {
+        const r = await fetch(salida.dataset.renderUrl, { headers: { Accept: "application/json" } });
+        const estados = await r.json();
+        let cambio = false;
+        $$("[data-render]", salida).forEach((tarjeta) => {
+          const e = estados[tarjeta.dataset.render];
+          const antes = tarjeta.dataset.estado;
+          if (!e) return;
+          if (e.estado !== antes && !(antes === "en_cola" && e.estado === "produciendo")) cambio = true;
+          const barra = $("[data-render-barra]", tarjeta);
+          const paso = $("[data-render-paso]", tarjeta);
+          if (barra) barra.value = e.progreso || 0;
+          if (paso) paso.textContent = e.paso || "";
+          tarjeta.dataset.estado = e.estado;
+        });
+        if (cambio) { location.reload(); return; }
+      } catch (_) { /* sin conexión: se reintenta */ }
+      setTimeout(consultar, 3000);
+    };
+    setTimeout(consultar, 3000);
+  }
+
   // ── Menú de marcas: se cierra al hacer clic fuera o con Escape ────
   const menu = $("details.menu");
   if (menu) {

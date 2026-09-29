@@ -188,3 +188,47 @@ def test_voz_sin_clave_avisa_antes_de_empezar(datos_copia, monkeypatch):
     taller.ajustar(t, "riskmann", "jerome", ["16:9"])  # sin voice_id
     with pytest.raises(voz.VozNoDisponible):
         produccion.producir(t, t["videos"][0]["clave"])
+
+
+# ── Desde la interfaz ────────────────────────────────────────────────────────
+
+@pytest.mark.skipif(not hay_ffmpeg, reason="hace falta ffmpeg")
+def test_producir_desde_el_taller(datos_copia, monkeypatch):
+    pytest.importorskip("playwright")
+    from fastapi.testclient import TestClient
+    from app.main import app
+    from motor import cola, voz
+    monkeypatch.setitem(voz.PROVEEDORES, "Kokoro", VozDePrueba)
+    monkeypatch.setattr(voz, "disponible", lambda v: None)
+    c = TestClient(app)
+
+    url = c.post("/taller/nuevo", files={"archivo": ("x.pptx", pptx_con_foto())}, follow_redirects=False).headers["location"].split("?")[0]
+    c.post(f"{url}/ajustes", data={"marca": "riskmann", "voz": "kokoro-dora", "formatos": ["16:9"]})
+    assert "Producir video" in c.get(url).text
+
+    r = c.post(f"{url}/producir/v01", follow_redirects=False)
+    assert r.headers["location"].endswith("?ok=produciendo#sale")
+    cola.esperar()
+    assert c.get(f"{url}/render").json()["v01"]["estado"] == "listo"
+
+    html = c.get(url).text
+    assert f"{url}/salida/v01/v01.mp4" in html and "Volver a producir" in html
+    r = c.get(f"{url}/salida/v01/v01.mp4?descargar=1")
+    assert r.status_code == 200 and r.headers["content-type"] == "video/mp4" and "attachment" in r.headers["content-disposition"]
+    assert c.get(f"{url}/salida/v01/v01.vtt").text.startswith("WEBVTT")
+    # Solo los archivos de la salida, nada más de la carpeta del trabajo.
+    assert c.get(f"{url}/salida/v01/estado.json").status_code == 404
+    assert c.get(f"{url}/salida/..%2F..%2Ftrabajo.json/x.mp4").status_code == 404
+    assert c.post(f"{url}/producir/no-existe").status_code == 404
+
+
+def test_producir_con_voz_no_disponible_avisa(datos_copia, monkeypatch):
+    from fastapi.testclient import TestClient
+    from app.main import app
+    monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
+    c = TestClient(app)
+    url = c.post("/taller/nuevo", files={"archivo": ("x.pptx", pptx_con_foto())}, follow_redirects=False).headers["location"].split("?")[0]
+    html = c.get(url).text  # la voz por defecto es Carlos (ElevenLabs) sin clave
+    assert "no se puede usar todavía" in html and "Falta la clave de ElevenLabs" in html
+    r = c.post(f"{url}/producir/v01", follow_redirects=False)
+    assert "error=" in r.headers["location"]

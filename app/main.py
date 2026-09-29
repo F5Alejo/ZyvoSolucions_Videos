@@ -1,4 +1,5 @@
 import json
+import re
 from collections import Counter
 from pathlib import Path
 from urllib.parse import quote
@@ -10,6 +11,8 @@ from fastapi.templating import Jinja2Templates
 from markupsafe import Markup, escape
 
 from app import datos, extractor, taller
+from motor import cola
+from motor import voz as motor_voz
 
 AQUI = Path(__file__).resolve().parent
 
@@ -42,6 +45,7 @@ MENSAJES = {
     "guardado": "Cambios guardados.",
     "estado": "Estado actualizado.",
     "eliminado": "El curso se eliminó.",
+    "produciendo": "El video entró a la cola. Puedes seguir trabajando: aparece aquí cuando esté listo.",
 }
 
 
@@ -111,8 +115,11 @@ def _trabajo(id_: str) -> dict:
 @app.get("/taller/{id_}")
 def taller_ver(request: Request, id_: str, error: str = ""):
     t = _trabajo(id_)
-    return _pagina(request, "taller.html", t=t, r=taller.resumen(t), voces=taller.voces(),
-                   FORMATOS=taller.FORMATOS, error=error)
+    voces = taller.voces()
+    voz = next((v for v in voces if v["id"] == t["voz"]), {})
+    return _pagina(request, "taller.html", t=t, r=taller.resumen(t), voces=voces,
+                   FORMATOS=taller.FORMATOS, error=error, render=cola.estados(t),
+                   voz_falta=motor_voz.disponible(voz), voz_borrador=bool(voz.get("solo_borrador")))
 
 
 @app.post("/taller/{id_}/ajustes")
@@ -142,6 +149,47 @@ def taller_eliminar(id_: str):
 def _descarga(contenido, nombre: str) -> Response:
     return Response(json.dumps(contenido, ensure_ascii=False, indent=1), media_type="application/json",
                     headers={"Content-Disposition": f'attachment; filename="{nombre}"'})
+
+
+@app.post("/taller/{id_}/producir/{clave}")
+def taller_producir(id_: str, clave: str):
+    """Pone un video del trabajo en la cola del motor."""
+    t = _trabajo(id_)
+    if clave not in {v["clave"] for v in t["videos"]}:
+        raise HTTPException(404, "Video no encontrado")
+    voz = next(v for v in taller.voces() if v["id"] == t["voz"])
+    falta = motor_voz.disponible(voz)
+    if falta:
+        return RedirectResponse(f"/taller/{id_}?error={quote(falta)}#sale", status_code=303)
+    cola.encolar(id_, clave)
+    return RedirectResponse(f"/taller/{id_}?ok=produciendo#sale", status_code=303)
+
+
+@app.get("/taller/{id_}/render")
+def taller_render(id_: str):
+    """Estado de producción de cada video (la página lo consulta mientras produce)."""
+    t = _trabajo(id_)
+    return {c: ({k: e.get(k) for k in ("estado", "paso", "progreso", "mensaje")} if e else None)
+            for c, e in cola.estados(t).items()}
+
+
+# Lo que se puede bajar de la salida de un video.
+SALIDA = {".mp4": "video/mp4", ".vtt": "text/vtt", ".srt": "application/x-subrip", ".json": "application/json"}
+
+
+@app.get("/taller/{id_}/salida/{clave}/{archivo}")
+def taller_salida(id_: str, clave: str, archivo: str, descargar: bool = False):
+    t = _trabajo(id_)
+    permitidos = {f"{clave}.mp4", f"{clave}.vtt", f"{clave}.srt", "qa.json"}
+    if not re.fullmatch(r"[a-z0-9-]+", clave) or archivo not in permitidos:
+        raise HTTPException(404)
+    ruta = taller.ruta_trabajo(t["id"]).parent / "salida" / clave / archivo
+    if not ruta.is_file():
+        raise HTTPException(404)
+    extension = ruta.suffix
+    nombre = f"{t['id']}-{archivo}" if descargar else None
+    return FileResponse(ruta, media_type=SALIDA[extension], filename=nombre,
+                        content_disposition_type="attachment" if descargar else "inline")
 
 
 @app.get("/taller/{id_}/curso.json")

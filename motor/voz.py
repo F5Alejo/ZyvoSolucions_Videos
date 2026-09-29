@@ -110,6 +110,22 @@ def proveedor(voz: dict):
     return clase(voz)
 
 
+def disponible(voz: dict) -> str | None:
+    """None si la voz se puede usar ya; si no, lo que falta, dicho para la persona."""
+    try:
+        proveedor(voz)
+    except VozNoDisponible as e:
+        return str(e)
+    p = voz.get("proveedor")
+    if p == "Kokoro" and not (MODELOS / "kokoro" / "kokoro-v1.0.int8.onnx").exists():
+        return "Falta el modelo Kokoro: corre «python scripts/descargar_modelos.py»"
+    if p == "Piper" and not (MODELOS / "voces" / f"{voz['voice_id']}.onnx").exists():
+        return "Falta la voz de Piper: corre «python scripts/descargar_modelos.py»"
+    if p == "ElevenLabs" and not os.environ.get("ELEVENLABS_API_KEY"):
+        return "Falta la clave de ElevenLabs (variable ELEVENLABS_API_KEY)"
+    return None
+
+
 # ── Frases ───────────────────────────────────────────────────────────────────
 
 def _clave(voz: dict, texto: str) -> str:
