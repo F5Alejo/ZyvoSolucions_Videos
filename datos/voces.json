@@ -15,6 +15,12 @@
    "muestra": "prueba-voz-narrador/1-Gabriel-formal.mp3"},
   {"id": "oscar", "nombre": "Óscar G.", "descripcion": "Colombiano, grave, narrativo", "proveedor": "ElevenLabs", "voice_id": null, "modelo": null, "ajustes": null,
    "muestra": "prueba-voz-narrador/2-OscarG-grave.mp3"},
-  {"id": "piper-davefx", "nombre": "Piper · davefx", "descripcion": "Voz local y gratuita (la del módulo PESV M01). No depende de ElevenLabs",
-   "proveedor": "Piper", "voice_id": "es_ES-davefx-medium", "modelo": null, "ajustes": null, "muestra": null}
+  {"id": "piper-davefx", "nombre": "Piper · davefx", "descripcion": "Voz local y rápida (la del módulo PESV M01). Solo para borradores internos: su base (lessac) no permite uso comercial",
+   "proveedor": "Piper", "voice_id": "es_ES-davefx-medium", "modelo": null, "ajustes": null, "muestra": null, "solo_borrador": true},
+  {"id": "kokoro-dora", "nombre": "Dora · Kokoro", "descripcion": "Mujer. Gratuita y local (Apache 2.0): se puede entregar",
+   "proveedor": "Kokoro", "voice_id": "ef_dora", "modelo": "kokoro-v1.0", "ajustes": {"velocidad": 1.0}, "muestra": null},
+  {"id": "kokoro-alex", "nombre": "Alex · Kokoro", "descripcion": "Hombre. Gratuita y local (Apache 2.0): se puede entregar",
+   "proveedor": "Kokoro", "voice_id": "em_alex", "modelo": "kokoro-v1.0", "ajustes": {"velocidad": 1.0}, "muestra": null},
+  {"id": "kokoro-santa", "nombre": "Santa · Kokoro", "descripcion": "Hombre, más grave. Gratuita y local (Apache 2.0): se puede entregar",
+   "proveedor": "Kokoro", "voice_id": "em_santa", "modelo": "kokoro-v1.0", "ajustes": {"velocidad": 1.0}, "muestra": null}
 ]
