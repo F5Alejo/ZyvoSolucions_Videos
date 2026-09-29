@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block titulo %}Inicio · Estudio de video RiskMann{% endblock %}
+{% block contenido %}
+<section class="portada">
+  <h1 class="grande">Entra un PPTX. Sale el curso en video.</h1>
+  <p class="entradilla">Sube una presentación de capacitación y el estudio la convierte en los videos del curso,
+    con la marca y la voz que elijas. Cada frase que dice el video sale de tu presentación.</p>
+  <div class="acciones">
+    <a class="boton grande-boton" href="/taller/nuevo">Crear un curso</a>
+    {% if ejemplo %}
+    <form method="post" action="/taller/ejemplo-csm" data-cargando="Abriendo el ejemplo…">
+      <button class="boton secundario grande-boton" type="submit">Ver un ejemplo real</button>
+    </form>
+    {% endif %}
+  </div>
+</section>
+
+<section class="flujo" aria-label="Cómo funciona">
+  <div class="etapa etapa-entra">
+    <span class="rotulo">1 · Entra</span>
+    <h2>Tu presentación</h2>
+    <p>El PPTX con sus láminas y las <strong>notas del orador</strong>, que son el guion.</p>
+    {% if cifras %}<p class="cifra-grande">{{ cifras.laminas }} <small>láminas en el ejemplo</small></p>{% endif %}
+  </div>
+  <div class="flecha" aria-hidden="true">→</div>
+  <div class="etapa etapa-motor">
+    <span class="rotulo">2 · El estudio</span>
+    <h2>Lo prepara contigo</h2>
+    <ul class="lista-simple">
+      <li>Lee cada lámina y arma el guion</li>
+      <li>Te muestra de dónde sale cada frase</li>
+      <li>Aplica la marca y la voz que elijas</li>
+      <li>Avisa si hay cifras o normas por revisar</li>
+    </ul>
+  </div>
+  <div class="flecha" aria-hidden="true">→</div>
+  <div class="etapa etapa-sale">
+    <span class="rotulo">3 · Sale</span>
+    <h2>Los videos del curso</h2>
+    <p>Un video por módulo, las preguntas de evaluación y un informe de revisión.</p>
+    {% if cifras %}<p class="cifra-grande">{{ cifras.videos }} <small>videos · {{ cifras.minutos }} min en el ejemplo</small></p>{% endif %}
+  </div>
+</section>
+
+<h2 class="titulo-seccion">Tus cursos</h2>
+{% if trabajos %}
+<div class="cursos">
+  {% for t in trabajos %}
+    {% set m = marcas[t.marca] %}
+    <a class="curso-tarjeta" href="/taller/{{ t.id }}">
+      <span class="curso-franja" style="background: linear-gradient(90deg, {{ m.paleta[0].hex }}, {{ m.paleta[1].hex }});"></span>
+      <strong>{{ t.nombre }}</strong>
+      <span class="tipo">{{ m.nombre_corto }} · {{ t.laminas | cuenta("lámina") }} → {{ t.videos | cuenta("video") }} · {{ t.segundos | mmss }} min</span>
+      <span class="tipo">{{ "Desde tu PPTX" if t.origen.tipo == "pptx" else "Ejemplo real" }} · {{ t.creado[:10] }}</span>
+      <span class="curso-ir">Abrir →</span>
+    </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="vacio-caja">
+  <p><strong>Todavía no has creado ningún curso.</strong></p>
+  <p>Empieza subiendo una presentación{% if ejemplo %} o mira primero el ejemplo real{% endif %}.</p>
+  <a class="boton" href="/taller/nuevo">Crear un curso</a>
+</div>
+{% endif %}
+
+<h2 class="titulo-seccion">Piezas de marketing ya hechas</h2>
+<p class="sub">Estas no salen de un PPTX: el equipo las diseña una por una. Aquí puedes ver qué entró y qué salió.</p>
+<div class="casos">
+  {% for c in casos %}
+    <a class="caso" href="/casos/{{ c.id }}">
+      {% if c.videos %}<video muted playsinline preload="metadata" src="/media/entregables/{{ c.videos[0].archivo }}#t=3" aria-hidden="true"></video>{% endif %}
+      <div>
+        <strong>{{ c.titulo }}</strong>
+        <span>{{ c.resumen }}</span>
+        <span class="tipo">{{ c.videos | length }} videos</span>
+      </div>
+    </a>
+  {% endfor %}
+</div>
+{% endblock %}

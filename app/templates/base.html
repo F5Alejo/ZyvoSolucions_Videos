@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Estudio de video RiskMann{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap">
+  <link rel="icon" type="image/png" href="/static/marca/riskmann_icono_color.png">
+  <link rel="stylesheet" href="/static/estilo.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+  {% macro enlace(href, texto, activo) %}<a href="{{ href }}" {% if activo %}aria-current="page"{% endif %}>{{ texto }}</a>{% endmacro %}
+  <header class="barra">
+    <a class="logo" href="/"><img src="/static/marca/riskmann_logo_blanco.png" alt="RiskMann by SOFU"><span>Estudio de video</span></a>
+    <nav aria-label="Principal">
+      {{ enlace("/", "Inicio", ruta == "/" or (ruta.startswith("/taller/") and ruta != "/taller/nuevo") or ruta.startswith("/casos/")) }}
+      {{ enlace("/taller/nuevo", "Crear curso", ruta == "/taller/nuevo") }}
+      {{ enlace("/proyectos", "Videos", ruta.startswith("/proyectos")) }}
+      <details class="menu" {% if ruta.startswith("/marcas/") %}data-activo{% endif %}>
+        <summary {% if ruta.startswith("/marcas/") %}aria-current="page"{% endif %}>Marcas</summary>
+        <div class="menu-lista">
+          {% for id, m in marcas.items() %}<a href="/marcas/{{ id }}" {% if ruta == "/marcas/" ~ id %}aria-current="page"{% endif %}>{{ m.nombre_corto }}</a>{% endfor %}
+        </div>
+      </details>
+      <a href="/pendientes" {% if ruta == "/pendientes" %}aria-current="page"{% endif %}>Pendientes
+        {% if pendientes_abiertos %}<span class="insignia" aria-label="{{ pendientes_abiertos }} abiertos">{{ pendientes_abiertos }}</span>{% endif %}</a>
+    </nav>
+  </header>
+
+  <div class="avisos" aria-live="polite" id="avisos">
+    {% if mensaje_ok %}<div class="aviso-flotante ok" role="status">✓ {{ mensaje_ok }}</div>{% endif %}
+  </div>
+
+  <main id="contenido">{% block contenido %}{% endblock %}</main>
+</body>
+</html>

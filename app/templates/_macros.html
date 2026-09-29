@@ -1,0 +1,26 @@
+{% macro estado(e) %}<span class="estado estado-{{ e }}">{{ ESTADOS[e] }}</span>{% endmacro %}
+
+{% macro nombre_proyecto(p) %}{{ p.titulo or p.id | replace("-", " ") | capitalize }}{% endmacro %}
+
+{% macro tabla_proyectos(lista, marcas, con_marca=True, vacio="No hay videos con estos filtros.") %}
+<div class="tabla-envoltura">
+<table class="tabla-clic" data-filtrable>
+  <thead><tr>
+    <th>Video</th>{% if con_marca %}<th>Marca</th>{% endif %}<th>Tipo</th><th>Duración</th><th>Estado</th>
+  </tr></thead>
+  <tbody>
+  {% for p in lista %}
+    <tr data-href="/proyectos/{{ p.id }}">
+      <td><a href="/proyectos/{{ p.id }}"><strong>{{ nombre_proyecto(p) }}</strong></a><br><span class="tipo">{{ p.formato }}</span></td>
+      {% if con_marca %}<td>{{ marcas[p.marca].nombre_corto }}</td>{% endif %}
+      <td>{{ FAMILIAS[p.familia] }}</td>
+      <td class="num">{{ p.duracion or "—" }}</td>
+      <td>{{ estado(p.estado) }}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="5" class="vacio">{{ vacio }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endmacro %}

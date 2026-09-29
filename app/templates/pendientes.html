@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "_macros.html" import tabla_proyectos %}
+{% block titulo %}Pendientes · Estudio de video RiskMann{% endblock %}
+{% block contenido %}
+<h1>Pendientes</h1>
+<p class="sub">{{ abiertos }} abiertos en las cuatro fichas.
+  {% if ver == "todos" %}<a href="/pendientes">Ver solo abiertos</a>{% else %}<a href="/pendientes?ver=todos">Ver también los cerrados</a>{% endif %}</p>
+
+<div class="tabla-envoltura">
+<table>
+  <thead><tr><th>Marca</th><th>Tipo</th><th>Qué</th></tr></thead>
+  <tbody>
+  {% for x in lista %}
+    <tr class="{{ 'hecho' if x.hecho }}">
+      <td><a href="/marcas/{{ x.marca.id }}">{{ x.marca.nombre_corto }}</a></td>
+      <td>{{ x.tipo }}</td>
+      <td>{{ x.texto }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<h2>Proyectos sin estado</h2>
+<p class="sub">Nadie sabe hoy en qué quedaron. Ábrelos y registra su estado.</p>
+{{ tabla_proyectos(sin_estado, marcas) }}
+
+<h2 id="sin-registrar">Carpetas sin registrar</h2>
+{% if sin_registrar %}
+<p class="sub">Están en <code>videos/</code> del repositorio, pero ningún proyecto del panel las reclama. Hay que añadirlas a <code>datos/proyectos.json</code>.</p>
+<ul class="carpetas">{% for c in sin_registrar %}<li><code>videos/{{ c }}</code></li>{% endfor %}</ul>
+{% elif CONFIG.repo_videos %}
+<p class="vacio">Ninguna: cada carpeta de <code>videos/</code> pertenece a un proyecto.</p>
+{% else %}
+<p class="vacio">⚠ El repositorio de videos no está configurado.</p>
+{% endif %}
+{% endblock %}

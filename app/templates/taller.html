@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+{% block titulo %}{{ t.nombre }} · Estudio de video RiskMann{% endblock %}
+{% block contenido %}
+{% set m = marcas[t.marca] %}
+{% set voz = voces | selectattr("id", "equalto", t.voz) | first %}
+{% set por_revisar = r.chequeos | rejectattr('ok', 'equalto', True) | list %}
+{% set sin_notas = t.laminas | rejectattr('frases') | list | length %}
+
+<p class="miga"><a href="/">Inicio</a> › {{ t.nombre }}</p>
+<div class="cabecera-curso">
+  <div>
+    <h1>{{ t.nombre }}</h1>
+    <p class="sub">{{ t.laminas | length }} láminas → <strong>{{ r.videos | length | cuenta("video") }}</strong> · {{ r.segundos | mmss }} min
+      {% if r.preguntas %}· {{ r.preguntas }} preguntas{% endif %}</p>
+  </div>
+</div>
+{% if error %}<p class="error" role="alert">⚠ {{ error }}</p>{% endif %}
+
+<nav class="pasos-barra" aria-label="Pasos del curso">
+  <a href="#entra" data-paso="entra"><span class="paso-num">1</span><span><strong>Presentación</strong><small>{{ t.laminas | length | cuenta("lámina") }}</small></span></a>
+  <a href="#guion" data-paso="guion"><span class="paso-num">2</span><span><strong>Guion</strong><small>{% if por_revisar %}{{ por_revisar | length | cuenta("cosa") }} por revisar{% else %}Todo en orden{% endif %}</small></span></a>
+  <a href="#ajustes" data-paso="ajustes"><span class="paso-num">3</span><span><strong>Marca y voz</strong><small data-resumen-ajustes>{{ m.nombre_corto }} · {{ voz.nombre }}</small></span></a>
+  <a href="#sale" data-paso="sale"><span class="paso-num">4</span><span><strong>Resultado</strong><small>{{ r.videos | length | cuenta("video") }}</small></span></a>
+</nav>
+
+{# ── 1. Presentación ─────────────────────────────────────── #}
+<section class="paso" id="entra">
+  <h2><span class="num-paso">1</span> Tu presentación</h2>
+  <div class="datos-rapidos">
+    <div><span class="cifra">{{ t.laminas | length }}</span><span>láminas</span></div>
+    <div><span class="cifra">{{ r.frases }}</span><span>frases de guion</span></div>
+    <div><span class="cifra">{{ r.palabras }}</span><span>palabras</span></div>
+    <div class="{{ 'alerta' if sin_notas }}"><span class="cifra">{{ sin_notas }}</span><span>láminas sin notas</span></div>
+  </div>
+  <p class="sub">
+    {% if t.origen.tipo == "pptx" %}Archivo: <strong>{{ t.origen.archivo }}</strong> ({{ (t.origen.bytes / 1048576) | round(1) }} MB).
+    {% else %}{{ t.origen.nota }}{% endif %}
+  </p>
+  <details>
+    <summary>Ver las {{ t.laminas | length }} láminas una por una</summary>
+    <div class="tabla-envoltura">
+    <table>
+      <thead><tr><th>#</th><th>Lámina</th><th>Frases</th></tr></thead>
+      <tbody>
+      {% for l in t.laminas %}
+        {% set motivo = t.excluidas[l.n | string] %}
+        <tr class="{{ 'fuera' if motivo }}">
+          <td class="num">{{ l.n }}</td>
+          <td>{{ l | titulo_lamina }}{% if motivo %}<br><span class="tipo">No va al video: {{ motivo }}</span>{% endif %}</td>
+          <td class="num">{% if l.frases %}{{ l.frases | length }}{% else %}<span class="aviso-texto">⚠ sin notas</span>{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </details>
+  <a class="siguiente" href="#guion">Siguiente: revisar el guion →</a>
+</section>
+
+{# ── 2. Guion ────────────────────────────────────────────── #}
+<section class="paso" id="guion">
+  <h2><span class="num-paso">2</span> El guion de cada video</h2>
+  <p class="sub">Esto es lo que dirá la voz, frase por frase. Cada frase indica la lámina de la que sale:
+    nada se inventa. Lo <mark>resaltado</mark> son cifras y normas que conviene comprobar.</p>
+
+  {% if por_revisar %}
+  <div class="revisar-caja">
+    <strong>Antes de seguir, revisa esto:</strong>
+    <ul>{% for c in por_revisar %}<li><strong>{{ c.titulo }}.</strong> {{ c.detalle }}</li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+
+  <div class="herramientas-guion" data-guion-herramientas hidden>
+    <input type="search" placeholder="Buscar en el guion…" aria-label="Buscar en el guion" data-guion-buscar>
+    <label class="check"><input type="checkbox" data-guion-solo-marcas> Solo lo que hay que revisar</label>
+    <button type="button" class="boton-texto" data-guion-abrir>Abrir todo</button>
+    <button type="button" class="boton-texto" data-guion-cerrar>Cerrar todo</button>
+    <span class="tipo" data-guion-conteo aria-live="polite"></span>
+  </div>
+
+  <div data-guion>
+  {% for v in r.videos %}
+  <details class="video-guion">
+    <summary>
+      <span class="video-guion-num">{{ loop.index }}</span>
+      <span class="video-guion-titulo"><strong>{{ v.titulo }}</strong>
+        <span class="tipo">Láminas {{ v.laminas | join(", ") }} · {{ v.frases }} frases · ~{{ v.segundos | mmss }} min</span></span>
+    </summary>
+    {% for l in v.laminas_detalle %}
+      <div class="lamina">
+        <div class="lamina-cab">
+          <span class="fuente-chip">Lámina {{ l.n }}</span>
+          <strong>{{ l | titulo_lamina }}</strong>
+          <span class="tipo">~{{ l.notas | segundos }} s{% if l.fuente_narracion %} · {{ l.fuente_narracion }}{% endif %}</span>
+        </div>
+        {% if l.frases %}
+          <ol class="frases">{% for f in l.frases %}<li>{{ f | marcar }}</li>{% endfor %}</ol>
+        {% else %}
+          <p class="aviso-texto">⚠ Esta lámina no tiene notas: se vería sin voz. Escribe su guion en las notas del orador.</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </details>
+  {% endfor %}
+  </div>
+  <a class="siguiente" href="#ajustes">Siguiente: elegir marca y voz →</a>
+</section>
+
+{# ── 3. Marca y voz ──────────────────────────────────────── #}
+<section class="paso" id="ajustes">
+  <h2><span class="num-paso">3</span> Marca y voz</h2>
+  <p class="sub">Los cambios se guardan solos.</p>
+  <form class="ajustes" method="post" action="/taller/{{ t.id }}/ajustes" data-autoguardar>
+    <fieldset>
+      <legend>¿De quién es el video?</legend>
+      <div class="opciones">
+        {% for id, mm in marcas.items() %}
+          <label class="opcion">
+            <input type="radio" name="marca" value="{{ id }}" {% if id == t.marca %}checked{% endif %}
+                   data-nombre="{{ mm.nombre_corto }}" data-c1="{{ mm.paleta[0].hex }}" data-c2="{{ mm.paleta[1].hex }}">
+            <span class="opcion-cuerpo">
+              {% if mm.logo and (mm.logo.archivo | en_repo) %}<span class="mini-logo fondo-{{ mm.logo.fondo }}"><img src="/media/repo/{{ mm.logo.archivo }}" alt=""></span>{% endif %}
+              <strong>{{ mm.nombre_corto }}</strong>
+              <span class="franja" aria-hidden="true">{% for c in mm.paleta[:5] %}<i style="background: {{ c.hex }}"></i>{% endfor %}</span>
+            </span>
+          </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>¿Qué voz lo narra?</legend>
+      <p class="sub">Escucha las muestras antes de elegir.</p>
+      <div class="opciones voces">
+        {% for vz in voces %}
+          <label class="opcion">
+            <input type="radio" name="voz" value="{{ vz.id }}" {% if vz.id == t.voz %}checked{% endif %} data-nombre="{{ vz.nombre }}">
+            <span class="opcion-cuerpo">
+              <strong>{{ vz.nombre }}{% if vz.id == "carlos" %} <span class="etiqueta">La de siempre</span>{% endif %}</strong>
+              <span class="tipo">{{ vz.descripcion }}</span>
+              {% if vz.muestra | en_entregables %}<audio controls preload="none" src="/media/entregables/{{ vz.muestra }}"></audio>
+              {% else %}<span class="tipo">Sin muestra para escuchar</span>{% endif %}
+            </span>
+          </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>¿Dónde se va a ver?</legend>
+      <div class="formatos">
+      {% for f, txt in FORMATOS.items() %}
+        <label class="formato">
+          <input type="checkbox" name="formatos" value="{{ f }}" {% if f in t.formatos %}checked{% endif %}>
+          <span class="formato-muestra formato-{{ f | replace(':', '-') }}" aria-hidden="true"></span>
+          <span><strong>{{ txt }}</strong><br><span class="tipo">{{ "Computador, plataforma, proyector" if f == "16:9" else "Celular, Reels, TikTok" }}</span></span>
+        </label>
+      {% endfor %}
+      </div>
+    </fieldset>
+    <noscript><button type="submit">Guardar</button></noscript>
+    <p class="estado-guardado" data-estado-guardado aria-live="polite"></p>
+  </form>
+  <a class="siguiente" href="#sale">Siguiente: ver el resultado →</a>
+</section>
+
+{# ── 4. Resultado ────────────────────────────────────────── #}
+<section class="paso" id="sale">
+  <h2><span class="num-paso">4</span> El resultado</h2>
+
+  <div class="nota-motor">
+    <strong>Todo está listo menos el render.</strong>
+    Los videos todavía no se generan desde aquí.
+    {% if t.origen.tipo == "ejemplo" %}Este curso ya se produjo aparte y sus videos están en Drive.{% endif %}
+    Cuando el generador esté conectado, cada tarjeta mostrará su video.
+  </div>
+
+  <div class="videos-plan" data-videos-plan style="--c1: {{ m.paleta[0].hex }}; --c2: {{ m.paleta[1].hex }};">
+    {% for v in r.videos %}
+      <div class="tarjeta-video">
+        <div class="pantalla">
+          <span>{{ v.titulo }}</span>
+          <span class="duracion">{{ v.segundos | mmss }}</span>
+        </div>
+        <div class="tarjeta-pie">
+          <span class="tipo">Video {{ loop.index }} · láminas {{ v.laminas | join(", ") }}</span>
+          <span class="estado estado-borrador">Por generar</span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if t.banco %}
+  <h3>Preguntas de evaluación · {{ r.preguntas }}</h3>
+  <p class="sub">Cada pregunta indica de qué lámina sale. La respuesta correcta va en verde.</p>
+  {% for g in t.banco.grupos %}
+  <details>
+    <summary><strong>{{ g.titulo }}</strong> <span class="tipo">{{ g.tema }} · {{ g.preguntas | length }} preguntas</span></summary>
+    <ol class="preguntas">
+      {% for p in g.preguntas %}
+        <li><strong>{{ p.enunciado }}</strong>
+          <ul><li class="correcta">✓ {{ p.correcta }}</li>{% for d in p.distractores %}<li>{{ d }}</li>{% endfor %}</ul>
+          <span class="fuente-chip">{{ p.fuente }}</span></li>
+      {% endfor %}
+    </ol>
+  </details>
+  {% endfor %}
+  {% endif %}
+
+  <h3 id="verificacion">Revisión</h3>
+  <ul class="chequeos">
+    {% for c in r.chequeos %}
+      <li class="{{ 'ok' if c.ok == True else ('falla' if c.ok == False else 'revisar') }}">
+        <span class="marca-chequeo" aria-hidden="true">{{ "✓" if c.ok == True else ("✗" if c.ok == False else "!") }}</span>
+        <span><strong>{{ c.titulo }}</strong><br><span class="tipo">{{ c.detalle }}</span></span>
+      </li>
+    {% endfor %}
+  </ul>
+  {% if r.normativas %}
+  <details>
+    <summary>Ver cada cifra y norma, lámina por lámina</summary>
+    <div class="tabla-envoltura">
+    <table>
+      <thead><tr><th>Lámina</th><th>Qué se cita</th></tr></thead>
+      <tbody>{% for x in r.normativas %}<tr><td class="num">{{ x.lamina }}</td><td>{{ x.citas | join(" · ") }}</td></tr>{% endfor %}</tbody>
+    </table>
+    </div>
+  </details>
+  {% endif %}
+
+  <details class="tecnico">
+    <summary>Archivos para el equipo técnico</summary>
+    <p class="sub">Lo que recibirá el generador de video. No hace falta abrirlos para revisar el curso.</p>
+    <div class="descargas">
+      <a class="boton secundario" href="/taller/{{ t.id }}/orden.json">Orden de producción</a>
+      <a class="boton secundario" href="/taller/{{ t.id }}/curso.json">Contenido extraído (curso.json)</a>
+      {% if t.banco %}<a class="boton secundario" href="/taller/{{ t.id }}/banco.json">Preguntas (JSON)</a>{% endif %}
+    </div>
+  </details>
+
+  <form class="zona-peligro" method="post" action="/taller/{{ t.id }}/eliminar"
+        data-confirmar="¿Eliminar «{{ t.nombre }}»? Se borra también la presentación que subiste. No se puede deshacer.">
+    <button class="boton-peligro" type="submit">Eliminar este curso</button>
+  </form>
+</section>
+{% endblock %}
