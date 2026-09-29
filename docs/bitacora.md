@@ -8,6 +8,20 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-09-29 · Commits sin coautoría y subida de la rama
+
+### Qué se hizo
+- A pedido del usuario, se quitó la línea `Co-Authored-By` de los 10 commits de `Alejodev`
+  (`git filter-branch --msg-filter`). Aún no se habían subido. Los archivos no cambiaron: el
+  árbol es el mismo (`de8e346`). Desde ahora los commits van sin esa línea.
+- Revisado antes de subir: ningún commit trae `.env`, la clave, `modelos/` ni `datos/trabajos/`.
+
+### Pendiente
+- Subir la rama: `git push -u origin Alejodev`. El asistente no tiene permiso para hacer push;
+  lo corre el usuario.
+
+---
+
 ## 2026-09-29 · Clave de ElevenLabs y manejo de secretos
 
 ### Qué se hizo
