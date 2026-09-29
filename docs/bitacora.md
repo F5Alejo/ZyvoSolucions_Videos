@@ -8,6 +8,41 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-09-29 · Unión con `main` (interfaz nueva en Vue 3)
+
+### Qué se hizo
+- `origin/main` recibió un *force push*: el commit inicial se reescribió (`7d591ae` → `7b04806`,
+  con los mismos archivos) y encima llegó «Rehacer la interfaz con Vue 3, TypeScript y
+  Tailwind» (`51aad05`). El servidor pasó a ser una API JSON y se borraron las plantillas Jinja.
+- `Alejodev` se movió encima de `7b04806` (`git rebase --onto`, sin conflictos) y luego se unió
+  con `origin/main`.
+- **Conflictos resueltos:**
+  - `app/templates/taller.html`, `app/static/app.js` y `app/static/estilo.css`: se aceptó el
+    borrado; lo que hacían ahora está en Vue.
+  - `app/main.py`: se tomó la API nueva y se le añadieron las rutas del motor:
+    `GET /api/trabajos/{id}/produccion`, `POST /api/trabajos/{id}/producir/{clave}` (202) y
+    `GET /api/trabajos/{id}/salida/{clave}/{archivo}`. `/api/catalogo` dice por cada voz qué le
+    falta para producir (`falta`).
+  - `app/extractor.py`: se conservaron `guardar_imagenes` y las nuevas reglas de título y sección.
+  - `README.md`: el de `main` más la fila del motor y su instalación.
+- **Ajustes por la reorganización:**
+  - el logo de RiskMann se movió a `frontend/public/marca/` y se actualizó `logo_local` en su ficha;
+  - las escenas usan `extractor.titulo_lamina` (forma «title») y no repiten el título ni la sección en las viñetas;
+  - `main` quitó `jinja2` de `requirements.txt`, pero el motor lo usa, así que se volvió a añadir en la sección del motor.
+- **Vue:**
+  - `PasoResultado.vue` tiene el botón «Producir video», el progreso cada 3 s, el reproductor con subtítulos, la calidad y las descargas, y avisa si la voz falta, es de borrador o si el video quedó desactualizado;
+  - `PasoMarcaVoz.vue` avisa qué le falta a cada voz;
+  - se añadieron los tipos en `tipos.ts`.
+- **Verificado:**
+  - 34 pruebas de Python, `vue-tsc`, 7 pruebas de Vitest y `npm run build`;
+  - en vivo: el curso demo se produjo con Carlos (ElevenLabs), con todos los chequeos en verde.
+
+### Errores y cómo se resolvieron
+- Unir directamente fallaba porque las historias no tenían ancestro común (el commit inicial fue
+  reescrito). Se resolvió con `git rebase --onto 7b04806 7d591ae` antes de unir.
+
+---
+
 ## 2026-09-29 · Commits sin coautoría y subida de la rama
 
 ### Qué se hizo

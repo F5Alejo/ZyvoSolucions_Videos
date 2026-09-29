@@ -224,7 +224,7 @@
     "texto": "#F3F3F3",
     "acento": "#C8951A",
     "acento2": "#06C7FB",
-    "logo_local": "app/static/marca/riskmann_logo_blanco.png"
+    "logo_local": "frontend/public/marca/riskmann_logo_blanco.png"
   },
   "capas_paleta": {
     "manual": {

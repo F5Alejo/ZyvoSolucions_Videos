@@ -1,64 +1,38 @@
+"""API del estudio de video y servidor de la interfaz (Vue, en `frontend/dist`).
+
+Todo lo que la interfaz necesita sale de `/api/*`. `/media/*` sirve los videos, logos y PDF
+del repositorio de videos en solo lectura. Cualquier otra ruta devuelve la aplicación Vue.
+"""
+
 import json
 import re
 from collections import Counter
 from pathlib import Path
-from urllib.parse import quote
 
-from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
-from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Response
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-from markupsafe import Markup, escape
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi.responses import FileResponse, JSONResponse, Response
+from pydantic import BaseModel
 
 from app import datos, extractor, taller
 from motor import cola
 from motor import voz as motor_voz
 
-AQUI = Path(__file__).resolve().parent
-
-app = FastAPI(title="Estudio de video RiskMann")
-app.mount("/static", StaticFiles(directory=AQUI / "static"), name="static")
-plantillas = Jinja2Templates(directory=AQUI / "templates")
-plantillas.env.globals.update(ESTADOS=datos.ESTADOS, FAMILIAS=datos.FAMILIAS, CONFIG=datos.CONFIG)
-plantillas.env.filters["en_repo"] = lambda rel: datos.ruta_segura("repo_videos", rel) is not None
-plantillas.env.filters["en_entregables"] = lambda rel: bool(rel) and datos.ruta_segura("entregables", rel) is not None
-plantillas.env.filters["mmss"] = lambda s: f"{int(s) // 60}:{int(s) % 60:02d}"
-plantillas.env.filters["titulo_lamina"] = extractor.titulo_lamina
-plantillas.env.filters["segundos"] = extractor.segundos
-plantillas.env.filters["cuenta"] = lambda n, uno, varios=None: f"{n} {uno if n == 1 else (varios or uno + 's')}"
-
-
-def _marcar(texto: str) -> Markup:
-    """Escapa el texto y resalta las cifras y normas que hay que revisar contra su fuente."""
-    return Markup(extractor._NORMATIVO.sub(lambda m: f"<mark>{m.group(0)}</mark>", str(escape(texto))))
-
-
-plantillas.env.filters["marcar"] = _marcar
-
+RAIZ = Path(__file__).resolve().parent.parent
+DIST = RAIZ / "frontend" / "dist"
+MAX_PPTX = 200 * 1024 * 1024
 # Lo único que se sirve del repositorio de videos: imágenes, PDF y texto. Nunca código ni claves.
 EXTENSIONES_REPO = {".png", ".jpg", ".jpeg", ".webp", ".svg", ".pdf", ".md", ".txt"}
+EXTENSIONES_ENTREGABLES = {".mp4", ".webm", ".mp3", ".txt"}
+
+app = FastAPI(title="Estudio de video RiskMann", docs_url="/api/docs", openapi_url="/api/openapi.json")
 
 
-# Lo que se le dice a la persona después de una acción (`?ok=<clave>` en la redirección).
-MENSAJES = {
-    "creado": "Listo: leímos tu presentación. Revisa el guion y elige la marca y la voz.",
-    "guardado": "Cambios guardados.",
-    "estado": "Estado actualizado.",
-    "eliminado": "El curso se eliminó.",
-    "produciendo": "El video entró a la cola. Puedes seguir trabajando: aparece aquí cuando esté listo.",
-}
+@app.exception_handler(ValueError)
+def _valor_invalido(_, e: ValueError):
+    return JSONResponse({"detail": str(e)}, status_code=400)
 
 
-def _pagina(request: Request, nombre: str, **contexto):
-    contexto.setdefault("marcas", datos.marcas())
-    contexto["ruta"] = request.url.path
-    contexto["pendientes_abiertos"] = sum(not x["hecho"] for x in datos.pendientes())
-    contexto["mensaje_ok"] = MENSAJES.get(request.query_params.get("ok", ""))
-    return plantillas.TemplateResponse(request, nombre, contexto)
-
-
-MAX_PPTX = 200 * 1024 * 1024
-
+# ── Utilidades ───────────────────────────────────────────────────────────────
 
 def _casos() -> list[dict]:
     casos = json.loads((datos.RAIZ_DATOS / "casos.json").read_text(encoding="utf-8"))
@@ -68,82 +42,31 @@ def _casos() -> list[dict]:
     return casos
 
 
-@app.get("/")
-def inicio(request: Request):
-    return _pagina(request, "inicio.html", cifras=taller.cifras_csm(), trabajos=taller.lista(),
-                   casos=_casos(), ejemplo=taller.ejemplo_disponible())
+def _con_medios(m: dict) -> dict:
+    """Añade a la marca la URL de su logo si el archivo está en el repositorio."""
+    logo = m.get("logo")
+    url = f"/media/repo/{logo['archivo']}" if logo and datos.ruta_segura("repo_videos", logo["archivo"]) else None
+    return {**m, "logo_url": url}
 
 
-@app.get("/taller/nuevo")
-def taller_nuevo(request: Request, error: str = ""):
-    return _pagina(request, "taller_nuevo.html", error=error, ejemplo=taller.ejemplo_disponible())
-
-
-@app.post("/taller/nuevo")
-async def taller_subir(archivo: UploadFile = File(...), nombre: str = Form("")):
-    def volver(msg):
-        return RedirectResponse(f"/taller/nuevo?error={quote(msg)}", status_code=303)
-
-    if not (archivo.filename or "").lower().endswith(".pptx"):
-        return volver("El archivo tiene que ser un .pptx de PowerPoint")
-    contenido = await archivo.read(MAX_PPTX + 1)
-    if len(contenido) > MAX_PPTX:
-        return volver("El archivo pasa de 200 MB")
-    try:
-        t = taller.desde_pptx(archivo.filename, contenido, nombre)
-    except ValueError as e:
-        return volver(str(e))
-    return RedirectResponse(f"/taller/{t['id']}?ok=creado", status_code=303)
-
-
-@app.post("/taller/ejemplo-csm")
-def taller_ejemplo():
-    try:
-        t = taller.desde_csm()
-    except ValueError as e:
-        return RedirectResponse(f"/taller/nuevo?error={quote(str(e))}", status_code=303)
-    return RedirectResponse(f"/taller/{t['id']}?ok=creado", status_code=303)
-
-
-def _trabajo(id_: str) -> dict:
+def _trabajo_o_404(id_: str) -> dict:
     t = taller.cargar(id_)
     if t is None:
-        raise HTTPException(404, "Trabajo no encontrado")
+        raise HTTPException(404, "No encontramos ese curso")
     return t
 
 
-@app.get("/taller/{id_}")
-def taller_ver(request: Request, id_: str, error: str = ""):
-    t = _trabajo(id_)
-    voces = taller.voces()
-    voz = next((v for v in voces if v["id"] == t["voz"]), {})
-    return _pagina(request, "taller.html", t=t, r=taller.resumen(t), voces=voces,
-                   FORMATOS=taller.FORMATOS, error=error, render=cola.estados(t),
-                   voz_falta=motor_voz.disponible(voz), voz_borrador=bool(voz.get("solo_borrador")))
-
-
-@app.post("/taller/{id_}/ajustes")
-def taller_ajustes(request: Request, id_: str, marca: str = Form(...), voz: str = Form(...),
-                   formatos: list[str] = Form([])):
-    """Guarda marca, voz y formatos. Con JavaScript responde JSON (guardado automático)."""
-    t = _trabajo(id_)
-    quiere_json = "application/json" in request.headers.get("accept", "")
-    try:
-        taller.ajustar(t, marca, voz, formatos)
-    except ValueError as e:
-        if quiere_json:
-            return JSONResponse({"ok": False, "mensaje": str(e)}, status_code=400)
-        return RedirectResponse(f"/taller/{id_}?error={quote(str(e))}#ajustes", status_code=303)
-    if quiere_json:
-        return JSONResponse({"ok": True, "mensaje": MENSAJES["guardado"]})
-    return RedirectResponse(f"/taller/{id_}?ok=guardado#sale", status_code=303)
-
-
-@app.post("/taller/{id_}/eliminar")
-def taller_eliminar(id_: str):
-    _trabajo(id_)
-    taller.eliminar(id_)
-    return RedirectResponse("/?ok=eliminado", status_code=303)
+def _trabajo_completo(t: dict) -> dict:
+    """El trabajo con lo que la interfaz necesita por lámina, y su resumen sin duplicar láminas."""
+    laminas = [
+        {**l, "titulo": extractor.titulo_lamina(l), "segundos": extractor.segundos(l["notas"]),
+         "citas": extractor.afirmaciones_normativas(l["notas"])}
+        for l in t["laminas"]
+    ]
+    r = taller.resumen(t)
+    r["videos"] = [{k: v for k, v in vid.items() if k != "laminas_detalle"} for vid in r["videos"]]
+    r["sin_uso"] = [l["n"] for l in r["sin_uso"]]
+    return {"trabajo": {**t, "laminas": laminas}, "resumen": r}
 
 
 def _descarga(contenido, nombre: str) -> Response:
@@ -151,134 +74,240 @@ def _descarga(contenido, nombre: str) -> Response:
                     headers={"Content-Disposition": f'attachment; filename="{nombre}"'})
 
 
-@app.post("/taller/{id_}/producir/{clave}")
-def taller_producir(id_: str, clave: str):
-    """Pone un video del trabajo en la cola del motor."""
-    t = _trabajo(id_)
+# ── General ──────────────────────────────────────────────────────────────────
+
+@app.get("/api/inicio")
+def api_inicio():
+    proyectos = datos.proyectos()
+    return {
+        "cifras_ejemplo": taller.cifras_csm(),
+        "ejemplo_disponible": taller.ejemplo_disponible(),
+        "trabajos": taller.lista(),
+        "casos": [{k: c[k] for k in ("id", "titulo", "resumen", "marca")}
+                  | {"portada": c["videos"][0]["archivo"] if c["videos"] else None, "total_videos": len(c["videos"])}
+                  for c in _casos()],
+        "conteo_estados": Counter(p["estado"] for p in proyectos),
+        "total_videos": len(proyectos),
+        "pendientes_abiertos": sum(not x["hecho"] for x in datos.pendientes()),
+        "repositorio_conectado": "repo_videos" in datos.CONFIG,
+    }
+
+
+@app.get("/api/catalogo")
+def api_catalogo():
+    """Lo que casi todas las pantallas necesitan: estados, tipos, marcas y voces."""
+    return {
+        "estados": datos.ESTADOS,
+        "familias": datos.FAMILIAS,
+        "formatos": taller.FORMATOS,
+        "marcas": {k: _con_medios(m) for k, m in datos.marcas().items()},
+        "voces": [{**v, "muestra_url": f"/media/entregables/{v['muestra']}"
+                   if v.get("muestra") and datos.ruta_segura("entregables", v["muestra"]) else None,
+                   "falta": motor_voz.disponible(v)}
+                  for v in taller.voces()],
+        "pendientes_abiertos": sum(not x["hecho"] for x in datos.pendientes()),
+    }
+
+
+# ── Cursos (el taller) ───────────────────────────────────────────────────────
+
+@app.get("/api/trabajos")
+def api_trabajos():
+    return taller.lista()
+
+
+@app.post("/api/trabajos", status_code=201)
+async def api_crear_trabajo(archivo: UploadFile = File(...), nombre: str = Form("")):
+    if not (archivo.filename or "").lower().endswith(".pptx"):
+        raise ValueError("El archivo tiene que ser un .pptx de PowerPoint")
+    contenido = await archivo.read(MAX_PPTX + 1)
+    if len(contenido) > MAX_PPTX:
+        raise ValueError("El archivo pasa de 200 MB")
+    t = taller.desde_pptx(archivo.filename, contenido, nombre)
+    return {"id": t["id"]}
+
+
+@app.post("/api/trabajos/ejemplo-csm", status_code=201)
+def api_crear_ejemplo():
+    return {"id": taller.desde_csm()["id"]}
+
+
+@app.get("/api/trabajos/{id_}")
+def api_trabajo(id_: str):
+    return _trabajo_completo(_trabajo_o_404(id_))
+
+
+class Ajustes(BaseModel):
+    marca: str
+    voz: str
+    formatos: list[str]
+
+
+@app.patch("/api/trabajos/{id_}")
+def api_ajustar_trabajo(id_: str, ajustes: Ajustes):
+    t = taller.ajustar(_trabajo_o_404(id_), ajustes.marca, ajustes.voz, ajustes.formatos)
+    return _trabajo_completo(t)
+
+
+@app.post("/api/trabajos/{id_}/reagrupar")
+def api_reagrupar(id_: str):
+    return _trabajo_completo(taller.reagrupar(_trabajo_o_404(id_)))
+
+
+@app.delete("/api/trabajos/{id_}", status_code=204)
+def api_eliminar_trabajo(id_: str):
+    _trabajo_o_404(id_)
+    taller.eliminar(id_)
+
+
+@app.get("/api/trabajos/{id_}/curso.json")
+def api_curso_json(id_: str):
+    return _descarga(taller.curso_json(_trabajo_o_404(id_)), "curso.json")
+
+
+@app.get("/api/trabajos/{id_}/orden.json")
+def api_orden(id_: str):
+    t = _trabajo_o_404(id_)
+    return _descarga(taller.orden_produccion(t), f"orden-{t['id']}.json")
+
+
+@app.get("/api/trabajos/{id_}/banco.json")
+def api_banco(id_: str):
+    t = _trabajo_o_404(id_)
+    if not t.get("banco"):
+        raise HTTPException(404, "Este curso no tiene banco de preguntas")
+    return _descarga(t["banco"], "banco-preguntas.json")
+
+
+# ── Motor: producir los videos de un curso ───────────────────────────────────
+
+def _produccion(t: dict) -> dict:
+    """Estado de cada video del curso en el motor, con lo que la interfaz necesita para mostrarlo."""
+    voz = next((v for v in taller.voces() if v["id"] == t["voz"]), {})
+    videos = {}
+    for clave, e in cola.estados(t).items():
+        if e is None:
+            videos[clave] = None
+            continue
+        base = f"/api/trabajos/{t['id']}/salida/{clave}/"
+        inf = e.get("informe")
+        videos[clave] = {
+            **{k: e.get(k) for k in ("estado", "paso", "progreso", "mensaje")},
+            "informe": inf,
+            "desactualizado": bool(inf) and (inf["marca"] != t["marca"] or inf["voz"] != t["voz"]),
+            "archivos": {"mp4": f"{base}{clave}.mp4", "vtt": f"{base}{clave}.vtt", "srt": f"{base}{clave}.srt"}
+            if e.get("estado") == "listo" else None,
+        }
+    return {"voz_falta": motor_voz.disponible(voz), "voz_borrador": bool(voz.get("solo_borrador")), "videos": videos}
+
+
+@app.get("/api/trabajos/{id_}/produccion")
+def api_produccion(id_: str):
+    """Estado de producción de cada video; la interfaz lo consulta mientras produce."""
+    return _produccion(_trabajo_o_404(id_))
+
+
+@app.post("/api/trabajos/{id_}/producir/{clave}", status_code=202)
+def api_producir(id_: str, clave: str):
+    """Pone un video del curso en la cola del motor (un video a la vez, en segundo plano)."""
+    t = _trabajo_o_404(id_)
     if clave not in {v["clave"] for v in t["videos"]}:
-        raise HTTPException(404, "Video no encontrado")
+        raise HTTPException(404, "Ese curso no tiene ese video")
     voz = next(v for v in taller.voces() if v["id"] == t["voz"])
     falta = motor_voz.disponible(voz)
     if falta:
-        return RedirectResponse(f"/taller/{id_}?error={quote(falta)}#sale", status_code=303)
+        raise ValueError(falta)
     cola.encolar(id_, clave)
-    return RedirectResponse(f"/taller/{id_}?ok=produciendo#sale", status_code=303)
-
-
-@app.get("/taller/{id_}/render")
-def taller_render(id_: str):
-    """Estado de producción de cada video (la página lo consulta mientras produce)."""
-    t = _trabajo(id_)
-    return {c: ({k: e.get(k) for k in ("estado", "paso", "progreso", "mensaje")} if e else None)
-            for c, e in cola.estados(t).items()}
+    return _produccion(t)
 
 
 # Lo que se puede bajar de la salida de un video.
-SALIDA = {".mp4": "video/mp4", ".vtt": "text/vtt", ".srt": "application/x-subrip", ".json": "application/json"}
+TIPOS_SALIDA = {".mp4": "video/mp4", ".vtt": "text/vtt", ".srt": "application/x-subrip", ".json": "application/json"}
 
 
-@app.get("/taller/{id_}/salida/{clave}/{archivo}")
-def taller_salida(id_: str, clave: str, archivo: str, descargar: bool = False):
-    t = _trabajo(id_)
-    permitidos = {f"{clave}.mp4", f"{clave}.vtt", f"{clave}.srt", "qa.json"}
-    if not re.fullmatch(r"[a-z0-9-]+", clave) or archivo not in permitidos:
+@app.get("/api/trabajos/{id_}/salida/{clave}/{archivo}")
+def api_salida(id_: str, clave: str, archivo: str, descargar: bool = False):
+    """Solo el mp4, los subtítulos y el qa.json de ese video: nada más de la carpeta del curso."""
+    t = _trabajo_o_404(id_)
+    if not re.fullmatch(r"[a-z0-9-]+", clave) or archivo not in {f"{clave}.mp4", f"{clave}.vtt", f"{clave}.srt", "qa.json"}:
         raise HTTPException(404)
     ruta = taller.ruta_trabajo(t["id"]).parent / "salida" / clave / archivo
     if not ruta.is_file():
         raise HTTPException(404)
-    extension = ruta.suffix
-    nombre = f"{t['id']}-{archivo}" if descargar else None
-    return FileResponse(ruta, media_type=SALIDA[extension], filename=nombre,
+    return FileResponse(ruta, media_type=TIPOS_SALIDA[ruta.suffix], filename=f"{t['id']}-{archivo}" if descargar else None,
                         content_disposition_type="attachment" if descargar else "inline")
 
 
-@app.get("/taller/{id_}/curso.json")
-def taller_curso_json(id_: str):
-    return _descarga(taller.curso_json(_trabajo(id_)), "curso.json")
+# ── Videos producidos ────────────────────────────────────────────────────────
+
+@app.get("/api/proyectos")
+def api_proyectos():
+    return {
+        "proyectos": datos.proyectos(),
+        "carpetas": len(datos.carpetas_videos()),
+        "sin_registrar": datos.sin_registrar(),
+    }
 
 
-@app.get("/taller/{id_}/orden.json")
-def taller_orden(id_: str):
-    t = _trabajo(id_)
-    return _descarga(taller.orden_produccion(t), f"orden-{t['id']}.json")
-
-
-@app.get("/taller/{id_}/banco.json")
-def taller_banco(id_: str):
-    t = _trabajo(id_)
-    if not t.get("banco"):
-        raise HTTPException(404, "Este trabajo no tiene banco de preguntas")
-    return _descarga(t["banco"], "banco-preguntas.json")
-
-
-@app.get("/casos/{id_}")
-def ver_caso(request: Request, id_: str):
-    caso = next((c for c in _casos() if c["id"] == id_), None)
-    if caso is None:
-        raise HTTPException(404, "Caso no encontrado")
-    return _pagina(request, "caso.html", c=caso)
-
-
-@app.get("/proyectos")
-def lista_proyectos(request: Request, marca: str = "", estado: str = "", familia: str = ""):
-    todos = datos.proyectos()
-    filtrados = [
-        p for p in todos
-        if (not marca or p["marca"] == marca)
-        and (not estado or p["estado"] == estado)
-        and (not familia or p["familia"] == familia)
-    ]
-    return _pagina(
-        request, "proyectos.html",
-        proyectos=filtrados, total=len(todos),
-        carpetas=len(datos.carpetas_videos()), sin_registrar=len(datos.sin_registrar()),
-        conteo=Counter(p["estado"] for p in todos),
-        filtro={"marca": marca, "estado": estado, "familia": familia},
-    )
-
-
-@app.get("/proyectos/{id_}")
-def ver_proyecto(request: Request, id_: str, error: str = ""):
+@app.get("/api/proyectos/{id_}")
+def api_proyecto(id_: str):
     p = datos.proyecto(id_)
     if p is None:
-        raise HTTPException(404, "Proyecto no encontrado")
-    return _pagina(request, "proyecto.html", p=p, error=error)
+        raise HTTPException(404, "No encontramos ese video")
+    return p
 
 
-@app.post("/proyectos/{id_}/estado")
-def cambiar_estado(id_: str, estado: str = Form(...), quien: str = Form(""), nota: str = Form("")):
+class CambioEstado(BaseModel):
+    estado: str
+    quien: str
+    nota: str = ""
+
+
+@app.post("/api/proyectos/{id_}/estado")
+def api_cambiar_estado(id_: str, cambio: CambioEstado):
     try:
-        datos.cambiar_estado(id_, estado, quien, nota)
+        datos.cambiar_estado(id_, cambio.estado, cambio.quien, cambio.nota)
     except KeyError:
-        raise HTTPException(404, "Proyecto no encontrado")
-    except ValueError as e:
-        return RedirectResponse(f"/proyectos/{id_}?error={quote(str(e))}", status_code=303)
-    return RedirectResponse(f"/proyectos/{id_}?ok=estado", status_code=303)
+        raise HTTPException(404, "No encontramos ese video")
+    return datos.proyecto(id_)
 
 
-@app.get("/marcas/{id_}")
-def ver_marca(request: Request, id_: str):
+# ── Marcas, pendientes y casos ───────────────────────────────────────────────
+
+@app.get("/api/marcas/{id_}")
+def api_marca(id_: str):
     m = datos.marcas().get(id_)
     if m is None:
-        raise HTTPException(404, "Marca no encontrada")
-    suyos = [p for p in datos.proyectos() if p["marca"] == id_]
-    return _pagina(request, "marca.html", m=m, proyectos=suyos)
+        raise HTTPException(404, "No encontramos esa marca")
+    fuentes = [{**f, "url": f"/media/repo/{f['donde']}" if datos.ruta_segura("repo_videos", f["donde"])
+                else (f["donde"] if f["donde"].startswith("https://") else None)} for f in m.get("fuentes", [])]
+    return {**_con_medios(m), "fuentes": fuentes, "proyectos": [p for p in datos.proyectos() if p["marca"] == id_]}
 
 
-@app.get("/pendientes")
-def ver_pendientes(request: Request, ver: str = "abiertos"):
-    todos = datos.pendientes()
-    lista = todos if ver == "todos" else [x for x in todos if not x["hecho"]]
-    sin_estado = [p for p in datos.proyectos() if p["estado"] == "sin_estado"]
-    return _pagina(request, "pendientes.html", lista=lista, ver=ver,
-                   abiertos=sum(not x["hecho"] for x in todos), sin_estado=sin_estado,
-                   sin_registrar=datos.sin_registrar())
+@app.get("/api/pendientes")
+def api_pendientes():
+    return {
+        "pendientes": [{**x, "marca": x["marca"]["id"]} for x in datos.pendientes()],
+        "sin_estado": [p for p in datos.proyectos() if p["estado"] == "sin_estado"],
+        "sin_registrar": datos.sin_registrar(),
+    }
 
+
+@app.get("/api/casos/{id_}")
+def api_caso(id_: str):
+    caso = next((c for c in _casos() if c["id"] == id_), None)
+    if caso is None:
+        raise HTTPException(404, "No encontramos ese caso")
+    doc = caso.get("documento")
+    return {**caso, "documento_url": f"/media/repo/{doc}" if doc and datos.ruta_segura("repo_videos", doc) else None}
+
+
+# ── Archivos ─────────────────────────────────────────────────────────────────
 
 @app.get("/media/entregables/{ruta:path}")
 def media_entregable(ruta: str):
     archivo = datos.ruta_segura("entregables", ruta)
-    if archivo is None or archivo.suffix.lower() not in {".mp4", ".webm", ".mp3", ".txt"}:
+    if archivo is None or archivo.suffix.lower() not in EXTENSIONES_ENTREGABLES:
         raise HTTPException(404)
     return FileResponse(archivo)
 
@@ -289,3 +318,21 @@ def media_repo(ruta: str):
     if archivo is None or archivo.suffix.lower() not in EXTENSIONES_REPO:
         raise HTTPException(404)
     return FileResponse(archivo)
+
+
+# ── La aplicación Vue ────────────────────────────────────────────────────────
+
+@app.get("/api/{resto:path}", include_in_schema=False)
+def api_no_existe(resto: str):
+    raise HTTPException(404, "Esa dirección de la API no existe")
+
+
+@app.get("/{ruta:path}", include_in_schema=False)
+def interfaz(ruta: str):
+    """Archivos de `frontend/dist`; cualquier otra ruta es de la aplicación y devuelve index.html."""
+    if not (DIST / "index.html").exists():
+        return JSONResponse({"detail": "La interfaz no está compilada: ejecuta «npm run build» en frontend/"}, status_code=503)
+    archivo = (DIST / ruta).resolve()
+    if ruta and archivo.is_relative_to(DIST.resolve()) and archivo.is_file():
+        return FileResponse(archivo)
+    return FileResponse(DIST / "index.html")

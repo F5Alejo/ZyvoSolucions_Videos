@@ -71,13 +71,16 @@ def vista(lamina: dict, indice: int, total: int, video: str, media: Path | None,
 
     `video` es el título del video (arriba a la derecha); `curso`, el antetítulo de la portada.
     """
-    parrafos = []
+    from app import extractor  # el mismo título que muestra el taller (forma «title» si la hay)
+
+    titulo = extractor.titulo_lamina(lamina) if lamina.get("formas") else video
+    seccion = extractor._forma(lamina, extractor._SECCION)
+    resto = []
     for ps in lamina.get("formas", {}).values():
         for p in ps:
-            if p not in parrafos:
-                parrafos.append(p)
-    titulo = parrafos[0] if parrafos else video
-    resto = parrafos[1:]
+            p = p.strip()
+            if p and p not in resto and not titulo.startswith(p[:90]) and p != seccion:
+                resto.append(p)
 
     foto = media / lamina["foto"] if media and lamina.get("foto") else None
     if foto is not None and not foto.exists():

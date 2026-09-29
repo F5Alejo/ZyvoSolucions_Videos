@@ -203,6 +203,15 @@ def lista() -> list[dict]:
     return sorted(salida, key=lambda t: t["creado"], reverse=True)
 
 
+def reagrupar(t: dict) -> dict:
+    """Vuelve a proponer los videos a partir de las láminas (p. ej. tras mejorar el extractor)."""
+    if t["origen"]["tipo"] != "pptx":
+        raise ValueError("Los videos de este curso vienen de su producción real: no se vuelven a proponer")
+    t["videos"] = extractor.agrupar(t["laminas"])
+    guardar(t)
+    return t
+
+
 def ajustar(t: dict, marca: str, voz: str, formatos: list[str]) -> dict:
     if marca not in datos.marcas():
         raise ValueError("Marca desconocida")

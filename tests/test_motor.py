@@ -190,10 +190,16 @@ def test_voz_sin_clave_avisa_antes_de_empezar(datos_copia, monkeypatch):
         produccion.producir(t, t["videos"][0]["clave"])
 
 
-# ── Desde la interfaz ────────────────────────────────────────────────────────
+# ── Desde la API ─────────────────────────────────────────────────────────────
+
+def _crear(c) -> str:
+    r = c.post("/api/trabajos", files={"archivo": ("x.pptx", pptx_con_foto())}, data={"nombre": "Curso de prueba"})
+    assert r.status_code == 201
+    return r.json()["id"]
+
 
 @pytest.mark.skipif(not hay_ffmpeg, reason="hace falta ffmpeg")
-def test_producir_desde_el_taller(datos_copia, monkeypatch):
+def test_producir_desde_la_api(datos_copia, monkeypatch):
     pytest.importorskip("playwright")
     from fastapi.testclient import TestClient
     from app.main import app
@@ -202,24 +208,29 @@ def test_producir_desde_el_taller(datos_copia, monkeypatch):
     monkeypatch.setattr(voz, "disponible", lambda v: None)
     c = TestClient(app)
 
-    url = c.post("/taller/nuevo", files={"archivo": ("x.pptx", pptx_con_foto())}, follow_redirects=False).headers["location"].split("?")[0]
-    c.post(f"{url}/ajustes", data={"marca": "riskmann", "voz": "kokoro-dora", "formatos": ["16:9"]})
-    assert "Producir video" in c.get(url).text
+    id_ = _crear(c)
+    c.patch(f"/api/trabajos/{id_}", json={"marca": "riskmann", "voz": "kokoro-dora", "formatos": ["16:9"]})
+    p = c.get(f"/api/trabajos/{id_}/produccion").json()
+    assert p["voz_falta"] is None and p["videos"] == {"v01": None}
 
-    r = c.post(f"{url}/producir/v01", follow_redirects=False)
-    assert r.headers["location"].endswith("?ok=produciendo#sale")
+    r = c.post(f"/api/trabajos/{id_}/producir/v01")
+    assert r.status_code == 202
     cola.esperar()
-    assert c.get(f"{url}/render").json()["v01"]["estado"] == "listo"
+    v = c.get(f"/api/trabajos/{id_}/produccion").json()["videos"]["v01"]
+    assert v["estado"] == "listo" and v["desactualizado"] is False
+    assert not [x for x in v["informe"]["chequeos"] if x["ok"] is False]
 
-    html = c.get(url).text
-    assert f"{url}/salida/v01/v01.mp4" in html and "Volver a producir" in html
-    r = c.get(f"{url}/salida/v01/v01.mp4?descargar=1")
+    r = c.get(v["archivos"]["mp4"] + "?descargar=1")
     assert r.status_code == 200 and r.headers["content-type"] == "video/mp4" and "attachment" in r.headers["content-disposition"]
-    assert c.get(f"{url}/salida/v01/v01.vtt").text.startswith("WEBVTT")
-    # Solo los archivos de la salida, nada más de la carpeta del trabajo.
-    assert c.get(f"{url}/salida/v01/estado.json").status_code == 404
-    assert c.get(f"{url}/salida/..%2F..%2Ftrabajo.json/x.mp4").status_code == 404
-    assert c.post(f"{url}/producir/no-existe").status_code == 404
+    assert c.get(v["archivos"]["vtt"]).text.startswith("WEBVTT")
+    # Solo los archivos de la salida, nada más de la carpeta del curso.
+    assert c.get(f"/api/trabajos/{id_}/salida/v01/estado.json").status_code == 404
+    assert c.get(f"/api/trabajos/{id_}/salida/..%2F..%2Ftrabajo.json/x.mp4").status_code == 404
+    assert c.post(f"/api/trabajos/{id_}/producir/no-existe").status_code == 404
+
+    # Si cambia la voz, el video queda marcado como desactualizado.
+    c.patch(f"/api/trabajos/{id_}", json={"marca": "riskmann", "voz": "kokoro-alex", "formatos": ["16:9"]})
+    assert c.get(f"/api/trabajos/{id_}/produccion").json()["videos"]["v01"]["desactualizado"] is True
 
 
 def test_producir_con_voz_no_disponible_avisa(datos_copia, monkeypatch):
@@ -227,11 +238,12 @@ def test_producir_con_voz_no_disponible_avisa(datos_copia, monkeypatch):
     from app.main import app
     monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
     c = TestClient(app)
-    url = c.post("/taller/nuevo", files={"archivo": ("x.pptx", pptx_con_foto())}, follow_redirects=False).headers["location"].split("?")[0]
-    html = c.get(url).text  # la voz por defecto es Carlos (ElevenLabs) sin clave
-    assert "no se puede usar todavía" in html and "Falta la clave de ElevenLabs" in html
-    r = c.post(f"{url}/producir/v01", follow_redirects=False)
-    assert "error=" in r.headers["location"]
+    id_ = _crear(c)  # la voz por defecto es Carlos (ElevenLabs), aquí sin clave
+    assert "Falta la clave de ElevenLabs" in c.get(f"/api/trabajos/{id_}/produccion").json()["voz_falta"]
+    r = c.post(f"/api/trabajos/{id_}/producir/v01")
+    assert r.status_code == 400 and "ElevenLabs" in r.json()["detail"]
+    carlos = next(v for v in c.get("/api/catalogo").json()["voces"] if v["id"] == "carlos")
+    assert "ElevenLabs" in carlos["falta"]
 
 
 def test_env_carga_claves_sin_pisar_las_del_sistema(tmp_path, monkeypatch):
