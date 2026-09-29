@@ -5,3 +5,5 @@ __pycache__/
 config.local.json
 # Material de los clientes: no va a git
 datos/trabajos/
+# Modelos de voz descargados (scripts/descargar_modelos.py): pesan cientos de MB
+modelos/
