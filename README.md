@@ -69,7 +69,7 @@ python scripts/descargar_modelos.py     # voces Kokoro y Piper → modelos/ (no 
 | Voz | Proveedor | ¿Se puede entregar? |
 | --- | --- | --- |
 | Dora, Alex, Santa | Kokoro-82M, local (Apache 2.0) | Sí |
-| Carlos y las demás de ElevenLabs | ElevenLabs, de pago | Sí. Necesita `ELEVENLABS_API_KEY` y, salvo Carlos, su `voice_id` en `datos/voces.json` |
+| Carlos y las demás de ElevenLabs | ElevenLabs, de pago | Sí. Necesita `ELEVENLABS_API_KEY` en `.env` (copia `.env.ejemplo`; `.env` no va a git) y, salvo Carlos, su `voice_id` en `datos/voces.json` |
 | Piper · davefx | Piper, local | **No**: solo borradores (sale con sello «BORRADOR»). Ver `docs/bitacora.md` |
 
 Cada video sale en `datos/trabajos/<id>/salida/<clave>/`: el `.mp4` (1920×1080, H.264 + AAC,

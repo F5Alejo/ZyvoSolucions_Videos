@@ -8,6 +8,22 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-09-29 · Clave de ElevenLabs y manejo de secretos
+
+### Qué se hizo
+- La clave nueva de ElevenLabs quedó en `interfaz/.env`, que **no va a git**. `.gitignore` ignora
+  `.env` y `.env.*`, salvo la plantilla `.env.ejemplo`, que sí va y no trae ninguna clave.
+- `app/datos.py` lee `.env` al arrancar (`_cargar_env`), sin dependencias nuevas. Una variable
+  de entorno del sistema manda sobre el archivo.
+
+### Decisiones
+- **Las claves nunca se escriben en el código, en `docs/` ni en los mensajes de commit.** Si
+  hay que citar una, se dice «la clave de ElevenLabs de `.env`».
+- La clave se compartió por chat: conviene **rotarla** en el panel de ElevenLabs cuando se pueda
+  y actualizar solo `.env`.
+
+---
+
 ## 2026-09-29 · Fase 1: el primer MP4 que se puede subir
 
 ### Qué se hizo

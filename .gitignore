@@ -7,3 +7,7 @@ config.local.json
 datos/trabajos/
 # Modelos de voz descargados (scripts/descargar_modelos.py): pesan cientos de MB
 modelos/
+# Claves y secretos (ElevenLabs, etc.): solo en este equipo. Plantilla: .env.ejemplo
+.env
+.env.*
+!.env.ejemplo

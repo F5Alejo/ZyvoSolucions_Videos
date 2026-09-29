@@ -232,3 +232,17 @@ def test_producir_con_voz_no_disponible_avisa(datos_copia, monkeypatch):
     assert "no se puede usar todavía" in html and "Falta la clave de ElevenLabs" in html
     r = c.post(f"{url}/producir/v01", follow_redirects=False)
     assert "error=" in r.headers["location"]
+
+
+def test_env_carga_claves_sin_pisar_las_del_sistema(tmp_path, monkeypatch):
+    from app import datos
+    (tmp_path / ".env").write_text("# comentario\nCLAVE_A=desde-archivo\nCLAVE_B='con comillas'\nVACIA=\n", encoding="utf-8")
+    monkeypatch.delenv("CLAVE_A", raising=False)
+    monkeypatch.setenv("CLAVE_B", "del-sistema")
+    monkeypatch.delenv("VACIA", raising=False)
+    datos._cargar_env(tmp_path / ".env")
+    import os
+    assert os.environ["CLAVE_A"] == "desde-archivo"
+    assert os.environ["CLAVE_B"] == "del-sistema"
+    assert "VACIA" not in os.environ
+    monkeypatch.delenv("CLAVE_A")
