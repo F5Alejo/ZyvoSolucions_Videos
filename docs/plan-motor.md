@@ -1,5 +1,9 @@
 # Del PPTX al MP4 listo para publicar: qué falta y con qué herramientas gratuitas
 
+> **Estado (2026-09-29):** Fase 1 hecha en la rama `Alejodev`, salvo la música y la transcripción
+> de control (ver [`bitacora.md`](bitacora.md)). La cola con progreso, prevista para la Fase 2,
+> se adelantó porque sin ella no se puede producir desde la interfaz. Siguiente: Fase 2.
+
 ## Contexto
 El estudio (`interfaz/`) ya cubre los pasos 1 a 4:
 - Lee el PPTX (`app/extractor.py`).
@@ -121,7 +125,7 @@ El material es del cliente, así que conviene correr la IA **en local**.
 - LibreOffice es opcional: solo sirve para ver una miniatura de la lámina original al lado de la plantilla.
 
 ## 6. Orden recomendado
-1. **Fase 1, el primer MP4 que se puede subir:**
+1. **Fase 1, el primer MP4 que se puede subir** ✅ (sin música):
    - extraer las imágenes;
    - normalizar el texto;
    - generar la voz con Piper o ElevenLabs;

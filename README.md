@@ -23,7 +23,7 @@ está en `datos/marcas/riskmann.json` y se ve en `/marcas/riskmann`.
 | 2. Guion trazado | Cada frase con la lámina de la que sale; cifras, normas y umbrales resaltados | Funciona |
 | 3. Marca, voz, formato | Las cuatro marcas con su logo y paleta; las voces con su muestra grabada | Funciona |
 | 4. Sale | Plan de videos con su duración, banco de preguntas, informe de verificación, `curso.json` y **orden de producción** | Funciona |
-| 5. Render | El motor por CLI recibe la orden de producción y produce los MP4 | **Falta el motor** (fase 1) |
+| 5. Render | «Producir video» en cada tarjeta: voz, escenas de marca, subtítulos VTT/SRT y control de calidad → MP4 listo para subir | Funciona (Fase 1: 16:9) |
 
 La duración se estima con la velocidad medida en csm (2,394 palabras por segundo con Carlos,
 más 2,3 s por lámina). Para csm da 33:24 frente a los ~33 min que salieron de verdad.
@@ -56,6 +56,25 @@ uvicorn app.main:app --reload
 ```
 
 Luego se abre http://localhost:8000.
+
+### El motor de video (paso 5)
+
+Además de lo anterior, necesita **ffmpeg** en el PATH y, una sola vez:
+
+```sh
+python -m playwright install chromium   # el navegador que dibuja las escenas
+python scripts/descargar_modelos.py     # voces Kokoro y Piper → modelos/ (no va a git)
+```
+
+| Voz | Proveedor | ¿Se puede entregar? |
+| --- | --- | --- |
+| Dora, Alex, Santa | Kokoro-82M, local (Apache 2.0) | Sí |
+| Carlos y las demás de ElevenLabs | ElevenLabs, de pago | Sí. Necesita `ELEVENLABS_API_KEY` y, salvo Carlos, su `voice_id` en `datos/voces.json` |
+| Piper · davefx | Piper, local | **No**: solo borradores (sale con sello «BORRADOR»). Ver `docs/bitacora.md` |
+
+Cada video sale en `datos/trabajos/<id>/salida/<clave>/`: el `.mp4` (1920×1080, H.264 + AAC,
+-14 LUFS), sus subtítulos `.vtt` y `.srt`, y `qa.json` con el control de calidad. El código
+está en `motor/` (un módulo por paso); el plan y la bitácora de desarrollo, en `docs/`.
 
 ### Conectar el repositorio de videos y los entregables
 
