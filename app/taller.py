@@ -72,7 +72,9 @@ def desde_pptx(nombre_archivo: str, contenido: bytes, nombre: str = "") -> dict:
         {"tipo": "pptx", "archivo": nombre_archivo, "bytes": len(contenido)},
         laminas, extractor.agrupar(laminas), excluidas={},
     )
-    tmp.replace(_raiz() / t["id"] / "entrada.pptx")
+    entrada = _raiz() / t["id"] / "entrada.pptx"
+    tmp.replace(entrada)
+    extractor.guardar_imagenes(entrada, _raiz() / t["id"] / "media")
     return t
 
 
