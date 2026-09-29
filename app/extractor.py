@@ -96,16 +96,73 @@ def leer_pptx(ruta: Path) -> list[dict]:
     return laminas
 
 
+# Nombres de forma que marcan el título y la sección de una lámina. Incluyen los que pone
+# PowerPoint por defecto («Título 1», «Title 1») y los del curso de moto («title», «section»).
+_TITULO = ("title", "titulo", "título", "cover-title")
+_SECCION = ("section", "seccion", "sección", "modulo", "módulo")
+
+
+def _forma(lamina: dict, prefijos: tuple[str, ...]) -> str | None:
+    for nombre, parrafos in lamina.get("formas", {}).items():
+        if parrafos and nombre.lower().startswith(prefijos):
+            return parrafos[0].strip()
+    return None
+
+
 def titulo_lamina(lamina: dict) -> str:
-    """El primer texto de la lámina, para nombrarla en pantalla."""
+    """El título de la lámina: su forma «title» si la tiene; si no, su primer texto."""
+    titulo = _forma(lamina, _TITULO)
+    if titulo:
+        return titulo[:90]
     for parrafos in lamina.get("formas", {}).values():
         if parrafos:
             return parrafos[0][:90]
     return f"Lámina {lamina['n']}"
 
 
+def seccion_lamina(lamina: dict) -> str | None:
+    """«APERTURA», «MÓDULO 1»…: la sección que marca la lámina en una forma con nombre."""
+    return _forma(lamina, _SECCION)
+
+
 def agrupar(laminas: list[dict], objetivo: float = 120.0) -> list[dict]:
-    """Propuesta de videos: láminas seguidas hasta rondar `objetivo` segundos de narración."""
+    """Propuesta de videos. Si el PPTX marca secciones, un video por sección; si no, por duración."""
+    return _por_seccion(laminas) or _por_duracion(laminas, objetivo)
+
+
+def _por_seccion(laminas: list[dict]) -> list[dict] | None:
+    """Agrupa las láminas seguidas que comparten sección. Las que no la marcan (una portada,
+    por ejemplo) se unen a la sección siguiente, o a la anterior si están al final."""
+    secciones = [seccion_lamina(l) for l in laminas]
+    marcadas = [s for s in secciones if s]
+    if len(marcadas) < len(laminas) / 2 or len(set(marcadas)) < 2:
+        return None
+
+    grupos: list[tuple[str, list[dict]]] = []
+    sueltas: list[dict] = []
+    for l, s in zip(laminas, secciones):
+        if s is None:
+            sueltas.append(l)
+        elif grupos and grupos[-1][0] == s:
+            grupos[-1][1].extend(sueltas + [l])
+            sueltas = []
+        else:
+            grupos.append((s, sueltas + [l]))
+            sueltas = []
+    if sueltas:
+        grupos[-1][1].extend(sueltas)
+
+    salida = []
+    for i, (s, ls) in enumerate(grupos, start=1):
+        # El título de la sección es el de su primera lámina que sí la marca.
+        primera = next(l for l in ls if seccion_lamina(l) == s)
+        nombre = s[:1].upper() + s[1:].lower()
+        salida.append({"clave": f"v{i:02d}", "titulo": f"{nombre} · {titulo_lamina(primera)}", "laminas": [l["n"] for l in ls]})
+    return salida
+
+
+def _por_duracion(laminas: list[dict], objetivo: float) -> list[dict]:
+    """Láminas seguidas hasta rondar `objetivo` segundos de narración."""
     grupos, actual, dur = [], [], 0.0
     for l in laminas:
         s = segundos(l["notas"])
