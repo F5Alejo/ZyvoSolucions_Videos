@@ -85,7 +85,7 @@ const abiertos = computed(() => (m.value?.pendientes.filter((p) => !p.hecho).len
     </section>
 
     <!-- Identidad -->
-    <section class="grid gap-4 md:grid-cols-3" aria-label="Identidad">
+    <section class="grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-3" aria-label="Identidad">
       <div class="tarjeta p-5"><h3 class="text-sm font-semibold text-suave">Tipografía</h3><p class="mt-1 text-sm">{{ m.tipografia }}</p></div>
       <div class="tarjeta p-5"><h3 class="text-sm font-semibold text-suave">Voz</h3><p class="mt-1 text-sm">{{ m.voz }}</p></div>
       <div class="tarjeta p-5"><h3 class="text-sm font-semibold text-suave">Llamado a la acción</h3><p class="mt-1 text-sm">{{ m.cta ?? "Faltan los datos de contacto y el CTA" }}</p></div>

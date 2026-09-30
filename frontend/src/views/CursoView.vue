@@ -1,65 +1,40 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ArrowLeft, ArrowRight, CircleCheck, Download } from "lucide-vue-next";
+import { LayoutDashboard, ListChecks, SlidersHorizontal } from "lucide-vue-next";
 import { api } from "../api";
 import { useCarga } from "../composables/carga";
 import { avisar } from "../composables/avisos";
 import { catalogo } from "../composables/catalogo";
 import { confirmar } from "../composables/confirmar";
-import EncabezadoPagina from "../components/EncabezadoPagina.vue";
 import EstadoCarga from "../components/EstadoCarga.vue";
-import PasoPresentacion from "../components/curso/PasoPresentacion.vue";
+import PasoAjustes from "../components/curso/PasoAjustes.vue";
 import PasoGuion from "../components/curso/PasoGuion.vue";
-import PasoMarcaVoz from "../components/curso/PasoMarcaVoz.vue";
-import PasoResultado from "../components/curso/PasoResultado.vue";
+import PasoResumen from "../components/curso/PasoResumen.vue";
 import type { TrabajoCompleto } from "../tipos";
-import { cuenta, mmss } from "../utils";
+import { cuenta, fecha, mmss } from "../utils";
 
 const props = defineProps<{ id: string }>();
 const ruta = useRoute();
 const router = useRouter();
 const { datos: d, cargando, error, recargar } = useCarga(() => api.get<TrabajoCompleto>(`/api/trabajos/${props.id}`), () => props.id);
 
-const PASOS = [
-  { id: "presentacion", titulo: "Presentación" },
-  { id: "guion", titulo: "Guion" },
-  { id: "marca", titulo: "Marca y voz" },
-  { id: "resultado", titulo: "Resultado" },
-] as const;
-type Paso = (typeof PASOS)[number]["id"];
+type Vista = "resumen" | "guion" | "ajustes";
+const vista = computed<Vista>(() => (["guion", "ajustes"].includes(ruta.query.vista as string) ? ruta.query.vista : "resumen") as Vista);
+const videoInicial = computed(() => (ruta.query.video !== undefined ? Number(ruta.query.video) : undefined));
+const soloRevisar = computed(() => ruta.query.revisar === "1");
 
-const paso = computed<Paso>(() => {
-  const q = ruta.query.paso;
-  return PASOS.find((p) => p.id === q)?.id ?? "presentacion";
-});
-const indice = computed(() => PASOS.findIndex((p) => p.id === paso.value));
-
-function ir(p: Paso) {
-  router.replace({ query: { ...ruta.query, paso: p } });
+/** Cambia de pestaña. Desde el Resumen se puede llegar a un video concreto o a lo que hay que revisar. */
+function ir(v: Vista, video?: number, revisar?: boolean) {
+  const query: Record<string, string> = v === "resumen" ? {} : { vista: v };
+  if (video !== undefined) query.video = String(video);
+  if (revisar) query.revisar = "1";
+  router.push({ query });
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-const porRevisar = computed(() => d.value?.resumen.chequeos.filter((c) => c.ok !== true) ?? []);
-
-/** Lo que dice cada paso debajo de su nombre. */
-function detalle(p: Paso): string {
-  if (!d.value) return "";
-  const { trabajo: t, resumen: r } = d.value;
-  switch (p) {
-    case "presentacion":
-      return cuenta(t.laminas.length, "lámina");
-    case "guion":
-      return porRevisar.value.length ? `${cuenta(porRevisar.value.length, "cosa")} por revisar` : "Todo en orden";
-    case "marca": {
-      const m = catalogo.value?.marcas[t.marca]?.nombre_corto ?? t.marca;
-      const v = catalogo.value?.voces.find((x) => x.id === t.voz)?.nombre ?? t.voz;
-      return `${m} · ${v}`;
-    }
-    case "resultado":
-      return `${cuenta(r.videos.length, "video")} · ${mmss(r.segundos)} min`;
-  }
-}
+const porRevisar = computed(() => d.value?.resumen.chequeos.filter((c) => c.ok !== true).length ?? 0);
+const marca = computed(() => (d.value ? catalogo.value?.marcas[d.value.trabajo.marca] : undefined));
 
 async function eliminar() {
   if (!d.value) return;
@@ -79,65 +54,50 @@ async function eliminar() {
   }
 }
 
-// Después de guardar marca o voz, la API devuelve el curso actualizado.
-function actualizar(nuevo: TrabajoCompleto) {
-  d.value = nuevo;
-}
+// Después de guardar, la API devuelve el curso actualizado.
+function actualizar(nuevo: TrabajoCompleto) { d.value = nuevo; }
 </script>
 
 <template>
   <EstadoCarga v-if="!d" :cargando="cargando" :error="error" @reintentar="recargar()" />
   <div v-else>
-    <EncabezadoPagina :titulo="d.trabajo.nombre" :migas="[{ texto: 'Cursos', a: '/cursos' }, { texto: d.trabajo.nombre }]">
-      <template #debajo>
-        <p class="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-suave">
-          <span>{{ cuenta(d.trabajo.laminas.length, "lámina") }}</span>
-          <ArrowRight class="size-3.5" aria-label="se convierten en" />
-          <span class="font-semibold text-texto">{{ cuenta(d.resumen.videos.length, "video") }}</span>
-          <span>· {{ mmss(d.resumen.segundos) }} min</span>
-          <span v-if="d.resumen.preguntas">· {{ cuenta(d.resumen.preguntas, "pregunta") }}</span>
-        </p>
-      </template>
-      <template #acciones>
-        <a :href="`/api/trabajos/${id}/orden.json`" class="boton-secundario"><Download class="size-4" /> Orden de producción</a>
-      </template>
-    </EncabezadoPagina>
-
-    <!-- Los cuatro pasos -->
-    <nav class="sticky top-[60px] z-20 -mx-4 mb-8 bg-fondo/95 px-4 py-2 backdrop-blur sm:-mx-6 sm:px-6 lg:top-0 lg:-mx-10 lg:px-10"
-         aria-label="Pasos del curso">
-      <ol class="grid grid-cols-4 gap-2">
-        <li v-for="(p, i) in PASOS" :key="p.id">
-          <button type="button" :aria-current="paso === p.id ? 'step' : undefined" @click="ir(p.id)"
-            class="flex w-full flex-col items-center gap-1 rounded-xl border px-2 py-2 text-center transition sm:flex-row sm:gap-3 sm:px-3 sm:py-2.5 sm:text-left"
-            :class="paso === p.id ? 'border-acento bg-superficie shadow-sm ring-1 ring-acento' : 'border-borde bg-superficie hover:border-acento'">
-            <span class="grid size-8 shrink-0 place-items-center rounded-full text-sm font-bold"
-                  :class="paso === p.id ? 'bg-acento text-sobre-acento' : i < indice ? 'bg-exito-fondo text-exito' : 'bg-superficie-2 text-suave'">
-              <CircleCheck v-if="i < indice" class="size-4" aria-label="visto" /><template v-else>{{ i + 1 }}</template>
-            </span>
-            <span class="min-w-0">
-              <span class="block text-xs font-bold sm:text-sm">{{ p.titulo }}</span>
-              <span class="hidden truncate text-xs text-suave sm:block">{{ detalle(p.id) }}</span>
-            </span>
-          </button>
-        </li>
-      </ol>
+    <nav aria-label="Estás en" class="mb-3 text-sm text-suave">
+      <RouterLink to="/cursos" class="hover:text-acento hover:underline">Mis cursos</RouterLink> <span aria-hidden="true">›</span> {{ d.trabajo.nombre }}
     </nav>
+    <header class="flex flex-wrap items-center gap-4">
+      <span v-if="marca?.logo_url" class="grid h-14 w-20 shrink-0 place-items-center rounded-xl border border-borde"
+            :class="marca.logo?.fondo === 'oscuro' ? 'bg-[#0b0d0f]' : 'bg-white'">
+        <img :src="marca.logo_url" alt="" class="max-h-9 max-w-16 object-contain" />
+      </span>
+      <div class="min-w-0 flex-1">
+        <h1 class="text-2xl font-bold sm:text-3xl">{{ d.trabajo.nombre }}</h1>
+        <p class="mt-1 text-sm text-suave">
+          {{ cuenta(d.resumen.videos.length, "video") }} · {{ mmss(d.resumen.segundos) }} min ·
+          {{ cuenta(d.trabajo.laminas.length, "diapositiva") }} · creado el {{ fecha(d.trabajo.creado) }}
+        </p>
+      </div>
+    </header>
 
-    <PasoPresentacion v-if="paso === 'presentacion'" :datos="d" />
-    <PasoGuion v-else-if="paso === 'guion'" :datos="d" @actualizado="actualizar" />
-    <PasoMarcaVoz v-else-if="paso === 'marca'" :datos="d" @actualizado="actualizar" />
-    <PasoResultado v-else :datos="d" @eliminar="eliminar" />
-
-    <!-- Avanzar o volver -->
-    <div class="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-borde pt-6">
-      <button v-if="indice > 0" class="boton-fantasma" @click="ir(PASOS[indice - 1]!.id)">
-        <ArrowLeft class="size-4" /> {{ PASOS[indice - 1]!.titulo }}
-      </button>
-      <span v-else />
-      <button v-if="indice < PASOS.length - 1" class="boton-primario" @click="ir(PASOS[indice + 1]!.id)">
-        Siguiente: {{ PASOS[indice + 1]!.titulo }} <ArrowRight class="size-4" />
-      </button>
+    <!-- Pestañas -->
+    <div class="sticky top-[60px] z-20 -mx-4 mt-6 mb-8 border-b border-borde bg-fondo/95 px-4 backdrop-blur sm:-mx-6 sm:px-6 lg:top-0 lg:-mx-10 lg:px-10">
+      <nav class="-mb-px flex gap-1 overflow-x-auto" aria-label="Secciones del curso">
+        <button v-for="p in ([
+          { id: 'resumen', texto: 'Resumen', icono: LayoutDashboard },
+          { id: 'guion', texto: 'Guion', icono: ListChecks },
+          { id: 'ajustes', texto: 'Marca y voz', icono: SlidersHorizontal },
+        ] as const)" :key="p.id" type="button" :aria-current="vista === p.id ? 'page' : undefined" @click="ir(p.id)"
+          class="flex shrink-0 items-center gap-2 border-b-[3px] px-3 py-3.5 text-sm font-semibold whitespace-nowrap transition sm:px-4"
+          :class="vista === p.id ? 'border-acento text-acento' : 'border-transparent text-suave hover:border-borde hover:text-texto'">
+          <component :is="p.icono" class="size-4" /> {{ p.texto }}
+          <span v-if="p.id === 'guion' && porRevisar" class="rounded-full bg-aviso-fondo px-2 py-0.5 text-xs font-bold text-aviso"
+                :aria-label="`${porRevisar} por revisar`">{{ porRevisar }}</span>
+        </button>
+      </nav>
     </div>
+
+    <PasoResumen v-if="vista === 'resumen'" :datos="d" @ir="ir" @eliminar="eliminar" />
+    <PasoGuion v-else-if="vista === 'guion'" :key="`${videoInicial}-${soloRevisar}`" :datos="d"
+               :video-inicial="videoInicial" :solo-revisar-inicial="soloRevisar" @actualizado="actualizar" />
+    <PasoAjustes v-else :datos="d" @actualizado="actualizar" />
   </div>
 </template>

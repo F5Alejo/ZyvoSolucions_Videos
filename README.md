@@ -8,13 +8,24 @@ video hasta su aprobación.
 
 | Parte | Tecnología | Dónde |
 | --- | --- | --- |
-| Interfaz | **Vue 3** + TypeScript + **Tailwind CSS 4** + Vite, íconos Lucide, Montserrat incluida | `frontend/` |
+| Interfaz | **Vue 3** + TypeScript + **Tailwind CSS 4** + Vite, íconos Lucide | `frontend/` |
 | API | FastAPI (Python), JSON en `/api/*`, documentación en `/api/docs` | `app/main.py` |
 | Lógica | Extractor de PPTX, taller (guion, videos, revisión) y datos | `app/extractor.py`, `app/taller.py`, `app/datos.py` |
 
 Vue porque es el framework de **app.riskmann.com** (Vue 3 + Vuex): el equipo de RiskMann ya lo conoce.
-Los colores son los de la app de RiskMann, con los contrastes medidos; los tokens están comentados en
-`frontend/src/estilos.css`.
+
+### Identidad
+
+- **Colores: la guía del manual de identidad de RiskMann**, en sus dos modos (selector en la barra lateral,
+  oscuro por defecto). Oscuro: `#020202` fondo, `#272725` separadores, `#C8951A` dorado, `#06C7FB` cian,
+  `#999999` gris, `#FF3333` énfasis. Claro: `#26367D` institucional, `#333366` texto, `#336699`.
+  Los que no llegan a 4,5:1 como texto sobre blanco se oscurecen solo para texto; cada token dice su
+  origen y su contraste en `frontend/src/estilos.css`.
+- **Imágenes: el banco de RiskMann.** El caballero del manual en la portada y en Crear curso; las
+  ilustraciones de su app en los estados vacíos, el error de conexión y la página 404. El origen de cada
+  una está en `frontend/public/marca/banco/FUENTES.md`.
+- **Tipografía:** Dubai, la del manual, cuando está instalada (viene con Windows); si no, Montserrat.
+  Dubai no se incluye en el proyecto: es de Microsoft y su licencia no permite redistribuirla en la web.
 
 ## Puesta en marcha
 
@@ -69,9 +80,23 @@ npm test                           # utilidades y componentes (Vitest)
 
 | Ruta | Qué hace |
 | --- | --- |
-| `/` | Inicio: cifras, cómo funciona, tus cursos y piezas de marketing ya hechas |
+| `/` | Inicio: qué hace el estudio, «continúa donde quedaste», cómo funciona y tus cursos; abajo, lo del equipo |
 | `/cursos/nuevo` | Subir un PPTX (arrastrar y soltar, progreso de subida) |
-| `/cursos/:id` | El curso en cuatro pasos: Presentación · Guion · Marca y voz · Resultado |
+| `/cursos/:id/asistente` | Después de subir: lo que encontramos → marca (con vista previa en vivo) → voz (con muestras) → formato → listo |
+| `/cursos/:id` | El curso en tres pestañas: **Resumen** (estado, siguiente paso, vistas previas), **Guion** y **Marca y voz** |
+
+Pensado para una persona que no es del equipo de producción:
+
+- **Un paso a la vez.** El asistente guía después de subir; cada elección se guarda sola y «atrás» funciona.
+- **Siempre un siguiente paso.** El Resumen dice qué hacer ahora y lleva al lugar exacto del guion.
+- **Sus palabras.** «Diapositivas», no «láminas»; cada aviso dice qué pasa y qué hacer.
+- **Ver antes de producir.** Cada video tiene una vista previa con la marca; el color del texto se elige por
+  contraste medido, nunca por la paleta a ciegas.
+- **Ayuda a mano.** Panel de ayuda con un dibujo de dónde están las notas del orador en PowerPoint.
+- **Lo del equipo, aparte.** Videos, Pendientes y Marcas van plegados en «Equipo de producción».
+
+| Ruta del equipo | Qué hace |
+| --- | --- |
 | `/videos` | Todos los videos, con filtros que quedan en la dirección y columnas ordenables |
 | `/videos/:id` | Un video: reproducción, siguiente paso (aprobar, entregar…) e historial |
 | `/marcas/:id` | Ficha de la marca; RiskMann con su paleta en cuatro capas y la fuente de cada color |
@@ -83,7 +108,7 @@ npm test                           # utilidades y componentes (Vitest)
 | Paso | Qué hace | Estado |
 | --- | --- | --- |
 | Entra | Lee el PPTX: formas con nombre, notas del orador, imágenes → `curso.json` (formato de csm/moto) | Funciona |
-| Guion | Cada frase con la lámina de la que sale; cifras, normas y umbrales resaltados | Funciona |
+| Guion | Cada frase con la diapositiva de la que sale; cifras, normas y umbrales resaltados | Funciona |
 | Videos | Un video por sección si el PPTX las marca (forma `section`); si no, por duración | Funciona |
 | Marca y voz | Las cuatro marcas y las voces con su muestra; se guarda solo | Funciona |
 | Resultado | Plan de videos, preguntas, revisión, `curso.json` y **orden de producción** | Funciona |

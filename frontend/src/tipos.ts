@@ -86,7 +86,13 @@ export interface Lamina {
 }
 
 export interface VideoPlan { clave: string; titulo: string; laminas: number[]; segundos: number; frases: number }
-export interface Chequeo { ok: boolean | null; titulo: string; detalle: string }
+export interface Chequeo {
+  clave: "fuente" | "sin_notas" | "sin_uso" | "largos" | "normativas" | "marca";
+  ok: boolean | null;
+  titulo: string;
+  detalle: string;
+  ayuda: string;
+}
 export interface Pregunta { enunciado: string; correcta: string; distractores: string[]; fuente: string }
 export interface Banco { nombre: string | null; grupos: { clave: string; titulo: string; tema: string; preguntas: Pregunta[] }[] }
 

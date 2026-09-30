@@ -5,8 +5,9 @@ const router = createRouter({
   scrollBehavior: (a, b, guardada) => guardada ?? (a.path === b.path ? undefined : { top: 0 }),
   routes: [
     { path: "/", name: "inicio", component: () => import("./views/InicioView.vue"), meta: { titulo: "Inicio" } },
-    { path: "/cursos", name: "cursos", component: () => import("./views/CursosView.vue"), meta: { titulo: "Cursos" } },
+    { path: "/cursos", name: "cursos", component: () => import("./views/CursosView.vue"), meta: { titulo: "Mis cursos" } },
     { path: "/cursos/nuevo", name: "crear", component: () => import("./views/CrearCursoView.vue"), meta: { titulo: "Crear curso" } },
+    { path: "/cursos/:id/asistente", name: "asistente", component: () => import("./views/AsistenteView.vue"), props: true, meta: { titulo: "Preparar curso" } },
     { path: "/cursos/:id", name: "curso", component: () => import("./views/CursoView.vue"), props: true, meta: { titulo: "Curso" } },
     { path: "/videos", name: "videos", component: () => import("./views/VideosView.vue"), meta: { titulo: "Videos" } },
     { path: "/videos/:id", name: "video", component: () => import("./views/VideoView.vue"), props: true, meta: { titulo: "Video" } },

@@ -6,6 +6,7 @@ import BarraLateral from "./components/BarraLateral.vue";
 import AvisosFlotantes from "./components/AvisosFlotantes.vue";
 import DialogoConfirmar from "./components/DialogoConfirmar.vue";
 import EstadoCarga from "./components/EstadoCarga.vue";
+import PanelAyuda from "./components/PanelAyuda.vue";
 import { catalogo, cargarCatalogo } from "./composables/catalogo";
 
 const ruta = useRoute();
@@ -66,4 +67,5 @@ watch(() => ruta.fullPath, () => (menuAbierto.value = false));
 
   <AvisosFlotantes />
   <DialogoConfirmar />
+  <PanelAyuda />
 </template>
