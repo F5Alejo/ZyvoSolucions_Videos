@@ -16,6 +16,7 @@ from pathlib import Path
 
 from app import configuracion, datos, extractor, taller
 from motor import audio, escenas, normalizar, render, subtitulos, voz as motor_voz
+from motor.escenas import animacion
 from motor.qa import revisar
 
 # Los tiempos (entrada antes de la voz, pausa entre frases, respiro final) salen de la
@@ -96,8 +97,14 @@ def producir(t: dict, clave: str, avisar=lambda paso, progreso: None) -> dict:
     import soundfile as sf
     linea, segmentos, frases_tiempo, t0 = [], [], [], 0.0
     entrada, pausa, respiro = tiempos["entrada"], tiempos["pausa"], tiempos["salida"]
-    for l, propios in zip(laminas, audios):
-        dur = entrada + respiro if propios else MUDA
+    estilo = escenas.estilo(marca, _logo(marca))
+    media = _media(t)
+    vistas = [escenas.vista(l, i, len(laminas), video["titulo"], media, t["nombre"]) for i, l in enumerate(laminas)]
+    planes = [animacion.plan(t, l["n"]) for l in laminas]
+    for l, propios, v, p in zip(laminas, audios, vistas, planes):
+        ent_s, sal_s = animacion.duraciones(p, v)
+        # La lámina respira al menos lo que tarda en salir, para que la salida no pise la voz.
+        dur = entrada + max(respiro, sal_s + 0.3) if propios else max(MUDA, ent_s + sal_s + 1.0)
         cursor = t0 + entrada
         for i, (texto, wav) in enumerate(propios):
             d = sf.info(str(wav)).duration
@@ -106,18 +113,17 @@ def producir(t: dict, clave: str, avisar=lambda paso, progreso: None) -> dict:
             cursor += d + (pausa if i < len(propios) - 1 else 0)
             dur += d + (pausa if i < len(propios) - 1 else 0)
         n = render.cuadros(dur, fps)
-        linea.append({"lamina": l["n"], "inicio": round(t0, 3), "cuadros": n})
+        linea.append({"lamina": l["n"], "inicio": round(t0, 3), "cuadros": n, "plantilla": p["plantilla"],
+                      "entrada": ent_s, "salida": sal_s})
         t0 += n / fps
     duracion = t0
 
     # 3. Escenas y render.
-    estilo = escenas.estilo(marca, _logo(marca))
-    media = _media(t)
     borrador = bool(voz.get("solo_borrador"))
-    htmls = [(escenas.html(escenas.vista(l, i, len(laminas), video["titulo"], media, t["nombre"]), estilo, formato, borrador), x["cuadros"])
-             for i, (l, x) in enumerate(zip(laminas, linea))]
+    htmls = [(escenas.html(v, estilo, formato, borrador, p, x["cuadros"] / fps), x["cuadros"], x["entrada"], x["salida"])
+             for v, p, x in zip(vistas, planes, linea)]
     mudo = tmp / "mudo.mp4"
-    render.video(htmls, ancho, alto, mudo, tmp / "escenas",
+    encuadre = render.video(htmls, ancho, alto, mudo, tmp / "escenas",
                  avisar=lambda h, n: avisar(f"Imagen: lámina {h} de {n}", 0.5 + 0.33 * h / n),
                  fps=fps, escala=escala, crf=crf, preset=preset)
 
@@ -145,6 +151,9 @@ def producir(t: dict, clave: str, avisar=lambda paso, progreso: None) -> dict:
     # 6. Control de calidad.
     avisar("Revisando el resultado", 0.95)
     chequeos = revisar(mp4, ancho_real, alto_real, duracion, video["segundos"], fps, ca["lufs"])
+    chequeos.insert(2, {"ok": not encuadre, "titulo": "Todo el texto cabe",
+                        "detalle": "; ".join(f"lámina {laminas[x['escena']]['n']}: {x['detalle']}" for x in encuadre)
+                        or "Ningún texto se sale de la pantalla ni de su caja"})
     informe = {
         "trabajo": t["id"], "video": clave, "titulo": video["titulo"],
         "creado": datetime.now().isoformat(timespec="seconds"),

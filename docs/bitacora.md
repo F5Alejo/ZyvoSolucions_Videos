@@ -8,6 +8,41 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-09-30 · Frente B1/B2: plantillas de animación con entradas y salidas
+
+### Qué se hizo
+- **Catálogo de efectos** (`motor/escenas/efectos.py`), todos en CSS y deterministas:
+  - `aparecer`, `subir`, `bajar`, `deslizar-izquierda`, `deslizar-derecha`, `escalar`, `desenfoque`, `revelar`, `rebote`, `girar`, `crecer`;
+  - `palabra-por-palabra` y `maquina` (letra por letra), solo para el título y el antetítulo.
+
+  Cuatro curvas: suave, enérgica, con rebote y lineal. Cada elemento (fondo, logo, antetítulo, título, línea, viñetas, imagen, barra de avance) dice qué efectos admite.
+- **Cinco plantillas de fábrica** en `datos/animaciones/`: Sobria, Dinámica (la de antes, mejorada), Cinética, Corporativa y Mínima. Cada elemento tiene su entrada y su salida (efecto, duración, retardo, curva y escalonado).
+- **`motor/escenas/animacion.py`:**
+  - carga y valida las plantillas (las de fábrica y las de `propias/`);
+  - mezcla por capas: plantilla del curso → ajustes del curso → ajustes de la lámina (que puede cambiar de plantilla);
+  - calcula cuánto duran la entrada y la salida de cada escena y genera el CSS.
+- **Render con salidas:** se dibuja cuadro a cuadro la entrada y la salida; ffmpeg sostiene lo del medio (`tpad` + `concat`). El respiro final dura al menos la salida más 0,3 s, para que la salida no pise la voz.
+- **Revisor de encuadre** (sin IA): al terminar la entrada, Playwright mide si algún texto se sale de la pantalla o de su caja. Aparece en el control de calidad como «Todo el texto cabe», con la lámina.
+- **Pruebas** (`tests/test_animaciones.py`, 12):
+  - las plantillas son válidas y se rechazan los ajustes inválidos;
+  - la mezcla por capas funciona;
+  - el fondo y el logo solo se animan al abrir y al cerrar el video;
+  - el título se parte palabra por palabra;
+  - al final de la escena el título tiene opacidad 0 con salida y 1 sin salida;
+  - el revisor detecta la lámina que no cabe.
+
+### Decisiones
+- **El fondo y el logo** solo entran en la primera escena del video y solo salen en la última. Entre láminas quedan fijos; si no, parpadean en cada cambio.
+- **La salida usa `fill-mode: forwards`** (la entrada, `both`): así la salida no actúa antes de su momento y no pisa a la entrada.
+- **Las viñetas salen en orden**, y la última termina justo al final de la escena.
+
+### Errores y cómo se resolvieron
+- Al generar `render.py` con un script, un `
+` dentro de un f-string se escribió como salto de línea real (`SyntaxError`). Se corrigió a mano.
+- El chequeo de comandos del asistente falló varias veces seguidas. Las plantillas se escribieron con la herramienta de archivos y se validaron después.
+
+---
+
 ## 2026-09-30 · Frente A2: curso completo en un MP4 y paquete ZIP
 
 ### Qué se hizo

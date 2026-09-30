@@ -26,6 +26,7 @@ import soundfile as sf
 
 from app import configuracion, datos, taller
 from motor import escenas, render, subtitulos
+from motor.escenas import animacion
 from motor.voz import FRECUENCIA
 
 CLAVE = "completo"
@@ -76,10 +77,12 @@ def _tarjeta(t: dict, titulo: str, numero: int, conf: dict, destino: Path, traba
     marca = datos.marcas()[t["marca"]]
     lamina = {"n": 0, "formas": {"title": [titulo]}, "foto": None}
     vista = escenas.vista(lamina, 0, 1, titulo, None, f"Video {numero} · {t['nombre']}")
-    html = escenas.html(vista, escenas.estilo(marca, _logo(marca)))
     segundos = conf["completo"]["duracion_tarjeta"]
+    plan = animacion.plan(t, t["videos"][numero - 1]["laminas"][0]) if t["videos"][numero - 1]["laminas"] else None
+    html = escenas.html(vista, escenas.estilo(marca, _logo(marca)), plan=plan, segundos=segundos)
+    ent_s, sal_s = animacion.duraciones(plan, vista) if plan else (1.2, 0.0)
     mudo = trabajo / "tarjeta-mudo.mp4"
-    render.video([(html, render.cuadros(segundos, fps))], ancho, alto, mudo, trabajo / "escenas",
+    render.video([(html, render.cuadros(segundos, fps), ent_s, sal_s)], ancho, alto, mudo, trabajo / "escenas",
                  fps=fps, escala=escala, crf=crf, preset=preset)
     silencio = trabajo / "silencio.wav"
     sf.write(str(silencio), np.zeros((int(segundos * FRECUENCIA), 2), dtype=np.float32), FRECUENCIA, subtype="PCM_16")

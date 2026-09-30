@@ -7,8 +7,8 @@ tres tipos en la Fase 1:
 - `imagen`: la lámina trae foto → foto a un lado, título y hasta 3 viñetas al otro.
 - `lista`: título y hasta 5 viñetas.
 
-Toda animación es de entrada y dura menos de `DURACION_ENTRADA`: el render la dibuja cuadro a
-cuadro y luego sostiene el último cuadro mientras habla la voz.
+Cómo entra y sale cada elemento lo decide la plantilla de animación (`animacion.py`): el
+render dibuja cuadro a cuadro la entrada y la salida, y sostiene lo del medio.
 """
 
 from pathlib import Path
@@ -17,7 +17,6 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 AQUI = Path(__file__).resolve().parent
 FUENTE = AQUI / "fuentes" / "Montserrat.ttf"
-DURACION_ENTRADA = 1.2  # segundos
 
 FORMATOS = {"16:9": (1920, 1080), "9:16": (1080, 1920)}
 
@@ -105,8 +104,19 @@ def vista(lamina: dict, indice: int, total: int, video: str, media: Path | None,
     }
 
 
-def html(v: dict, e: dict, formato: str = "16:9", borrador: bool = False) -> str:
+def html(v: dict, e: dict, formato: str = "16:9", borrador: bool = False,
+         plan: dict | None = None, segundos: float = 4.0) -> str:
+    """La escena. `plan` es la animación ya resuelta (animacion.plan); sin él, la plantilla por defecto.
+
+    `segundos` es lo que dura la escena: las salidas se ubican contra su final.
+    """
+    from motor.escenas import animacion
+
+    if plan is None:
+        todas = animacion.plantillas()
+        plan = {"plantilla": "dinamica", "elementos": todas.get("dinamica", next(iter(todas.values())))["elementos"]}
+    reglas, partir = animacion.css(plan, v, segundos, 100 * v["indice"] / v["total"], 100 * (v["indice"] + 1) / v["total"])
     ancho, alto = FORMATOS[formato]
     return _entorno.get_template("escena.html").render(
-        v=v, e=e, ancho=ancho, alto=alto, vertical=formato == "9:16",
-        borrador=borrador, fuente=FUENTE.resolve().as_uri())
+        v=v, e=e, ancho=ancho, alto=alto, vertical=formato == "9:16", borrador=borrador,
+        fuente=FUENTE.resolve().as_uri(), animaciones=reglas, partir=partir)
