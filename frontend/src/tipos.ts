@@ -146,10 +146,20 @@ export interface VideoRender {
   archivos: { mp4: string; vtt: string; srt: string } | null;
 }
 
+export interface CompletoRender extends Omit<VideoRender, "informe" | "archivos"> {
+  informe: (Omit<InformeRender, "chequeos"> & { chequeos: Chequeo[]; capitulos: { inicio: number; titulo: string }[] }) | null;
+  archivos: { mp4: string; vtt: string; srt: string; capitulos: string } | null;
+}
+
 export interface Produccion {
   voz_falta: string | null;
   voz_borrador: boolean;
   videos: Record<string, VideoRender | null>;
+  completo: CompletoRender | null;
+  listos: number;
+  total: number;
+  /** Videos que faltan o quedaron desactualizados («Título (sin producir)»). */
+  pendientes: string[];
 }
 
 export interface TrabajoFila {

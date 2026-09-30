@@ -60,3 +60,19 @@ def escribir_vtt(lista: list[tuple[float, float, str]], destino: Path) -> None:
 def escribir_srt(lista: list[tuple[float, float, str]], destino: Path) -> None:
     cuerpo = "".join(f"{i}\n{_tiempo(a, ',')} --> {_tiempo(b, ',')}\n{t}\n\n" for i, (a, b, t) in enumerate(lista, 1))
     destino.write_text(cuerpo, encoding="utf-8")
+
+
+def leer_srt(ruta: Path) -> list[tuple[float, float, str]]:
+    """Lee un .srt escrito por `escribir_srt` (para unir los subtítulos del curso completo)."""
+    def seg(x: str) -> float:
+        h, m, resto = x.strip().split(":")
+        s, ms = resto.split(",")
+        return int(h) * 3600 + int(m) * 60 + int(s) + int(ms) / 1000
+
+    salida = []
+    for bloque in ruta.read_text(encoding="utf-8").strip().split("\n\n"):
+        lineas = bloque.splitlines()
+        if len(lineas) >= 3 and "-->" in lineas[1]:
+            a, b = lineas[1].split("-->")
+            salida.append((seg(a), seg(b), "\n".join(lineas[2:])))
+    return salida

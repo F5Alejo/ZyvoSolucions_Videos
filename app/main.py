@@ -14,7 +14,7 @@ from fastapi.responses import FileResponse, JSONResponse, Response
 from pydantic import BaseModel
 
 from app import configuracion, datos, extractor, taller
-from motor import cola, diagnostico, produccion
+from motor import cola, diagnostico, empaquetar, produccion
 from motor import voz as motor_voz
 
 RAIZ = Path(__file__).resolve().parent.parent
@@ -199,7 +199,17 @@ def _produccion(t: dict) -> dict:
             "archivos": {"mp4": f"{base}{clave}.mp4", "vtt": f"{base}{clave}.vtt", "srt": f"{base}{clave}.srt"}
             if e.get("estado") == "listo" else None,
         }
-    return {"voz_falta": motor_voz.disponible(voz), "voz_borrador": bool(voz.get("solo_borrador")), "videos": videos}
+    c = cola.estado(t["id"], empaquetar.CLAVE)
+    completo = None
+    if c:
+        base = f"/api/trabajos/{t['id']}/salida/{empaquetar.CLAVE}/"
+        completo = {**{k: c.get(k) for k in ("estado", "paso", "progreso", "mensaje")}, "informe": c.get("informe"),
+                    "desactualizado": bool(c.get("informe")) and c["informe"].get("firma") != firma_actual,
+                    "archivos": {"mp4": f"{base}completo.mp4", "vtt": f"{base}completo.vtt", "srt": f"{base}completo.srt",
+                                 "capitulos": f"{base}capitulos.txt"} if c.get("estado") == "listo" else None}
+    listos = sum(1 for v in videos.values() if v and v["estado"] == "listo" and not v["desactualizado"])
+    return {"voz_falta": motor_voz.disponible(voz), "voz_borrador": bool(voz.get("solo_borrador")), "videos": videos,
+            "completo": completo, "listos": listos, "total": len(videos), "pendientes": empaquetar.pendientes(t)}
 
 
 @app.get("/api/trabajos/{id_}/produccion")
@@ -222,15 +232,57 @@ def api_producir(id_: str, clave: str):
     return _produccion(t)
 
 
+@app.post("/api/trabajos/{id_}/producir-todo", status_code=202)
+def api_producir_todo(id_: str, completo: bool = True):
+    """Pone en la cola los videos que faltan o quedaron desactualizados y, al final, el MP4 completo."""
+    t = _trabajo_o_404(id_)
+    voz = next(v for v in taller.voces() if v["id"] == t["voz"])
+    falta = motor_voz.disponible(voz)
+    if falta:
+        raise ValueError(falta)
+    actual = produccion.firma(t)
+    for clave, e in cola.estados(t).items():
+        inf = (e or {}).get("informe")
+        if e and e.get("estado") == "listo" and inf and inf.get("firma") == actual:
+            continue
+        cola.encolar(id_, clave)
+    if completo:
+        cola.encolar(id_, empaquetar.CLAVE)
+    return _produccion(t)
+
+
+@app.post("/api/trabajos/{id_}/completo", status_code=202)
+def api_armar_completo(id_: str):
+    """Une los videos ya producidos en un solo MP4 con capítulos."""
+    t = _trabajo_o_404(id_)
+    faltan = empaquetar.pendientes(t)
+    if faltan:
+        raise ValueError("Antes hay que producir: " + "; ".join(faltan))
+    cola.encolar(id_, empaquetar.CLAVE)
+    return _produccion(t)
+
+
+@app.get("/api/trabajos/{id_}/paquete.zip")
+def api_paquete(id_: str):
+    """Todo lo producido del curso en un ZIP, con un manifiesto que trae el SHA-256 de cada archivo."""
+    t = _trabajo_o_404(id_)
+    try:
+        ruta = empaquetar.paquete(t)
+    except empaquetar.NoSePuedeArmar as e:
+        raise ValueError(str(e))
+    return FileResponse(ruta, media_type="application/zip", filename=f"{t['id']}.zip")
+
+
 # Lo que se puede bajar de la salida de un video.
-TIPOS_SALIDA = {".mp4": "video/mp4", ".vtt": "text/vtt", ".srt": "application/x-subrip", ".json": "application/json"}
+TIPOS_SALIDA = {".mp4": "video/mp4", ".vtt": "text/vtt", ".srt": "application/x-subrip", ".json": "application/json",
+                ".txt": "text/plain; charset=utf-8"}
 
 
 @app.get("/api/trabajos/{id_}/salida/{clave}/{archivo}")
 def api_salida(id_: str, clave: str, archivo: str, descargar: bool = False):
     """Solo el mp4, los subtítulos y el qa.json de ese video: nada más de la carpeta del curso."""
     t = _trabajo_o_404(id_)
-    if not re.fullmatch(r"[a-z0-9-]+", clave) or archivo not in {f"{clave}.mp4", f"{clave}.vtt", f"{clave}.srt", "qa.json"}:
+    if not re.fullmatch(r"[a-z0-9-]+", clave) or archivo not in {f"{clave}.mp4", f"{clave}.vtt", f"{clave}.srt", "qa.json", "capitulos.txt"}:
         raise HTTPException(404)
     ruta = taller.ruta_trabajo(t["id"]).parent / "salida" / clave / archivo
     if not ruta.is_file():

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, watch } from "vue";
-import { ChevronDown, CircleAlert, CircleCheck, CircleX, Clapperboard, Download, Info, RefreshCw, Trash2 } from "lucide-vue-next";
+import { ChevronDown, CircleAlert, CircleCheck, CircleX, Clapperboard, Download, FileArchive, Film, Info, ListVideo, LoaderCircle, RefreshCw, Trash2 } from "lucide-vue-next";
 import { api } from "../../api";
 import { avisar } from "../../composables/avisos";
 import { catalogo } from "../../composables/catalogo";
@@ -31,7 +31,8 @@ async function consultar() {
   } catch {
     /* sin conexión: se reintenta */
   }
-  if (Object.values(produccion.value?.videos ?? {}).some(enCurso)) temporizador = setTimeout(consultar, 3000);
+  const p = produccion.value;
+  if (Object.values(p?.videos ?? {}).some(enCurso) || enCurso(p?.completo as VideoRender | null)) temporizador = setTimeout(consultar, 3000);
 }
 
 async function producir(clave: string) {
@@ -50,6 +51,37 @@ async function producir(clave: string) {
 // Al cambiar de curso, de marca o de voz, se vuelve a preguntar (un video puede quedar desactualizado).
 watch(() => [t.value.id, t.value.marca, t.value.voz], consultar, { immediate: true });
 onUnmounted(() => clearTimeout(temporizador));
+
+async function producirTodo() {
+  pidiendo.value = "todo";
+  try {
+    produccion.value = await api.post<Produccion>(`/api/trabajos/${t.value.id}/producir-todo`);
+    avisar("Todo entró a la cola: primero los videos y al final el MP4 completo.");
+    temporizador = setTimeout(consultar, 1500);
+  } catch (e) {
+    avisar((e as Error).message, "error");
+  } finally {
+    pidiendo.value = null;
+  }
+}
+
+async function armarCompleto() {
+  pidiendo.value = "completo";
+  try {
+    produccion.value = await api.post<Produccion>(`/api/trabajos/${t.value.id}/completo`);
+    temporizador = setTimeout(consultar, 1500);
+  } catch (e) {
+    avisar((e as Error).message, "error");
+  } finally {
+    pidiendo.value = null;
+  }
+}
+
+const trabajando = computed(() => {
+  const p = produccion.value;
+  return !!p && (Object.values(p.videos).some(enCurso) || enCurso(p.completo as VideoRender | null));
+});
+const completo = computed(() => produccion.value?.completo ?? null);
 
 function fallas(v: VideoRender): number {
   return v.informe?.chequeos.filter((c) => c.ok === false).length ?? 0;
@@ -83,6 +115,59 @@ function fallas(v: VideoRender): number {
         Cada video se produce en este equipo: voz, imagen, subtítulos y revisión de calidad. Se produce uno a la vez;
         uno de 2 minutos tarda unos 5. Por ahora sale en horizontal (16:9).
       </p>
+    </div>
+
+    <!-- Todo el curso: avance, producir todo, MP4 completo y paquete -->
+    <div v-if="produccion" class="tarjeta space-y-4 p-5">
+      <div class="flex flex-wrap items-center gap-4">
+        <div class="min-w-0 flex-1">
+          <h3 class="font-bold">Todo el curso</h3>
+          <p class="text-sm text-suave">
+            <span class="cifra text-texto">{{ produccion.listos }} de {{ produccion.total }}</span> videos listos
+            <template v-if="produccion.pendientes.length && produccion.listos"> · faltan {{ produccion.pendientes.length }}</template>
+          </p>
+          <div class="mt-2 h-2 overflow-hidden rounded-full bg-superficie-2" aria-hidden="true">
+            <div class="h-full rounded-full bg-exito transition-all" :style="{ width: `${(100 * produccion.listos) / Math.max(1, produccion.total)}%` }" />
+          </div>
+        </div>
+        <button v-if="trabajando || produccion.pendientes.length || !completo || completo.desactualizado || completo.estado === 'error'"
+                class="boton-primario" :disabled="!!produccion.voz_falta || trabajando || pidiendo === 'todo'" @click="producirTodo">
+          <LoaderCircle v-if="trabajando" class="size-4 animate-spin" /><ListVideo v-else class="size-4" />
+          {{ trabajando ? "Produciendo…" : produccion.pendientes.length ? "Producir lo que falta y el completo" : "Armar el MP4 completo" }}
+        </button>
+      </div>
+
+      <!-- Estado del MP4 completo -->
+      <div v-if="completo" class="flex flex-wrap items-center gap-3 border-t border-borde pt-4">
+        <Film class="size-5 shrink-0 text-acento" />
+        <div class="min-w-0 flex-1 text-sm">
+          <strong>Curso completo en un MP4</strong>
+          <template v-if="enCurso(completo as VideoRender)">
+            <progress max="1" :value="completo.progreso ?? 0" class="mt-1 block h-2 w-full accent-[var(--c-motor)]" />
+            <span class="text-xs text-suave">{{ completo.paso }}</span>
+          </template>
+          <span v-else-if="completo.estado === 'error'" class="block text-error">{{ completo.mensaje }}</span>
+          <span v-else-if="completo.informe" class="block text-suave">
+            {{ mmss(completo.informe.duracion) }} min · {{ cuenta(completo.informe.capitulos.length, "capítulo") }}
+            <span v-if="completo.desactualizado" class="font-semibold text-aviso"> · desactualizado: vuelve a armarlo</span>
+          </span>
+        </div>
+        <template v-if="completo.estado === 'listo' && completo.archivos">
+          <a :href="completo.archivos.mp4 + '?descargar=1'" class="boton-secundario"><Download class="size-4" /> MP4 completo</a>
+          <a :href="completo.archivos.srt + '?descargar=1'" class="boton-fantasma">SRT</a>
+          <a :href="completo.archivos.vtt + '?descargar=1'" class="boton-fantasma">VTT</a>
+          <a :href="completo.archivos.capitulos + '?descargar=1'" class="boton-fantasma">Capítulos</a>
+        </template>
+        <button v-if="!enCurso(completo as VideoRender) && !produccion.pendientes.length" class="boton-fantasma"
+                :disabled="pidiendo === 'completo'" @click="armarCompleto"><RefreshCw class="size-4" /> Volver a armar</button>
+      </div>
+
+      <div v-if="produccion.listos" class="flex flex-wrap items-center gap-3 border-t border-borde pt-4">
+        <FileArchive class="size-5 shrink-0 text-acento" />
+        <p class="min-w-0 flex-1 text-sm"><strong>Paquete para entregar</strong>
+          <span class="block text-suave">Todos los MP4, subtítulos, capítulos, informes de calidad y un manifiesto con el SHA-256 de cada archivo.</span></p>
+        <a :href="`/api/trabajos/${t.id}/paquete.zip`" class="boton-secundario"><Download class="size-4" /> Descargar ZIP</a>
+      </div>
     </div>
 
     <!-- Los videos: su plan con los colores de la marca, o el video ya producido -->

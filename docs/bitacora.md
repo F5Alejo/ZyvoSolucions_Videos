@@ -8,6 +8,28 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-09-30 · Frente A2: curso completo en un MP4 y paquete ZIP
+
+### Qué se hizo
+- **`motor/empaquetar.py`:**
+  - `armar_completo` une los MP4 de todos los videos **sin recodificar** (`concat -c copy`, todos salen con los mismos parámetros);
+  - entre video y video pone una tarjeta con el título del video (se dibuja con la misma plantilla de marca, con audio en silencio y el mismo formato);
+  - incrusta los capítulos en el MP4 (FFMETADATA) y escribe `capitulos.txt` en formato YouTube;
+  - une el VTT y el SRT corriendo los tiempos de cada video.
+- `pendientes(t)`: lista los videos sin producir o desactualizados. Si hay alguno, no se arma el completo y se dice cuáles.
+- `paquete(t)`: un ZIP con cada video, sus subtítulos y su informe de calidad, más el completo, los capítulos, el banco de preguntas y un `manifiesto.json` con el SHA-256 de cada archivo. Los MP4 van sin comprimir de nuevo (`ZIP_STORED`), lo que es igual de liviano y mucho más rápido.
+- La cola de `motor/cola.py` atiende también `completo`: los videos y el completo van en la misma fila, así que «Producir todo» arma el completo al final.
+- **API:**
+  - `POST /api/trabajos/{id}/producir-todo`: solo lo que falta o quedó desactualizado, y al final el completo;
+  - `POST /api/trabajos/{id}/completo`;
+  - `GET /api/trabajos/{id}/paquete.zip`;
+  - `/produccion` ahora dice cuántos videos están listos, cuáles faltan y el estado del completo.
+- **Interfaz (Resultado):** tarjeta «Todo el curso» con el avance, «Producir lo que falta y el completo», el estado del MP4 completo con sus descargas (MP4, SRT, VTT y capítulos) y «Descargar ZIP».
+- **Prueba nueva:** un curso de dos videos. Se comprueban los capítulos dentro del MP4, `capitulos.txt`, los subtítulos corridos, el manifiesto con SHA-256 correctos y que un cambio de ajuste deja todo desactualizado.
+- **Probado en vivo** con el curso demo: completo de 0:15 (tarjeta de 3 s más el video de 12 s) y ZIP.
+
+---
+
 ## 2026-09-30 · Frente A1/A3: configuración del estudio
 
 Plan de esta ronda (configuración, plantillas de animación y agentes): ver `docs/plan-motor.md`.

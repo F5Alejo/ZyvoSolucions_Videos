@@ -14,7 +14,7 @@ import traceback
 from datetime import datetime
 
 from app import taller
-from motor import produccion
+from motor import empaquetar, produccion
 from motor.voz import VozNoDisponible
 
 _cola: queue.Queue = queue.Queue()
@@ -55,6 +55,10 @@ def estados(t: dict) -> dict[str, dict | None]:
     return {v["clave"]: estado(t["id"], v["clave"]) for v in t["videos"]}
 
 
+def en_cola(id_: str, clave: str) -> bool:
+    return (id_, clave) in _activos
+
+
 def encolar(id_: str, clave: str) -> bool:
     """Pone el video en la cola. False si ya estaba en la cola o produciéndose."""
     global _hilo
@@ -80,10 +84,14 @@ def _trabajar() -> None:
                 continue
             _escribir(id_, clave, estado="produciendo", paso="Empezando", progreso=0.01,
                       inicio=datetime.now().isoformat(timespec="seconds"))
-            produccion.producir(t, clave, avisar=lambda paso, x: _escribir(id_, clave, paso=paso, progreso=round(x, 3)))
+            avance = lambda paso, x: _escribir(id_, clave, paso=paso, progreso=round(x, 3))  # noqa: E731
+            if clave == empaquetar.CLAVE:
+                empaquetar.armar_completo(t, avisar=avance)
+            else:
+                produccion.producir(t, clave, avisar=avance)
             _escribir(id_, clave, estado="listo", paso="Listo", progreso=1,
                       fin=datetime.now().isoformat(timespec="seconds"))
-        except (VozNoDisponible, produccion.ErrorProduccion) as e:
+        except (VozNoDisponible, produccion.ErrorProduccion, empaquetar.NoSePuedeArmar) as e:
             _escribir(id_, clave, estado="error", mensaje=str(e))
         except Exception:
             _escribir(id_, clave, estado="error", mensaje="La producción falló. El detalle quedó en estado.json.",

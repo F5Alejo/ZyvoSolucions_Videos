@@ -124,3 +124,64 @@ def test_producir_con_la_configuracion_del_curso(cliente, monkeypatch):
     # Cambiar un ajuste deja el video desactualizado.
     cliente.put(f"/api/trabajos/{id_}/ajustes-video", json={"ajustes": {**ajustes, "tiempos": {"pausa": 0.5}}})
     assert cliente.get(f"/api/trabajos/{id_}/produccion").json()["videos"]["v01"]["desactualizado"] is True
+
+
+# ── Curso completo y paquete ─────────────────────────────────────────────────
+
+@pytest.mark.skipif(not hay_ffmpeg, reason="hace falta ffmpeg")
+def test_producir_todo_arma_el_mp4_completo_y_el_zip(cliente, monkeypatch):
+    pytest.importorskip("playwright")
+    import hashlib
+    import zipfile
+    from app import taller
+    from motor import cola, voz
+    monkeypatch.setitem(voz.PROVEEDORES, "Kokoro", VozDePrueba)
+    monkeypatch.setattr(voz, "disponible", lambda v: None)
+
+    id_ = cliente.post("/api/trabajos", files={"archivo": ("x.pptx", pptx_con_foto())}).json()["id"]
+    cliente.patch(f"/api/trabajos/{id_}", json={"marca": "riskmann", "voz": "kokoro-dora", "formatos": ["16:9"]})
+    t = taller.cargar(id_)
+    t["videos"] = [{"clave": "v01", "titulo": "Uno", "laminas": [1]}, {"clave": "v02", "titulo": "Dos", "laminas": [2]}]
+    taller.guardar(t)
+
+    # Sin videos no hay completo ni paquete.
+    assert cliente.post(f"/api/trabajos/{id_}/completo").status_code == 400
+    assert cliente.get(f"/api/trabajos/{id_}/paquete.zip").status_code == 400
+
+    assert cliente.post(f"/api/trabajos/{id_}/producir-todo").status_code == 202
+    cola.esperar()
+    p = cliente.get(f"/api/trabajos/{id_}/produccion").json()
+    assert (p["listos"], p["total"], p["pendientes"]) == (2, 2, [])
+    c = p["completo"]
+    assert c["estado"] == "listo", c
+    assert all(x["ok"] for x in c["informe"]["chequeos"])
+
+    mp4 = cliente.get(c["archivos"]["mp4"])
+    assert mp4.status_code == 200
+    capitulos = cliente.get(c["archivos"]["capitulos"]).text.splitlines()
+    assert capitulos[0] == "0:00 Uno" and capitulos[1].endswith(" Dos")
+    from app import datos
+    ruta = datos.RAIZ_DATOS / "trabajos" / id_ / "salida" / "completo" / "completo.mp4"
+    info = json.loads(subprocess.run(["ffprobe", "-v", "error", "-show_chapters", "-show_format", "-of", "json", str(ruta)],
+                                     capture_output=True, text=True).stdout)
+    assert [x["tags"]["title"] for x in info["chapters"]] == ["Uno", "Dos"]
+    # El segundo video empieza después de la tarjeta de 3 s, el primer video y la segunda tarjeta.
+    inicio_dos = c["informe"]["capitulos"][1]["inicio"]
+    vtt = cliente.get(c["archivos"]["vtt"]).text
+    assert "Ley 1503 de 2011" in vtt and "Anticipa lo que harán los demás." in vtt
+    ultimo = [l for l in vtt.splitlines() if "-->" in l][-1]
+    assert float(ultimo.split(" --> ")[0].split(":")[-1]) + 60 * int(ultimo.split(":")[1]) > inicio_dos
+
+    z = cliente.get(f"/api/trabajos/{id_}/paquete.zip")
+    assert z.status_code == 200 and z.headers["content-type"] == "application/zip"
+    with zipfile.ZipFile(io.BytesIO(z.content)) as paquete:
+        nombres = set(paquete.namelist())
+        assert {"v01/v01.mp4", "v02/v02.srt", "completo/completo.mp4", "completo/capitulos.txt", "manifiesto.json"} <= nombres
+        manifiesto = json.loads(paquete.read("manifiesto.json"))
+        for a in manifiesto["archivos"]:
+            assert hashlib.sha256(paquete.read(a["ruta"])).hexdigest() == a["sha256"]
+
+    # Un cambio deja todo desactualizado; el completo también.
+    cliente.put(f"/api/trabajos/{id_}/ajustes-video", json={"ajustes": {"tiempos": {"pausa": 0.6}}})
+    p = cliente.get(f"/api/trabajos/{id_}/produccion").json()
+    assert p["completo"]["desactualizado"] and p["listos"] == 0 and len(p["pendientes"]) == 2
