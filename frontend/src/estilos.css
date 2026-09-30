@@ -1,0 +1,119 @@
+@import "tailwindcss";
+@import "@fontsource-variable/montserrat";
+
+/*
+  Identidad RiskMann (datos/marcas/riskmann.json, capas «app», «web» y «manual»).
+  Claro = app.riskmann.com: fondo #F3F3F3, texto #3C3C44, principal #073D7A, Montserrat.
+  Oscuro = riskmann.com y el manual: negro, dorado y cian.
+  Contrastes medidos: todo texto ≥ 4,5:1 sobre su fondo.
+*/
+:root {
+  --c-fondo: #F3F3F3;
+  --c-superficie: #FFFFFF;
+  --c-superficie-2: #F8FAFC;
+  --c-texto: #3C3C44;        /* 9,9:1 */
+  --c-suave: #5F636B;        /* el #70747C de la app baja a 4,2:1 sobre #F3F3F3 */
+  --c-borde: #E2E8F0;
+  --c-acento: #073D7A;       /* theme_color de la app, 9,7:1 */
+  --c-acento-suave: #E4E8F3;
+  --c-sobre-acento: #FFFFFF;
+  --c-dorado: #AC841D;       /* solo detalles, nunca texto (3,5:1) */
+  --c-aviso: #B4530A;        /* naranja de la app oscurecido a 5:1 */
+  --c-aviso-fondo: #FFF4E5;
+  --c-error: #C0302A;        /* rojo #E6423C de la app, oscurecido para texto */
+  --c-error-fondo: #FDECEC;
+  --c-exito: #208454;
+  --c-exito-fondo: #E7F4EC;
+  --c-entra: #3A55A3;
+  --c-motor: #87733D;
+  --c-lateral: #073D7A;
+  --c-lateral-2: #0A4A92;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-fondo: #0A0A0A;      /* --dark de riskmann.com */
+    --c-superficie: #161618;
+    --c-superficie-2: #1E1E21;
+    --c-texto: #F3F3F3;
+    --c-suave: #9A989B;      /* gris del logo, 6,3:1 */
+    --c-borde: #2A2A2E;
+    --c-acento: #8FD3FF;     /* azul claro de la app, 11:1 */
+    --c-acento-suave: #10263A;
+    --c-sobre-acento: #0A0A0A;
+    --c-dorado: #C8951A;     /* dorado del manual */
+    --c-aviso: #FFB74D;
+    --c-aviso-fondo: #2A2112;
+    --c-error: #FF6B66;
+    --c-error-fondo: #2C1413;
+    --c-exito: #4ADE80;
+    --c-exito-fondo: #0F2A1A;
+    --c-entra: #7D95E0;
+    --c-motor: #C8951A;
+    --c-lateral: #040404;    /* --black de riskmann.com */
+    --c-lateral-2: #161618;
+  }
+}
+
+@theme inline {
+  --font-sans: "Montserrat Variable", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  --color-fondo: var(--c-fondo);
+  --color-superficie: var(--c-superficie);
+  --color-superficie-2: var(--c-superficie-2);
+  --color-texto: var(--c-texto);
+  --color-suave: var(--c-suave);
+  --color-borde: var(--c-borde);
+  --color-acento: var(--c-acento);
+  --color-acento-suave: var(--c-acento-suave);
+  --color-sobre-acento: var(--c-sobre-acento);
+  --color-dorado: var(--c-dorado);
+  --color-aviso: var(--c-aviso);
+  --color-aviso-fondo: var(--c-aviso-fondo);
+  --color-error: var(--c-error);
+  --color-error-fondo: var(--c-error-fondo);
+  --color-exito: var(--c-exito);
+  --color-exito-fondo: var(--c-exito-fondo);
+  --color-entra: var(--c-entra);
+  --color-motor: var(--c-motor);
+  --color-lateral: var(--c-lateral);
+  --color-lateral-2: var(--c-lateral-2);
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  :focus-visible { outline: 3px solid var(--c-acento); outline-offset: 2px; border-radius: 6px; }
+  h1, h2, h3 { letter-spacing: -0.01em; }
+  mark { background: var(--c-aviso-fondo); color: var(--c-aviso); border-radius: 3px; padding: 0 2px; font-weight: 600; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  }
+}
+
+@utility tarjeta {
+  @apply rounded-xl border border-borde bg-superficie;
+}
+@utility boton-primario {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition
+    disabled:cursor-progress disabled:opacity-60 bg-acento text-sobre-acento hover:brightness-110;
+}
+@utility boton-secundario {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition
+    disabled:cursor-progress disabled:opacity-60 border border-acento text-acento hover:bg-acento-suave;
+}
+@utility boton-fantasma {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition
+    disabled:cursor-progress disabled:opacity-60 text-suave hover:bg-superficie-2 hover:text-texto;
+}
+@utility boton-peligro {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition
+    disabled:cursor-progress disabled:opacity-60 border border-error text-error hover:bg-error-fondo;
+}
+@utility campo {
+  @apply w-full rounded-lg border border-borde bg-superficie px-3 py-2.5 text-sm text-texto placeholder:text-suave
+    focus:border-acento focus:outline-none focus:ring-2 focus:ring-acento/30;
+}
+@utility etiqueta-campo {
+  @apply mb-1.5 block text-sm font-medium text-texto;
+}
+@utility cifra {
+  @apply font-bold tabular-nums;
+}
