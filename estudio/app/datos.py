@@ -15,12 +15,21 @@ RAIZ_DATOS = Path(os.environ.get("INTERFAZ_DATOS", RAIZ / "datos"))
 
 
 def _config() -> dict:
+    """Rutas del repositorio de videos y de los entregables.
+
+    El estudio vive en `estudio/` dentro del repositorio de videos, así que lo encuentra solo en la
+    carpeta de arriba. `config.local.json` y las variables de entorno mandan sobre eso.
+    Las rutas relativas se toman desde la carpeta del estudio.
+    """
+    conf = {"repo_videos": ".."} if (RAIZ.parent / "videos").is_dir() else {}
     ruta = RAIZ / "config.local.json"
-    conf = json.loads(ruta.read_text(encoding="utf-8")) if ruta.exists() else {}
+    if ruta.exists():
+        conf.update(json.loads(ruta.read_text(encoding="utf-8")))
     for clave, var in (("repo_videos", "REPO_VIDEOS"), ("entregables", "ENTREGABLES")):
         if os.environ.get(var):
             conf[clave] = os.environ[var]
-    return {k: Path(v) for k, v in conf.items() if v and Path(v).is_dir()}
+    rutas = {k: (RAIZ / v).resolve() for k, v in conf.items() if v}
+    return {k: v for k, v in rutas.items() if v.is_dir()}
 
 
 CONFIG = _config()

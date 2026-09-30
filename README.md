@@ -1,6 +1,32 @@
 # riskmann2-marketing-videos
 Repositorio dedicado a la elaboración de videos para presentaciones, marketing y capacitación de la plataforma RiskMann, producidos con [HyperFrames](https://github.com/heygen-com/hyperframes) (HTML → MP4).
 
+## Estudio de video
+
+En [`estudio/`](estudio/) vive el **estudio de video**: la aplicación donde entra un PPTX y sale el curso
+en video, con el seguimiento de las piezas de cada marca. Vue 3 + TypeScript + Tailwind y una API en
+FastAPI. Lee este repositorio en solo lectura. Cómo arrancarlo: [`estudio/README.md`](estudio/README.md).
+
+## Cómo trabajamos: una rama por persona
+
+`main` es la base común. Cada uno trabaja en **su rama** y la une a `main` cuando algo está listo:
+
+| Rama | De quién |
+| --- | --- |
+| `main` | Base común: lo que ya está listo y revisado |
+| `juan` | Juan |
+| `alejandro` | Alejandro |
+
+```sh
+git switch juan                 # (o alejandro) trabajar en la rama propia
+git pull origin main            # traer lo último de la base antes de empezar
+git push origin juan            # subir el avance
+# cuando esté listo: pull request de juan → main en GitHub
+```
+
+Antes de cambiar de rama o renderizar, **commit y push**: el trabajo que solo vive en un equipo se pierde
+(ya pasó con OneDrive; ver `docs/ARRANQUE-EN-OTRO-EQUIPO.md`).
+
 ## Documentación
 
 | Documento | Para quién | Qué contiene |
@@ -18,6 +44,7 @@ Repositorio dedicado a la elaboración de videos para presentaciones, marketing 
 ## Estructura
 
 ```
+estudio/                 el estudio de video (aplicación Vue + API)
 assets/                  material fuente compartido (marca, iconos, capturas, grabaciones)
   fotos-pixabay/         fotos candidatas ya revisadas para la serie PESV
 docs/                    informes (PoC)

@@ -29,7 +29,7 @@ Vue porque es el framework de **app.riskmann.com** (Vue 3 + Vuex): el equipo de 
 
 ## Puesta en marcha
 
-Requisitos: Python 3.12 y Node 20 o superior.
+Requisitos: Python 3.12 y Node 20 o superior. Todos los comandos, desde la carpeta `estudio/`.
 
 ```sh
 # API
@@ -57,14 +57,16 @@ npm run dev                        # http://localhost:5173, se recarga al guarda
 
 Vite reenvía `/api` y `/media` al puerto 8765.
 
-### Conectar el repositorio de videos
+### El repositorio de videos y los entregables
 
-Copia `config.ejemplo.json` como `config.local.json` y pon las rutas de tu equipo:
+El estudio vive en `estudio/` dentro del repositorio de videos y **lo encuentra solo** en la carpeta
+de arriba: no hay que configurar nada para ver las marcas, los logos, los videos del catálogo y el
+curso de ejemplo.
 
-- `repo_videos`: la copia de `riskmann2-marketing-videos` (hoy, la rama `fegir/avance-local`).
-- `entregables`: la carpeta `ENTREGABLES-VIDEO` con los MP4 entregados.
+Lo único que no está en git son los MP4 entregados (`ENTREGABLES-VIDEO`, pesan cientos de MB). Para
+verlos, copia `config.ejemplo.json` como `config.local.json` y pon su ruta en `entregables`.
+`config.local.json` no se sube a git. También sirven las variables `REPO_VIDEOS` y `ENTREGABLES`.
 
-`config.local.json` no se sube a git. Sin él, el estudio funciona pero sin videos, logos ni el ejemplo.
 El estudio **solo lee** esas carpetas; del repositorio de videos solo sirve imágenes, PDF y texto.
 
 ## Pruebas
