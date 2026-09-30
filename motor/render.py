@@ -1,0 +1,138 @@
+"""Escenas HTML → video mudo H.264, con Playwright (Chromium) y ffmpeg.
+
+Por cada escena se dibujan cuadro a cuadro solo la **entrada** (sus primeros segundos) y la
+**salida** (sus últimos), llevando cada animación CSS a su instante exacto: el resultado es el
+mismo en cada render. Entre una y otra no se mueve nada, así que ffmpeg sostiene el último
+cuadro de la entrada: una lámina de 40 s cuesta lo mismo que una de 5 s.
+
+Al terminar la entrada se revisa el encuadre: si algún texto se sale de la pantalla o de su
+caja, se informa (el control de calidad lo muestra como «Todo el texto cabe»).
+"""
+
+import math
+import shutil
+import subprocess
+from pathlib import Path
+
+FPS = 30  # por defecto; la configuración puede pedir 25 o 60
+
+
+def codificar(fps: int = FPS, crf: str = "18", preset: str = "medium") -> list[str]:
+    return ["-c:v", "libx264", "-profile:v", "high", "-pix_fmt", "yuv420p", "-crf", crf,
+            "-preset", preset, "-r", str(fps), "-g", str(fps * 2)]
+
+
+_IR_A = """(ms) => { for (const a of document.getAnimations()) { a.pause(); a.currentTime = ms; } }"""
+_LISTO = """async () => {
+  await document.fonts.ready;
+  await Promise.all([...document.images].map(i => i.complete ? null : new Promise(r => { i.onload = i.onerror = r; })));
+}"""
+# Qué texto se sale de la pantalla o de su caja (con todo ya en su sitio).
+_ENCUADRE = """() => {
+  const W = innerWidth, H = innerHeight, fuera = [];
+  const nombre = (el) => (el.textContent || el.className).trim().slice(0, 50);
+  for (const el of document.querySelectorAll("h1, li, .kicker, .serie, .foto")) {
+    const r = el.getBoundingClientRect();
+    if (r.width && (r.right > W + 1 || r.bottom > H - 14 || r.left < -1 || r.top < -1)) fuera.push("se sale de la pantalla: " + nombre(el));
+  }
+  const cuerpo = document.querySelector(".cuerpo");
+  if (cuerpo && cuerpo.scrollHeight > cuerpo.clientHeight + 2) fuera.push("el texto no cabe en la lámina (sobran " + (cuerpo.scrollHeight - cuerpo.clientHeight) + " px)");
+  return fuera;
+}"""
+
+
+def cuadros(segundos: float, fps: int = FPS) -> int:
+    return max(1, round(segundos * fps))
+
+
+def video(escenas: list[tuple], ancho: int, alto: int, destino: Path, trabajo: Path,
+          avisar=lambda hechas, total: None, fps: int = FPS, escala: float = 1.0,
+          crf: str = "18", preset: str = "medium") -> list[dict]:
+    """Escribe `destino` (mp4 sin audio) y devuelve los problemas de encuadre encontrados.
+
+    `escenas`: (html, cuadros) o (html, cuadros, segundos_de_entrada, segundos_de_salida).
+    El HTML siempre se diseña en el lienzo `ancho`×`alto`; `escala` lo dibuja más pequeño
+    (p. ej. 2/3 para 720p) sin cambiar la composición.
+    """
+    from playwright.sync_api import sync_playwright
+
+    trabajo.mkdir(parents=True, exist_ok=True)
+    partes, problemas = [], []
+    with sync_playwright() as p:
+        navegador = p.chromium.launch()
+        pagina = navegador.new_page(viewport={"width": ancho, "height": alto}, device_scale_factor=escala)
+        for i, escena in enumerate(escenas):
+            html, total = escena[0], escena[1]
+            ent_s = escena[2] if len(escena) > 2 else 1.2
+            sal_s = escena[3] if len(escena) > 3 else 0.0
+            carpeta = trabajo / f"escena-{i:03d}"
+            (carpeta / "e").mkdir(parents=True, exist_ok=True)
+            (carpeta / "x").mkdir(exist_ok=True)
+            pagina_html = carpeta / "escena.html"
+            pagina_html.write_text(html, encoding="utf-8")
+            pagina.goto(pagina_html.resolve().as_uri())
+            pagina.evaluate(_LISTO)
+
+            a = min(total, math.ceil(ent_s * fps) + 1)
+            b = min(total - a, math.ceil(sal_s * fps) + 1) if sal_s > 0 else 0
+            if total - a - b < 2:  # escena corta: se dibuja entera
+                a, b = total, 0
+            for f in range(a):
+                pagina.evaluate(_IR_A, f * 1000 / fps)
+                pagina.screenshot(path=str(carpeta / "e" / f"{f:04d}.png"))
+            pagina.evaluate(_IR_A, ent_s * 1000)
+            problemas += [{"escena": i, "detalle": d} for d in pagina.evaluate(_ENCUADRE)]
+            for j, f in enumerate(range(total - b, total)):
+                pagina.evaluate(_IR_A, f * 1000 / fps)
+                pagina.screenshot(path=str(carpeta / "x" / f"{j:04d}.png"))
+
+            parte = trabajo / f"parte-{i:03d}.mp4"
+            entradas = ["-framerate", str(fps), "-i", str(carpeta / "e" / "%04d.png")]
+            if b:
+                entradas += ["-framerate", str(fps), "-i", str(carpeta / "x" / "%04d.png")]
+                filtro = f"[0:v]tpad=stop_mode=clone:stop={total - a - b}[m];[m][1:v]concat=n=2:v=1:a=0[v]"
+            else:
+                filtro = f"[0:v]tpad=stop_mode=clone:stop={total - a}[v]"
+            subprocess.run(["ffmpeg", "-v", "error", "-y", *entradas, "-filter_complex", filtro, "-map", "[v]",
+                            "-frames:v", str(total), *codificar(fps, crf, preset), "-an", str(parte)], check=True)
+            shutil.rmtree(carpeta)
+            partes.append(parte)
+            avisar(i + 1, len(escenas))
+        navegador.close()
+
+    lista = trabajo / "partes.txt"
+    lista.write_text("".join(f"file '{x.name}'\n" for x in partes), encoding="utf-8")
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(lista),
+                    "-c", "copy", str(destino)], check=True)
+    return problemas
+
+
+def unir(video_mudo: Path, audio: Path, destino: Path) -> None:
+    """Video + narración → MP4 final: AAC 48 kHz 192 kbps y `faststart` para la web."""
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(video_mudo), "-i", str(audio),
+                    "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy",
+                    "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2",
+                    "-movflags", "+faststart", "-shortest", str(destino)], check=True)
+
+
+def quemar_subtitulos(mp4: Path, srt: Path, trabajo: Path, fps: int = FPS, crf: str = "18",
+                      preset: str = "medium") -> None:
+    """Dibuja los subtítulos dentro de la imagen (para redes, donde se ve sin sonido). Reemplaza `mp4`.
+
+    El filtro `subtitles` de ffmpeg no acepta bien rutas de Windows («C:»): se trabaja con
+    rutas relativas dentro de `trabajo`, con la fuente Montserrat al lado.
+    """
+    from motor.escenas import FUENTE
+
+    trabajo.mkdir(parents=True, exist_ok=True)
+    shutil.copy(srt, trabajo / "subs.srt")
+    (trabajo / "fuentes").mkdir(exist_ok=True)
+    shutil.copy(FUENTE, trabajo / "fuentes" / FUENTE.name)
+    estilo = ("FontName=Montserrat,FontSize=20,Bold=1,PrimaryColour=&H00FFFFFF,OutlineColour=&H80000000,"
+              "BorderStyle=3,Outline=6,Shadow=0,MarginV=36,Alignment=2")
+    salida = trabajo / "con-subtitulos.mp4"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(mp4.resolve()),
+                    "-vf", f"subtitles=subs.srt:fontsdir=fuentes:force_style='{estilo}'",
+                    *codificar(fps, crf, preset), "-c:a", "copy", "-movflags", "+faststart", salida.name],
+                   check=True, cwd=trabajo)
+    salida.replace(mp4)
