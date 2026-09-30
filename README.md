@@ -141,6 +141,18 @@ npm run typecheck                  # tipos de TypeScript
 npm test                           # utilidades y componentes (Vitest)
 ```
 
+### GitHub Actions y ramas
+
+| Rama | Para qué | Cuándo corren las pruebas |
+| --- | --- | --- |
+| `Alejodev` | Pruebas y mejoras: aquí se desarrolla | En cada push |
+| `main` | La versión estable | En cada push y en cada pull request hacia `main` |
+
+El flujo `.github/workflows/pruebas.yml` corre dos trabajos en Ubuntu: **API y motor** (Python 3.12,
+ffmpeg, Chromium y `pytest`, que produce videos de verdad con una voz de prueba y Ollama simulado:
+no necesita modelos ni claves) e **Interfaz** (Node 22: `vue-tsc`, Vitest y la compilación).
+`main` solo se actualiza desde `Alejodev` cuando las pruebas pasan en verde.
+
 ## Pantallas
 
 | Ruta | Qué hace |

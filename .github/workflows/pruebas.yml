@@ -1,0 +1,68 @@
+# Pruebas del estudio en cada cambio.
+#
+# - Alejodev es la rama de pruebas y mejoras: cada push corre todo.
+# - main es la versión estable: cada push y cada pull request hacia main corren todo.
+#   main solo se actualiza desde Alejodev cuando estas pruebas pasan.
+
+name: Pruebas
+
+on:
+  push:
+    branches: [main, Alejodev]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: pruebas-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api-y-motor:
+    name: API y motor (pytest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+
+      - name: Librerías de Python
+        run: pip install -r requirements.txt
+
+      - name: Navegador que dibuja las escenas (Chromium)
+        run: python -m playwright install --with-deps chromium
+
+      # Las pruebas usan una voz de prueba y Ollama simulado: no hacen falta modelos ni claves.
+      - name: pytest
+        run: python -m pytest -q
+
+  interfaz:
+    name: Interfaz (tipos, Vitest y compilación)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci --no-audit --no-fund
+      - name: Tipos (vue-tsc)
+        run: npm run typecheck
+      - name: Vitest
+        run: npm test
+      - name: Compilación
+        run: npm run build

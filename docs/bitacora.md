@@ -8,6 +8,26 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-09-30 · GitHub Actions: pruebas en cada cambio
+
+### Qué se hizo
+- `.github/workflows/pruebas.yml` con dos trabajos en Ubuntu:
+  - **API y motor:** Python 3.12, ffmpeg por apt, Chromium de Playwright (`--with-deps`) y `pytest`;
+  - **Interfaz:** Node 22, `npm ci`, `vue-tsc`, Vitest y la compilación.
+- **Se activa:**
+  - en cada push a `Alejodev`, la rama de pruebas y mejoras;
+  - en cada push a `main` y en cada pull request hacia `main`;
+  - a mano, desde la pestaña Actions (`workflow_dispatch`).
+
+  Si llega un push nuevo a la misma rama, se cancela la ejecución anterior.
+- README: sección «GitHub Actions y ramas».
+
+### Decisiones
+- **Las pruebas no necesitan secretos en GitHub:** usan una voz de prueba y Ollama simulado, así que no hace falta subir la clave de ElevenLabs a los *secrets* del repositorio.
+- **Flujo de ramas:** se trabaja en `Alejodev` y `main` se actualiza desde `Alejodev` solo con las pruebas en verde.
+
+---
+
 ## 2026-09-30 · Rama `Alejodev` en ZyvoSolucions_Videos
 
 - El desarrollo sigue en este repositorio. Se creó la rama `Alejodev` desde `main` (`59cf9da`) y se subió.
