@@ -1,0 +1,103 @@
+{
+  "id": "fegir",
+  "nombre": "Fundación Especializada en Gestión Integral del Riesgo",
+  "nombre_corto": "FEGIR",
+  "que_es": "Fundación dedicada a la gestión integral del riesgo",
+  "dominio": "fegir.org",
+  "responsable": null,
+  "fuente_ficha": "docs/marcas/fegir/ficha.md",
+  "revisada": "2026-09-26",
+  "paleta": [
+    {
+      "hex": "#45A035",
+      "nombre": "verde"
+    },
+    {
+      "hex": "#A8C875",
+      "nombre": "verde claro"
+    },
+    {
+      "hex": "#F1ECB0",
+      "nombre": "crema"
+    },
+    {
+      "hex": "#3A8F2C",
+      "nombre": "fondo bajo texto blanco (derivado, 3,9:1)"
+    },
+    {
+      "hex": "#22621A",
+      "nombre": "texto verde sobre blanco (derivado)"
+    }
+  ],
+  "paleta_fuente": "Manual de identidad FEGIR, s.2 (docs/marcas/fegir/manual-identidad-fegir.pdf); derivados de producción para contraste",
+  "tipografia": "Segoe UI (declarada como «FEGIR Sans»). ⚠ Es de Microsoft: confirmar licencia o cambiar a una fuente libre",
+  "voz": "Carlos 4PN5DHmrfIgZksvIrawS, eleven_multilingual_v2, semilla 20261003. Siglas escritas «pe e ese ve». Tono: tú, cercano, de invitación",
+  "cta": "«Reserva tu cupo gratis en fegir punto org.» → fegir.org",
+  "contradicciones": [],
+  "fuentes": [
+    {
+      "fuente": "Manual de identidad FEGIR",
+      "tipo": "PDF (1 página)",
+      "donde": "docs/marcas/fegir/manual-identidad-fegir.pdf"
+    },
+    {
+      "fuente": "Logos (color, blanco, escudo)",
+      "tipo": "SVG + PNG",
+      "donde": "docs/marcas/fegir/logos-extraidos/"
+    },
+    {
+      "fuente": "Web de FEGIR (captura)",
+      "tipo": "PDF",
+      "donde": "docs/marcas/fegir/web-fegir-captura.pdf"
+    },
+    {
+      "fuente": "Correos del En Vivo",
+      "tipo": "correo",
+      "donde": "Documentos_contexto/correos-en-vivo-pesv/ (fuera del repo: datos personales)"
+    }
+  ],
+  "pendientes": [
+    {
+      "texto": "Licencia de Segoe UI (o cambio de fuente)",
+      "hecho": false
+    },
+    {
+      "texto": "Origen oficial de los tres logos: extraídos del manual",
+      "hecho": true
+    },
+    {
+      "texto": "Que el cupo se reserve en fegir.org y cuál es el enlace del grupo de WhatsApp",
+      "hecho": false
+    },
+    {
+      "texto": "Qué hace FEGIR, a quién le habla, y su relación con SOFU/RiskMann y con el Dr. Yezid",
+      "hecho": false
+    },
+    {
+      "texto": "Guardar en git los cambios de fegir-envivo y la serie de recordatorios",
+      "hecho": false
+    }
+  ],
+  "pedir_al_cliente": [
+    {
+      "texto": "Manual de marca de FEGIR completo (⚠ el maestro se contradice: la ficha registra el manual recibido el 2026-09-25)",
+      "hecho": false
+    },
+    {
+      "texto": "El brief de la campaña como archivo",
+      "hecho": false
+    },
+    {
+      "texto": "Logos en vector y reglas de uso",
+      "hecho": false
+    },
+    {
+      "texto": "Confirmar lema, dominio y datos de contacto",
+      "hecho": false
+    }
+  ],
+  "logo": {
+    "archivo": "docs/marcas/fegir/logos-extraidos/fegir-logo-color.svg",
+    "fondo": "claro"
+  }
+}

@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.tmp
+config.local.json
+# Material de los clientes: no va a git
+datos/trabajos/
