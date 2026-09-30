@@ -1,0 +1,269 @@
+{
+  "id": "riskmann",
+  "nombre": "RiskMann",
+  "nombre_corto": "RiskMann",
+  "que_es": "Plataforma digital de gestión de riesgos empresariales (producto de SOFU; lockup «RiskMann by SOFU»)",
+  "dominio": "riskmann.com · app.riskmann.com",
+  "responsable": null,
+  "fuente_ficha": "docs/marcas/riskmann/ficha.md",
+  "revisada": "2026-09-29",
+  "paleta": [
+    {
+      "hex": "#020202",
+      "nombre": "fondo principal",
+      "capa": "manual"
+    },
+    {
+      "hex": "#C8951A",
+      "nombre": "dorado · toques de prestigio",
+      "capa": "manual"
+    },
+    {
+      "hex": "#06C7FB",
+      "nombre": "cian · gráficos acento",
+      "capa": "manual"
+    },
+    {
+      "hex": "#272725",
+      "nombre": "separadores, fondos secundarios",
+      "capa": "manual"
+    },
+    {
+      "hex": "#1F3A77",
+      "nombre": "azul de la M (manual escribe #26367D)",
+      "capa": "logo"
+    },
+    {
+      "hex": "#324D90",
+      "nombre": "azul del círculo superpuesto",
+      "capa": "logo"
+    },
+    {
+      "hex": "#E7322E",
+      "nombre": "rojo del isotipo (manual escribe #FF3333)",
+      "capa": "logo"
+    },
+    {
+      "hex": "#41435B",
+      "nombre": "«RiskMann» (manual escribe #333366)",
+      "capa": "logo"
+    },
+    {
+      "hex": "#9A989B",
+      "nombre": "gris del círculo (#999999)",
+      "capa": "logo"
+    },
+    {
+      "hex": "#1B494E",
+      "nombre": "«SOFU» del lockup = petróleo de SOFU",
+      "capa": "logo"
+    },
+    {
+      "hex": "#040404",
+      "nombre": "--black",
+      "capa": "web"
+    },
+    {
+      "hex": "#AC841D",
+      "nombre": "--gold",
+      "capa": "web"
+    },
+    {
+      "hex": "#87733D",
+      "nombre": "--gold-dark",
+      "capa": "web"
+    },
+    {
+      "hex": "#00C8D4",
+      "nombre": "--cyan",
+      "capa": "web"
+    },
+    {
+      "hex": "#203876",
+      "nombre": "--blue-dark",
+      "capa": "web"
+    },
+    {
+      "hex": "#1A2744",
+      "nombre": "--blue-navy",
+      "capa": "web"
+    },
+    {
+      "hex": "#073D7A",
+      "nombre": "principal · theme_color (35 usos)",
+      "capa": "app"
+    },
+    {
+      "hex": "#E6423C",
+      "nombre": "rojo de acción y alerta (16 usos)",
+      "capa": "app"
+    },
+    {
+      "hex": "#3A55A3",
+      "nombre": "azul secundario",
+      "capa": "app"
+    },
+    {
+      "hex": "#3C3C44",
+      "nombre": "texto",
+      "capa": "app"
+    },
+    {
+      "hex": "#F3F3F3",
+      "nombre": "fondo",
+      "capa": "app"
+    },
+    {
+      "hex": "#208454",
+      "nombre": "éxito",
+      "capa": "app"
+    }
+  ],
+  "paleta_fuente": "Cuatro capas, cada una con su fuente: manual (PDF), logo (medido), web (common.css) y app (app.riskmann.com). Los tonos cambian poco entre capas; lo que cambia es el uso.",
+  "tipografia": "Manual: Dubai Bold (títulos) y Regular (cuerpo). Web: Montserrat (títulos) + Open Sans (cuerpo). App: Montserrat.",
+  "voz": "Carlos (ElevenLabs) 4PN5DHmrfIgZksvIrawS. ⚠ La voz oficial sigue sin decidir entre siete muestras",
+  "cta": "«Quiero mi inspección gratis» · «Quiero activar Capacitaciones» · «Quiero empezar ahora» → app.riskmann.com/entrada",
+  "contradicciones": [
+    "Manual (marketing) frente a web y app: el manual fija Dubai y dorado #c8951a; la web y la app usan Montserrat y la web el dorado #AC841D. Hace falta una regla por tipo de pieza (ver pendientes)",
+    "La tabla del manual claro no coincide con sus propios círculos: #333366 aparece dos veces (morado y petróleo) y el círculo de #26367D es lavanda. Los colores medidos del logo están en la capa «Logo»",
+    "El rojo: el manual lo da para «énfasis, alertas, botones» y la app lo usa así (#E6423C), pero el cliente lo reservó para «peligro» en los videos (18-sep)"
+  ],
+  "fuentes": [
+    {
+      "fuente": "Manual de identidad (claro y oscuro)",
+      "tipo": "PDF",
+      "donde": "docs/marcas/riskmann/manual-identidad*.pdf"
+    },
+    {
+      "fuente": "Manejo del PESV en 24 pasos",
+      "tipo": "PDF",
+      "donde": "docs/marcas/riskmann/fuentes/manejo-pesv-24-pasos.pdf"
+    },
+    {
+      "fuente": "Landing consulta PESV",
+      "tipo": "web",
+      "donde": "https://riskmann.com/consulta-pesv/"
+    },
+    {
+      "fuente": "Landing inspecciones gratis",
+      "tipo": "web",
+      "donde": "https://riskmann.com/inspecciones-gratis/"
+    },
+    {
+      "fuente": "Logos oficiales",
+      "tipo": "PNG",
+      "donde": "assets/public/riskmann_logo_blanco.png, riskmann_icono_blanco.png"
+    },
+    {
+      "fuente": "Hoja de estilos de riskmann.com",
+      "tipo": "web",
+      "donde": "https://riskmann.com/css/common.css"
+    },
+    {
+      "fuente": "App de RiskMann (estilos y manifest)",
+      "tipo": "web",
+      "donde": "https://app.riskmann.com/entrada"
+    }
+  ],
+  "pendientes": [
+    {
+      "texto": "Umbral del PESV: la landing dice «11 o más vehículos» y «diez (10) unidades»",
+      "hecho": false
+    },
+    {
+      "texto": "riskmann-hud: documentarla como la identidad de la app, no del manual, y decir para qué piezas vale",
+      "hecho": false
+    },
+    {
+      "texto": "Regla por tipo de pieza: ¿manual (Dubai, #c8951a) para marketing y web/app (Montserrat, #AC841D/#073D7A) para lo que enlaza al sitio o al producto?",
+      "hecho": false
+    },
+    {
+      "texto": "Elegir la voz oficial",
+      "hecho": false
+    },
+    {
+      "texto": "Corregir o retirar «Sala de control»",
+      "hecho": false
+    },
+    {
+      "texto": "Guardar en git el promo y la serie de capacitaciones",
+      "hecho": true
+    },
+    {
+      "texto": "Respuestas de las preguntas frecuentes de la landing de Capacitaciones (precio, validez del certificado)",
+      "hecho": false
+    }
+  ],
+  "pedir_al_cliente": [
+    {
+      "texto": "Confirmación escrita del umbral de vehículos y la norma de la que sale",
+      "hecho": false
+    },
+    {
+      "texto": "El storyboard «LANDING INSPECCIONES GRATIS»",
+      "hecho": false
+    },
+    {
+      "texto": "Decisión sobre la identidad de las landings frente al manual",
+      "hecho": false
+    },
+    {
+      "texto": "Nueva clave de ElevenLabs (la del issue #3 caducó el 21-sep-2026)",
+      "hecho": false
+    }
+  ],
+  "logo": {
+    "archivo": "assets/public/riskmann_logo_blanco.png",
+    "fondo": "oscuro"
+  },
+  "video": {
+    "fuente": "Capa «manual»: «Videos y piezas de marca: fondo negro, anillos cian + dorado». Tipografía Montserrat mientras se decide la regla por tipo de pieza (pendiente abierto).",
+    "fondo": "#020202",
+    "superficie": "#272725",
+    "texto": "#F3F3F3",
+    "acento": "#C8951A",
+    "acento2": "#06C7FB",
+    "logo_local": "frontend/public/marca/riskmann_logo_blanco.png"
+  },
+  "capas_paleta": {
+    "manual": {
+      "titulo": "Manual · piezas de marketing",
+      "fuente": "Manual de identidad, modo oscuro (docs/marcas/riskmann/manual-identidad-modo-oscuro.pdf), «Colores Generales»",
+      "uso": "Videos y piezas de marca: fondo negro, caballero, anillos cian + dorado. Dubai."
+    },
+    "logo": {
+      "titulo": "Logo · no se toca",
+      "fuente": "Medido en el logo oficial assets/public/riskmann_logo_color.png y en los rellenos vectoriales del manual",
+      "uso": "Los colores reales del isotipo y del lockup «by SOFU». Solo se usa el archivo oficial."
+    },
+    "web": {
+      "titulo": "riskmann.com · todo el sitio",
+      "fuente": "riskmann.com/css/common.css (variables de todo el sitio), leído 2026-09-29",
+      "uso": "Negro + dorado + cian con Montserrat y Open Sans. No es solo la landing de Capacitaciones: son las variables de common.css."
+    },
+    "app": {
+      "titulo": "app.riskmann.com · el producto",
+      "fuente": "app.riskmann.com/css/app.74edd864.css y manifest.json, leído 2026-09-29",
+      "uso": "Interfaz clara, azul #073D7A como principal (theme_color), rojo #E6423C y Montserrat. Es la base de la interfaz de este panel."
+    }
+  },
+  "hallazgos": [
+    {
+      "fecha": "2026-09-29",
+      "texto": "La receta riskmann-hud (Montserrat + rojo #E6423C + azul marino) no se inventó: coincide con la app (app.riskmann.com). No corresponde al manual, pero sí al producto."
+    },
+    {
+      "fecha": "2026-09-29",
+      "texto": "La identidad «de la landing de Capacitaciones» (#040404, #AC841D, Montserrat + Open Sans) es la de todo riskmann.com: son las variables de common.css. También la usó Ruta Segura (#AC841D, #00C8D4)."
+    },
+    {
+      "fecha": "2026-09-29",
+      "texto": "El «SOFU» del lockup es #1B494E, el mismo petróleo que se muestreó de los archivos de SOFU (#19484D): la paleta de SOFU queda respaldada por el manual de RiskMann."
+    },
+    {
+      "fecha": "2026-09-29",
+      "texto": "Los hex escritos en el manual son aproximados: los rellenos dibujados en el PDF son #233976 (no #26367D), #E6342E (no #FF3333) y #41425B (no #333366)."
+    }
+  ]
+}

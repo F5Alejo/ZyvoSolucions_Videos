@@ -1,0 +1,23 @@
+{
+ "id": "sobria",
+ "nombre": "Sobria",
+ "descripcion": "Fundidos tranquilos. Para formación normativa y temas serios: nada distrae de lo que se dice.",
+ "elementos": {
+  "fondo": {"entrada": {"efecto": "aparecer", "duracion": 1.0, "retardo": 0.0, "curva": "suave", "escalonado": 0.0},
+            "salida": {"efecto": "aparecer", "duracion": 0.6, "retardo": 0.0, "curva": "suave", "escalonado": 0.0}},
+  "logo": {"entrada": {"efecto": "aparecer", "duracion": 0.6, "retardo": 0.0, "curva": "suave", "escalonado": 0.0},
+           "salida": {"efecto": "aparecer", "duracion": 0.5, "retardo": 0.0, "curva": "suave", "escalonado": 0.0}},
+  "antetitulo": {"entrada": {"efecto": "aparecer", "duracion": 0.6, "retardo": 0.1, "curva": "suave", "escalonado": 0.0},
+                 "salida": {"efecto": "aparecer", "duracion": 0.4, "retardo": 0.0, "curva": "suave", "escalonado": 0.0}},
+  "titulo": {"entrada": {"efecto": "aparecer", "duracion": 0.8, "retardo": 0.2, "curva": "suave", "escalonado": 0.0},
+             "salida": {"efecto": "aparecer", "duracion": 0.5, "retardo": 0.0, "curva": "suave", "escalonado": 0.0}},
+  "linea": {"entrada": {"efecto": "crecer", "duracion": 0.6, "retardo": 0.45, "curva": "suave", "escalonado": 0.0},
+            "salida": {"efecto": "aparecer", "duracion": 0.4, "retardo": 0.0, "curva": "suave", "escalonado": 0.0}},
+  "vinetas": {"entrada": {"efecto": "aparecer", "duracion": 0.6, "retardo": 0.6, "curva": "suave", "escalonado": 0.18},
+              "salida": {"efecto": "aparecer", "duracion": 0.4, "retardo": 0.0, "curva": "suave", "escalonado": 0.0}},
+  "imagen": {"entrada": {"efecto": "aparecer", "duracion": 0.9, "retardo": 0.3, "curva": "suave", "escalonado": 0.0},
+             "salida": {"efecto": "aparecer", "duracion": 0.5, "retardo": 0.0, "curva": "suave", "escalonado": 0.0}},
+  "avance": {"entrada": {"efecto": "crecer", "duracion": 0.9, "retardo": 0.1, "curva": "suave", "escalonado": 0.0},
+             "salida": {"efecto": "ninguno", "duracion": 0.0, "retardo": 0.0, "curva": "suave", "escalonado": 0.0}}
+ }
+}

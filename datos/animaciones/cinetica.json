@@ -1,0 +1,23 @@
+{
+ "id": "cinetica",
+ "nombre": "Cinética",
+ "descripcion": "Promocional y con energía: el título llega palabra por palabra y las viñetas rebotan.",
+ "elementos": {
+  "fondo": {"entrada": {"efecto": "escalar", "duracion": 1.0, "retardo": 0.0, "curva": "energica", "escalonado": 0.0},
+            "salida": {"efecto": "desenfoque", "duracion": 0.5, "retardo": 0.0, "curva": "suave", "escalonado": 0.0}},
+  "logo": {"entrada": {"efecto": "deslizar-izquierda", "duracion": 0.5, "retardo": 0.0, "curva": "energica", "escalonado": 0.0},
+           "salida": {"efecto": "desenfoque", "duracion": 0.4, "retardo": 0.0, "curva": "suave", "escalonado": 0.0}},
+  "antetitulo": {"entrada": {"efecto": "maquina", "duracion": 0.05, "retardo": 0.05, "curva": "lineal", "escalonado": 0.03},
+                 "salida": {"efecto": "desenfoque", "duracion": 0.35, "retardo": 0.0, "curva": "suave", "escalonado": 0.0}},
+  "titulo": {"entrada": {"efecto": "palabra-por-palabra", "duracion": 0.45, "retardo": 0.1, "curva": "energica", "escalonado": 0.09},
+             "salida": {"efecto": "desenfoque", "duracion": 0.4, "retardo": 0.05, "curva": "suave", "escalonado": 0.0}},
+  "linea": {"entrada": {"efecto": "crecer", "duracion": 0.4, "retardo": 0.5, "curva": "energica", "escalonado": 0.0},
+            "salida": {"efecto": "crecer", "duracion": 0.25, "retardo": 0.0, "curva": "suave", "escalonado": 0.0}},
+  "vinetas": {"entrada": {"efecto": "rebote", "duracion": 0.55, "retardo": 0.7, "curva": "suave", "escalonado": 0.12},
+              "salida": {"efecto": "desenfoque", "duracion": 0.3, "retardo": 0.0, "curva": "suave", "escalonado": 0.04}},
+  "imagen": {"entrada": {"efecto": "rebote", "duracion": 0.7, "retardo": 0.3, "curva": "suave", "escalonado": 0.0},
+             "salida": {"efecto": "escalar", "duracion": 0.4, "retardo": 0.0, "curva": "suave", "escalonado": 0.0}},
+  "avance": {"entrada": {"efecto": "crecer", "duracion": 0.7, "retardo": 0.1, "curva": "energica", "escalonado": 0.0},
+             "salida": {"efecto": "ninguno", "duracion": 0.0, "retardo": 0.0, "curva": "suave", "escalonado": 0.0}}
+ }
+}

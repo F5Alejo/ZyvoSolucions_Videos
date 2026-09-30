@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.tmp
+config.local.json
+# Material de los clientes: no va a git
+datos/trabajos/
+# Modelos de voz descargados (scripts/descargar_modelos.py): pesan cientos de MB
+modelos/
+# Claves y secretos (ElevenLabs, etc.): solo en este equipo. Plantilla: .env.ejemplo
+.env
+.env.*
+!.env.ejemplo
+# Música de fondo: cada equipo sube sus pistas (con su licencia) desde Configuración
+datos/musica/
