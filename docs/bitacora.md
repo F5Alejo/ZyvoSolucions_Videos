@@ -8,6 +8,16 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-09-30 · Rama `Alejodev` en ZyvoSolucions_Videos
+
+- El desarrollo sigue en este repositorio. Se creó la rama `Alejodev` desde `main` (`59cf9da`) y se subió.
+  Como antes: se trabaja en `Alejodev`, con un commit por tema y sin coautoría, y `main` solo se
+  actualiza cuando se pide, con las pruebas en verde y con un avance directo.
+- El servidor local se deja en su propia ventana de PowerShell («Estudio de video - localhost:8765»),
+  para que no lo corte el tiempo máximo de las tareas en segundo plano del asistente.
+
+---
+
 ## 2026-09-30 · El proyecto pasa a `F5Alejo/ZyvoSolucions_Videos`
 
 ### Qué se hizo
