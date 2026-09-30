@@ -22,6 +22,15 @@ resolvieron) y **Pendiente**.
   Si llega un push nuevo a la misma rama, se cancela la ejecución anterior.
 - README: sección «GitHub Actions y ramas».
 
+- **Primera ejecución en verde:** 75 pruebas de pytest (con ffmpeg 7.0.2 estático y Chromium, sin saltarse ninguna) y 10 de Vitest, en unos 2 minutos. Actions ya estaba activado en el repositorio (Settings → Actions → General: «Allow all actions»); no hizo falta cambiar nada ahí.
+
+### Errores y cómo se resolvieron
+- **`apt-get` se colgó más de 20 min instalando ffmpeg** en la primera ejecución. Se canceló, y ahora se descarga la versión estática de johnvansickle.com (un archivo), con `apt` de respaldo y un tiempo límite de 5 min. Chromium se instala sin `--with-deps`, que también usa `apt`: las imágenes de Ubuntu de GitHub ya traen sus librerías.
+- **GitHub avisó que las acciones en v4 usan Node 20, que está obsoleto.** Se pasaron a `actions/checkout@v7`, `actions/setup-python@v7` y `actions/setup-node@v7`.
+
+### Pendiente
+- `ubuntu-latest` pasa a Ubuntu 26 el 19-oct-2026. Si algo falla ese día, fijar `runs-on: ubuntu-24.04`.
+
 ### Decisiones
 - **Las pruebas no necesitan secretos en GitHub:** usan una voz de prueba y Ollama simulado, así que no hace falta subir la clave de ElevenLabs a los *secrets* del repositorio.
 - **Flujo de ramas:** se trabaja en `Alejodev` y `main` se actualiza desde `Alejodev` solo con las pruebas en verde.
