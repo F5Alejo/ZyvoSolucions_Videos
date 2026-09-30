@@ -8,6 +8,53 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-09-30 · Frente C (y B4): agentes locales que proponen mejoras
+
+### Qué se hizo
+- **Base (`motor/agentes/`):**
+  - `ollama.py` es el cliente: salida JSON con esquema, `think: false`, `temperature` 0,2, y el modelo se descarga al terminar cada agente;
+  - `guardas.py` descarta cualquier propuesta que traiga una cifra o una norma que no esté en la lámina;
+  - `base.py` tiene el registro, la ejecución en la cola y las propuestas (pendiente, aceptada o descartada), y guarda con qué se hizo cada una (el modelo, «reglas» o «whisper small»).
+- **Ediciones del curso** (`trabajo["ediciones"]`): título, viñetas y narración corregidos, sin tocar el original del PPTX. Las usan el resumen, las escenas y `curso.json`. En el paso Guion cada lámina tiene «Editar» y «Original».
+- **Los 8 agentes:**
+
+  | Agente | Con IA | Sin IA |
+  | --- | --- | --- |
+  | Redactor de pantalla | `qwen3:4b` | Recorta a 8 y 10 palabras |
+  | Guionista | `qwen3:4b` | Arma la narración con título y viñetas |
+  | Verificador normativo | — | Clasifica cada cita, la cruza con los pendientes de la marca y, al aceptarla, queda como «fuente revisada» en el chequeo |
+  | Director de animación (B4) | `qwen3:4b`, en lotes de 10 láminas y solo con listas cerradas del catálogo | Cifra → escalar; portada → palabra por palabra; muchas viñetas → más seguidas; imagen → revelar |
+  | Evaluador | `qwen3:4b` (sin IA no corre) | — |
+  | Publicador | `qwen3:4b` | Plantilla de texto; los capítulos son los reales |
+  | Descriptor de imágenes | `qwen3.5:2b` con visión | Imágenes pequeñas o muy alargadas = adorno; si no es contenido, la escena no la usa como foto |
+  | Revisor de voz | faster-whisper `small` en int8 | — |
+
+  El Revisor de voz transcribe el MP4 y lo compara con el guion; los dos textos se normalizan igual.
+- **Exportes:** el banco de preguntas sale en GIFT y Moodle XML (`/banco.gift` y `/banco.xml`), y el ZIP incluye `publicacion.md` y el banco en los dos formatos.
+- **Interfaz:**
+  - `PanelAgentes.vue` en Presentación, Guion, Animación y Resultado: proponer, ver el avance y cada propuesta con su «ahora» y su «propuesta», aceptar, descartar o aceptar todas;
+  - Configuración muestra qué agentes tienen IA hoy.
+- `instalar.ps1 -ConAgentes` baja los modelos de Ollama.
+- **Pruebas:** `tests/test_agentes.py` (13) con Ollama simulado.
+- **Probado con los modelos reales** en el curso demo:
+  - Redactor, 22 s; Director, 25 s; Publicador, 32 s; Evaluador, 32 s; Descriptor (visión), 59 s;
+  - Revisor de voz, 5 s (más la descarga única del modelo), con 100 % de coincidencia.
+
+### Decisiones
+- **Nada se aplica solo.** Aceptar una propuesta es lo que cambia el curso, y el cambio queda como edición: siempre se puede volver al original.
+- **Los agentes van en la cola de los renders.** El equipo tiene 8 GB y un modelo de 4 B más Chromium no caben juntos con holgura.
+- **El Director no puede inventar efectos:** el esquema JSON solo admite los del catálogo, y lo que no valida cae a las reglas.
+
+### Errores y cómo se resolvieron
+- **Con `keep_alive: 0` Ollama recargaba el modelo en cada pregunta** (Redactor: 79 s para 2 láminas). Ahora el modelo queda cargado 2 min mientras trabaja el agente y se descarga al terminar (`ollama.descargar`): 22 s. `ollama ps` confirma que no queda en memoria.
+- **faster-whisper 1.2.1 falla al leer audio con la versión de PyAV instalada** («unexpected keyword argument 'metadata_errors'»). El audio se decodifica con ffmpeg y se pasa como muestras.
+- **El Revisor de voz daba un falso 73 %:** Whisper escribe «1503» y el guion «mil quinientos tres». Ahora la transcripción pasa por la misma normalización.
+- **La guarda contaba dos veces la misma cifra** (como cifra y como norma). Una norma solo se marca si sus números ya estaban pero el texto cambió («Decreto 1503» donde decía «Ley 1503»). Además compara sin espacios («30%» = «30 %»).
+- **`instalar.ps1` estaba en git con `\r\r\n`** (una conversión de saltos de línea anterior); PowerShell lo toleraba. Se corrigió, y `.gitattributes` fija `*.ps1` en CRLF.
+- **Bash no aceptó un script largo en línea** («unexpected EOF»). Los scripts largos se guardan en la carpeta temporal y se ejecutan desde ahí.
+
+---
+
 ## 2026-09-30 · Frente B3: editor de animación con vista previa en vivo
 
 ### Qué se hizo

@@ -4,6 +4,8 @@
 > de control (ver [`bitacora.md`](bitacora.md)). La cola con progreso, prevista para la Fase 2,
 > se adelantó porque sin ella no se puede producir desde la interfaz. Siguiente: Fase 2.
 
+> La segunda ronda (configuración, plantillas de animación y agentes) está en [`plan-ronda-2.md`](plan-ronda-2.md).
+
 ## Contexto
 El estudio (`interfaz/`) ya cubre los pasos 1 a 4:
 - Lee el PPTX (`app/extractor.py`).

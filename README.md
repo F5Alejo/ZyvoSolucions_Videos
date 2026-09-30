@@ -30,7 +30,8 @@ powershell -ExecutionPolicy Bypass -File instalar.ps1
 El script crea `.venv`, instala las librerías de Python, Chromium y las voces Kokoro y Piper,
 compila la interfaz y pide la clave de ElevenLabs para guardarla en `.env` (Enter para dejarla
 vacía). Se puede volver a correr: salta lo que ya está. Opciones: `-InstalarFfmpeg` (con winget),
-`-SinModelos` y `-Probar` (corre las pruebas al final). Al terminar dice qué quedó pendiente.
+`-SinModelos`, `-ConAgentes` (baja los modelos de Ollama, ~5 GB) y `-Probar` (corre las pruebas al
+final). Al terminar dice qué quedó pendiente.
 
 Lo que git no trae y el script resuelve: `.venv`, `frontend/node_modules` y `frontend/dist`,
 Chromium, `modelos/` y `.env`. Lo que no resuelve: `config.local.json` (opcional, rutas de tu
@@ -85,6 +86,42 @@ En **Resultado**, cada video tiene «Producir video». Sale en `datos/trabajos/<
 el `.mp4` (1920×1080, H.264 + AAC, -14 LUFS), sus subtítulos `.vtt` y `.srt`, y `qa.json` con el
 control de calidad. El plan y la bitácora de desarrollo están en `docs/`.
 
+### Configuración (`/configuracion`)
+
+Todo lo que antes estaba fijo en el código se elige aquí y se guarda en `datos/configuracion.json`:
+resolución (1080p/720p), fps (25/30/60), calidad (final o borrador), subtítulos dentro de la imagen,
+el ritmo de cada lámina, el volumen final (-14/-16/-23 LUFS), la música de fondo (se sube con su
+licencia y baja sola cuando habla la voz), el MP4 completo del curso (tarjetas y capítulos) y los
+agentes. Muestra también qué tiene el equipo (ffmpeg, navegador, voces, clave, Ollama, disco) y cómo
+arreglar lo que falta. Cada curso puede cambiar estos ajustes para sí mismo en «Marca y voz».
+
+### Animación
+
+Cinco estilos de fábrica (Sobria, Dinámica, Cinética, Corporativa y Mínima) en `datos/animaciones/`.
+En el paso **Animación** de cada curso se elige el estilo y se edita la **entrada y la salida** de
+cada elemento (título, viñetas, imagen, línea, antetítulo, fondo, logo y barra de avance): efecto,
+duración, espera, curva y separación. Se puede cambiar todo el curso o solo una lámina, guardar el
+resultado como plantilla propia y verlo animándose en vivo antes de producir.
+
+### Agentes con IA local
+
+Proponen mejoras que una persona acepta o descarta; nada cambia solo. Usan Ollama (`qwen3:4b` y
+`qwen3.5:2b`, gratuitos y locales: el material del cliente no sale del equipo) y, si no está, reglas
+simples. Corren en la misma cola que los renders, uno a la vez.
+
+| Agente | Paso | Qué propone |
+| --- | --- | --- |
+| Descriptor de imágenes | Presentación | Si cada imagen es contenido o adorno, y su texto alternativo |
+| Redactor de pantalla | Guion | Títulos y viñetas cortas para leer mientras habla la voz |
+| Guionista | Guion | Narración para láminas sin notas; acortar videos de más de 4 min |
+| Verificador normativo | Guion | Cada cifra y norma con la pregunta por su fuente (sin IA) |
+| Director de animación | Animación | Estilo y efectos por lámina, solo del catálogo |
+| Evaluador | Resultado | Preguntas por video; se exportan a Moodle (GIFT y XML) |
+| Publicador | Resultado | Título, descripción con capítulos, etiquetas e historias |
+| Revisor de voz | Resultado | Escucha el video (Whisper local) y lo compara con el guion |
+
+Ninguna propuesta puede traer cifras o normas que no estén en la lámina: si aparecen, se descarta.
+
 ### Conectar el repositorio de videos
 
 Copia `config.ejemplo.json` como `config.local.json` y pon las rutas de tu equipo:
@@ -110,7 +147,8 @@ npm test                           # utilidades y componentes (Vitest)
 | --- | --- |
 | `/` | Inicio: cifras, cómo funciona, tus cursos y piezas de marketing ya hechas |
 | `/cursos/nuevo` | Subir un PPTX (arrastrar y soltar, progreso de subida) |
-| `/cursos/:id` | El curso en cuatro pasos: Presentación · Guion · Marca y voz · Resultado |
+| `/cursos/:id` | El curso en cinco pasos: Presentación · Guion · Marca y voz · Animación · Resultado |
+| `/configuracion` | Cómo se producen los videos, música, agentes y qué tiene este equipo |
 | `/videos` | Todos los videos, con filtros que quedan en la dirección y columnas ordenables |
 | `/videos/:id` | Un video: reproducción, siguiente paso (aprobar, entregar…) e historial |
 | `/marcas/:id` | Ficha de la marca; RiskMann con su paleta en cuatro capas y la fuente de cada color |
@@ -126,7 +164,8 @@ npm test                           # utilidades y componentes (Vitest)
 | Videos | Un video por sección si el PPTX las marca (forma `section`); si no, por duración | Funciona |
 | Marca y voz | Las cuatro marcas y las voces con su muestra; se guarda solo | Funciona |
 | Resultado | Plan de videos, preguntas, revisión, `curso.json` y **orden de producción** | Funciona |
-| Render | «Producir video» en cada tarjeta: voz, escenas de marca, subtítulos VTT/SRT y control de calidad → MP4 listo para subir | Funciona (16:9) |
+| Animación | Estilo y entrada/salida de cada elemento, por curso o por lámina, con vista previa en vivo | Funciona |
+| Render | «Producir video» por tarjeta o «Producir lo que falta y el completo»: MP4 por video, MP4 completo con capítulos, subtítulos y paquete ZIP | Funciona (16:9) |
 
 La duración se estima con la velocidad medida en csm (2,394 palabras por segundo con Carlos,
 más 2,3 s por lámina): para csm da 33:24 frente a los ~33 min reales.
