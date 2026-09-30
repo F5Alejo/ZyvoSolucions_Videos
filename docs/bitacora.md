@@ -8,6 +8,27 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-09-30 · Frente B3: editor de animación con vista previa en vivo
+
+### Qué se hizo
+- **API:**
+  - `GET /api/animaciones`: plantillas y catálogo (efectos por elemento, curvas y límites);
+  - `POST /api/animaciones` para guardar una plantilla propia, y `DELETE` solo para las propias;
+  - `GET` y `PUT /api/trabajos/{id}/animacion`, validado contra el catálogo.
+- **Vista previa:** `POST /api/trabajos/{id}/escena/{n}` devuelve el HTML de la lámina con **lo que se está editando, sin guardar**, en bucle (entrada, 1,6 s quieta y salida). La fuente, el logo y las imágenes se sirven por la API (`/api/escenas/fuente.ttf`, `/api/escenas/logo/{marca}` y `/api/trabajos/{id}/media/{nombre}`, solo imágenes de esa carpeta).
+- **Paso nuevo «Animación»** (5 pasos en el curso), en `PasoAnimacion.vue`:
+  - estilos para elegir y alcance («Todo el curso» o «Solo la lámina N», marcando las láminas con animación propia);
+  - editor por elemento con pestañas Entrada y Salida: efecto, curva, duración, espera o adelanto y separación entre viñetas o palabras;
+  - botón de restaurar, «Guardar como plantilla nueva» y vista previa escalada con `ResizeObserver`.
+- `utils.ts`: `resolverAnimacion` y `fijarAjuste` (la misma lógica por capas que el servidor), con pruebas de Vitest.
+
+### Errores y cómo se resolvieron
+- **`structuredClone` falla con los objetos reactivos de Vue** («#<Object> could not be cloned»). Afectaba también a «Ajustes de este curso» del paso Marca y voz, sin que se hubiera notado. Se cambió por `clonar()` (copia por JSON) en todo el frontend.
+- **La vista previa corre en un iframe aislado** (`sandbox`, origen «null»), así que el navegador bloqueaba la fuente por CORS. La ruta de la fuente, que es pública (OFL), responde `Access-Control-Allow-Origin: *`.
+- Al probar con Playwright desde la terminal, la tilde de «Cinética» llegaba dañada. Se busca por el valor (`cinetica`).
+
+---
+
 ## 2026-09-30 · Frente B1/B2: plantillas de animación con entradas y salidas
 
 ### Qué se hizo

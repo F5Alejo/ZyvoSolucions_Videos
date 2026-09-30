@@ -9,6 +9,7 @@ import AjustesVideoForm from "../components/AjustesVideoForm.vue";
 import EncabezadoPagina from "../components/EncabezadoPagina.vue";
 import EstadoCarga from "../components/EstadoCarga.vue";
 import type { Configuracion, PistaMusica, RespuestaConfig, Sistema } from "../tipos";
+import { clonar } from "../utils";
 
 const { datos: respuesta, cargando, error, recargar } = useCarga(() => api.get<RespuestaConfig>("/api/configuracion"));
 const sistema = ref<Sistema | null>(null);
@@ -19,7 +20,7 @@ const borrador = ref<Configuracion | null>(null);
 const musica = ref<PistaMusica[]>([]);
 watch(respuesta, (r) => {
   if (!r) return;
-  borrador.value = structuredClone(r.configuracion);
+  borrador.value = clonar(r.configuracion);
   musica.value = r.musica;
 }, { immediate: true });
 
@@ -40,7 +41,7 @@ async function guardar() {
 }
 
 function descartar() {
-  if (respuesta.value) borrador.value = structuredClone(respuesta.value.configuracion);
+  if (respuesta.value) borrador.value = clonar(respuesta.value.configuracion);
 }
 
 async function revisarSistema(forzar = false) {

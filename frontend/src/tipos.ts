@@ -106,6 +106,7 @@ export interface Trabajo {
   videos: { clave: string; titulo: string; laminas: number[] }[];
   excluidas: Record<string, string>;
   banco: Banco | null;
+  animacion?: { plantilla: string | null } | null;
 }
 
 export interface Resumen {
@@ -229,4 +230,23 @@ export interface Sistema {
   voces: { id: string; nombre: string; proveedor: string; ok: boolean; detalle: string }[];
   ollama: Revision & { encendido: boolean; modelos: string[] };
   disco: Revision;
+}
+
+/** Animación (GET /api/animaciones y /api/trabajos/:id/animacion). */
+export type Fase = "entrada" | "salida";
+export interface PasoAnim { efecto: string; duracion: number; retardo: number; curva: string; escalonado: number }
+export type ElementosAnim = Record<string, Record<Fase, PasoAnim>>;
+export type AjustesAnim = Record<string, Partial<Record<Fase, Partial<PasoAnim>>>>;
+export interface PlantillaAnim { id: string; nombre: string; descripcion: string; elementos: ElementosAnim; propia: boolean }
+export interface AnimacionCurso {
+  plantilla: string | null;
+  ajustes: AjustesAnim;
+  laminas: Record<string, { plantilla: string | null; ajustes: AjustesAnim }>;
+}
+export interface CatalogoAnim {
+  plantillas: PlantillaAnim[];
+  elementos: Record<string, { nombre: string; entrada: { id: string; nombre: string }[]; salida: { id: string; nombre: string }[] }>;
+  curvas: { id: string; nombre: string }[];
+  limites: Record<"duracion" | "retardo" | "escalonado", { min: number; max: number }>;
+  continuos: string[];
 }

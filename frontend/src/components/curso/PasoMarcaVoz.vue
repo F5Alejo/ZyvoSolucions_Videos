@@ -6,7 +6,7 @@ import { avisar } from "../../composables/avisos";
 import { catalogo } from "../../composables/catalogo";
 import AjustesVideoForm from "../AjustesVideoForm.vue";
 import type { AjustesVideo, RespuestaConfig, TrabajoCompleto } from "../../tipos";
-import { diferencias } from "../../utils";
+import { clonar, diferencias } from "../../utils";
 
 const props = defineProps<{ datos: TrabajoCompleto }>();
 const emit = defineEmits<{ actualizado: [TrabajoCompleto] }>();
@@ -25,7 +25,7 @@ const FORMATOS = [
 
 // ── Ajustes de producción propios de este curso ──
 const GRUPOS = ["video", "tiempos", "audio", "completo"] as const;
-const soloAjustes = (c: AjustesVideo): AjustesVideo => structuredClone(Object.fromEntries(GRUPOS.map((g) => [g, c[g]])) as unknown as AjustesVideo);
+const soloAjustes = (c: AjustesVideo): AjustesVideo => clonar(Object.fromEntries(GRUPOS.map((g) => [g, c[g]])) as unknown as AjustesVideo);
 const config = ref<RespuestaConfig | null>(null);
 const ajustes = ref<AjustesVideo | null>(null);
 const guardados = ref<AjustesVideo | null>(null);

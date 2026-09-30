@@ -117,3 +117,46 @@ def test_el_revisor_de_encuadre_detecta_texto_que_no_cabe(tmp_path, datos_copia)
     problemas = render.video([(bien, 60, 1.0, 0.3), (mal, 60, 1.0, 0.3)], 1920, 1080, tmp_path / "v.mp4", tmp_path / "t")
     assert problemas and all(p["escena"] == 1 for p in problemas)
     assert (tmp_path / "v.mp4").exists()
+
+
+# ── API ──────────────────────────────────────────────────────────────────────
+
+@pytest.fixture()
+def cliente(datos_copia):
+    from fastapi.testclient import TestClient
+    from app.main import app
+    return TestClient(app)
+
+
+def test_api_de_animaciones(cliente):
+    from tests.test_motor import pptx_con_foto
+    cat = cliente.get("/api/animaciones").json()
+    assert {p["id"] for p in cat["plantillas"]} >= {"sobria", "cinetica"}
+    assert {"id": "palabra-por-palabra", "nombre": "Palabra por palabra"} in cat["elementos"]["titulo"]["entrada"]
+    assert all(x["id"] != "palabra-por-palabra" for x in cat["elementos"]["vinetas"]["entrada"])
+
+    id_ = cliente.post("/api/trabajos", files={"archivo": ("x.pptx", pptx_con_foto())}).json()["id"]
+    a = {"plantilla": "corporativa", "ajustes": {"titulo": {"salida": {"efecto": "desenfoque"}}},
+         "laminas": {"2": {"plantilla": "cinetica"}}}
+    assert cliente.put(f"/api/trabajos/{id_}/animacion", json=a).status_code == 200
+    guardada = cliente.get(f"/api/trabajos/{id_}/animacion").json()
+    assert guardada["plantilla"] == "corporativa" and guardada["animacion"]["laminas"]["2"]["plantilla"] == "cinetica"
+    assert cliente.put(f"/api/trabajos/{id_}/animacion", json={"plantilla": "no-existe"}).status_code == 400
+
+    # Vista previa: sin rutas locales, con el bucle y con lo que se está editando (sin guardar).
+    html = cliente.post(f"/api/trabajos/{id_}/escena/2", json={"animacion": {"plantilla": "sobria"}}).text
+    assert "file://" not in html and "/api/escenas/fuente.ttf" in html and "setInterval" in html
+    assert "/api/trabajos/" in html and "/media/" in html  # la lámina 2 trae foto
+    assert cliente.get("/api/escenas/fuente.ttf").status_code == 200
+    assert cliente.get(f"/api/trabajos/{id_}/escena/9").status_code == 404
+    assert cliente.get(f"/api/trabajos/{id_}/media/..%2Ftrabajo.json").status_code == 404
+
+
+def test_plantillas_propias(cliente):
+    base = next(p for p in cliente.get("/api/animaciones").json()["plantillas"] if p["id"] == "sobria")
+    r = cliente.post("/api/animaciones", json={"nombre": "Mi estilo", "descripcion": "prueba", "elementos": base["elementos"]})
+    assert r.status_code == 201 and r.json()["id"] == "propia-mi-estilo" and r.json()["propia"] is True
+    assert cliente.post("/api/animaciones", json={"nombre": "Mi estilo", "elementos": base["elementos"]}).json()["id"] == "propia-mi-estilo-2"
+    assert cliente.post("/api/animaciones", json={"nombre": "Rota", "elementos": {"titulo": base["elementos"]["titulo"]}}).status_code == 400
+    assert cliente.delete("/api/animaciones/sobria").status_code == 400  # las de fábrica no se borran
+    assert cliente.delete("/api/animaciones/propia-mi-estilo").status_code == 204

@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { mount } from "@vue/test-utils";
 import TextoResaltado from "./components/TextoResaltado.vue";
-import { cuenta, diferencias, mmss, normalizar, resaltar } from "./utils";
+import { cuenta, diferencias, fijarAjuste, mmss, normalizar, resaltar, resolverAnimacion } from "./utils";
+import type { PlantillaAnim } from "./tipos";
 
 describe("utilidades", () => {
   it("formatea minutos y segundos", () => {
@@ -51,5 +52,30 @@ describe("diferencias", () => {
     const nuevo = { video: { fps: 60, calidad: "final" }, audio: { lufs: -14, musica: null } };
     expect(diferencias(base, nuevo)).toEqual({ video: { fps: 60 } });
     expect(diferencias(base, structuredClone(base))).toEqual({});
+  });
+});
+
+describe("animación por capas", () => {
+  const paso = (efecto: string) => ({ efecto, duracion: 0.5, retardo: 0, curva: "suave", escalonado: 0 });
+  const plantillas: PlantillaAnim[] = [
+    { id: "sobria", nombre: "Sobria", descripcion: "", propia: false, elementos: { titulo: { entrada: paso("aparecer"), salida: paso("aparecer") } } },
+    { id: "cinetica", nombre: "Cinética", descripcion: "", propia: false, elementos: { titulo: { entrada: paso("rebote"), salida: paso("desenfoque") } } },
+  ];
+  const vacia = { plantilla: null, ajustes: {}, laminas: {} };
+
+  it("usa la plantilla por defecto, luego la del curso y luego la de la lámina", () => {
+    expect(resolverAnimacion(plantillas, vacia, "sobria", null).plantilla).toBe("sobria");
+    const a = { ...vacia, plantilla: "cinetica", laminas: { "3": { plantilla: "sobria", ajustes: {} } } };
+    expect(resolverAnimacion(plantillas, a, "sobria", 1).plantilla).toBe("cinetica");
+    expect(resolverAnimacion(plantillas, a, "sobria", 3).plantilla).toBe("sobria");
+  });
+
+  it("un ajuste va a su capa y no toca las demás", () => {
+    let a = fijarAjuste(vacia, null, "titulo", "entrada", "duracion", 1.2);
+    a = fijarAjuste(a, 2, "titulo", "salida", "efecto", "subir");
+    expect(resolverAnimacion(plantillas, a, "sobria", 1).elementos.titulo!.entrada.duracion).toBe(1.2);
+    expect(resolverAnimacion(plantillas, a, "sobria", 1).elementos.titulo!.salida.efecto).toBe("aparecer");
+    expect(resolverAnimacion(plantillas, a, "sobria", 2).elementos.titulo!.salida.efecto).toBe("subir");
+    expect(vacia.ajustes).toEqual({}); // no muta la original
   });
 });

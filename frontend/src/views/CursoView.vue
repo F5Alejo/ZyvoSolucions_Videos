@@ -13,6 +13,7 @@ import PasoPresentacion from "../components/curso/PasoPresentacion.vue";
 import PasoGuion from "../components/curso/PasoGuion.vue";
 import PasoMarcaVoz from "../components/curso/PasoMarcaVoz.vue";
 import PasoResultado from "../components/curso/PasoResultado.vue";
+import PasoAnimacion from "../components/curso/PasoAnimacion.vue";
 import type { TrabajoCompleto } from "../tipos";
 import { cuenta, mmss } from "../utils";
 
@@ -25,6 +26,7 @@ const PASOS = [
   { id: "presentacion", titulo: "Presentación" },
   { id: "guion", titulo: "Guion" },
   { id: "marca", titulo: "Marca y voz" },
+  { id: "animacion", titulo: "Animación" },
   { id: "resultado", titulo: "Resultado" },
 ] as const;
 type Paso = (typeof PASOS)[number]["id"];
@@ -56,6 +58,8 @@ function detalle(p: Paso): string {
       const v = catalogo.value?.voces.find((x) => x.id === t.voz)?.nombre ?? t.voz;
       return `${m} · ${v}`;
     }
+    case "animacion":
+      return t.animacion?.plantilla ? `Estilo: ${t.animacion.plantilla}` : "Estilo por defecto";
     case "resultado":
       return `${cuenta(r.videos.length, "video")} · ${mmss(r.segundos)} min`;
   }
@@ -106,7 +110,7 @@ function actualizar(nuevo: TrabajoCompleto) {
     <!-- Los cuatro pasos -->
     <nav class="sticky top-[60px] z-20 -mx-4 mb-8 bg-fondo/95 px-4 py-2 backdrop-blur sm:-mx-6 sm:px-6 lg:top-0 lg:-mx-10 lg:px-10"
          aria-label="Pasos del curso">
-      <ol class="grid grid-cols-4 gap-2">
+      <ol class="grid grid-cols-5 gap-2">
         <li v-for="(p, i) in PASOS" :key="p.id">
           <button type="button" :aria-current="paso === p.id ? 'step' : undefined" @click="ir(p.id)"
             class="flex w-full flex-col items-center gap-1 rounded-xl border px-2 py-2 text-center transition sm:flex-row sm:gap-3 sm:px-3 sm:py-2.5 sm:text-left"
@@ -127,6 +131,7 @@ function actualizar(nuevo: TrabajoCompleto) {
     <PasoPresentacion v-if="paso === 'presentacion'" :datos="d" />
     <PasoGuion v-else-if="paso === 'guion'" :datos="d" @actualizado="actualizar" />
     <PasoMarcaVoz v-else-if="paso === 'marca'" :datos="d" @actualizado="actualizar" />
+    <PasoAnimacion v-else-if="paso === 'animacion'" :datos="d" @actualizado="actualizar" />
     <PasoResultado v-else :datos="d" @eliminar="eliminar" />
 
     <!-- Avanzar o volver -->

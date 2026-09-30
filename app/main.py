@@ -10,11 +10,12 @@ from collections import Counter
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel
 
 from app import configuracion, datos, extractor, taller
-from motor import cola, diagnostico, empaquetar, produccion
+from motor import cola, diagnostico, empaquetar, escenas, produccion
+from motor.escenas import animacion, efectos
 from motor import voz as motor_voz
 
 RAIZ = Path(__file__).resolve().parent.parent
@@ -25,6 +26,11 @@ EXTENSIONES_REPO = {".png", ".jpg", ".jpeg", ".webp", ".svg", ".pdf", ".md", ".t
 EXTENSIONES_ENTREGABLES = {".mp4", ".webm", ".mp3", ".txt"}
 
 app = FastAPI(title="Estudio de video RiskMann", docs_url="/api/docs", openapi_url="/api/openapi.json")
+
+
+@app.exception_handler(animacion.AnimacionInvalida)
+def _animacion_invalida(_, e: animacion.AnimacionInvalida):
+    return JSONResponse({"detail": str(e)}, status_code=400)
 
 
 @app.exception_handler(ValueError)
@@ -307,6 +313,121 @@ def api_ajustes_video(id_: str, cuerpo: AjustesVideo):
 def api_ver_ajustes_video(id_: str):
     t = _trabajo_o_404(id_)
     return {"propios": t.get("ajustes_video") or {}, "efectivos": configuracion.para_trabajo(t)}
+
+
+# ── Animaciones ──────────────────────────────────────────────────────────────
+
+@app.get("/api/animaciones")
+def api_animaciones():
+    """Las plantillas y el catálogo: qué efectos admite cada elemento, curvas y límites."""
+    return {
+        "plantillas": list(animacion.plantillas().values()),
+        "elementos": {el: {"nombre": d["nombre"],
+                           "entrada": [{"id": x, "nombre": efectos.NOMBRES[x]} for x in d["entrada"]],
+                           "salida": [{"id": x, "nombre": efectos.NOMBRES[x]} for x in d["salida"]]}
+                      for el, d in efectos.ELEMENTOS.items()},
+        "curvas": [{"id": k, "nombre": v} for k, v in efectos.NOMBRES_CURVAS.items()],
+        "limites": {k: {"min": a, "max": b} for k, (a, b) in efectos.LIMITES.items()},
+        "continuos": list(efectos.CONTINUOS),
+    }
+
+
+@app.post("/api/animaciones", status_code=201)
+def api_guardar_plantilla(p: dict):
+    """Guarda una plantilla propia (duplicada o editada desde un curso)."""
+    return animacion.guardar_propia(p)
+
+
+@app.delete("/api/animaciones/{id_}", status_code=204)
+def api_borrar_plantilla(id_: str):
+    animacion.borrar_propia(id_)
+
+
+@app.get("/api/trabajos/{id_}/animacion")
+def api_animacion_curso(id_: str):
+    t = _trabajo_o_404(id_)
+    a = animacion.validar_curso(t.get("animacion"))
+    return {"animacion": a, "defecto": configuracion.leer()["cursos"]["animacion"],
+            "plantilla": animacion.plan(t, t["laminas"][0]["n"])["plantilla"] if t["laminas"] else None}
+
+
+@app.put("/api/trabajos/{id_}/animacion")
+def api_guardar_animacion_curso(id_: str, a: dict):
+    t = _trabajo_o_404(id_)
+    t["animacion"] = animacion.validar_curso(a)
+    taller.guardar(t)
+    return _trabajo_completo(t)
+
+
+def _escena_vista_previa(t: dict, n: int, a: dict | None, formato: str) -> str:
+    """El HTML de una lámina con sus animaciones corriendo en bucle, para verla en el navegador."""
+    from motor.produccion import _logo, _media
+    if formato not in escenas.FORMATOS:
+        raise ValueError("Formato desconocido")
+    lamina = next((l for l in t["laminas"] if l["n"] == n), None)
+    if lamina is None:
+        raise HTTPException(404, "Ese curso no tiene esa lámina")
+    video = next((v for v in t["videos"] if n in v["laminas"]), {"titulo": t["nombre"], "laminas": [n]})
+    indice = video["laminas"].index(n)
+    prueba = {**t, "animacion": animacion.validar_curso(a) if a is not None else t.get("animacion")}
+    plan = animacion.plan(prueba, n)
+    media = _media(t)
+    vista = escenas.vista(lamina, indice, len(video["laminas"]), video["titulo"], media, t["nombre"])
+    ent, sal = animacion.duraciones(plan, vista)
+    segundos = round(ent + 1.6 + sal, 2)
+    marca = datos.marcas()[t["marca"]]
+    logo = _logo(marca)
+    html = escenas.html(vista, escenas.estilo(marca, logo), formato, plan=plan, segundos=segundos)
+    # En el navegador no se abren rutas locales (file://): se sirven por la API.
+    html = html.replace(escenas.FUENTE.resolve().as_uri(), "/api/escenas/fuente.ttf")
+    if logo:
+        html = html.replace(logo.resolve().as_uri(), f"/api/escenas/logo/{t['marca']}")
+    if media:
+        html = html.replace(media.resolve().as_uri() + "/", f"/api/trabajos/{t['id']}/media/")
+    bucle = (f"<script>setInterval(() => {{ for (const a of document.getAnimations()) {{ a.currentTime = 0; a.play(); }} }},"
+             f" {int(segundos * 1000) + 700});</script>")
+    return html.replace("</body>", bucle + "</body>")
+
+
+class VistaPrevia(BaseModel):
+    animacion: dict | None = None  # sin guardar: lo que se está editando
+    formato: str = "16:9"
+
+
+@app.post("/api/trabajos/{id_}/escena/{n}", response_class=HTMLResponse)
+def api_vista_previa(id_: str, n: int, cuerpo: VistaPrevia):
+    return HTMLResponse(_escena_vista_previa(_trabajo_o_404(id_), n, cuerpo.animacion, cuerpo.formato))
+
+
+@app.get("/api/trabajos/{id_}/escena/{n}", response_class=HTMLResponse)
+def api_vista_previa_guardada(id_: str, n: int, formato: str = "16:9"):
+    return HTMLResponse(_escena_vista_previa(_trabajo_o_404(id_), n, None, formato))
+
+
+@app.get("/api/escenas/fuente.ttf")
+def api_fuente():
+    # La vista previa corre en un iframe aislado (origen «null»): la fuente (OFL, pública) se permite a cualquiera.
+    return FileResponse(escenas.FUENTE, media_type="font/ttf", headers={"Access-Control-Allow-Origin": "*"})
+
+
+@app.get("/api/escenas/logo/{marca}")
+def api_logo_escena(marca: str):
+    from motor.produccion import _logo
+    m = datos.marcas().get(marca)
+    ruta = _logo(m) if m else None
+    if ruta is None:
+        raise HTTPException(404)
+    return FileResponse(ruta)
+
+
+@app.get("/api/trabajos/{id_}/media/{nombre}")
+def api_media_trabajo(id_: str, nombre: str):
+    """Las imágenes extraídas del PPTX del curso (solo imágenes, solo de su carpeta)."""
+    t = _trabajo_o_404(id_)
+    ruta = taller.ruta_trabajo(t["id"]).parent / "media" / Path(nombre).name
+    if ruta.suffix.lower() not in {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".svg", ".tif", ".tiff", ".emf", ".wmf"} or not ruta.is_file():
+        raise HTTPException(404)
+    return FileResponse(ruta)
 
 
 # ── Configuración y diagnóstico ──────────────────────────────────────────────
