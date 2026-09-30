@@ -23,21 +23,38 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
 
+      # La versión estática de ffmpeg (un solo archivo): apt-get se colgó más de 20 min en la
+      # primera ejecución. Si la descarga falla, se intenta con apt, con tiempo límite.
       - name: ffmpeg
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+        timeout-minutes: 8
+        run: |
+          set -e
+          if curl -fsSL --retry 3 --max-time 180 -o /tmp/ffmpeg.tar.xz                https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz; then
+            mkdir -p "$HOME/ffmpeg" && tar -xJf /tmp/ffmpeg.tar.xz -C "$HOME/ffmpeg" --strip-components=1
+            echo "$HOME/ffmpeg" >> "$GITHUB_PATH"
+          else
+            sudo timeout 300 apt-get update && sudo timeout 300 apt-get install -y --no-install-recommends ffmpeg
+          fi
+
+      - name: ffmpeg instalado
+        run: ffmpeg -version | head -1
 
       - name: Librerías de Python
+        timeout-minutes: 10
         run: pip install -r requirements.txt
 
       - name: Navegador que dibuja las escenas (Chromium)
-        run: python -m playwright install --with-deps chromium
+        timeout-minutes: 10
+        # Las imágenes de Ubuntu de GitHub ya traen las librerías de Chrome; --with-deps (que usa apt)
+        # queda solo de respaldo.
+        run: python -m playwright install chromium || python -m playwright install --with-deps chromium
 
       # Las pruebas usan una voz de prueba y Ollama simulado: no hacen falta modelos ni claves.
       - name: pytest
@@ -51,9 +68,9 @@ jobs:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "22"
           cache: npm
