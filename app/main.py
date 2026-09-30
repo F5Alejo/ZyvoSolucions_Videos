@@ -13,8 +13,8 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse, JSONResponse, Response
 from pydantic import BaseModel
 
-from app import datos, extractor, taller
-from motor import cola
+from app import configuracion, datos, extractor, taller
+from motor import cola, diagnostico, produccion
 from motor import voz as motor_voz
 
 RAIZ = Path(__file__).resolve().parent.parent
@@ -184,6 +184,7 @@ def api_banco(id_: str):
 def _produccion(t: dict) -> dict:
     """Estado de cada video del curso en el motor, con lo que la interfaz necesita para mostrarlo."""
     voz = next((v for v in taller.voces() if v["id"] == t["voz"]), {})
+    firma_actual = produccion.firma(t)
     videos = {}
     for clave, e in cola.estados(t).items():
         if e is None:
@@ -194,7 +195,7 @@ def _produccion(t: dict) -> dict:
         videos[clave] = {
             **{k: e.get(k) for k in ("estado", "paso", "progreso", "mensaje")},
             "informe": inf,
-            "desactualizado": bool(inf) and (inf["marca"] != t["marca"] or inf["voz"] != t["voz"]),
+            "desactualizado": bool(inf) and inf.get("firma") != firma_actual,
             "archivos": {"mp4": f"{base}{clave}.mp4", "vtt": f"{base}{clave}.vtt", "srt": f"{base}{clave}.srt"}
             if e.get("estado") == "listo" else None,
         }
@@ -236,6 +237,83 @@ def api_salida(id_: str, clave: str, archivo: str, descargar: bool = False):
         raise HTTPException(404)
     return FileResponse(ruta, media_type=TIPOS_SALIDA[ruta.suffix], filename=f"{t['id']}-{archivo}" if descargar else None,
                         content_disposition_type="attachment" if descargar else "inline")
+
+
+class AjustesVideo(BaseModel):
+    ajustes: dict | None  # None: volver a la configuración global
+
+
+@app.put("/api/trabajos/{id_}/ajustes-video")
+def api_ajustes_video(id_: str, cuerpo: AjustesVideo):
+    """Ajustes de video propios del curso (solo lo que cambie respecto a la configuración)."""
+    t = configuracion.ajustar_trabajo(_trabajo_o_404(id_), cuerpo.ajustes)
+    taller.guardar(t)
+    return {**_trabajo_completo(t), "ajustes_efectivos": configuracion.para_trabajo(t)}
+
+
+@app.get("/api/trabajos/{id_}/ajustes-video")
+def api_ver_ajustes_video(id_: str):
+    t = _trabajo_o_404(id_)
+    return {"propios": t.get("ajustes_video") or {}, "efectivos": configuracion.para_trabajo(t)}
+
+
+# ── Configuración y diagnóstico ──────────────────────────────────────────────
+
+def _opciones() -> dict:
+    """Los valores permitidos, para que la interfaz arme sus listas."""
+    return {f"{g}.{k}": [{"valor": v, "texto": txt} for v, txt in ops.items()]
+            for (g, k), ops in configuracion.OPCIONES.items()} | {
+        f"{g}.{k}": {"min": a, "max": b} for (g, k), (a, b) in configuracion.RANGOS.items()}
+
+
+@app.get("/api/configuracion")
+def api_configuracion():
+    return {"configuracion": configuracion.leer(), "opciones": _opciones(), "musica": configuracion.pistas(),
+            "por_curso": list(configuracion.POR_CURSO)}
+
+
+@app.put("/api/configuracion")
+def api_guardar_configuracion(conf: dict):
+    return {"configuracion": configuracion.guardar(conf), "opciones": _opciones(), "musica": configuracion.pistas(),
+            "por_curso": list(configuracion.POR_CURSO)}
+
+
+@app.get("/api/sistema")
+def api_sistema(forzar: bool = False):
+    """Qué tiene este equipo para producir (ffmpeg, navegador, voces, clave, Ollama, disco)."""
+    return diagnostico.revisar(forzar)
+
+
+MAX_MUSICA = 50 * 1024 * 1024
+
+
+@app.post("/api/musica", status_code=201)
+async def api_subir_musica(archivo: UploadFile = File(...), licencia: str = Form(""), fuente: str = Form("")):
+    """Sube una pista de música de fondo. La licencia es obligatoria: los videos se entregan a clientes."""
+    nombre = Path(archivo.filename or "").name
+    extension = Path(nombre).suffix.lower()
+    if extension not in configuracion.EXTENSIONES_MUSICA:
+        raise ValueError("La música tiene que ser mp3, wav, m4a, ogg o flac")
+    if len(licencia.strip()) < 3:
+        raise ValueError("Escribe la licencia de la pista (p. ej. «Pixabay Content License»)")
+    limpio = re.sub(r"[^A-Za-z0-9._-]+", "-", Path(nombre).stem).strip("-")[:60] or "pista"
+    contenido = await archivo.read(MAX_MUSICA + 1)
+    if len(contenido) > MAX_MUSICA:
+        raise ValueError("La pista pasa de 50 MB")
+    carpeta = configuracion.carpeta_musica()
+    carpeta.mkdir(parents=True, exist_ok=True)
+    (carpeta / f"{limpio}{extension}").write_bytes(contenido)
+    (carpeta / f"{limpio}.json").write_text(
+        json.dumps({"licencia": licencia.strip(), "fuente": fuente.strip()}, ensure_ascii=False), encoding="utf-8")
+    return configuracion.pistas()
+
+
+@app.get("/api/musica/{archivo}")
+def api_escuchar_musica(archivo: str):
+    ruta = configuracion.carpeta_musica() / Path(archivo).name
+    if ruta.suffix.lower() not in configuracion.EXTENSIONES_MUSICA or not ruta.is_file():
+        raise HTTPException(404)
+    return FileResponse(ruta)
 
 
 # ── Videos producidos ────────────────────────────────────────────────────────

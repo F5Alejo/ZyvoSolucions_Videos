@@ -8,6 +8,45 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-09-30 · Frente A1/A3: configuración del estudio
+
+Plan de esta ronda (configuración, plantillas de animación y agentes): ver `docs/plan-motor.md`.
+
+### Qué se hizo
+- **`app/configuracion.py` + `datos/configuracion.json`** (va a git, sin secretos). Grupos:
+  - cursos nuevos: marca, voz, formatos y animación;
+  - video: resolución 1080p/720p, 25/30/60 fps, calidad final/borrador y subtítulos quemados;
+  - tiempos: entrada, pausa y respiro;
+  - audio: -14/-16/-23 LUFS, música de fondo y su volumen;
+  - curso completo: tarjetas entre videos y capítulos;
+  - agentes: URL de Ollama, modelos y cuáles están activos.
+
+  Lo que falta en el archivo toma el valor por defecto, y todo se valida con mensajes claros.
+- **Ajustes por curso** (`trabajo["ajustes_video"]`): solo lo que cambia respecto a lo global.
+  `PUT /api/trabajos/{id}/ajustes-video` (null vuelve a lo global).
+- **El motor usa la configuración:**
+  - fps, resolución (Chromium dibuja con `device_scale_factor` 2/3 para 720p, sin cambiar la composición), CRF y preset;
+  - tiempos y volumen objetivo;
+  - música con `sidechaincompress`: baja ~10 dB cuando habla la voz, con fundido de entrada y de salida;
+  - subtítulos quemados con Montserrat.
+- **«Desactualizado»** ya no compara solo marca y voz: `produccion.firma(t)` resume marca, voz, ajustes, animación y ediciones, y el informe la guarda.
+- **Música:** `POST /api/musica` exige la licencia (se guarda en un `.json` al lado). `datos/musica/` no va a git.
+- **Diagnóstico** `GET /api/sistema`: ffmpeg, Chromium, voces, clave de ElevenLabs (solo si está), Ollama y sus modelos, y el disco. Nunca devuelve la clave.
+- **Interfaz:**
+  - vista `/configuracion` con el diagnóstico y los comandos para arreglar lo que falta, cursos nuevos, producción, música con subida y licencia, y agentes; barra de «cambios sin guardar»;
+  - en «Marca y voz», el bloque «Ajustes de producción de este curso», que marca lo que cambia y deja volver a lo general.
+- **Pruebas:** 48 de pytest (14 nuevas), entre ellas una producción real a 720p, 25 fps, -16 LUFS, con música y subtítulos quemados; 8 de Vitest.
+
+### Decisiones
+- La configuración va a git y la música no. Por eso, si otro equipo no tiene la pista, el curso se produce **sin música** en vez de fallar (`_validar(estricto=False)`).
+- Cliente de Ollama con `keep_alive: 0` y `think: false`: libera la RAM al terminar y no gasta tiempo «pensando».
+
+### Errores y cómo se resolvieron
+- Con un campo de formulario vacío FastAPI respondía 422 antes de llegar a nuestro mensaje. La licencia pasó a `Form("")` para responder «escribe la licencia».
+- Al reiniciar el servidor, PowerShell estaba en `frontend/` y no encontró `.venv`. Se lanza con la ruta de la carpeta del proyecto.
+
+---
+
 ## 2026-09-30 · Script de instalación para equipos nuevos
 
 ### Qué se hizo

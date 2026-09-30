@@ -39,3 +39,14 @@ export function resaltar(texto: string, citas: string[]): Trozo[] {
     .filter((t) => t !== "")
     .map((t) => ({ texto: t, marcado: validas.includes(t) }));
 }
+
+/** Lo que `nuevo` cambia respecto a `base` (objetos de dos niveles, como los grupos de ajustes). */
+export function diferencias<T extends Record<string, Record<string, unknown>>>(base: T, nuevo: T): Partial<T> {
+  const salida: Record<string, Record<string, unknown>> = {};
+  for (const grupo of Object.keys(nuevo)) {
+    for (const [clave, valor] of Object.entries(nuevo[grupo] ?? {})) {
+      if (JSON.stringify(valor) !== JSON.stringify(base[grupo]?.[clave])) (salida[grupo] ??= {})[clave] = valor;
+    }
+  }
+  return salida as Partial<T>;
+}

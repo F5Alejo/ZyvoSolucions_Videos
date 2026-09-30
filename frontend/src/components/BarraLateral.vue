@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { LayoutDashboard, Plus, Presentation, Film, Bell } from "lucide-vue-next";
+import { LayoutDashboard, Plus, Presentation, Film, Bell, Settings } from "lucide-vue-next";
 import { catalogo } from "../composables/catalogo";
 
 const principal = [
@@ -58,6 +58,12 @@ const pendientes = computed(() => catalogo.value?.pendientes_abiertos ?? 0);
       </ul>
     </div>
 
-    <p class="mt-auto px-6 py-5 text-xs text-white/40">RiskMann by SOFU</p>
+    <div class="mt-auto px-3 pt-6">
+      <RouterLink to="/configuracion"
+         class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white/80 transition hover:bg-white/10 hover:text-white [&.router-link-active]:bg-white/15 [&.router-link-active]:text-white">
+        <Settings class="size-[18px]" /> Configuración
+      </RouterLink>
+    </div>
+    <p class="px-6 py-5 text-xs text-white/40">RiskMann by SOFU</p>
   </nav>
 </template>

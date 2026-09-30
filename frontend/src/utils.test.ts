@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { mount } from "@vue/test-utils";
 import TextoResaltado from "./components/TextoResaltado.vue";
-import { cuenta, mmss, normalizar, resaltar } from "./utils";
+import { cuenta, diferencias, mmss, normalizar, resaltar } from "./utils";
 
 describe("utilidades", () => {
   it("formatea minutos y segundos", () => {
@@ -42,5 +42,14 @@ describe("resaltar cifras y normas", () => {
     expect(w.find("img").exists()).toBe(false);
     expect(w.text()).toContain("<img src=x onerror=alert(1)>");
     expect(w.find("mark").text()).toBe("30 %");
+  });
+});
+
+describe("diferencias", () => {
+  it("devuelve solo lo que cambia, por grupo", () => {
+    const base = { video: { fps: 30, calidad: "final" }, audio: { lufs: -14, musica: null } };
+    const nuevo = { video: { fps: 60, calidad: "final" }, audio: { lufs: -14, musica: null } };
+    expect(diferencias(base, nuevo)).toEqual({ video: { fps: 60 } });
+    expect(diferencias(base, structuredClone(base))).toEqual({});
   });
 });

@@ -8,20 +8,27 @@ Todo sale en `datos/trabajos/<id>/salida/<clave>/`:
     qa.json       control de calidad y línea de tiempo por lámina
 """
 
+import hashlib
 import json
 import shutil
 from datetime import datetime
 from pathlib import Path
 
-from app import datos, extractor, taller
+from app import configuracion, datos, extractor, taller
 from motor import audio, escenas, normalizar, render, subtitulos, voz as motor_voz
 from motor.qa import revisar
 
-# Tiempos de csm.py: el título entra 1,0 s antes de la voz y la lámina respira 1,3 s al final.
-ENTRADA = 1.0
-PAUSA = 0.35   # entre frases de la misma lámina
-SALIDA = 1.3
+# Los tiempos (entrada antes de la voz, pausa entre frases, respiro final) salen de la
+# configuración; por defecto son los de csm.py: 1,0 s, 0,35 s y 1,3 s.
 MUDA = 3.0     # una lámina sin narración (no debería pasar: el taller lo marca)
+
+
+def firma(t: dict) -> str:
+    """Lo que cambia el resultado de un video. Si cambia, el video producido queda desactualizado."""
+    conf = configuracion.para_trabajo(t)
+    base = {"marca": t["marca"], "voz": t["voz"], "conf": {g: conf[g] for g in configuracion.POR_CURSO},
+            "animacion": t.get("animacion"), "ediciones": t.get("ediciones")}
+    return hashlib.sha256(json.dumps(base, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()[:16]
 
 
 class ErrorProduccion(RuntimeError):
@@ -58,8 +65,14 @@ def producir(t: dict, clave: str, avisar=lambda paso, progreso: None) -> dict:
     marca = datos.marcas()[t["marca"]]
     voz = next(v for v in taller.voces() if v["id"] == t["voz"])
     motor_voz.proveedor(voz)  # falla pronto si la voz no se puede usar
-    formato = "16:9"  # Fase 1; el 9:16 llega en la Fase 3 (docs/plan-motor.md)
+    conf = configuracion.para_trabajo(t)
+    tiempos, cv, ca = conf["tiempos"], conf["video"], conf["audio"]
+    fps = int(cv["fps"])
+    escala = configuracion.RESOLUCIONES[cv["resolucion"]]
+    crf, preset = configuracion.CALIDADES[cv["calidad"]]
+    formato = "16:9"  # el 9:16 llega en la Fase 3 (docs/plan-motor.md)
     ancho, alto = escenas.FORMATOS[formato]
+    ancho_real, alto_real = round(ancho * escala), round(alto * escala)
 
     salida = carpeta_salida(t, clave)
     tmp = salida / "tmp"
@@ -82,18 +95,19 @@ def producir(t: dict, clave: str, avisar=lambda paso, progreso: None) -> dict:
     # 2. Línea de tiempo en cuadros exactos: la imagen y la voz no se pueden separar.
     import soundfile as sf
     linea, segmentos, frases_tiempo, t0 = [], [], [], 0.0
+    entrada, pausa, respiro = tiempos["entrada"], tiempos["pausa"], tiempos["salida"]
     for l, propios in zip(laminas, audios):
-        dur = ENTRADA + SALIDA if propios else MUDA
-        cursor = t0 + ENTRADA
+        dur = entrada + respiro if propios else MUDA
+        cursor = t0 + entrada
         for i, (texto, wav) in enumerate(propios):
             d = sf.info(str(wav)).duration
             segmentos.append((cursor, wav))
             frases_tiempo.append((cursor, cursor + d, texto))
-            cursor += d + (PAUSA if i < len(propios) - 1 else 0)
-            dur += d + (PAUSA if i < len(propios) - 1 else 0)
-        n = render.cuadros(dur)
+            cursor += d + (pausa if i < len(propios) - 1 else 0)
+            dur += d + (pausa if i < len(propios) - 1 else 0)
+        n = render.cuadros(dur, fps)
         linea.append({"lamina": l["n"], "inicio": round(t0, 3), "cuadros": n})
-        t0 += n / render.FPS
+        t0 += n / fps
     duracion = t0
 
     # 3. Escenas y render.
@@ -104,28 +118,38 @@ def producir(t: dict, clave: str, avisar=lambda paso, progreso: None) -> dict:
              for i, (l, x) in enumerate(zip(laminas, linea))]
     mudo = tmp / "mudo.mp4"
     render.video(htmls, ancho, alto, mudo, tmp / "escenas",
-                 avisar=lambda h, n: avisar(f"Imagen: lámina {h} de {n}", 0.5 + 0.35 * h / n))
+                 avisar=lambda h, n: avisar(f"Imagen: lámina {h} de {n}", 0.5 + 0.33 * h / n),
+                 fps=fps, escala=escala, crf=crf, preset=preset)
 
-    # 4. Audio a la norma y unión.
-    avisar("Mezclando el audio", 0.87)
+    # 4. Audio: narración, música de fondo si la hay, y volumen a la norma.
+    avisar("Mezclando el audio", 0.85)
     crudo, norma = tmp / "narracion.wav", tmp / "narracion-norma.wav"
     audio.armar_pista(segmentos, duracion, crudo)
-    audio.normalizar(crudo, norma)
+    musica = configuracion.carpeta_musica() / ca["musica"] if ca["musica"] else None
+    if musica is not None and musica.exists():
+        con_musica = tmp / "con-musica.wav"
+        audio.mezclar_musica(crudo, musica, con_musica, duracion, ca["musica_volumen"])
+        crudo = con_musica
+    audio.normalizar(crudo, norma, ca["lufs"])
     mp4 = salida / f"{clave}.mp4"
     render.unir(mudo, norma, mp4)
 
-    # 5. Subtítulos.
+    # 5. Subtítulos (y quemados en la imagen si la configuración lo pide).
     cues = subtitulos.cues(frases_tiempo)
     subtitulos.escribir_vtt(cues, salida / f"{clave}.vtt")
     subtitulos.escribir_srt(cues, salida / f"{clave}.srt")
+    if cv["subtitulos_quemados"]:
+        avisar("Quemando los subtítulos", 0.9)
+        render.quemar_subtitulos(mp4, salida / f"{clave}.srt", tmp / "quemar", fps, crf, preset)
 
     # 6. Control de calidad.
     avisar("Revisando el resultado", 0.95)
-    chequeos = revisar(mp4, ancho, alto, duracion, video["segundos"])
+    chequeos = revisar(mp4, ancho_real, alto_real, duracion, video["segundos"], fps, ca["lufs"])
     informe = {
         "trabajo": t["id"], "video": clave, "titulo": video["titulo"],
         "creado": datetime.now().isoformat(timespec="seconds"),
         "marca": t["marca"], "voz": voz["id"], "borrador": borrador, "formato": formato,
+        "firma": firma(t), "ajustes": {g: conf[g] for g in configuracion.POR_CURSO},
         "duracion": round(duracion, 2), "linea_de_tiempo": linea, "chequeos": chequeos,
         "archivos": [mp4.name, f"{clave}.vtt", f"{clave}.srt"],
     }

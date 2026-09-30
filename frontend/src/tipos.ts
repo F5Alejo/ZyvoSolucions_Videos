@@ -186,3 +186,37 @@ export interface Caso {
   videos: (Entregable & { existe: boolean })[];
   documento_url: string | null;
 }
+
+/** Configuración del estudio (GET /api/configuracion). */
+export interface AjustesVideo {
+  video: { resolucion: "1080p" | "720p"; fps: 25 | 30 | 60; calidad: "final" | "borrador"; subtitulos_quemados: boolean };
+  tiempos: { entrada: number; pausa: number; salida: number };
+  audio: { lufs: number; musica: string | null; musica_volumen: number };
+  completo: { tarjetas: boolean; duracion_tarjeta: number; capitulos: boolean };
+}
+
+export interface Configuracion extends AjustesVideo {
+  cursos: { marca: string; voz: string; formatos: string[]; animacion: string };
+  agentes: { url: string; modelo_texto: string; modelo_vision: string; activos: Record<string, boolean> };
+}
+
+export type OpcionesConfig = Record<string, { valor: string | number; texto: string }[] | { min: number; max: number }>;
+export interface PistaMusica { archivo: string; licencia: string | null; fuente: string | null }
+
+export interface RespuestaConfig {
+  configuracion: Configuracion;
+  opciones: OpcionesConfig;
+  musica: PistaMusica[];
+  por_curso: (keyof AjustesVideo)[];
+}
+
+/** Diagnóstico del equipo (GET /api/sistema). */
+export interface Revision { ok: boolean; detalle: string; arreglo?: string | null }
+export interface Sistema {
+  ffmpeg: Revision;
+  chromium: Revision;
+  elevenlabs: Revision;
+  voces: { id: string; nombre: string; proveedor: string; ok: boolean; detalle: string }[];
+  ollama: Revision & { encendido: boolean; modelos: string[] };
+  disco: Revision;
+}

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { CircleCheck, LoaderCircle, Monitor, Smartphone } from "lucide-vue-next";
+import { ChevronDown, CircleCheck, LoaderCircle, Monitor, RotateCcw, Save, Smartphone } from "lucide-vue-next";
 import { api } from "../../api";
 import { avisar } from "../../composables/avisos";
 import { catalogo } from "../../composables/catalogo";
-import type { TrabajoCompleto } from "../../tipos";
+import AjustesVideoForm from "../AjustesVideoForm.vue";
+import type { AjustesVideo, RespuestaConfig, TrabajoCompleto } from "../../tipos";
+import { diferencias } from "../../utils";
 
 const props = defineProps<{ datos: TrabajoCompleto }>();
 const emit = defineEmits<{ actualizado: [TrabajoCompleto] }>();
@@ -20,6 +22,45 @@ const FORMATOS = [
   { id: "16:9", titulo: "Horizontal 16:9", uso: "Computador, plataforma, proyector", icono: Monitor },
   { id: "9:16", titulo: "Vertical 9:16", uso: "Celular, Reels, TikTok", icono: Smartphone },
 ];
+
+// ── Ajustes de producción propios de este curso ──
+const GRUPOS = ["video", "tiempos", "audio", "completo"] as const;
+const soloAjustes = (c: AjustesVideo): AjustesVideo => structuredClone(Object.fromEntries(GRUPOS.map((g) => [g, c[g]])) as unknown as AjustesVideo);
+const config = ref<RespuestaConfig | null>(null);
+const ajustes = ref<AjustesVideo | null>(null);
+const guardados = ref<AjustesVideo | null>(null);
+const propios = ref(0);
+const guardandoAjustes = ref(false);
+
+async function cargarAjustes() {
+  const [c, a] = await Promise.all([
+    api.get<RespuestaConfig>("/api/configuracion"),
+    api.get<{ propios: Partial<AjustesVideo>; efectivos: AjustesVideo }>(`/api/trabajos/${props.datos.trabajo.id}/ajustes-video`),
+  ]);
+  config.value = c;
+  ajustes.value = soloAjustes(a.efectivos);
+  guardados.value = soloAjustes(a.efectivos);
+  propios.value = Object.values(a.propios).reduce((n, g) => n + Object.keys(g ?? {}).length, 0);
+}
+cargarAjustes().catch((e) => avisar((e as Error).message, "error"));
+
+const ajustesCambiados = computed(() => JSON.stringify(ajustes.value) !== JSON.stringify(guardados.value));
+
+async function guardarAjustes(volverAGlobal = false) {
+  if (!config.value || !ajustes.value) return;
+  const cuerpo = volverAGlobal ? null : diferencias(soloAjustes(config.value.configuracion) as never, ajustes.value as never);
+  guardandoAjustes.value = true;
+  try {
+    const r = await api.put<TrabajoCompleto>(`/api/trabajos/${props.datos.trabajo.id}/ajustes-video`, { ajustes: cuerpo });
+    emit("actualizado", { trabajo: r.trabajo, resumen: r.resumen });
+    await cargarAjustes();
+    avisar(volverAGlobal ? "El curso vuelve a usar la configuración general." : "Ajustes del curso guardados.");
+  } catch (e) {
+    avisar((e as Error).message, "error");
+  } finally {
+    guardandoAjustes.value = false;
+  }
+}
 
 /** Guarda enseguida; si el servidor lo rechaza, vuelve a lo último que sí quedó guardado. */
 async function guardar() {
@@ -107,5 +148,27 @@ function pausarOtros(e: Event) {
         </label>
       </div>
     </fieldset>
+
+    <details class="tarjeta group" :open="propios > 0">
+      <summary class="flex cursor-pointer list-none items-center justify-between gap-3 p-5">
+        <span>
+          <strong class="block">Ajustes de producción de este curso</strong>
+          <span class="text-sm text-suave">
+            {{ propios ? `${propios} ${propios === 1 ? "ajuste propio" : "ajustes propios"}; el resto viene de Configuración` : "Usa la configuración general" }}
+          </span>
+        </span>
+        <ChevronDown class="size-5 shrink-0 transition group-open:rotate-180" />
+      </summary>
+      <div v-if="config && ajustes" class="space-y-4 border-t border-borde p-5">
+        <AjustesVideoForm v-model="ajustes" :opciones="config.opciones" :musica="config.musica"
+                          :base="soloAjustes(config.configuracion)" />
+        <div class="flex flex-wrap justify-end gap-2">
+          <button v-if="propios" class="boton-fantasma" :disabled="guardandoAjustes" @click="guardarAjustes(true)">
+            <RotateCcw class="size-4" /> Volver a la configuración general</button>
+          <button class="boton-primario" :disabled="guardandoAjustes || !ajustesCambiados" @click="guardarAjustes()">
+            <LoaderCircle v-if="guardandoAjustes" class="size-4 animate-spin" /><Save v-else class="size-4" /> Guardar ajustes del curso</button>
+        </div>
+      </div>
+    </details>
   </section>
 </template>

@@ -11,3 +11,5 @@ modelos/
 .env
 .env.*
 !.env.ejemplo
+# Música de fondo: cada equipo sube sus pistas (con su licencia) desde Configuración
+datos/musica/

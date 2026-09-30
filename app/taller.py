@@ -35,15 +35,18 @@ def voces() -> list[dict]:
 
 def _nuevo(nombre: str, origen: dict, laminas: list[dict], videos: list[dict],
            excluidas: dict, banco: dict | None = None) -> dict:
+    from app import configuracion  # aquí para evitar un import circular al arrancar
+
     id_ = f"{_slug(nombre)}-{secrets.token_hex(3)}"
+    defecto = configuracion.leer()["cursos"]
     t = {
         "id": id_,
         "nombre": nombre,
         "creado": datetime.now().isoformat(timespec="seconds"),
         "origen": origen,
-        "marca": "riskmann",
-        "voz": "carlos",
-        "formatos": ["16:9"],
+        "marca": defecto["marca"],
+        "voz": defecto["voz"],
+        "formatos": list(defecto["formatos"]),
         "laminas": laminas,
         "videos": videos,
         "excluidas": {str(k): v for k, v in excluidas.items()},
