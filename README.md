@@ -17,6 +17,25 @@ Vue porque es el framework de **app.riskmann.com** (Vue 3 + Vuex): el equipo de 
 Los colores son los de la app de RiskMann, con los contrastes medidos; los tokens están comentados en
 `frontend/src/estilos.css`.
 
+## Instalar en un equipo nuevo (Windows)
+
+Con Python 3.12+ y Node 20+ instalados, después de clonar:
+
+```powershell
+git clone https://github.com/juanezzzzz/interfaz.git
+cd interfaz
+powershell -ExecutionPolicy Bypass -File instalar.ps1
+```
+
+El script crea `.venv`, instala las librerías de Python, Chromium y las voces Kokoro y Piper,
+compila la interfaz y pide la clave de ElevenLabs para guardarla en `.env` (Enter para dejarla
+vacía). Se puede volver a correr: salta lo que ya está. Opciones: `-InstalarFfmpeg` (con winget),
+`-SinModelos` y `-Probar` (corre las pruebas al final). Al terminar dice qué quedó pendiente.
+
+Lo que git no trae y el script resuelve: `.venv`, `frontend/node_modules` y `frontend/dist`,
+Chromium, `modelos/` y `.env`. Lo que no resuelve: `config.local.json` (opcional, rutas de tu
+equipo) y los cursos de `datos/trabajos/` (material de clientes, se quedan en cada equipo).
+
 ## Puesta en marcha
 
 Requisitos: Python 3.12 y Node 20 o superior.

@@ -8,6 +8,36 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-09-30 · Script de instalación para equipos nuevos
+
+### Qué se hizo
+- **`instalar.ps1`** (PowerShell 5.1+). En orden:
+  1. revisa Python ≥ 3.12, Node ≥ 20 y ffmpeg;
+  2. crea `.venv` e instala `requirements.txt`;
+  3. instala Chromium (Playwright);
+  4. baja los modelos de voz;
+  5. crea `.env` desde `.env.ejemplo` pidiendo la clave de ElevenLabs de forma oculta;
+  6. corre `npm ci` y `npm run build`.
+
+  Al final lista lo pendiente. Opciones: `-InstalarFfmpeg`, `-SinModelos` y `-Probar`.
+- README: sección nueva «Instalar en un equipo nuevo».
+- **Probado** en este equipo con `-Probar`: sale con código 0, pasan 34 pruebas de pytest y 7 de Vitest, y respeta el `.env` existente.
+
+### Decisiones
+- El archivo se guarda en UTF-8 **con BOM**: sin él, Windows PowerShell 5.1 lo lee como ANSI y
+  las tildes de los mensajes salen dañadas.
+- Se llama `npm.cmd` en vez de `npm`, para no depender de que PowerShell permita correr `npm.ps1`.
+- `.env` existente nunca se toca. La clave se pide con `-AsSecureString`, para que no quede en
+  pantalla ni en el historial.
+- ffmpeg no se instala sin permiso: solo con `-InstalarFfmpeg`, porque instala un programa en
+  todo el equipo.
+
+### Pendiente
+- No se probó en un equipo limpio de verdad (aquí ya estaba todo instalado). La primera vez
+  baja unos 600 MB entre librerías, Chromium y voces.
+
+---
+
 ## 2026-09-29 · Unión con `main` (interfaz nueva en Vue 3)
 
 ### Qué se hizo
