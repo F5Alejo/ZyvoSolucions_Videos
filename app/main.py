@@ -15,6 +15,8 @@ from pydantic import BaseModel
 
 from app import configuracion, datos, extractor, taller
 from motor import cola, diagnostico, empaquetar, escenas, produccion
+from motor.agentes import entrega as agentes_entrega
+from motor.agentes import registro as agentes
 from motor.escenas import animacion, efectos
 from motor import voz as motor_voz
 
@@ -30,6 +32,11 @@ app = FastAPI(title="Estudio de video RiskMann", docs_url="/api/docs", openapi_u
 
 @app.exception_handler(animacion.AnimacionInvalida)
 def _animacion_invalida(_, e: animacion.AnimacionInvalida):
+    return JSONResponse({"detail": str(e)}, status_code=400)
+
+
+@app.exception_handler(agentes.ErrorAgente)
+def _error_agente(_, e: agentes.ErrorAgente):
     return JSONResponse({"detail": str(e)}, status_code=400)
 
 
@@ -65,9 +72,9 @@ def _trabajo_o_404(id_: str) -> dict:
 def _trabajo_completo(t: dict) -> dict:
     """El trabajo con lo que la interfaz necesita por lámina, y su resumen sin duplicar láminas."""
     laminas = [
-        {**l, "titulo": extractor.titulo_lamina(l), "segundos": extractor.segundos(l["notas"]),
-         "citas": extractor.afirmaciones_normativas(l["notas"])}
-        for l in t["laminas"]
+        {**l, "titulo": (l.get("pantalla") or {}).get("titulo") or extractor.titulo_lamina(l),
+         "segundos": extractor.segundos(l["notas"]), "citas": extractor.afirmaciones_normativas(l["notas"])}
+        for l in taller.laminas_efectivas(t)
     ]
     r = taller.resumen(t)
     r["videos"] = [{k: v for k, v in vid.items() if k != "laminas_detalle"} for vid in r["videos"]]
@@ -183,6 +190,16 @@ def api_banco(id_: str):
     if not t.get("banco"):
         raise HTTPException(404, "Este curso no tiene banco de preguntas")
     return _descarga(t["banco"], "banco-preguntas.json")
+
+
+class Edicion(BaseModel):
+    cambios: dict | None  # {notas?, titulo?, vinetas?}; None vuelve al original del PPTX
+
+
+@app.put("/api/trabajos/{id_}/laminas/{n}/edicion")
+def api_editar_lamina(id_: str, n: int, cuerpo: Edicion):
+    """Corrige la narración o lo que se ve de una lámina, sin tocar lo extraído del PPTX."""
+    return _trabajo_completo(taller.editar_lamina(_trabajo_o_404(id_), n, cuerpo.cambios))
 
 
 # ── Motor: producir los videos de un curso ───────────────────────────────────
@@ -428,6 +445,70 @@ def api_media_trabajo(id_: str, nombre: str):
     if ruta.suffix.lower() not in {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".svg", ".tif", ".tiff", ".emf", ".wmf"} or not ruta.is_file():
         raise HTTPException(404)
     return FileResponse(ruta)
+
+
+# ── Agentes ──────────────────────────────────────────────────────────────────
+
+@app.get("/api/agentes")
+def api_agentes():
+    """Cada agente: qué hace, dónde aparece, si está activo y si hoy puede usar IA (Ollama y su modelo)."""
+    return agentes.estado_agentes()
+
+
+def _agentes_curso(t: dict) -> dict:
+    estados = {}
+    for a in agentes.REGISTRO:
+        e = cola.estado(t["id"], f"{cola.PREFIJO_AGENTE}{a}")
+        estados[a] = {k: e.get(k) for k in ("estado", "paso", "progreso", "mensaje", "propuestas", "con_ia")} if e else None
+    return {"agentes": agentes.estado_agentes(), "estados": estados, "propuestas": t.get("propuestas", [])}
+
+
+@app.get("/api/trabajos/{id_}/agentes")
+def api_agentes_curso(id_: str):
+    return _agentes_curso(_trabajo_o_404(id_))
+
+
+@app.post("/api/trabajos/{id_}/agentes/{agente}", status_code=202)
+def api_ejecutar_agente(id_: str, agente: str):
+    """Pone al agente en la cola (la misma de los renders: uno a la vez)."""
+    t = _trabajo_o_404(id_)
+    if agente not in agentes.REGISTRO:
+        raise HTTPException(404, "No existe ese agente")
+    if not configuracion.leer()["agentes"]["activos"].get(agente, True):
+        raise ValueError(f"{agentes.REGISTRO[agente].nombre} está desactivado en Configuración")
+    cola.encolar(id_, f"{cola.PREFIJO_AGENTE}{agente}")
+    return _agentes_curso(t)
+
+
+@app.post("/api/trabajos/{id_}/propuestas/{pid}/{accion}")
+def api_resolver_propuesta(id_: str, pid: str, accion: str):
+    """Acepta (aplica al curso) o descarta una propuesta. Devuelve el curso y los agentes."""
+    t = _trabajo_o_404(id_)
+    if accion == "aceptar":
+        t = agentes.aceptar(t, pid)
+    elif accion == "descartar":
+        t = agentes.descartar(t, pid)
+    else:
+        raise HTTPException(404)
+    return {**_trabajo_completo(t), **_agentes_curso(t)}
+
+
+@app.get("/api/trabajos/{id_}/banco.gift")
+def api_banco_gift(id_: str):
+    t = _trabajo_o_404(id_)
+    if not t.get("banco"):
+        raise HTTPException(404, "Este curso no tiene banco de preguntas")
+    return Response(agentes_entrega.a_gift(t["banco"]), media_type="text/plain; charset=utf-8",
+                    headers={"Content-Disposition": f'attachment; filename="{t["id"]}-preguntas.gift.txt"'})
+
+
+@app.get("/api/trabajos/{id_}/banco.xml")
+def api_banco_moodle(id_: str):
+    t = _trabajo_o_404(id_)
+    if not t.get("banco"):
+        raise HTTPException(404, "Este curso no tiene banco de preguntas")
+    return Response(agentes_entrega.a_moodle_xml(t["banco"]), media_type="application/xml",
+                    headers={"Content-Disposition": f'attachment; filename="{t["id"]}-preguntas.moodle.xml"'})
 
 
 # ── Configuración y diagnóstico ──────────────────────────────────────────────

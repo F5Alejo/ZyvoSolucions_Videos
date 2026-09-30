@@ -3,8 +3,10 @@ import { computed, ref } from "vue";
 import { FileText, Search, TriangleAlert } from "lucide-vue-next";
 import type { TrabajoCompleto } from "../../tipos";
 import { mb, normalizar } from "../../utils";
+import PanelAgentes from "./PanelAgentes.vue";
 
 const props = defineProps<{ datos: TrabajoCompleto }>();
+const emit = defineEmits<{ actualizado: [TrabajoCompleto] }>();
 const t = computed(() => props.datos.trabajo);
 const r = computed(() => props.datos.resumen);
 const sinNotas = computed(() => t.value.laminas.filter((l) => !l.frases.length && !t.value.excluidas[String(l.n)]).length);
@@ -66,5 +68,6 @@ const laminas = computed(() => {
       </table>
       <p v-if="!laminas.length" class="p-6 text-center text-suave">Ninguna lámina coincide con «{{ busqueda }}».</p>
     </div>
+    <div class="mt-6"><PanelAgentes :trabajo="t.id" donde="presentacion" @actualizado="(d) => emit('actualizado', d)" /></div>
   </section>
 </template>

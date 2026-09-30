@@ -5,10 +5,11 @@ import { api } from "../../api";
 import { avisar } from "../../composables/avisos";
 import { catalogo } from "../../composables/catalogo";
 import type { Produccion, TrabajoCompleto, VideoRender } from "../../tipos";
+import PanelAgentes from "./PanelAgentes.vue";
 import { cuenta, mmss } from "../../utils";
 
 const props = defineProps<{ datos: TrabajoCompleto }>();
-defineEmits<{ eliminar: [] }>();
+const emit = defineEmits<{ eliminar: []; actualizado: [TrabajoCompleto] }>();
 
 const t = computed(() => props.datos.trabajo);
 const r = computed(() => props.datos.resumen);
@@ -239,6 +240,8 @@ function fallas(v: VideoRender): number {
       </div>
     </div>
 
+    <PanelAgentes :trabajo="t.id" donde="resultado" @actualizado="(d) => emit('actualizado', d)" />
+
     <!-- Revisión -->
     <div>
       <h3 class="mb-3 text-lg font-bold">Revisión</h3>
@@ -294,6 +297,8 @@ function fallas(v: VideoRender): number {
         <a :href="`/api/trabajos/${t.id}/orden.json`" class="boton-secundario"><Download class="size-4" /> Orden de producción</a>
         <a :href="`/api/trabajos/${t.id}/curso.json`" class="boton-secundario"><Download class="size-4" /> Contenido extraído</a>
         <a v-if="t.banco" :href="`/api/trabajos/${t.id}/banco.json`" class="boton-secundario"><Download class="size-4" /> Preguntas</a>
+        <a v-if="t.banco" :href="`/api/trabajos/${t.id}/banco.gift`" class="boton-secundario"><Download class="size-4" /> Preguntas para Moodle (GIFT)</a>
+        <a v-if="t.banco" :href="`/api/trabajos/${t.id}/banco.xml`" class="boton-secundario"><Download class="size-4" /> Moodle XML</a>
       </div>
     </div>
 

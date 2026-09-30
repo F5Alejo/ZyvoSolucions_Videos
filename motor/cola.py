@@ -15,7 +15,10 @@ from datetime import datetime
 
 from app import taller
 from motor import empaquetar, produccion
+from motor.agentes.base import ErrorAgente
 from motor.voz import VozNoDisponible
+
+PREFIJO_AGENTE = "agente-"  # la clave en la cola de un agente: «agente-redactor»
 
 _cola: queue.Queue = queue.Queue()
 _activos: set[tuple[str, str]] = set()
@@ -87,11 +90,15 @@ def _trabajar() -> None:
             avance = lambda paso, x: _escribir(id_, clave, paso=paso, progreso=round(x, 3))  # noqa: E731
             if clave == empaquetar.CLAVE:
                 empaquetar.armar_completo(t, avisar=avance)
+            elif clave.startswith(PREFIJO_AGENTE):
+                from motor.agentes import registro
+                r = registro.ejecutar(id_, clave[len(PREFIJO_AGENTE):], avisar=avance)
+                _escribir(id_, clave, propuestas=r["propuestas"], con_ia=r["con_ia"])
             else:
                 produccion.producir(t, clave, avisar=avance)
             _escribir(id_, clave, estado="listo", paso="Listo", progreso=1,
                       fin=datetime.now().isoformat(timespec="seconds"))
-        except (VozNoDisponible, produccion.ErrorProduccion, empaquetar.NoSePuedeArmar) as e:
+        except (VozNoDisponible, produccion.ErrorProduccion, empaquetar.NoSePuedeArmar, ErrorAgente) as e:
             _escribir(id_, clave, estado="error", mensaje=str(e))
         except Exception:
             _escribir(id_, clave, estado="error", mensaje="La producción falló. El detalle quedó en estado.json.",

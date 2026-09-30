@@ -8,7 +8,7 @@ import { useCarga } from "../composables/carga";
 import AjustesVideoForm from "../components/AjustesVideoForm.vue";
 import EncabezadoPagina from "../components/EncabezadoPagina.vue";
 import EstadoCarga from "../components/EstadoCarga.vue";
-import type { Configuracion, PistaMusica, RespuestaConfig, Sistema } from "../tipos";
+import type { AgenteInfo, Configuracion, PistaMusica, RespuestaConfig, Sistema } from "../tipos";
 import { clonar } from "../utils";
 
 const { datos: respuesta, cargando, error, recargar } = useCarga(() => api.get<RespuestaConfig>("/api/configuracion"));
@@ -55,6 +55,10 @@ async function revisarSistema(forzar = false) {
   }
 }
 revisarSistema();
+
+// Si cada agente puede usar IA hoy (Ollama con su modelo, o Whisper para el revisor de voz).
+const estadoAgentes = ref<Record<string, AgenteInfo>>({});
+api.get<AgenteInfo[]>("/api/agentes").then((l) => { estadoAgentes.value = Object.fromEntries(l.map((a) => [a.id, a])); }).catch(() => {});
 
 // ── Música ──
 const archivoMusica = ref<File | null>(null);
@@ -207,7 +211,11 @@ const REVISIONES = [
         <li v-for="a in AGENTES" :key="a.id">
           <label class="tarjeta flex h-full cursor-pointer items-start gap-3 p-4">
             <input v-model="borrador.agentes.activos[a.id]" type="checkbox" class="mt-1 size-4 accent-[var(--c-acento)]" />
-            <span><strong class="block text-sm">{{ a.nombre }}</strong><span class="text-xs text-suave">{{ a.que }}</span></span>
+            <span><strong class="block text-sm">{{ a.nombre }}</strong><span class="text-xs text-suave">{{ a.que }}</span>
+              <span v-if="estadoAgentes[a.id]" class="mt-1 block text-xs font-semibold"
+                    :class="estadoAgentes[a.id]!.con_ia ? 'text-exito' : 'text-suave'">
+                {{ estadoAgentes[a.id]!.con_ia ? `Con IA: ${estadoAgentes[a.id]!.modelo}` : estadoAgentes[a.id]!.necesita_ia ? "Necesita Ollama" : estadoAgentes[a.id]!.modelo ? "Sin IA: usa reglas" : "No usa IA" }}
+              </span></span>
           </label>
         </li>
       </ul>

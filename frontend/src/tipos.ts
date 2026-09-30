@@ -87,6 +87,10 @@ export interface Lamina {
   segundos: number;
   citas: string[];
   fuente_narracion?: string;
+  /** Tiene una edición propia (el original del PPTX no cambia). */
+  editada?: boolean;
+  notas_original?: string;
+  pantalla?: { titulo: string | null; vinetas: string[] | null };
 }
 
 export interface VideoPlan { clave: string; titulo: string; laminas: number[]; segundos: number; frases: number }
@@ -249,4 +253,36 @@ export interface CatalogoAnim {
   curvas: { id: string; nombre: string }[];
   limites: Record<"duracion" | "retardo" | "escalonado", { min: number; max: number }>;
   continuos: string[];
+}
+
+/** Agentes (GET /api/trabajos/:id/agentes). */
+export interface AgenteInfo {
+  id: string;
+  nombre: string;
+  que: string;
+  donde: "presentacion" | "guion" | "animacion" | "resultado";
+  modelo: string | null;
+  activo: boolean;
+  con_ia: boolean;
+  necesita_ia: boolean;
+  acepta: boolean;
+}
+export interface Propuesta {
+  id: string;
+  agente: string;
+  lamina: number | null;
+  video: string | null;
+  titulo: string;
+  antes: unknown;
+  despues: Record<string, unknown>;
+  razon: string;
+  estado: "pendiente" | "aceptada" | "descartada";
+  hecha_con: string;
+  creada: string;
+}
+export interface AgentesCurso {
+  agentes: AgenteInfo[];
+  estados: Record<string, { estado: EstadoRender; paso: string | null; progreso: number | null; mensaje: string | null;
+    propuestas: number | null; con_ia: boolean | null } | null>;
+  propuestas: Propuesta[];
 }

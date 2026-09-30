@@ -81,7 +81,13 @@ def vista(lamina: dict, indice: int, total: int, video: str, media: Path | None,
             if p and p not in resto and not titulo.startswith(p[:90]) and p != seccion:
                 resto.append(p)
 
-    foto = media / lamina["foto"] if media and lamina.get("foto") else None
+    pantalla = lamina.get("pantalla") or {}
+    if pantalla.get("titulo"):
+        titulo = pantalla["titulo"]
+    if pantalla.get("vinetas") is not None:
+        resto = list(pantalla["vinetas"])
+    decorativa = (lamina.get("imagen_info") or {}).get("decorativa")
+    foto = media / lamina["foto"] if media and lamina.get("foto") and not decorativa else None
     if foto is not None and not foto.exists():
         foto = None
 

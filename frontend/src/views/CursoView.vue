@@ -128,11 +128,11 @@ function actualizar(nuevo: TrabajoCompleto) {
       </ol>
     </nav>
 
-    <PasoPresentacion v-if="paso === 'presentacion'" :datos="d" />
+    <PasoPresentacion v-if="paso === 'presentacion'" :datos="d" @actualizado="actualizar" />
     <PasoGuion v-else-if="paso === 'guion'" :datos="d" @actualizado="actualizar" />
     <PasoMarcaVoz v-else-if="paso === 'marca'" :datos="d" @actualizado="actualizar" />
     <PasoAnimacion v-else-if="paso === 'animacion'" :datos="d" @actualizado="actualizar" />
-    <PasoResultado v-else :datos="d" @eliminar="eliminar" />
+    <PasoResultado v-else :datos="d" @eliminar="eliminar" @actualizado="actualizar" />
 
     <!-- Avanzar o volver -->
     <div class="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-borde pt-6">

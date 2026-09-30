@@ -1,7 +1,8 @@
 """Cliente mínimo de Ollama (API local en http://localhost:11434).
 
-Los modelos se descargan de la memoria al terminar cada pedido (`keep_alive: 0`): el equipo
-tiene 8 GB y el render también necesita memoria.
+Mientras un agente trabaja, el modelo queda cargado (`keep_alive` de 2 minutos: volver a
+cargarlo en cada pregunta costaba ~30 s). Al terminar el agente se descarga con `descargar()`:
+el equipo tiene 8 GB y el render también necesita memoria.
 """
 
 import json
@@ -40,7 +41,7 @@ def chat(modelo: str, sistema: str, usuario: str, esquema: dict, imagenes: list[
     if imagenes:
         mensaje["images"] = imagenes
     cuerpo = {
-        "model": modelo, "stream": False, "format": esquema, "keep_alive": 0, "think": False,
+        "model": modelo, "stream": False, "format": esquema, "keep_alive": "2m", "think": False,
         "options": {"temperature": 0.2},
         "messages": [{"role": "system", "content": sistema}, mensaje],
     }
@@ -55,3 +56,11 @@ def chat(modelo: str, sistema: str, usuario: str, esquema: dict, imagenes: list[
         return json.loads(r.json()["message"]["content"])
     except (KeyError, ValueError) as e:
         raise OllamaNoDisponible("El modelo no devolvió JSON válido") from e
+
+
+def descargar(modelo: str) -> None:
+    """Saca el modelo de la memoria ya (si Ollama no responde, no pasa nada)."""
+    try:
+        httpx.post(f"{_url()}/api/generate", json={"model": modelo, "keep_alive": 0}, timeout=10)
+    except httpx.HTTPError:
+        pass

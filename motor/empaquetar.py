@@ -191,9 +191,14 @@ def paquete(t: dict) -> Path:
     if not archivos:
         raise NoSePuedeArmar("Todavía no hay videos producidos en este curso")
 
+    from motor.agentes import entrega
     extras = {}
     if t.get("banco"):
         extras["banco-preguntas.json"] = json.dumps(t["banco"], ensure_ascii=False, indent=1)
+        extras["banco-preguntas.gift.txt"] = entrega.a_gift(t["banco"])
+        extras["banco-preguntas.moodle.xml"] = entrega.a_moodle_xml(t["banco"])
+    if t.get("publicacion"):
+        extras["publicacion.md"] = entrega.publicacion_md(t["publicacion"])
     manifiesto = {
         "curso": t["nombre"], "trabajo": t["id"], "marca": t["marca"], "voz": t["voz"],
         "creado": datetime.now().isoformat(timespec="seconds"), "pendientes": pendientes(t),

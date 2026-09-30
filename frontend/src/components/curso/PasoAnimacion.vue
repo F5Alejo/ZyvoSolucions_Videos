@@ -5,6 +5,7 @@ import { api } from "../../api";
 import { avisar } from "../../composables/avisos";
 import type { AnimacionCurso, CatalogoAnim, Fase, PasoAnim, TrabajoCompleto } from "../../tipos";
 import { clonar, fijarAjuste, resolverAnimacion } from "../../utils";
+import PanelAgentes from "./PanelAgentes.vue";
 
 const props = defineProps<{ datos: TrabajoCompleto }>();
 const emit = defineEmits<{ actualizado: [TrabajoCompleto] }>();
@@ -79,6 +80,12 @@ async function guardar() {
   } finally {
     guardando.value = false;
   }
+}
+
+// Al aceptar una propuesta del Director, la animación guardada cambió: se vuelve a leer.
+function alAceptar(d: TrabajoCompleto) {
+  emit("actualizado", d);
+  cargar().catch((e) => avisar((e as Error).message, "error"));
 }
 
 const nombreNueva = ref("");
@@ -231,6 +238,8 @@ const segundos = (x: number) => `${x.toFixed(2).replace(".", ",")} s`;
             </div>
           </div>
 
+          <PanelAgentes :trabajo="t.id" donde="animacion" @actualizado="alAceptar" />
+
           <!-- Guardar como plantilla -->
           <form class="tarjeta flex flex-wrap items-end gap-3 p-4" @submit.prevent="guardarComoPlantilla">
             <label class="block min-w-48 flex-1"><span class="etiqueta-campo">Guardar esto como plantilla nueva</span>
@@ -255,7 +264,7 @@ const segundos = (x: number) => `${x.toFixed(2).replace(".", ",")} s`;
           </div>
           <p class="mt-2 text-xs text-suave">
             Se repite sola: entrada, 1,6 s quieta y salida. Plantilla: <strong>{{ plantillaActual?.nombre }}</strong>.
-            <Sparkles class="inline size-3.5" /> La propuesta con IA está en «Sugerir con IA» cuando Ollama esté listo.
+            <Sparkles class="inline size-3.5" /> El Director de animación propone estilos por lámina (a la izquierda).
           </p>
         </div>
       </div>
