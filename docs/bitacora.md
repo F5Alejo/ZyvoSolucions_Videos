@@ -8,6 +8,22 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-09-30 · `main` actualizada con todo lo de `Alejodev`
+
+### Qué se hizo
+- A pedido del usuario se revisaron todas las ramas del remoto: solo existen `main` y `Alejodev`.
+  `Alejodev` contenía todo lo de `origin/main` (la interfaz en Vue, `51aad05`) más 19 commits.
+- Antes de tocar `main` pasaron 75 pruebas de pytest, `vue-tsc`, 10 pruebas de Vitest y la compilación.
+- `main` se actualizó con un avance directo (`git push origin Alejodev:main`): sin forzar, sin
+  reescribir historia y sin conflictos. El `main` local, que seguía en la historia anterior al
+  *force push* (`7d591ae`), se puso al día con `origin/main`.
+
+### Decisiones
+- Se sigue trabajando en `Alejodev`. `main` se actualiza solo cuando el usuario lo pide y
+  siempre con un avance directo, después de pasar las pruebas.
+
+---
+
 ## 2026-09-30 · Frente C (y B4): agentes locales que proponen mejoras
 
 ### Qué se hizo
