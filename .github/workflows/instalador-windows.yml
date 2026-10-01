@@ -1,0 +1,55 @@
+# El instalador en un Windows limpio, como en un equipo recién clonado: instalar.ps1 -Probar.
+#
+# Tarda ~10-15 min, así que no corre en cada push: cada lunes, a mano (pestaña Actions) y cuando
+# cambian el instalador o las dependencias.
+
+name: Instalador en Windows
+
+on:
+  schedule:
+    - cron: "0 11 * * 1"  # lunes 6:00 a. m. en Colombia
+  workflow_dispatch:
+  push:
+    branches: [Alejodev]
+    paths:
+      - instalar.ps1
+      - requirements.txt
+      - frontend/package.json
+      - frontend/package-lock.json
+      - .github/workflows/instalador-windows.yml
+
+jobs:
+  instalar:
+    name: instalar.ps1 -SinModelos -Probar
+    runs-on: windows-2025
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: ffmpeg (versión estática de gyan.dev)
+        shell: pwsh
+        timeout-minutes: 10
+        run: |
+          $zip = Join-Path $env:RUNNER_TEMP "ffmpeg.zip"
+          Invoke-WebRequest "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -OutFile $zip
+          Expand-Archive $zip -DestinationPath (Join-Path $env:RUNNER_TEMP "ffmpeg")
+          $bin = (Get-ChildItem (Join-Path $env:RUNNER_TEMP "ffmpeg") -Recurse -Filter ffmpeg.exe | Select-Object -First 1).DirectoryName
+          Add-Content $env:GITHUB_PATH $bin
+
+      # Sin nadie que escriba la clave, el instalador no debe preguntarla: .env vacío desde la plantilla.
+      - name: .env vacío
+        shell: pwsh
+        run: Copy-Item .env.ejemplo .env
+
+      # Windows PowerShell 5.1, el mismo que usa el equipo del estudio.
+      - name: instalar.ps1
+        shell: pwsh
+        run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\instalar.ps1 -SinModelos -Probar
