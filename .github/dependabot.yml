@@ -18,6 +18,11 @@ updates:
   - package-ecosystem: npm
     directory: "/frontend"
     target-branch: Alejodev
+    ignore:
+      # vue-tsc todavía no funciona con TypeScript 7 (ERR_PACKAGE_PATH_NOT_EXPORTED «./lib/tsc»).
+      # Quitar cuando vue-tsc lo soporte.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
     schedule:
       interval: weekly
       day: monday

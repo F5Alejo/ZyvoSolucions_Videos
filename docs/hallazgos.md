@@ -56,6 +56,9 @@ de cada uno, con su fecha, está en la [bitácora](bitacora.md).
 | Aviso de Node 20 obsoleto en Actions | Las acciones en v4 corren en Node 20 | `checkout`, `setup-python` y `setup-node` en v7, `cache` en v6 y `upload-artifact` en v7 |
 | `ubuntu-latest` cambia a Ubuntu 26 el 19-oct-2026 | Una imagen que cambia sola puede romper las pruebas sin aviso | `runs-on: ubuntu-24.04` fijo; se sube a mano cuando se pruebe |
 | Aviso de Starlette en las pruebas | Su cliente de pruebas con `httpx` está obsoleto | Se instala `httpx2`, que Starlette usa si está (`import httpx2 as httpx`) |
+| Dependabot abría un PR por paquete de pip | Subía el mínimo (`>=`) aunque el rango ya admitía la versión nueva | `versioning-strategy: increase-if-necessary` |
+| Los PR de Dependabot no se probaban | «Pruebas» solo se activaba con PR hacia `main` | También con PR hacia `Alejodev` |
+| TypeScript 7 rompe `vue-tsc` | `ERR_PACKAGE_PATH_NOT_EXPORTED` (`./lib/tsc`) | Dependabot ignora las versiones mayores de TypeScript hasta que `vue-tsc` las soporte |
 | El servidor local se apagaba solo | Las tareas en segundo plano del asistente tienen un tiempo máximo | El servidor se lanza en su propia ventana de PowerShell |
 
 ## Despliegue

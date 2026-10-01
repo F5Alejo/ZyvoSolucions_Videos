@@ -23,8 +23,7 @@ resolvieron) y **Pendiente**.
 - **Los PR de Dependabot no se probaban:** «Pruebas» solo se activaba con PR hacia `main`. Ahora también con PR hacia `Alejodev`.
 - **Ruido de pip:** abrió un PR por paquete solo para subir el mínimo de `requirements.txt` (p. ej. `fastapi>=0.115` a `>=0.141.1`), aunque los `>=` ya admitían esas versiones. Con `versioning-strategy: increase-if-necessary` solo propone algo cuando una versión queda fuera del rango. Los PR #3 a #7 se cerraron por eso.
 
-### Pendiente
-- PR #2, **TypeScript 6 → 7**: es una versión mayor y puede romper `vue-tsc`. Se decide según lo que digan las pruebas.
+- **TypeScript 7 (PR #2):** las pruebas lo atraparon. «Interfaz» falla porque `vue-tsc` todavía no funciona con TypeScript 7 (`ERR_PACKAGE_PATH_NOT_EXPORTED`: no encuentra `./lib/tsc`). Se cerró el PR y Dependabot ya no propone versiones mayores de TypeScript. Hay que quitar esa excepción de `dependabot.yml` cuando `vue-tsc` lo soporte.
 
 ---
 
