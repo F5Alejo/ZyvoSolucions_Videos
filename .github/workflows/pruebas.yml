@@ -79,6 +79,19 @@ jobs:
       # Las reglas están en pyproject.toml ([tool.ruff]).
       - run: ruff check --output-format=github .
 
+  secretos:
+    name: Secretos (gitleaks)
+    runs-on: ubuntu-24.04  # fijo: ubuntu-latest pasa a Ubuntu 26 el 19-oct-2026
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0  # toda la historia: una clave borrada sigue en los commits viejos
+      # Cuenta personal: no necesita licencia (GITLEAKS_LICENSE solo para organizaciones).
+      - uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   interfaz:
     name: Interfaz (tipos, Vitest y compilación)
     runs-on: ubuntu-24.04  # fijo: ubuntu-latest pasa a Ubuntu 26 el 19-oct-2026
