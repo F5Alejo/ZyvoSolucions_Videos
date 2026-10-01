@@ -1,11 +1,16 @@
-"""Un video del trabajo, de principio a fin: voz → escenas → render → audio → subtítulos → QA.
+"""Un video del trabajo, por etapas: plan → voz → escenas → audio → subtítulos → control de calidad.
 
-Todo sale en `datos/trabajos/<id>/salida/<clave>/`:
+Cada etapa lee y escribe archivos en `datos/trabajos/<id>/salida/<clave>/`, así que se puede
+repetir sola y lo que ya está hecho no se vuelve a hacer:
 
-    <clave>.mp4   el video (H.264 + AAC, 1920×1080, 30 fps, -14 LUFS)
-    <clave>.vtt   subtítulos para el LMS y la web
-    <clave>.srt   subtítulos para YouTube
-    qa.json       control de calidad y línea de tiempo por lámina
+    videospec.plan.json   el plan del video (motor/videospec.py), con duraciones estimadas
+    videospec.json        el plan resuelto: cada frase con su audio y cada escena en cuadros
+    escenas/<huella>.mp4  cada escena dibujada; si no cambió, no se vuelve a dibujar
+    <clave>.mp4           el video (H.264 + AAC, 1920×1080, 30 fps, -14 LUFS)
+    <clave>.vtt / .srt    subtítulos para el LMS, la web y YouTube
+    qa.json               control de calidad y línea de tiempo por lámina
+
+La voz tiene su propia caché por (voz + texto) en `datos/trabajos/<id>/cache/voz/`.
 """
 
 import hashlib
@@ -14,15 +19,10 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
-from app import configuracion, datos, extractor, taller
-from motor import audio, escenas, normalizar, render, subtitulos
+from app import configuracion, taller
+from motor import audio, escenas, render, subtitulos, videospec
 from motor import voz as motor_voz
-from motor.escenas import animacion
 from motor.qa import revisar
-
-# Los tiempos (entrada antes de la voz, pausa entre frases, respiro final) salen de la
-# configuración; por defecto son los de csm.py: 1,0 s, 0,35 s y 1,3 s.
-MUDA = 3.0     # una lámina sin narración (no debería pasar: el taller lo marca)
 
 
 def firma(t: dict) -> str:
@@ -41,126 +41,123 @@ def carpeta_salida(t: dict, clave: str) -> Path:
     return taller.ruta_trabajo(t["id"]).parent / "salida" / clave
 
 
-def _media(t: dict) -> Path | None:
-    base = taller.ruta_trabajo(t["id"]).parent
-    media, entrada = base / "media", base / "entrada.pptx"
-    if not media.exists() and entrada.exists():
-        extractor.guardar_imagenes(entrada, media)  # trabajos creados antes de que existiera este paso
-    return media if media.exists() else None
+# ── Etapas ───────────────────────────────────────────────────────────────────
+
+def etapa_plan(t: dict, clave: str, salida: Path, formato: str = "16:9") -> videospec.VideoSpec:
+    try:
+        spec = videospec.construir(t, clave, firma(t), formato)
+    except videospec.VideoSpecInvalido as e:
+        raise ErrorProduccion(str(e)) from e
+    spec.guardar(salida / "videospec.plan.json")
+    return spec
 
 
-def _logo(marca: dict) -> Path | None:
-    local = (marca.get("video") or {}).get("logo_local")
-    if local and (datos.RAIZ / local).exists():
-        return datos.RAIZ / local
-    archivo = (marca.get("logo") or {}).get("archivo")
-    if archivo and (marca.get("logo") or {}).get("fondo") == "oscuro":
-        return datos.ruta_segura("repo_videos", archivo)
-    return None  # sin logo apto para fondo oscuro: se escribe el nombre de la marca
+def etapa_voz(t: dict, spec: videospec.VideoSpec, voz: dict, salida: Path, avisar) -> videospec.VideoSpec:
+    import soundfile as sf
+    cache = taller.ruta_trabajo(t["id"]).parent / "cache" / "voz"
+    spec = videospec.resolver(spec, generar=lambda texto: motor_voz.frase(voz, texto, cache),
+                              duracion_de=lambda wav: sf.info(str(wav)).duration,
+                              avisar=lambda paso, x: avisar(paso, 0.05 + 0.45 * x))
+    spec.guardar(salida / "videospec.json")
+    return spec
 
+
+def escenas_html(spec: videospec.VideoSpec) -> list[tuple]:
+    """(html, cuadros, entrada, salida, huella) de cada escena, lo que recibe el render."""
+    v, fps = spec.video, spec.video.fps
+    salida = []
+    for e in spec.escenas:
+        html = escenas.html(e.vista, spec.estilo, v.formato, spec.voz.solo_borrador, e.animacion, e.cuadros / fps)
+        huella = videospec.huella(html, e.cuadros, e.entrada, e.salida, fps, v.escala, v.crf, v.preset,
+                                  e.camara, e.transicion)
+        salida.append((html, e.cuadros, e.entrada, e.salida, huella))
+    return salida
+
+
+def etapa_escenas(spec: videospec.VideoSpec, salida: Path, tmp: Path, avisar) -> tuple[Path, list[dict]]:
+    """Dibuja (o toma de la caché) cada escena y las une en un video mudo."""
+    v = spec.video
+    lista = escenas_html(spec)
+    cache = salida / "escenas"
+    mudo = tmp / "mudo.mp4"
+    encuadre = render.video(lista, v.ancho, v.alto, mudo, tmp / "escenas",
+                            avisar=lambda h, n: avisar(f"Imagen: lámina {h} de {n}", 0.5 + 0.33 * h / n),
+                            fps=v.fps, escala=v.escala, crf=v.crf, preset=v.preset, cache=cache)
+    # Las escenas que ya no usa el video (se editó la lámina) no se guardan para siempre.
+    vigentes = {x[4] for x in lista}
+    for viejo in cache.glob("*.*"):
+        if viejo.stem not in vigentes:
+            viejo.unlink()
+    return mudo, encuadre
+
+
+def etapa_audio(spec: videospec.VideoSpec, tmp: Path, avisar) -> Path:
+    avisar("Mezclando el audio", 0.85)
+    crudo, norma = tmp / "narracion.wav", tmp / "narracion-norma.wav"
+    segmentos = [(f.inicio, Path(f.audio)) for e in spec.escenas for f in e.narracion]
+    audio.armar_pista(segmentos, spec.duracion, crudo)
+    musica = configuracion.carpeta_musica() / spec.audio.musica if spec.audio.musica else None
+    if musica is not None and musica.exists():
+        con_musica = tmp / "con-musica.wav"
+        audio.mezclar_musica(crudo, musica, con_musica, spec.duracion, spec.audio.musica_volumen)
+        crudo = con_musica
+    audio.normalizar(crudo, norma, spec.audio.lufs)
+    return norma
+
+
+def etapa_subtitulos(spec: videospec.VideoSpec, mp4: Path, salida: Path, tmp: Path, avisar) -> None:
+    clave = spec.clave
+    cues = subtitulos.cues([(f.inicio, f.inicio + f.duracion, f.texto) for e in spec.escenas for f in e.narracion])
+    subtitulos.escribir_vtt(cues, salida / f"{clave}.vtt")
+    subtitulos.escribir_srt(cues, salida / f"{clave}.srt")
+    if spec.video.subtitulos_quemados:
+        avisar("Quemando los subtítulos", 0.9)
+        v = spec.video
+        render.quemar_subtitulos(mp4, salida / f"{clave}.srt", tmp / "quemar", v.fps, v.crf, v.preset)
+
+
+def linea_de_tiempo(spec: videospec.VideoSpec) -> list[dict]:
+    return [{"lamina": e.lamina, "inicio": round(e.inicio, 3), "cuadros": e.cuadros, "plantilla": e.animacion["plantilla"],
+             "entrada": e.entrada, "salida": e.salida, "camara": e.camara, "transicion": e.transicion}
+            for e in spec.escenas]
+
+
+# ── El video completo ────────────────────────────────────────────────────────
 
 def producir(t: dict, clave: str, avisar=lambda paso, progreso: None) -> dict:
-    r = taller.resumen(t)
-    video = next((v for v in r["videos"] if v["clave"] == clave), None)
-    if video is None:
+    if clave not in {v["clave"] for v in t["videos"]}:
         raise ErrorProduccion(f"El trabajo no tiene un video «{clave}»")
-    marca = datos.marcas()[t["marca"]]
     voz = next(v for v in taller.voces() if v["id"] == t["voz"])
     motor_voz.proveedor(voz)  # falla pronto si la voz no se puede usar
-    conf = configuracion.para_trabajo(t)
-    tiempos, cv, ca = conf["tiempos"], conf["video"], conf["audio"]
-    fps = int(cv["fps"])
-    escala = configuracion.RESOLUCIONES[cv["resolucion"]]
-    crf, preset = configuracion.CALIDADES[cv["calidad"]]
-    formato = "16:9"  # el 9:16 llega en la Fase 3 (docs/plan-motor.md)
-    ancho, alto = escenas.FORMATOS[formato]
-    ancho_real, alto_real = round(ancho * escala), round(alto * escala)
+    estimada = next(v["segundos"] for v in taller.resumen(t)["videos"] if v["clave"] == clave)
 
     salida = carpeta_salida(t, clave)
     tmp = salida / "tmp"
     shutil.rmtree(tmp, ignore_errors=True)
     tmp.mkdir(parents=True)
-    cache = taller.ruta_trabajo(t["id"]).parent / "cache" / "voz"
 
-    # 1. Voz, frase por frase.
-    laminas = video["laminas_detalle"]
-    total_frases = sum(len(l["frases"]) for l in laminas) or 1
-    hechas, audios = 0, []
-    for l in laminas:
-        propios = []
-        for f in l["frases"]:
-            avisar(f"Voz: frase {hechas + 1} de {total_frases}", 0.05 + 0.45 * hechas / total_frases)
-            propios.append((f, motor_voz.frase(voz, normalizar.para_voz(f, marca.get("pronunciacion")), cache)))
-            hechas += 1
-        audios.append(propios)
-
-    # 2. Línea de tiempo en cuadros exactos: la imagen y la voz no se pueden separar.
-    import soundfile as sf
-    linea, segmentos, frases_tiempo, t0 = [], [], [], 0.0
-    entrada, pausa, respiro = tiempos["entrada"], tiempos["pausa"], tiempos["salida"]
-    estilo = escenas.estilo(marca, _logo(marca))
-    media = _media(t)
-    vistas = [escenas.vista(l, i, len(laminas), video["titulo"], media, t["nombre"]) for i, l in enumerate(laminas)]
-    planes = [animacion.plan(t, l["n"]) for l in laminas]
-    for l, propios, v, p in zip(laminas, audios, vistas, planes):
-        ent_s, sal_s = animacion.duraciones(p, v)
-        # La lámina respira al menos lo que tarda en salir, para que la salida no pise la voz.
-        dur = entrada + max(respiro, sal_s + 0.3) if propios else max(MUDA, ent_s + sal_s + 1.0)
-        cursor = t0 + entrada
-        for i, (texto, wav) in enumerate(propios):
-            d = sf.info(str(wav)).duration
-            segmentos.append((cursor, wav))
-            frases_tiempo.append((cursor, cursor + d, texto))
-            cursor += d + (pausa if i < len(propios) - 1 else 0)
-            dur += d + (pausa if i < len(propios) - 1 else 0)
-        n = render.cuadros(dur, fps)
-        linea.append({"lamina": l["n"], "inicio": round(t0, 3), "cuadros": n, "plantilla": p["plantilla"],
-                      "entrada": ent_s, "salida": sal_s})
-        t0 += n / fps
-    duracion = t0
-
-    # 3. Escenas y render.
-    borrador = bool(voz.get("solo_borrador"))
-    htmls = [(escenas.html(v, estilo, formato, borrador, p, x["cuadros"] / fps), x["cuadros"], x["entrada"], x["salida"])
-             for v, p, x in zip(vistas, planes, linea)]
-    mudo = tmp / "mudo.mp4"
-    encuadre = render.video(htmls, ancho, alto, mudo, tmp / "escenas",
-                 avisar=lambda h, n: avisar(f"Imagen: lámina {h} de {n}", 0.5 + 0.33 * h / n),
-                 fps=fps, escala=escala, crf=crf, preset=preset)
-
-    # 4. Audio: narración, música de fondo si la hay, y volumen a la norma.
-    avisar("Mezclando el audio", 0.85)
-    crudo, norma = tmp / "narracion.wav", tmp / "narracion-norma.wav"
-    audio.armar_pista(segmentos, duracion, crudo)
-    musica = configuracion.carpeta_musica() / ca["musica"] if ca["musica"] else None
-    if musica is not None and musica.exists():
-        con_musica = tmp / "con-musica.wav"
-        audio.mezclar_musica(crudo, musica, con_musica, duracion, ca["musica_volumen"])
-        crudo = con_musica
-    audio.normalizar(crudo, norma, ca["lufs"])
+    spec = etapa_plan(t, clave, salida)
+    spec = etapa_voz(t, spec, voz, salida, avisar)
+    mudo, encuadre = etapa_escenas(spec, salida, tmp, avisar)
+    norma = etapa_audio(spec, tmp, avisar)
     mp4 = salida / f"{clave}.mp4"
     render.unir(mudo, norma, mp4)
+    etapa_subtitulos(spec, mp4, salida, tmp, avisar)
 
-    # 5. Subtítulos (y quemados en la imagen si la configuración lo pide).
-    cues = subtitulos.cues(frases_tiempo)
-    subtitulos.escribir_vtt(cues, salida / f"{clave}.vtt")
-    subtitulos.escribir_srt(cues, salida / f"{clave}.srt")
-    if cv["subtitulos_quemados"]:
-        avisar("Quemando los subtítulos", 0.9)
-        render.quemar_subtitulos(mp4, salida / f"{clave}.srt", tmp / "quemar", fps, crf, preset)
-
-    # 6. Control de calidad.
     avisar("Revisando el resultado", 0.95)
-    chequeos = revisar(mp4, ancho_real, alto_real, duracion, video["segundos"], fps, ca["lufs"])
+    v = spec.video
+    chequeos = revisar(mp4, v.ancho_real, v.alto_real, spec.duracion, estimada, v.fps, spec.audio.lufs)
     chequeos.insert(2, {"ok": not encuadre, "titulo": "Todo el texto cabe",
-                        "detalle": "; ".join(f"lámina {laminas[x['escena']]['n']}: {x['detalle']}" for x in encuadre)
+                        "detalle": "; ".join(f"lámina {spec.escenas[x['escena']].lamina}: {x['detalle']}" for x in encuadre)
                         or "Ningún texto se sale de la pantalla ni de su caja"})
+    conf = configuracion.para_trabajo(t)
     informe = {
-        "trabajo": t["id"], "video": clave, "titulo": video["titulo"],
+        "trabajo": t["id"], "video": clave, "titulo": spec.titulo,
         "creado": datetime.now().isoformat(timespec="seconds"),
-        "marca": t["marca"], "voz": voz["id"], "borrador": borrador, "formato": formato,
-        "firma": firma(t), "ajustes": {g: conf[g] for g in configuracion.POR_CURSO},
-        "duracion": round(duracion, 2), "linea_de_tiempo": linea, "chequeos": chequeos,
+        "marca": t["marca"], "voz": voz["id"], "borrador": spec.voz.solo_borrador, "formato": v.formato,
+        "firma": spec.firma, "ajustes": {g: conf[g] for g in configuracion.POR_CURSO},
+        "duracion": round(spec.duracion, 2), "linea_de_tiempo": linea_de_tiempo(spec), "chequeos": chequeos,
+        "avisos": spec.avisos, "videospec": "videospec.json",
         "archivos": [mp4.name, f"{clave}.vtt", f"{clave}.srt"],
     }
     (salida / "qa.json").write_text(json.dumps(informe, ensure_ascii=False, indent=1), encoding="utf-8")

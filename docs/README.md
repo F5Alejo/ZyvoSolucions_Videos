@@ -3,6 +3,7 @@
 | Documento | Qué tiene |
 |---|---|
 | [`../ARCHITECTURE.md`](../ARCHITECTURE.md) | Análisis frente al objetivo (VideoSpec, etapas, agentes), problemas, decisiones pendientes y plan de migración |
+| [`videospec.md`](videospec.md) | El contrato de un video: forma, validación y versiones |
 | [`arquitectura-actual.md`](arquitectura-actual.md) | Cómo funciona hoy el estudio: piezas, del PPTX al MP4, dónde se guarda cada cosa, cola, agentes, tiempos y límites |
 | [`hallazgos.md`](hallazgos.md) | Problemas que aparecieron, su causa y cómo se resolvieron, para no repetirlos |
 | [`plan-nube.md`](plan-nube.md) | Siguiente etapa: llevarlo a la nube (prueba gratuita, SaaS y escala) |

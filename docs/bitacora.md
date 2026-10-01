@@ -8,6 +8,22 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-10-01 · Fases 2, 3 y 6: VideoSpec, producción por etapas y caché de escenas
+
+### Qué se hizo
+- **`motor/videospec.py`:** el contrato de un video en Pydantic (versión 1). `construir()` arma el plan con duraciones estimadas (`videospec.plan.json`); `resolver()` le pone el audio a cada frase y fija cada escena en cuadros exactos (`videospec.json`). Se valida esquema, catálogo y coherencia; `sanear()` cambia lo desconocido por el valor por defecto con el aviso `INVALID_EFFECT`. Ver `docs/videospec.md`.
+- **`motor/catalogo.py`:** catálogos cerrados de cámara y transición (por ahora `estatica` y `corte`, lo que el render ya sabe hacer).
+- **`motor/produccion.py` por etapas:** plan → voz → escenas → audio → subtítulos → QA, todas sobre el VideoSpec. Los tiempos son los mismos de antes.
+- **Caché de escenas (`salida/<clave>/escenas/<huella>.mp4`):** cada escena dibujada se guarda con un hash de su HTML y sus ajustes. Si se edita una lámina, solo esa escena se vuelve a dibujar; las que ya no se usan se borran.
+- **`motor/recursos.py`:** `logo()` y `media()` dejaron de ser funciones privadas de `produccion` que importaban `main.py` y `empaquetar.py`. `escenas` usa `extractor.seccion_lamina` en vez de `_forma` y `_SECCION`.
+- `qa.json` trae además cámara y transición por lámina, los avisos del VideoSpec y su nombre de archivo.
+- `tests/conftest.py` con el fixture `datos_copia` compartido. Pruebas: 80 (4 nuevas en `tests/test_videospec.py`).
+
+### Decisiones
+- **Las escenas se cachean por su HTML, no por el número de lámina:** el HTML ya incluye texto, imagen, colores, animación y duración, así que cualquier cambio que se vea invalida solo esa escena.
+
+---
+
 ## 2026-10-01 · Línea base, voz inicial que funciona e instalador sin preguntas colgadas
 
 ### Qué se hizo

@@ -14,7 +14,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel
 
 from app import configuracion, datos, extractor, taller
-from motor import cola, diagnostico, empaquetar, escenas, produccion
+from motor import cola, diagnostico, empaquetar, escenas, produccion, recursos
 from motor import voz as motor_voz
 from motor.agentes import entrega as agentes_entrega
 from motor.agentes import registro as agentes
@@ -379,7 +379,6 @@ def api_guardar_animacion_curso(id_: str, a: dict):
 
 def _escena_vista_previa(t: dict, n: int, a: dict | None, formato: str) -> str:
     """El HTML de una lámina con sus animaciones corriendo en bucle, para verla en el navegador."""
-    from motor.produccion import _logo, _media
     if formato not in escenas.FORMATOS:
         raise ValueError("Formato desconocido")
     lamina = next((l for l in t["laminas"] if l["n"] == n), None)
@@ -389,12 +388,12 @@ def _escena_vista_previa(t: dict, n: int, a: dict | None, formato: str) -> str:
     indice = video["laminas"].index(n)
     prueba = {**t, "animacion": animacion.validar_curso(a) if a is not None else t.get("animacion")}
     plan = animacion.plan(prueba, n)
-    media = _media(t)
+    media = recursos.media(t)
     vista = escenas.vista(lamina, indice, len(video["laminas"]), video["titulo"], media, t["nombre"])
     ent, sal = animacion.duraciones(plan, vista)
     segundos = round(ent + 1.6 + sal, 2)
     marca = datos.marcas()[t["marca"]]
-    logo = _logo(marca)
+    logo = recursos.logo(marca)
     html = escenas.html(vista, escenas.estilo(marca, logo), formato, plan=plan, segundos=segundos)
     # En el navegador no se abren rutas locales (file://): se sirven por la API.
     html = html.replace(escenas.FUENTE.resolve().as_uri(), "/api/escenas/fuente.ttf")
@@ -430,9 +429,8 @@ def api_fuente():
 
 @app.get("/api/escenas/logo/{marca}")
 def api_logo_escena(marca: str):
-    from motor.produccion import _logo
     m = datos.marcas().get(marca)
-    ruta = _logo(m) if m else None
+    ruta = recursos.logo(m) if m else None
     if ruta is None:
         raise HTTPException(404)
     return FileResponse(ruta)

@@ -10,8 +10,6 @@ import soundfile as sf
 from pptx import Presentation
 from pptx.util import Inches
 
-ORIGEN = Path(__file__).resolve().parent.parent / "datos"
-
 hay_ffmpeg = shutil.which("ffmpeg") is not None
 
 
@@ -35,15 +33,6 @@ def pptx_con_foto() -> bytes:
     buf = io.BytesIO()
     pres.save(buf)
     return buf.getvalue()
-
-
-@pytest.fixture()
-def datos_copia(tmp_path, monkeypatch):
-    copia = tmp_path / "datos"
-    shutil.copytree(ORIGEN, copia, ignore=shutil.ignore_patterns("trabajos"))
-    from app import datos
-    monkeypatch.setattr(datos, "RAIZ_DATOS", copia)
-    return copia
 
 
 class VozDePrueba:

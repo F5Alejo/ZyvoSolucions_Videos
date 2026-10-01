@@ -73,7 +73,7 @@ def vista(lamina: dict, indice: int, total: int, video: str, media: Path | None,
     from app import extractor  # el mismo título que muestra el taller (forma «title» si la hay)
 
     titulo = extractor.titulo_lamina(lamina) if lamina.get("formas") else video
-    seccion = extractor._forma(lamina, extractor._SECCION)
+    seccion = extractor.seccion_lamina(lamina)
     resto = []
     for ps in lamina.get("formas", {}).values():
         for p in ps:
