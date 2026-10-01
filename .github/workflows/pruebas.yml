@@ -66,6 +66,19 @@ jobs:
       - name: pytest
         run: python -m pytest -q
 
+  estilo:
+    name: Estilo (ruff)
+    runs-on: ubuntu-24.04  # fijo: ubuntu-latest pasa a Ubuntu 26 el 19-oct-2026
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install ruff
+      # Las reglas están en pyproject.toml ([tool.ruff]).
+      - run: ruff check --output-format=github .
+
   interfaz:
     name: Interfaz (tipos, Vitest y compilación)
     runs-on: ubuntu-24.04  # fijo: ubuntu-latest pasa a Ubuntu 26 el 19-oct-2026

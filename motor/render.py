@@ -36,7 +36,8 @@ _ENCUADRE = """() => {
     if (r.width && (r.right > W + 1 || r.bottom > H - 14 || r.left < -1 || r.top < -1)) fuera.push("se sale de la pantalla: " + nombre(el));
   }
   const cuerpo = document.querySelector(".cuerpo");
-  if (cuerpo && cuerpo.scrollHeight > cuerpo.clientHeight + 2) fuera.push("el texto no cabe en la lámina (sobran " + (cuerpo.scrollHeight - cuerpo.clientHeight) + " px)");
+  const sobra = cuerpo ? cuerpo.scrollHeight - cuerpo.clientHeight : 0;
+  if (sobra > 2) fuera.push("el texto no cabe en la lámina (sobran " + sobra + " px)");
   return fuera;
 }"""
 

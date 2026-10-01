@@ -15,10 +15,10 @@ from pydantic import BaseModel
 
 from app import configuracion, datos, extractor, taller
 from motor import cola, diagnostico, empaquetar, escenas, produccion
+from motor import voz as motor_voz
 from motor.agentes import entrega as agentes_entrega
 from motor.agentes import registro as agentes
 from motor.escenas import animacion, efectos
-from motor import voz as motor_voz
 
 RAIZ = Path(__file__).resolve().parent.parent
 DIST = RAIZ / "frontend" / "dist"
@@ -305,7 +305,8 @@ TIPOS_SALIDA = {".mp4": "video/mp4", ".vtt": "text/vtt", ".srt": "application/x-
 def api_salida(id_: str, clave: str, archivo: str, descargar: bool = False):
     """Solo el mp4, los subtítulos y el qa.json de ese video: nada más de la carpeta del curso."""
     t = _trabajo_o_404(id_)
-    if not re.fullmatch(r"[a-z0-9-]+", clave) or archivo not in {f"{clave}.mp4", f"{clave}.vtt", f"{clave}.srt", "qa.json", "capitulos.txt"}:
+    permitidos = {f"{clave}.mp4", f"{clave}.vtt", f"{clave}.srt", "qa.json", "capitulos.txt"}
+    if not re.fullmatch(r"[a-z0-9-]+", clave) or archivo not in permitidos:
         raise HTTPException(404)
     ruta = taller.ruta_trabajo(t["id"]).parent / "salida" / clave / archivo
     if not ruta.is_file():
@@ -442,7 +443,8 @@ def api_media_trabajo(id_: str, nombre: str):
     """Las imágenes extraídas del PPTX del curso (solo imágenes, solo de su carpeta)."""
     t = _trabajo_o_404(id_)
     ruta = taller.ruta_trabajo(t["id"]).parent / "media" / Path(nombre).name
-    if ruta.suffix.lower() not in {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".svg", ".tif", ".tiff", ".emf", ".wmf"} or not ruta.is_file():
+    imagenes = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".svg", ".tif", ".tiff", ".emf", ".wmf"}
+    if ruta.suffix.lower() not in imagenes or not ruta.is_file():
         raise HTTPException(404)
     return FileResponse(ruta)
 

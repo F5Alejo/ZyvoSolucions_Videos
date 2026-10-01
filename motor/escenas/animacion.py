@@ -194,7 +194,9 @@ def duraciones(p: dict, v: dict) -> tuple[float, float]:
         ent, sal = fases["entrada"], fases["salida"]
         if ent["efecto"] != "ninguno" and _activo(el, "entrada", v):
             n = _cuantos(el, v)
-            partes = trozos(v.get("titulo" if el == "titulo" else "antetitulo", ""), ent["efecto"]) if el in ("titulo", "antetitulo") else None
+            partes = None
+            if el in ("titulo", "antetitulo"):
+                partes = trozos(v.get("titulo" if el == "titulo" else "antetitulo", ""), ent["efecto"])
             if partes:
                 n = len(partes)
             paso = ent.get("escalonado", 0) or (0.03 if ent["efecto"] == "maquina" else 0.08 if partes else 0)

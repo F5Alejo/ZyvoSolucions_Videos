@@ -77,9 +77,11 @@ def _director(t: dict, ctx: Contexto) -> list[dict]:
             nueva = x["plantilla"] if x["plantilla"] != actual["plantilla"] else None
             base = todas[x["plantilla"]]["elementos"]
             ajustes = {}
-            if x.get("titulo_entrada") in efectos.ELEMENTOS["titulo"]["entrada"] and x["titulo_entrada"] != base["titulo"]["entrada"]["efecto"]:
+            permitido = efectos.ELEMENTOS["titulo"]["entrada"]
+            if x.get("titulo_entrada") in permitido and x["titulo_entrada"] != base["titulo"]["entrada"]["efecto"]:
                 ajustes["titulo"] = {"entrada": {"efecto": x["titulo_entrada"]}}
-            if v["vinetas"] and x.get("vinetas_entrada") in efectos.ELEMENTOS["vinetas"]["entrada"] and x["vinetas_entrada"] != base["vinetas"]["entrada"]["efecto"]:
+            permitido = efectos.ELEMENTOS["vinetas"]["entrada"]
+            if v["vinetas"] and x.get("vinetas_entrada") in permitido and x["vinetas_entrada"] != base["vinetas"]["entrada"]["efecto"]:
                 ajustes["vinetas"] = {"entrada": {"efecto": x["vinetas_entrada"]}}
             razon, con_ia = x.get("razon", "").strip()[:200] or "Elegido por la IA", True
         else:

@@ -202,6 +202,7 @@ def _crear(c) -> str:
 def test_producir_desde_la_api(datos_copia, monkeypatch):
     pytest.importorskip("playwright")
     from fastapi.testclient import TestClient
+
     from app.main import app
     from motor import cola, voz
     monkeypatch.setitem(voz.PROVEEDORES, "Kokoro", VozDePrueba)
@@ -235,6 +236,7 @@ def test_producir_desde_la_api(datos_copia, monkeypatch):
 
 def test_producir_con_voz_no_disponible_avisa(datos_copia, monkeypatch):
     from fastapi.testclient import TestClient
+
     from app.main import app
     monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
     c = TestClient(app)

@@ -30,6 +30,7 @@ def cliente(tmp_path, monkeypatch):
     monkeypatch.setitem(datos.CONFIG, "repo_videos", repo)
     monkeypatch.setitem(datos.CONFIG, "entregables", entregables)
     from fastapi.testclient import TestClient
+
     from app.main import app
     return TestClient(app), copia
 

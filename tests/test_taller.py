@@ -1,6 +1,5 @@
 import io
 import json
-import re
 import shutil
 from pathlib import Path
 
@@ -15,7 +14,8 @@ def pptx_de_prueba() -> bytes:
     """Tres láminas: una con norma y cifra, una sin notas y una con formas de nombre repetido."""
     pres = Presentation()
     diapos = [
-        ("Riesgo vial laboral", "El riesgo vial se gestiona como cualquier peligro. Lo exige la Ley 1503 de 2011: el 30 % de los siniestros ocurre en misión."),
+        ("Riesgo vial laboral", "El riesgo vial se gestiona como cualquier peligro. "
+                                "Lo exige la Ley 1503 de 2011: el 30 % de los siniestros ocurre en misión."),
         ("Lámina sin guion", ""),
         ("Cierre", "¿Qué aprendimos? Conducir es una tarea de alto riesgo."),
     ]
@@ -59,6 +59,7 @@ def cliente(tmp_path, monkeypatch):
     monkeypatch.setitem(datos.CONFIG, "repo_videos", repo_falso(tmp_path / "repo"))
     monkeypatch.delitem(datos.CONFIG, "entregables", raising=False)
     from fastapi.testclient import TestClient
+
     from app.main import app
     return TestClient(app), copia
 
