@@ -1,5 +1,8 @@
 # Estudio de video RiskMann
 
+[![Pruebas](https://github.com/F5Alejo/ZyvoSolucions_Videos/actions/workflows/pruebas.yml/badge.svg?branch=main)](https://github.com/F5Alejo/ZyvoSolucions_Videos/actions/workflows/pruebas.yml)
+[![Instalador en Windows](https://github.com/F5Alejo/ZyvoSolucions_Videos/actions/workflows/instalador-windows.yml/badge.svg)](https://github.com/F5Alejo/ZyvoSolucions_Videos/actions/workflows/instalador-windows.yml)
+
 **Entra un PPTX. Sale el curso en video.** La interfaz del motor de `riskmann2-marketing-videos`:
 el estudio donde entra la presentación del cliente y sale el curso, y el seguimiento de cada
 video hasta su aprobación.
@@ -84,7 +87,7 @@ python scripts/descargar_modelos.py     # voces Kokoro y Piper → modelos/ (no 
 
 En **Resultado**, cada video tiene «Producir video». Sale en `datos/trabajos/<id>/salida/<clave>/`:
 el `.mp4` (1920×1080, H.264 + AAC, -14 LUFS), sus subtítulos `.vtt` y `.srt`, y `qa.json` con el
-control de calidad. El plan y la bitácora de desarrollo están en `docs/`.
+control de calidad. La documentación (arquitectura, hallazgos, plan de nube y bitácora) está en [`docs/`](docs/README.md).
 
 ### Configuración (`/configuracion`)
 
@@ -143,15 +146,35 @@ npm test                           # utilidades y componentes (Vitest)
 
 ### GitHub Actions y ramas
 
-| Rama | Para qué | Cuándo corren las pruebas |
+| Rama | Para qué | Cómo se actualiza |
 | --- | --- | --- |
-| `Alejodev` | Pruebas y mejoras: aquí se desarrolla | En cada push |
-| `main` | La versión estable | En cada push y en cada pull request hacia `main` |
+| `Alejodev` | Pruebas y mejoras: aquí se desarrolla | Push directo; Actions corre todo en cada push |
+| `main` | La versión estable (protegida) | **Solo por pull request desde `Alejodev`**, con las pruebas en verde |
 
-El flujo `.github/workflows/pruebas.yml` corre dos trabajos en Ubuntu: **API y motor** (Python 3.12,
-ffmpeg, Chromium y `pytest`, que produce videos de verdad con una voz de prueba y Ollama simulado:
-no necesita modelos ni claves) e **Interfaz** (Node 22: `vue-tsc`, Vitest y la compilación).
-`main` solo se actualiza desde `Alejodev` cuando las pruebas pasan en verde.
+**Flujo «Pruebas»** (`.github/workflows/pruebas.yml`, Ubuntu 24.04, en cada push a las dos ramas y en
+cada PR hacia `main`):
+
+| Trabajo | Qué revisa |
+| --- | --- |
+| API y motor (pytest) | Python 3.12, ffmpeg y Chromium: 75 pruebas, que producen videos de verdad con una voz de prueba y Ollama simulado (no necesitan modelos ni claves). Sube el artefacto **`video-de-muestra`** (MP4, subtítulos y control de calidad, 14 días) |
+| Interfaz | Node 22: `vue-tsc`, Vitest y la compilación |
+| Estilo (ruff) | El código de Python, con las reglas de `pyproject.toml` |
+| Secretos (gitleaks) | Que ninguna clave haya llegado a la historia de git |
+
+**Flujo «Instalador en Windows»** (`.github/workflows/instalador-windows.yml`): `instalar.ps1
+-SinModelos -Probar` en un Windows limpio, como en un equipo nuevo. Corre cada lunes, a mano
+(pestaña Actions → «Run workflow») y cuando cambian el instalador o las dependencias.
+
+**Dependabot** (`.github/dependabot.yml`): cada lunes propone PR agrupados hacia `Alejodev` con las
+actualizaciones de pip, npm y las acciones.
+
+**Para llevar `Alejodev` a `main`:**
+```sh
+gh pr create --base main --head Alejodev --fill   # abre el PR
+gh pr checks --watch                              # espera las pruebas
+gh pr merge --merge                               # fusiona cuando están en verde
+git switch Alejodev && git pull origin main       # deja Alejodev igual que main
+```
 
 ## Pantallas
 
