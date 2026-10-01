@@ -5,6 +5,9 @@ updates:
   - package-ecosystem: pip
     directory: "/"
     target-branch: Alejodev
+    # requirements.txt usa mínimos (>=) que ya admiten las versiones nuevas: solo se propone algo
+    # cuando una versión queda fuera del rango, no para subir el mínimo de cada paquete.
+    versioning-strategy: increase-if-necessary
     schedule:
       interval: weekly
       day: monday

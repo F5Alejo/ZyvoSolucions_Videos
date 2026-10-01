@@ -8,6 +8,26 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-10-01 · `main` protegida, primer PR y ajustes de Dependabot
+
+### Qué se hizo
+- **Regla «Proteger main»** (ruleset 24305825, creada con `gh api`):
+  - exige pull request (0 aprobaciones: hay un solo desarrollador y GitHub no deja aprobar el PR propio);
+  - exige que pasen «API y motor (pytest)», «Interfaz (tipos, Vitest y compilación)», «Estilo (ruff)» y «Secretos (gitleaks)»;
+  - solo fusión con *merge*, y bloquea el *force push* y el borrado.
+- **Comprobado:** un `git push origin Alejodev:main` directo es rechazado («push declined due to repository rule violations») y `main` no cambia.
+- **Primer PR** (#1, «GitHub Actions completo y documentación»): los 4 trabajos en verde, fusionado con *merge* (`ae394ed`). Después `Alejodev` se adelantó a `main` para quedar iguales. «Pruebas» también pasó en `main` después de la fusión.
+- **Dependabot** arrancó al llegar su configuración a `main` y abrió PR hacia `Alejodev`: 5 de pip y uno de npm (TypeScript 7).
+
+### Errores y cómo se resolvieron
+- **Los PR de Dependabot no se probaban:** «Pruebas» solo se activaba con PR hacia `main`. Ahora también con PR hacia `Alejodev`.
+- **Ruido de pip:** abrió un PR por paquete solo para subir el mínimo de `requirements.txt` (p. ej. `fastapi>=0.115` a `>=0.141.1`), aunque los `>=` ya admitían esas versiones. Con `versioning-strategy: increase-if-necessary` solo propone algo cuando una versión queda fuera del rango. Los PR #3 a #7 se cerraron por eso.
+
+### Pendiente
+- PR #2, **TypeScript 6 → 7**: es una versión mayor y puede romper `vue-tsc`. Se decide según lo que digan las pruebas.
+
+---
+
 ## 2026-10-01 · GitHub Actions completo y documentación de lo encontrado
 
 El usuario decidió terminar GitHub Actions antes de pasar a la nube. El plan de nube quedó
