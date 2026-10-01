@@ -60,6 +60,7 @@ de cada uno, con su fecha, está en la [bitácora](bitacora.md).
 | Los PR de Dependabot no se probaban | «Pruebas» solo se activaba con PR hacia `main` | También con PR hacia `Alejodev` |
 | TypeScript 7 rompe `vue-tsc` | `ERR_PACKAGE_PATH_NOT_EXPORTED` (`./lib/tsc`) | Dependabot ignora las versiones mayores de TypeScript hasta que `vue-tsc` las soporte |
 | El servidor local se apagaba solo | Las tareas en segundo plano del asistente tienen un tiempo máximo | El servidor se lanza en su propia ventana de PowerShell |
+| `instalar.ps1` se quedaba esperando la clave sin ventana | `Read-Host` no falla cuando no hay quien escriba: espera para siempre | Solo pregunta si la sesión es interactiva y la entrada no está redirigida |
 
 ## Despliegue
 

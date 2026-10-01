@@ -31,6 +31,23 @@ def voces() -> list[dict]:
     return json.loads((datos.RAIZ_DATOS / "voces.json").read_text(encoding="utf-8"))
 
 
+def voz_inicial(preferida: str) -> str:
+    """La voz de un curso nuevo: la de la configuración si este equipo la puede usar; si no, la
+    primera que sí se pueda entregar (Kokoro, en un equipo sin clave de ElevenLabs).
+
+    Nunca una voz de solo borradores. Si ninguna está lista, queda la preferida y el taller dice
+    qué le falta.
+    """
+    from motor import voz as motor_voz
+
+    todas = voces()
+    elegida = next((v for v in todas if v["id"] == preferida), None)
+    if elegida and motor_voz.disponible(elegida) is None:
+        return preferida
+    lista = next((v for v in todas if not v.get("solo_borrador") and motor_voz.disponible(v) is None), None)
+    return lista["id"] if lista else preferida
+
+
 # ── Crear ────────────────────────────────────────────────────────────────────
 
 def _nuevo(nombre: str, origen: dict, laminas: list[dict], videos: list[dict],
@@ -45,7 +62,7 @@ def _nuevo(nombre: str, origen: dict, laminas: list[dict], videos: list[dict],
         "creado": datetime.now().isoformat(timespec="seconds"),
         "origen": origen,
         "marca": defecto["marca"],
-        "voz": defecto["voz"],
+        "voz": voz_inicial(defecto["voz"]),
         "formatos": list(defecto["formatos"]),
         "laminas": laminas,
         "videos": videos,

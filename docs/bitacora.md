@@ -8,6 +8,20 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-10-01 · Línea base, voz inicial que funciona e instalador sin preguntas colgadas
+
+### Qué se hizo
+- **Línea base en este equipo:** Python 3.12.10 y ffmpeg 9.0.2 instalados para el usuario, luego `instalar.ps1 -Probar`: pytest 75/75, Vitest 10/10, `vue-tsc` y ruff sin avisos.
+- **Voz inicial (`taller.voz_inicial`):** un curso nuevo toma la voz de la configuración solo si el equipo la puede usar; si no, la primera que se pueda entregar (Kokoro sin clave de ElevenLabs). Nunca Piper. Si ninguna está lista, queda la de la configuración y el taller dice qué falta.
+- **Instalador:** no pregunta la clave de ElevenLabs cuando nadie puede responder.
+- Pruebas: 76 (una nueva para la voz inicial).
+
+### Errores y cómo se resolvieron
+- **`instalar.ps1` se quedaba esperando para siempre** en «Pega la clave de ElevenLabs» al correr sin ventana: `Read-Host` no lanza error, espera. Ahora solo pregunta si la sesión es interactiva, la entrada no está redirigida y no se pasó `-NonInteractive`.
+- Dos pruebas daban por hecho que la voz de un curso nuevo es Carlos: ahora la eligen de forma explícita.
+
+---
+
 ## 2026-10-01 · Fase 1 del prompt maestro: análisis y plan de arquitectura
 
 ### Qué se hizo

@@ -122,7 +122,8 @@ def crear(c, nombre="Curso de prueba"):
     return r.json()["id"]
 
 
-def test_entra_pptx_y_sale_el_curso(cliente):
+def test_entra_pptx_y_sale_el_curso(cliente, monkeypatch):
+    monkeypatch.setenv("ELEVENLABS_API_KEY", "de-prueba")  # Carlos, la voz de la configuración, está lista
     c, copia = cliente
     id_ = crear(c)
     assert (copia / "trabajos" / id_ / "entrada.pptx").exists()
@@ -237,3 +238,18 @@ def test_volver_a_proponer_los_videos(cliente):
     ej = c.post("/api/trabajos/ejemplo-csm").json()["id"]
     r = c.post(f"/api/trabajos/{ej}/reagrupar")
     assert r.status_code == 400  # el ejemplo conserva los módulos con los que se produjo
+
+
+def test_curso_nuevo_toma_una_voz_que_este_equipo_pueda_usar(cliente, monkeypatch):
+    from motor import voz
+    c, _ = cliente
+    monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
+    # Sin clave de ElevenLabs, con Kokoro listo: la primera voz que se puede entregar (nunca Piper).
+    monkeypatch.setattr(voz, "disponible", lambda v: None if v["proveedor"] in ("Kokoro", "Piper") else "falta")
+    assert c.get(f"/api/trabajos/{crear(c)}").json()["trabajo"]["voz"] == "kokoro-dora"
+    # Si nada está listo, queda la de la configuración y el taller dice qué le falta.
+    monkeypatch.setattr(voz, "disponible", lambda v: "falta")
+    assert c.get(f"/api/trabajos/{crear(c)}").json()["trabajo"]["voz"] == "carlos"
+    # Con la clave, la de la configuración.
+    monkeypatch.setattr(voz, "disponible", lambda v: None)
+    assert c.get(f"/api/trabajos/{crear(c)}").json()["trabajo"]["voz"] == "carlos"

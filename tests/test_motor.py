@@ -250,7 +250,8 @@ def test_producir_con_voz_no_disponible_avisa(datos_copia, monkeypatch):
     from app.main import app
     monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
     c = TestClient(app)
-    id_ = _crear(c)  # la voz por defecto es Carlos (ElevenLabs), aquí sin clave
+    id_ = _crear(c)
+    c.patch(f"/api/trabajos/{id_}", json={"marca": "riskmann", "voz": "carlos", "formatos": ["16:9"]})  # ElevenLabs, sin clave
     assert "Falta la clave de ElevenLabs" in c.get(f"/api/trabajos/{id_}/produccion").json()["voz_falta"]
     r = c.post(f"/api/trabajos/{id_}/producir/v01")
     assert r.status_code == 400 and "ElevenLabs" in r.json()["detail"]
