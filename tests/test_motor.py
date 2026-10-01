@@ -179,6 +179,16 @@ def test_de_un_pptx_sale_un_mp4_listo_para_publicar(datos_copia, monkeypatch):
     assert vtt.count("-->") >= frases and "Ley 1503 de 2011" in vtt  # el subtítulo no se normaliza
     assert json.loads((salida / "qa.json").read_text(encoding="utf-8"))["voz"] == "kokoro-dora"
 
+    # En GitHub Actions se guarda el resultado como artefacto (variable GUARDAR_MUESTRA): el video,
+    # sus subtítulos y su informe de calidad. La voz es un tono de prueba, no una voz real.
+    import os
+    destino = os.environ.get("GUARDAR_MUESTRA")
+    if destino:
+        Path(destino).mkdir(parents=True, exist_ok=True)
+        clave = t["videos"][0]["clave"]
+        for nombre in (f"{clave}.mp4", f"{clave}.vtt", f"{clave}.srt", "qa.json"):
+            shutil.copy(salida / nombre, Path(destino) / f"muestra-{nombre}")
+
 
 def test_voz_sin_clave_avisa_antes_de_empezar(datos_copia, monkeypatch):
     from app import taller

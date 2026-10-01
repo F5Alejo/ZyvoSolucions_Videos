@@ -64,7 +64,18 @@ jobs:
 
       # Las pruebas usan una voz de prueba y Ollama simulado: no hacen falta modelos ni claves.
       - name: pytest
+        env:
+          GUARDAR_MUESTRA: ${{ runner.temp }}/muestra
         run: python -m pytest -q
+
+      # El video que produjo la prueba de punta a punta, para verlo desde la página de Actions.
+      - name: Video de muestra
+        uses: actions/upload-artifact@v7
+        with:
+          name: video-de-muestra
+          path: ${{ runner.temp }}/muestra/
+          retention-days: 14
+          if-no-files-found: error
 
   estilo:
     name: Estilo (ruff)
