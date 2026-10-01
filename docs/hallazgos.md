@@ -61,6 +61,7 @@ de cada uno, con su fecha, está en la [bitácora](bitacora.md).
 | TypeScript 7 rompe `vue-tsc` | `ERR_PACKAGE_PATH_NOT_EXPORTED` (`./lib/tsc`) | Dependabot ignora las versiones mayores de TypeScript hasta que `vue-tsc` las soporte |
 | El servidor local se apagaba solo | Las tareas en segundo plano del asistente tienen un tiempo máximo | El servidor se lanza en su propia ventana de PowerShell |
 | `instalar.ps1` se quedaba esperando la clave sin ventana | `Read-Host` no falla cuando no hay quien escriba: espera para siempre | Solo pregunta si la sesión es interactiva y la entrada no está redirigida |
+| Un commit dejó Actions en rojo tras mover un fixture | Se quitó `ORIGEN` de `test_motor.py`, que importan otras pruebas, y solo se corrió un subconjunto | Correr **todas** las pruebas después del último cambio |
 
 ## Despliegue
 

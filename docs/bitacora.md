@@ -8,6 +8,26 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-10-01 · Fases 6 y 7: errores con código, reintentos, voz de respaldo, registro técnico y detector de bugs
+
+### Qué se hizo
+- **`motor/errores.py`:** cada falla se clasifica con un código estable (`PPTX_001`, `TTS_001`, `TTS_002`, `RENDER_001`, `AUDIO_001`, `VIDEO_001`, `SPEC_001`, `QA_001`, `MOTOR_001`…), una severidad (CRITICAL a INFO), un mensaje para la persona y una recuperación sugerida.
+- **Reintentos (`produccion.correr`):** la voz se reintenta hasta 3 veces y las escenas hasta 2, **solo** si la falla es pasajera (red, ElevenLabs 5xx o 429, el navegador que se cayó). Un ffmpeg con datos malos o una clave que falta no se reintentan.
+- **Voz de respaldo:** si ElevenLabs falla, el video entero se rehace con la primera voz Kokoro lista (nunca Piper) y el informe lo dice (`respaldo_voz` y un aviso). Se apaga con `audio.respaldo_voz`.
+- **Registro técnico (`motor/logs.py`):** una línea JSON por evento en `datos/trabajos/<id>/logs/<clave>.jsonl`, con etapa, intento, código, severidad y *traceback*. `GET /api/trabajos/{id}/diagnostico/{clave}` lo entrega para el modo diagnóstico. La interfaz nunca recibe el *traceback*.
+- **Fases del pipeline** en `estado.json` y en la API: QUEUED, SCRIPTING, SCRIPT_READY, GENERATING_AUDIO, AUDIO_READY, BUILDING_SCENES, SCENES_READY, RENDERING, RENDERED, QA_RUNNING, QA_PASSED / QA_FAILED, COMPLETED y FAILED.
+- **Control de calidad:** cada chequeo lleva un `id` estable. Nuevos: «El audio no se satura» (pico por debajo de -0,1 dBFS), «Textos sin caracteres extraños» y «Todas las láminas e imágenes están en el video».
+- **Detector de bugs (`motor/bugs.py`):** cada chequeo fallido se vuelve un bug con código, severidad, escena y recuperación, ordenados de más a menos grave, en `qa.json["bugs"]`. No corrige nada solo.
+- Pruebas: 86 (`tests/test_robustez.py`).
+
+### Errores y cómo se resolvieron
+- **El commit `e3eea68` dejó Actions en rojo:** al pasar `datos_copia` a `conftest.py` se quitó `ORIGEN` de `test_motor.py`, que importan otras tres pruebas. Después de ese cambio solo se había corrido un subconjunto. Se arregló en `1d2071e`. Lección: correr **todas** las pruebas después del último cambio, no antes.
+
+### Decisiones
+- **No se detectan «cuadros congelados»:** una lámina quieta mientras habla la voz es a propósito, así que `freezedetect` marcaría casi todo el video. Las pantallas negras y los silencios largos sí se detectan.
+
+---
+
 ## 2026-10-01 · Fases 2, 3 y 6: VideoSpec, producción por etapas y caché de escenas
 
 ### Qué se hizo

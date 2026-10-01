@@ -16,7 +16,7 @@ DEFECTO = {
     "cursos": {"marca": "riskmann", "voz": "carlos", "formatos": ["16:9"], "animacion": "dinamica"},
     "video": {"resolucion": "1080p", "fps": 30, "calidad": "final", "subtitulos_quemados": False},
     "tiempos": {"entrada": 1.0, "pausa": 0.35, "salida": 1.3},
-    "audio": {"lufs": -14, "musica": None, "musica_volumen": -22},
+    "audio": {"lufs": -14, "musica": None, "musica_volumen": -22, "respaldo_voz": True},
     "completo": {"tarjetas": True, "duracion_tarjeta": 3.0, "capitulos": True},
     "agentes": {
         "url": "http://localhost:11434",
@@ -88,7 +88,8 @@ def _validar(conf: dict, estricto: bool = True) -> dict:
             raise ValueError(f"«{grupo}.{clave}» no admite {conf[grupo][clave]!r}")
     for grupo, clave in RANGOS:
         conf[grupo][clave] = _numero(grupo, clave, conf[grupo][clave])
-    for grupo, clave in (("video", "subtitulos_quemados"), ("completo", "tarjetas"), ("completo", "capitulos")):
+    for grupo, clave in (("video", "subtitulos_quemados"), ("completo", "tarjetas"), ("completo", "capitulos"),
+                         ("audio", "respaldo_voz")):
         if not isinstance(conf[grupo][clave], bool):
             raise ValueError(f"«{grupo}.{clave}» tiene que ser sí o no")
 

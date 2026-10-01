@@ -4,7 +4,8 @@ Producir tarda minutos y usa toda la CPU: un solo hilo trabajador atiende una co
 de cada video vive en `salida/<clave>/estado.json` (no en trabajo.json, para no pisar lo que
 la persona guarda mientras tanto) y la página lo consulta con `GET /taller/<id>/render`.
 
-Estados: `en_cola` → `produciendo` → `listo` | `error`.
+Estados: `en_cola` → `produciendo` → `listo` | `error`. Mientras produce un video, `fase` dice la etapa
+(QUEUED, SCRIPTING, GENERATING_AUDIO, … QA_PASSED, COMPLETED o FAILED; ver `produccion.FASES`).
 """
 
 import json
@@ -14,8 +15,9 @@ import traceback
 from datetime import datetime
 
 from app import taller
-from motor import empaquetar, produccion
+from motor import empaquetar, errores, logs, produccion
 from motor.agentes.base import ErrorAgente
+from motor.errores import ErrorZyvo
 from motor.voz import VozNoDisponible
 
 PREFIJO_AGENTE = "agente-"  # la clave en la cola de un agente: «agente-redactor»
@@ -47,7 +49,7 @@ def estado(id_: str, clave: str) -> dict | None:
     e = json.loads(ruta.read_text(encoding="utf-8"))
     if e.get("estado") in ("en_cola", "produciendo") and (id_, clave) not in _activos:
         # El servidor se reinició a mitad de camino: no hay nadie produciéndolo.
-        e = {**e, "estado": "error", "mensaje": "Se interrumpió (se reinició el servidor). Vuelve a producirlo."}
+        e = {**e, "estado": "error", "fase": "FAILED", "mensaje": "Se interrumpió (se reinició el servidor). Vuelve a producirlo."}
     if e.get("estado") == "listo":
         qa = ruta.parent / "qa.json"
         e["informe"] = json.loads(qa.read_text(encoding="utf-8")) if qa.exists() else None
@@ -69,7 +71,8 @@ def encolar(id_: str, clave: str) -> bool:
         if (id_, clave) in _activos:
             return False
         _activos.add((id_, clave))
-        _escribir(id_, clave, estado="en_cola", paso="En la cola", progreso=0, mensaje=None,
+        _escribir(id_, clave, estado="en_cola", fase="QUEUED", paso="En la cola", progreso=0, mensaje=None,
+                  codigo=None, severidad=None, recuperacion=None, etapa=None, detalle=None,
                   pedido=datetime.now().isoformat(timespec="seconds"))
         _cola.put((id_, clave))
         if _hilo is None or not _hilo.is_alive():
@@ -95,14 +98,21 @@ def _trabajar() -> None:
                 r = registro.ejecutar(id_, clave[len(PREFIJO_AGENTE):], avisar=avance)
                 _escribir(id_, clave, propuestas=r["propuestas"], con_ia=r["con_ia"])
             else:
-                produccion.producir(t, clave, avisar=avance)
-            _escribir(id_, clave, estado="listo", paso="Listo", progreso=1,
+                produccion.producir(t, clave, avisar=avance, fase=lambda f: _escribir(id_, clave, fase=f))
+            _escribir(id_, clave, estado="listo", fase="COMPLETED", paso="Listo", progreso=1,
                       fin=datetime.now().isoformat(timespec="seconds"))
+        except ErrorZyvo as e:
+            # Ya clasificado por el motor: el detalle técnico quedó en logs/<clave>.jsonl.
+            clasificado = {k: v for k, v in e.como_dict().items() if k != "mensaje"}
+            _escribir(id_, clave, estado="error", fase="FAILED", mensaje=str(e), **clasificado)
         except (VozNoDisponible, produccion.ErrorProduccion, empaquetar.NoSePuedeArmar, ErrorAgente) as e:
-            _escribir(id_, clave, estado="error", mensaje=str(e))
-        except Exception:
-            _escribir(id_, clave, estado="error", mensaje="La producción falló. El detalle quedó en estado.json.",
-                      detalle=traceback.format_exc()[-3000:])
+            _escribir(id_, clave, estado="error", fase="FAILED", mensaje=str(e))
+        except Exception as e:
+            error = errores.ErrorZyvo("MOTOR_001", etapa="cola")
+            error.__cause__ = e
+            logs.escribir(id_, clave, "cola", "error", f"{type(e).__name__}: {e}"[:500], error)
+            _escribir(id_, clave, estado="error", fase="FAILED", mensaje=f"{error} El detalle quedó en el registro del curso.",
+                      detalle=traceback.format_exc()[-3000:], **{k: v for k, v in error.como_dict().items() if k != "mensaje"})
         finally:
             with _candado:
                 _activos.discard((id_, clave))

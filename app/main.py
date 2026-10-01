@@ -14,7 +14,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel
 
 from app import configuracion, datos, extractor, taller
-from motor import cola, diagnostico, empaquetar, escenas, produccion, recursos
+from motor import cola, diagnostico, empaquetar, escenas, logs, produccion, recursos
 from motor import voz as motor_voz
 from motor.agentes import entrega as agentes_entrega
 from motor.agentes import registro as agentes
@@ -204,6 +204,10 @@ def api_editar_lamina(id_: str, n: int, cuerpo: Edicion):
 
 # ── Motor: producir los videos de un curso ───────────────────────────────────
 
+# Lo que la interfaz recibe del estado de cada video en la cola.
+CAMPOS_ESTADO = ("estado", "fase", "paso", "progreso", "mensaje", "codigo", "recuperacion")
+
+
 def _produccion(t: dict) -> dict:
     """Estado de cada video del curso en el motor, con lo que la interfaz necesita para mostrarlo."""
     voz = next((v for v in taller.voces() if v["id"] == t["voz"]), {})
@@ -216,7 +220,7 @@ def _produccion(t: dict) -> dict:
         base = f"/api/trabajos/{t['id']}/salida/{clave}/"
         inf = e.get("informe")
         videos[clave] = {
-            **{k: e.get(k) for k in ("estado", "paso", "progreso", "mensaje")},
+            **{k: e.get(k) for k in CAMPOS_ESTADO},
             "informe": inf,
             "desactualizado": bool(inf) and inf.get("firma") != firma_actual,
             "archivos": {"mp4": f"{base}{clave}.mp4", "vtt": f"{base}{clave}.vtt", "srt": f"{base}{clave}.srt"}
@@ -226,7 +230,7 @@ def _produccion(t: dict) -> dict:
     completo = None
     if c:
         base = f"/api/trabajos/{t['id']}/salida/{empaquetar.CLAVE}/"
-        completo = {**{k: c.get(k) for k in ("estado", "paso", "progreso", "mensaje")}, "informe": c.get("informe"),
+        completo = {**{k: c.get(k) for k in CAMPOS_ESTADO}, "informe": c.get("informe"),
                     "desactualizado": bool(c.get("informe")) and c["informe"].get("firma") != firma_actual,
                     "archivos": {"mp4": f"{base}completo.mp4", "vtt": f"{base}completo.vtt", "srt": f"{base}completo.srt",
                                  "capitulos": f"{base}capitulos.txt"} if c.get("estado") == "listo" else None}
@@ -313,6 +317,15 @@ def api_salida(id_: str, clave: str, archivo: str, descargar: bool = False):
         raise HTTPException(404)
     return FileResponse(ruta, media_type=TIPOS_SALIDA[ruta.suffix], filename=f"{t['id']}-{archivo}" if descargar else None,
                         content_disposition_type="attachment" if descargar else "inline")
+
+
+@app.get("/api/trabajos/{id_}/diagnostico/{clave}")
+def api_diagnostico(id_: str, clave: str):
+    """Modo diagnóstico: el registro técnico de un video (etapas, intentos, códigos y *tracebacks*)."""
+    t = _trabajo_o_404(id_)
+    if not re.fullmatch(r"[a-z0-9-]+", clave):
+        raise HTTPException(404)
+    return {"eventos": logs.leer(t["id"], clave), "estado": cola.estado(t["id"], clave)}
 
 
 class AjustesVideo(BaseModel):

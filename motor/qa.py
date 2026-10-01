@@ -11,6 +11,8 @@ from pathlib import Path
 
 from motor import audio
 
+SATURACION = -0.1  # dBFS: un pico más alto ya recorta la onda
+
 
 def _ffprobe(archivo: Path) -> dict:
     r = subprocess.run(["ffprobe", "-v", "error", "-show_streams", "-show_format", "-of", "json", str(archivo)],
@@ -36,28 +38,33 @@ def revisar(mp4: Path, ancho: int, alto: int, duracion_esperada: float, estimada
     sonoridad = audio.medir(mp4) if a else None
     negros = re.findall(r"black_start:([\d.]+) black_end:([\d.]+)", _filtro(mp4, "-vf", "blackdetect=d=1.0:pix_th=0.05", "-an"))
     silencios = re.findall(r"silence_start: ([\d.]+)", _filtro(mp4, "-af", "silencedetect=noise=-50dB:d=4", "-vn"))
+    picos = re.findall(r"Overall.*?Peak level dB: (-?[\d.]+|-inf)", _filtro(mp4, "-af", "astats=measure_perchannel=none", "-vn"),
+                       re.S)
+    pico = float(picos[-1]) if picos and picos[-1] != "-inf" else None
 
     def ok_rango(x, a_, b_):
         return a_ <= x <= b_
 
     return [
-        {"ok": (v["width"], v["height"]) == (ancho, alto) and abs(real - fps) < 0.01,
+        {"id": "resolucion", "ok": (v["width"], v["height"]) == (ancho, alto) and abs(real - fps) < 0.01,
          "titulo": "Resolución y cuadros por segundo", "detalle": f"{v['width']}×{v['height']} a {real:g} fps"},
-        {"ok": v["codec_name"] == "h264" and v.get("pix_fmt") == "yuv420p" and a is not None and a["codec_name"] == "aac",
+        {"id": "formato", "ok": v["codec_name"] == "h264" and v.get("pix_fmt") == "yuv420p" and a is not None and a["codec_name"] == "aac",
          "titulo": "Formato que aceptan YouTube, redes y LMS",
          "detalle": f"video {v['codec_name']} {v.get('profile', '')} {v.get('pix_fmt')}; "
                     f"audio {a['codec_name'] + ' ' + a['sample_rate'] + ' Hz' if a else 'ninguno'}"},
-        {"ok": abs(duracion - duracion_esperada) <= 0.25, "titulo": "La imagen y la voz duran lo mismo",
+        {"id": "sincronia", "ok": abs(duracion - duracion_esperada) <= 0.25, "titulo": "La imagen y la voz duran lo mismo",
          "detalle": f"{duracion:.1f} s (se esperaban {duracion_esperada:.1f} s)"},
-        {"ok": sonoridad is not None and ok_rango(float(sonoridad["input_i"]), lufs - 1, lufs + 1)
+        {"id": "volumen", "ok": sonoridad is not None and ok_rango(float(sonoridad["input_i"]), lufs - 1, lufs + 1)
                 and float(sonoridad["input_tp"]) <= audio.PICO + 0.5,
          "titulo": f"Volumen a {lufs:g} LUFS",
          "detalle": f"{sonoridad['input_i']} LUFS, pico {sonoridad['input_tp']} dBTP" if sonoridad else "sin audio"},
-        {"ok": not negros, "titulo": "Sin pantallas negras",
+        {"id": "negros", "ok": not negros, "titulo": "Sin pantallas negras",
          "detalle": ", ".join(f"{float(x):.1f}–{float(y):.1f} s" for x, y in negros) or "Ninguna de más de 1 s"},
-        {"ok": not silencios, "titulo": "Sin silencios largos",
+        {"id": "saturacion", "ok": pico is not None and pico < SATURACION, "titulo": "El audio no se satura",
+         "detalle": f"pico de {pico:.1f} dBFS" if pico is not None else "sin audio"},
+        {"id": "silencios", "ok": not silencios, "titulo": "Sin silencios largos",
          "detalle": ", ".join(f"desde {float(x):.1f} s" for x in silencios) or "Ninguno de más de 4 s"},
-        {"ok": None, "titulo": "Duración frente a la estimada del taller",
+        {"id": "estimada", "ok": None, "titulo": "Duración frente a la estimada del taller",
          "detalle": f"{duracion:.0f} s reales frente a {estimada:.0f} s estimados ({100 * (duracion - estimada) / estimada:+.0f} %)"
                     if estimada else f"{duracion:.0f} s"},
     ]

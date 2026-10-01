@@ -218,7 +218,7 @@ def test_producir_desde_la_api(datos_copia, monkeypatch):
     assert r.status_code == 202
     cola.esperar()
     v = c.get(f"/api/trabajos/{id_}/produccion").json()["videos"]["v01"]
-    assert v["estado"] == "listo" and v["desactualizado"] is False
+    assert v["estado"] == "listo" and v["desactualizado"] is False and v["fase"] == "COMPLETED"
     assert not [x for x in v["informe"]["chequeos"] if x["ok"] is False]
 
     r = c.get(v["archivos"]["mp4"] + "?descargar=1")
