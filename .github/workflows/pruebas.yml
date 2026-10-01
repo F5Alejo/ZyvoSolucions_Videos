@@ -2,6 +2,7 @@
 #
 # - Alejodev es la rama de pruebas y mejoras: cada push corre todo.
 # - main es la versión estable: cada push y cada pull request hacia main corren todo.
+# - Los PR hacia Alejodev (los de Dependabot) también se prueban.
 #   main solo se actualiza desde Alejodev cuando estas pruebas pasan.
 
 name: Pruebas
@@ -10,7 +11,7 @@ on:
   push:
     branches: [main, Alejodev]
   pull_request:
-    branches: [main]
+    branches: [main, Alejodev]  # también los PR de Dependabot hacia Alejodev
   workflow_dispatch:
 
 concurrency:
