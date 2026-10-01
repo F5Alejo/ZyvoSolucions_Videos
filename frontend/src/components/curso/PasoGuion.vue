@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { LoaderCircle, Pencil, RefreshCw, RotateCcw, Save, Search, TriangleAlert } from "lucide-vue-next";
+import { LoaderCircle, Pencil, RefreshCw, RotateCcw, Save, Search, TriangleAlert } from "@lucide/vue";
 import { api } from "../../api";
 import { avisar } from "../../composables/avisos";
 import { confirmar } from "../../composables/confirmar";

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CircleCheck, CircleAlert, X } from "lucide-vue-next";
+import { CircleCheck, CircleAlert, X } from "@lucide/vue";
 import { avisos, cerrarAviso } from "../composables/avisos";
 </script>
 

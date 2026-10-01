@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ArrowLeft, ArrowRight, CircleCheck, Download } from "lucide-vue-next";
+import { ArrowLeft, ArrowRight, CircleCheck, Download } from "@lucide/vue";
 import { api } from "../api";
 import { useCarga } from "../composables/carga";
 import { avisar } from "../composables/avisos";

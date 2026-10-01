@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { VideoOff } from "lucide-vue-next";
+import { VideoOff } from "@lucide/vue";
 
 defineProps<{ archivo: string; titulo: string; existe?: boolean; vertical?: boolean }>();
 

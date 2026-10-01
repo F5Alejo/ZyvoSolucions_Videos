@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { Check, Copy, ExternalLink, FileText, Lightbulb, TriangleAlert } from "lucide-vue-next";
+import { Check, Copy, ExternalLink, FileText, Lightbulb, TriangleAlert } from "@lucide/vue";
 import { api } from "../api";
 import { useCarga } from "../composables/carga";
 import { avisar } from "../composables/avisos";

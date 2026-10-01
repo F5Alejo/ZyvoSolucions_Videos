@@ -15,7 +15,8 @@ from datetime import datetime
 from pathlib import Path
 
 from app import configuracion, datos, extractor, taller
-from motor import audio, escenas, normalizar, render, subtitulos, voz as motor_voz
+from motor import audio, escenas, normalizar, render, subtitulos
+from motor import voz as motor_voz
 from motor.escenas import animacion
 from motor.qa import revisar
 

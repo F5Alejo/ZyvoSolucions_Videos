@@ -1,0 +1,15 @@
+# Configuración de las herramientas de Python (el proyecto no se publica como paquete).
+
+[tool.ruff]
+line-length = 140  # el estilo del código: líneas largas de datos y mensajes
+target-version = "py312"
+extend-exclude = ["frontend", "modelos", "datos"]
+
+[tool.ruff.lint]
+# E: estilo · F: errores (nombres sin definir, imports sin usar…) · I: imports ordenados
+select = ["E", "F", "I"]
+# E741: `l` es «lámina» en todo el proyecto; renombrarla no aporta.
+ignore = ["E741"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "motor", "tests"]

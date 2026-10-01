@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { Archive, ChevronDown, History, Info, LoaderCircle, VideoOff } from "lucide-vue-next";
+import { Archive, ChevronDown, History, Info, LoaderCircle, VideoOff } from "@lucide/vue";
 import { api } from "../api";
 import { useCarga } from "../composables/carga";
 import { avisar } from "../composables/avisos";

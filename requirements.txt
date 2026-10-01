@@ -14,6 +14,8 @@ piper-tts>=1.2           # voz rápida para borradores internos (ver docs/bitaco
 faster-whisper>=1.1       # Revisor de voz: escucha el video y lo compara con el guion (MIT)
 httpx>=0.27              # cliente de Ollama (agentes)
 
-# Pruebas
+# Pruebas y estilo
 pytest>=8
+ruff>=0.16               # estilo de Python (reglas en pyproject.toml)
 httpx>=0.27
+httpx2>=2.13             # cliente de pruebas de Starlette (reemplaza a httpx ahí; sin él avisa que está obsoleto)

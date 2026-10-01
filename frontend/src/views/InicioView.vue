@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRouter } from "vue-router";
-import { ArrowRight, Bell, CircleCheck, Film, FileText, Presentation, Sparkles, Upload, Clapperboard } from "lucide-vue-next";
+import { ArrowRight, Bell, CircleCheck, Film, FileText, Presentation, Sparkles, Upload, Clapperboard } from "@lucide/vue";
 import { api } from "../api";
 import { useCarga } from "../composables/carga";
 import { avisar } from "../composables/avisos";

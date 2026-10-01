@@ -87,7 +87,8 @@ def _estado_final(html: str, segundos: float, selector: str) -> dict:
         pg = b.new_page(viewport={"width": 1920, "height": 1080})
         pg.set_content(html)
         pg.evaluate("(ms) => { for (const a of document.getAnimations()) { a.pause(); a.currentTime = ms; } }", segundos * 1000 - 1)
-        estilo = pg.evaluate(f"() => {{ const s = getComputedStyle(document.querySelector('{selector}')); return {{opacity: +s.opacity}}; }}")
+        estilo = pg.evaluate(
+            f"() => {{ const s = getComputedStyle(document.querySelector('{selector}')); return {{opacity: +s.opacity}}; }}")
         b.close()
     return estilo
 
@@ -124,6 +125,7 @@ def test_el_revisor_de_encuadre_detecta_texto_que_no_cabe(tmp_path, datos_copia)
 @pytest.fixture()
 def cliente(datos_copia):
     from fastapi.testclient import TestClient
+
     from app.main import app
     return TestClient(app)
 
@@ -156,7 +158,9 @@ def test_plantillas_propias(cliente):
     base = next(p for p in cliente.get("/api/animaciones").json()["plantillas"] if p["id"] == "sobria")
     r = cliente.post("/api/animaciones", json={"nombre": "Mi estilo", "descripcion": "prueba", "elementos": base["elementos"]})
     assert r.status_code == 201 and r.json()["id"] == "propia-mi-estilo" and r.json()["propia"] is True
-    assert cliente.post("/api/animaciones", json={"nombre": "Mi estilo", "elementos": base["elementos"]}).json()["id"] == "propia-mi-estilo-2"
-    assert cliente.post("/api/animaciones", json={"nombre": "Rota", "elementos": {"titulo": base["elementos"]["titulo"]}}).status_code == 400
+    otra = cliente.post("/api/animaciones", json={"nombre": "Mi estilo", "elementos": base["elementos"]})
+    assert otra.json()["id"] == "propia-mi-estilo-2"
+    rota = cliente.post("/api/animaciones", json={"nombre": "Rota", "elementos": {"titulo": base["elementos"]["titulo"]}})
+    assert rota.status_code == 400
     assert cliente.delete("/api/animaciones/sobria").status_code == 400  # las de fábrica no se borran
     assert cliente.delete("/api/animaciones/propia-mi-estilo").status_code == 204

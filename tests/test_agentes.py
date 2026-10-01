@@ -1,4 +1,3 @@
-import io
 import shutil
 import zipfile
 
@@ -141,6 +140,7 @@ def test_director_con_ia_solo_elige_del_catalogo(datos_copia, ollama_falso):
 
 def test_evaluador_necesita_ia_y_exporta_a_moodle(datos_copia, sin_ollama, monkeypatch):
     from fastapi.testclient import TestClient
+
     from app import taller
     from app.main import app
     from motor.agentes import ollama, registro
@@ -157,7 +157,8 @@ def test_evaluador_necesita_ia_y_exporta_a_moodle(datos_copia, sin_ollama, monke
     ]})
     registro.ejecutar(t["id"], "evaluador")
     (p,) = _propuestas(t, "evaluador")
-    assert [q["enunciado"] for q in p["despues"]["preguntas"]] == ["¿Qué ley exige gestionar el riesgo vial?"]  # 45 % inventado y lámina 9 fuera
+    # Quedan fuera la del 45 % (cifra inventada) y la de la lámina 9 (no existe).
+    assert [q["enunciado"] for q in p["despues"]["preguntas"]] == ["¿Qué ley exige gestionar el riesgo vial?"]
     registro.aceptar(taller.cargar(t["id"]), p["id"])
 
     c = TestClient(app)
@@ -206,6 +207,7 @@ def test_descriptor_con_reglas_marca_la_imagen_pequena_como_decoracion(datos_cop
 
 def test_agentes_por_la_api_y_ediciones(datos_copia, sin_ollama):
     from fastapi.testclient import TestClient
+
     from app.main import app
     from motor import cola
     c = TestClient(app)

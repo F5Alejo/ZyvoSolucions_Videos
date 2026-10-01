@@ -20,7 +20,7 @@ concurrency:
 jobs:
   api-y-motor:
     name: API y motor (pytest)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # fijo: ubuntu-latest pasa a Ubuntu 26 el 19-oct-2026
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
@@ -50,6 +50,12 @@ jobs:
         timeout-minutes: 10
         run: pip install -r requirements.txt
 
+      - name: Caché de Chromium
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+
       - name: Navegador que dibuja las escenas (Chromium)
         timeout-minutes: 10
         # Las imágenes de Ubuntu de GitHub ya traen las librerías de Chrome; --with-deps (que usa apt)
@@ -58,11 +64,48 @@ jobs:
 
       # Las pruebas usan una voz de prueba y Ollama simulado: no hacen falta modelos ni claves.
       - name: pytest
+        env:
+          GUARDAR_MUESTRA: ${{ runner.temp }}/muestra
         run: python -m pytest -q
+
+      # El video que produjo la prueba de punta a punta, para verlo desde la página de Actions.
+      - name: Video de muestra
+        uses: actions/upload-artifact@v7
+        with:
+          name: video-de-muestra
+          path: ${{ runner.temp }}/muestra/
+          retention-days: 14
+          if-no-files-found: error
+
+  estilo:
+    name: Estilo (ruff)
+    runs-on: ubuntu-24.04  # fijo: ubuntu-latest pasa a Ubuntu 26 el 19-oct-2026
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install ruff
+      # Las reglas están en pyproject.toml ([tool.ruff]).
+      - run: ruff check --output-format=github .
+
+  secretos:
+    name: Secretos (gitleaks)
+    runs-on: ubuntu-24.04  # fijo: ubuntu-latest pasa a Ubuntu 26 el 19-oct-2026
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0  # toda la historia: una clave borrada sigue en los commits viejos
+      # Cuenta personal: no necesita licencia (GITLEAKS_LICENSE solo para organizaciones).
+      - uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   interfaz:
     name: Interfaz (tipos, Vitest y compilación)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # fijo: ubuntu-latest pasa a Ubuntu 26 el 19-oct-2026
     timeout-minutes: 15
     defaults:
       run:

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, watch } from "vue";
-import { ChevronDown, CircleAlert, CircleCheck, CircleX, Clapperboard, Download, FileArchive, Film, Info, ListVideo, LoaderCircle, RefreshCw, Trash2 } from "lucide-vue-next";
+import { ChevronDown, CircleAlert, CircleCheck, CircleX, Clapperboard, Download, FileArchive, Film, Info, ListVideo, LoaderCircle, RefreshCw, Trash2 } from "@lucide/vue";
 import { api } from "../../api";
 import { avisar } from "../../composables/avisos";
 import { catalogo } from "../../composables/catalogo";

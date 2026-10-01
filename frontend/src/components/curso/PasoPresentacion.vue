@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { FileText, Search, TriangleAlert } from "lucide-vue-next";
+import { FileText, Search, TriangleAlert } from "@lucide/vue";
 import type { TrabajoCompleto } from "../../tipos";
 import { mb, normalizar } from "../../utils";
 import PanelAgentes from "./PanelAgentes.vue";

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowDown, ArrowRight, ExternalLink, FileText } from "lucide-vue-next";
+import { ArrowDown, ArrowRight, ExternalLink, FileText } from "@lucide/vue";
 import { api } from "../api";
 import { useCarga } from "../composables/carga";
 import { catalogo } from "../composables/catalogo";

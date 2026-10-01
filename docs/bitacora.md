@@ -8,6 +8,43 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-10-01 · GitHub Actions completo y documentación de lo encontrado
+
+El usuario decidió terminar GitHub Actions antes de pasar a la nube. El plan de nube quedó
+documentado en [`plan-nube.md`](plan-nube.md) como siguiente etapa.
+
+### Qué se hizo
+- **Avisos corregidos:**
+  - el runner queda fijo en `ubuntu-24.04` (`ubuntu-latest` pasa a Ubuntu 26 el 19-oct);
+  - `lucide-vue-next` (obsoleto) pasa a `@lucide/vue`, sin cambiar los nombres de los íconos;
+  - se suma `httpx2`, el cliente que Starlette usa en sus pruebas si está instalado (`import httpx2 as httpx`); es de Tom Christie, el autor de httpx, con licencia BSD-3;
+  - Chromium queda en caché.
+- **Estilo con ruff:**
+  - `pyproject.toml` con las reglas E, F e I y líneas hasta 140 (el estilo que ya tiene el código);
+  - E741 se ignora porque `l` es «lámina» en todo el proyecto;
+  - se corrigieron 13 problemas automáticamente (imports ordenados y uno sin usar) y 11 líneas largas a mano.
+- **Secretos:** gitleaks revisa toda la historia en cada push y PR. Es gratis en cuentas personales y no pide licencia.
+- **Dependabot:** cada lunes, PR agrupados hacia `Alejodev` para pip, npm y las acciones.
+- **Video de muestra:** la prueba de punta a punta guarda su MP4, VTT, SRT y `qa.json` cuando existe `GUARDAR_MUESTRA`. El flujo los sube como artefacto `video-de-muestra` (14 días). Comprobado: H.264 1920×1080 con AAC, 14 s.
+- **Instalador en Windows** (`instalador-windows.yml`, `windows-2025`):
+  - Python 3.12, Node 22 y ffmpeg estático de gyan.dev;
+  - corre `instalar.ps1 -SinModelos -Probar` con Windows PowerShell 5.1;
+  - corre cada lunes, a mano y cuando cambian el instalador o las dependencias;
+  - **primera ejecución en verde en 3 min**: instaló todo y pasaron 75 pruebas de pytest y 10 de Vitest.
+- **«Pruebas»** quedó con 4 trabajos en verde: API y motor (75 pruebas en 50 s, sin avisos), Interfaz, Estilo y Secretos.
+- **Documentación nueva:**
+  - [`arquitectura-actual.md`](arquitectura-actual.md): cómo funciona hoy;
+  - [`hallazgos.md`](hallazgos.md): cada problema con su causa y su solución;
+  - [`plan-nube.md`](plan-nube.md): arquitectura en cuatro piezas, herramientas, prueba 100 % gratuita en Oracle Cloud Always Free, y SaaS y escala;
+  - [`README.md`](README.md): índice;
+  - el README principal suma las insignias de Actions y la sección «GitHub Actions y ramas».
+
+### Decisiones
+- `main` se protege con una regla (*ruleset*): solo por PR desde `Alejodev`, con los 4 trabajos de «Pruebas» en verde, sin *force push* y sin borrado. Ver la siguiente entrada.
+- En el flujo de Windows se copia `.env.ejemplo` a `.env` antes de instalar: en Actions nadie escribe la clave y el instalador no debe quedarse preguntando.
+
+---
+
 ## 2026-09-30 · GitHub Actions: pruebas en cada cambio
 
 ### Qué se hizo

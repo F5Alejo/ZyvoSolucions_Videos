@@ -22,6 +22,7 @@ def datos_copia(tmp_path, monkeypatch):
 @pytest.fixture()
 def cliente(datos_copia):
     from fastapi.testclient import TestClient
+
     from app.main import app
     return TestClient(app)
 
@@ -133,6 +134,7 @@ def test_producir_todo_arma_el_mp4_completo_y_el_zip(cliente, monkeypatch):
     pytest.importorskip("playwright")
     import hashlib
     import zipfile
+
     from app import taller
     from motor import cola, voz
     monkeypatch.setitem(voz.PROVEEDORES, "Kokoro", VozDePrueba)
