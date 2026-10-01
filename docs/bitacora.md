@@ -8,6 +8,23 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-10-01 · Fase 1 del prompt maestro: análisis y plan de arquitectura
+
+### Qué se hizo
+- `ARCHITECTURE.md` en la raíz: la arquitectura actual frente al objetivo (VideoSpec, pipeline por etapas, agentes, proveedores), los problemas encontrados, las decisiones y el plan de migración por fases. No se cambió código.
+
+### Decisiones (aceptadas por el usuario)
+- **Remotion no entra** salvo que se compre su licencia: se crea `VideoRenderer` con el renderer actual (Playwright + ffmpeg) como principal.
+- **Respaldo de voz: ElevenLabs → Kokoro.** Piper davefx sigue solo para borradores, nunca como respaldo de un video final.
+- **Nombres nuevos (`VideoSpec`, `TTSProvider`, `VideoRenderer`) dentro de `motor/` y `app/`**; la reorganización de carpetas se deja para cuando el pipeline ya esté en etapas.
+- **SFX:** solo con archivos de licencia comercial clara, guardada al lado.
+
+### Pendiente
+- Línea base de pruebas en este equipo (no tenía Python ni ffmpeg).
+- Fase 0b: voz por defecto que funcione en un equipo nuevo (Carlos depende de una clave caducada).
+
+---
+
 ## 2026-10-01 · `main` protegida, primer PR y ajustes de Dependabot
 
 ### Qué se hizo
