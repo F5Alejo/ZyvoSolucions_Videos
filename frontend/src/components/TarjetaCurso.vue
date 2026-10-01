@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { ArrowRight } from "lucide-vue-next";
+import { ArrowRight } from "@lucide/vue";
 import { catalogo } from "../composables/catalogo";
 import type { TrabajoFila } from "../tipos";
 import { cuenta, fecha, mmss } from "../utils";

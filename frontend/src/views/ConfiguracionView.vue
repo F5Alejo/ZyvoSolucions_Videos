@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { CircleAlert, CircleCheck, LoaderCircle, Music, RefreshCw, Save, Undo2, Upload } from "lucide-vue-next";
+import { CircleAlert, CircleCheck, LoaderCircle, Music, RefreshCw, Save, Undo2, Upload } from "@lucide/vue";
 import { api, subir } from "../api";
 import { avisar } from "../composables/avisos";
 import { catalogo } from "../composables/catalogo";

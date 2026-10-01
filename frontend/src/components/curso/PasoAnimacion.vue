@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
-import { CircleCheck, LoaderCircle, RotateCcw, Save, Sparkles, SwatchBook } from "lucide-vue-next";
+import { CircleCheck, LoaderCircle, RotateCcw, Save, Sparkles, SwatchBook } from "@lucide/vue";
 import { api } from "../../api";
 import { avisar } from "../../composables/avisos";
 import type { AnimacionCurso, CatalogoAnim, Fase, PasoAnim, TrabajoCompleto } from "../../tipos";

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { ChevronDown, CircleCheck, LoaderCircle, Monitor, RotateCcw, Save, Smartphone } from "lucide-vue-next";
+import { ChevronDown, CircleCheck, LoaderCircle, Monitor, RotateCcw, Save, Smartphone } from "@lucide/vue";
 import { api } from "../../api";
 import { avisar } from "../../composables/avisos";
 import { catalogo } from "../../composables/catalogo";

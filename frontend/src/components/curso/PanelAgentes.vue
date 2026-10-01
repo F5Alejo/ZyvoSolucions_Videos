@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Los agentes de un paso del curso: ejecutarlos, ver su avance y aceptar o descartar sus propuestas.
 import { computed, onUnmounted, ref, watch } from "vue";
-import { Bot, Check, CircleAlert, LoaderCircle, Play, Sparkles, X } from "lucide-vue-next";
+import { Bot, Check, CircleAlert, LoaderCircle, Play, Sparkles, X } from "@lucide/vue";
 import { api } from "../../api";
 import { avisar } from "../../composables/avisos";
 import type { AgentesCurso, Propuesta, TrabajoCompleto } from "../../tipos";

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ArrowDownUp, Film, Search, TriangleAlert, X } from "lucide-vue-next";
+import { ArrowDownUp, Film, Search, TriangleAlert, X } from "@lucide/vue";
 import { api } from "../api";
 import { useCarga } from "../composables/carga";
 import { catalogo } from "../composables/catalogo";

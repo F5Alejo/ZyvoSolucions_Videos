@@ -20,7 +20,7 @@ concurrency:
 jobs:
   api-y-motor:
     name: API y motor (pytest)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # fijo: ubuntu-latest pasa a Ubuntu 26 el 19-oct-2026
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
@@ -50,6 +50,12 @@ jobs:
         timeout-minutes: 10
         run: pip install -r requirements.txt
 
+      - name: Caché de Chromium
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+
       - name: Navegador que dibuja las escenas (Chromium)
         timeout-minutes: 10
         # Las imágenes de Ubuntu de GitHub ya traen las librerías de Chrome; --with-deps (que usa apt)
@@ -62,7 +68,7 @@ jobs:
 
   interfaz:
     name: Interfaz (tipos, Vitest y compilación)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # fijo: ubuntu-latest pasa a Ubuntu 26 el 19-oct-2026
     timeout-minutes: 15
     defaults:
       run:

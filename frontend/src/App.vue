@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { Menu, X } from "lucide-vue-next";
+import { Menu, X } from "@lucide/vue";
 import BarraLateral from "./components/BarraLateral.vue";
 import AvisosFlotantes from "./components/AvisosFlotantes.vue";
 import DialogoConfirmar from "./components/DialogoConfirmar.vue";

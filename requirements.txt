@@ -17,3 +17,4 @@ httpx>=0.27              # cliente de Ollama (agentes)
 # Pruebas
 pytest>=8
 httpx>=0.27
+httpx2>=2.13             # cliente de pruebas de Starlette (reemplaza a httpx ahí; sin él avisa que está obsoleto)

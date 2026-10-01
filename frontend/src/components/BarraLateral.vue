@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { LayoutDashboard, Plus, Presentation, Film, Bell, Settings } from "lucide-vue-next";
+import { LayoutDashboard, Plus, Presentation, Film, Bell, Settings } from "@lucide/vue";
 import { catalogo } from "../composables/catalogo";
 
 const principal = [

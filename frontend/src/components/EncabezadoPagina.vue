@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronRight } from "lucide-vue-next";
+import { ChevronRight } from "@lucide/vue";
 
 defineProps<{ titulo: string; subtitulo?: string; migas?: { texto: string; a?: string }[] }>();
 </script>

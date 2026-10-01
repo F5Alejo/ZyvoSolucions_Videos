@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
-import { CircleAlert, FileText, LoaderCircle, NotebookPen, Scale, Sparkles, Upload, X } from "lucide-vue-next";
+import { CircleAlert, FileText, LoaderCircle, NotebookPen, Scale, Sparkles, Upload, X } from "@lucide/vue";
 import { api, subir } from "../api";
 import { avisar } from "../composables/avisos";
 import EncabezadoPagina from "../components/EncabezadoPagina.vue";
