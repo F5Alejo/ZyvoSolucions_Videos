@@ -1,12 +1,10 @@
 """VideoSpec: el contrato entre el curso y el render, y la caché de escenas que permite regenerar por partes."""
 
 import json
-import shutil
 
 import pytest
-from test_motor import VozDePrueba, pptx_con_foto
 
-hay_ffmpeg = shutil.which("ffmpeg") is not None
+from tests.test_motor import VozDePrueba, hay_ffmpeg, pptx_con_foto
 
 
 def _curso():

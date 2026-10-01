@@ -10,6 +10,7 @@ import soundfile as sf
 from pptx import Presentation
 from pptx.util import Inches
 
+ORIGEN = Path(__file__).resolve().parent.parent / "datos"
 hay_ffmpeg = shutil.which("ffmpeg") is not None
 
 
