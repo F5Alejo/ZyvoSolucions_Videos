@@ -5,6 +5,32 @@
 > documentado se enlaza en lugar de repetirse: [`docs/arquitectura-actual.md`](docs/arquitectura-actual.md),
 > [`docs/hallazgos.md`](docs/hallazgos.md) y [`docs/bitacora.md`](docs/bitacora.md).
 
+## Estado de la migración (2026-10-02)
+
+Las secciones 1 a 6 son el análisis de partida y siguen como registro. Así quedó cada fase (detalle
+en [`docs/bitacora.md`](docs/bitacora.md); cómo quedó la arquitectura en [`docs/architecture.md`](docs/architecture.md)):
+
+| Fase | Estado | Dónde |
+|---|---|---|
+| 0 · Línea base y voz que funciona | Hecha | `instalar.ps1`, `taller.voz_inicial` |
+| 1 · Este análisis | Hecha | este archivo |
+| 2–3 · VideoSpec y separar etapas | Hecha | `motor/videospec.py`, `motor/produccion.py`, `motor/recursos.py` |
+| 4 · Agentes con permisos y respuestas validadas; Analizador | Hecha | `motor/agentes/base.py`, `motor/analisis.py` |
+| 5 · Proveedores | Hecha | `motor/proveedores.py`, `motor/renderers.py` |
+| 6 · Checkpoints, caché de escenas y reintentos | Hecha | `salida/<clave>/escenas/`, `produccion.correr` |
+| 7 · QA, errores con código y detector de bugs | Hecha | `motor/qa.py`, `motor/errores.py`, `motor/bugs.py`, `motor/logs.py` |
+| 8–10 · Renderer, cámara, transiciones y formatos | Hecha (sin Remotion, por licencia) | `motor/camara.py`, `motor/catalogo.py` |
+| 11 · Línea de tiempo | Hecha | `videospec.linea_de_tiempo`, `GET /api/trabajos/{id}/linea/{clave}` |
+| 12 · Audio: efectos y director de música | Hecha | `motor/sfx.py`, `motor/estilos.py` |
+| 13 · Estilos | Hecha | `datos/estilos/` |
+| 14–15 · Interfaz y editor | Hecha | `frontend/src/views/CrearVideoView.vue`, `EditorVideoView.vue`, `components/zyvo/` |
+| 16 · Fixtures y prueba de punta a punta | Hecha | `tests/fixtures/`, `tests/test_e2e.py` |
+| Versiones del video y regeneración selectiva | Hecha | `motor/versiones.py` |
+
+Lo que queda fuera a propósito: Remotion (licencia), Piper como respaldo (licencia), mover el código
+a la estructura de carpetas del objetivo (sección 5.3), paralaje, paneos verticales y fundido cruzado
+(ver `motor/catalogo.py`).
+
 ## 1. En una frase
 
 Zyvo **ya convierte un PPTX en MP4** con voz, animaciones de catálogo, música con *ducking*,
