@@ -53,7 +53,7 @@ def repo_falso(raiz: Path) -> Path:
 @pytest.fixture()
 def cliente(tmp_path, monkeypatch):
     copia = tmp_path / "datos"
-    shutil.copytree(ORIGEN, copia, ignore=shutil.ignore_patterns("trabajos"))
+    shutil.copytree(ORIGEN, copia, ignore=shutil.ignore_patterns("trabajos", "empresas", "musica"))
     from app import datos
     monkeypatch.setattr(datos, "RAIZ_DATOS", copia)
     monkeypatch.setitem(datos.CONFIG, "repo_videos", repo_falso(tmp_path / "repo"))

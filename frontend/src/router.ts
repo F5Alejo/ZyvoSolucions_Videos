@@ -16,6 +16,7 @@ const router = createRouter({
     { path: "/empresas/:id/editar", name: "editar-empresa", component: () => import("./views/RegistrarEmpresaView.vue"), props: true, meta: { titulo: "Editar empresa" } },
     { path: "/marcas/:id", name: "marca", component: () => import("./views/MarcaView.vue"), props: true, meta: { titulo: "Marca" } },
     { path: "/pendientes", name: "pendientes", component: () => import("./views/PendientesView.vue"), meta: { titulo: "Pendientes" } },
+    { path: "/configuracion", name: "configuracion", component: () => import("./views/ConfiguracionView.vue"), meta: { titulo: "Configuración" } },
     { path: "/casos/:id", name: "caso", component: () => import("./views/CasoView.vue"), props: true, meta: { titulo: "Pieza de marketing" } },
     { path: "/:resto(.*)*", name: "no-encontrado", component: () => import("./views/NoEncontradoView.vue"), meta: { titulo: "No encontrado" } },
   ],

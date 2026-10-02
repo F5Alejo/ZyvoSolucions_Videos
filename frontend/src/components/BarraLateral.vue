@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { Bell, Building2, ChevronDown, CircleHelp, Film, House, Moon, Plus, Presentation, Sun, Users } from "lucide-vue-next";
+import { Bell, Building2, ChevronDown, CircleHelp, Film, House, Moon, Plus, Presentation, Settings, Sun, Users } from "lucide-vue-next";
 import { catalogo } from "../composables/catalogo";
 import { abrirAyuda } from "../composables/ayuda";
 import { cambiarTema, tema } from "../composables/tema";
@@ -80,6 +80,9 @@ const activo = "bg-white/15 text-white";
       </div>
 
       <div class="mt-auto pt-6 pb-5">
+        <RouterLink to="/configuracion" :class="[enlace, ruta.path === '/configuracion' && activo]">
+          <Settings class="size-[18px]" /> Configuración
+        </RouterLink>
         <button type="button" :class="[enlace, 'w-full']" @click="abrirAyuda()">
           <CircleHelp class="size-[18px]" /> Ayuda
         </button>

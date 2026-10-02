@@ -217,6 +217,15 @@
     "archivo": "assets/public/riskmann_logo_blanco.png",
     "fondo": "oscuro"
   },
+  "video": {
+    "fuente": "Capa «manual»: «Videos y piezas de marca: fondo negro, anillos cian + dorado». Tipografía Montserrat mientras se decide la regla por tipo de pieza (pendiente abierto).",
+    "fondo": "#020202",
+    "superficie": "#272725",
+    "texto": "#F3F3F3",
+    "acento": "#C8951A",
+    "acento2": "#06C7FB",
+    "logo_local": "frontend/public/marca/riskmann_logo_blanco.png"
+  },
   "capas_paleta": {
     "manual": {
       "titulo": "Manual · piezas de marketing",

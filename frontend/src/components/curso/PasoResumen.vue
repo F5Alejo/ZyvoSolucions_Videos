@@ -3,11 +3,12 @@ import { computed } from "vue";
 import { ArrowRight, ChevronDown, CircleAlert, CircleCheck, Clapperboard, Download, Palette, Presentation, Trash2 } from "lucide-vue-next";
 import { catalogo } from "../../composables/catalogo";
 import VistaPreviaVideo from "../VistaPreviaVideo.vue";
+import PanelAgentes from "./PanelAgentes.vue";
 import type { TrabajoCompleto } from "../../tipos";
 import { cuenta, mmss } from "../../utils";
 
 const props = defineProps<{ datos: TrabajoCompleto }>();
-const emit = defineEmits<{ ir: [vista: "guion" | "ajustes", video?: number, soloRevisar?: boolean]; eliminar: [] }>();
+const emit = defineEmits<{ ir: [vista: "guion" | "ajustes" | "producir", video?: number, soloRevisar?: boolean]; eliminar: []; actualizado: [TrabajoCompleto] }>();
 
 const t = computed(() => props.datos.trabajo);
 const r = computed(() => props.datos.resumen);
@@ -52,7 +53,8 @@ function frase(numeros: number[]) {
         <li class="flex items-center gap-4 p-4">
           <span class="grid size-10 shrink-0 place-items-center rounded-full bg-superficie-2 text-suave"><Clapperboard class="size-5" /></span>
           <span class="min-w-0 flex-1"><span class="block font-semibold">Videos</span>
-            <span class="block text-sm text-suave">{{ cuenta(r.videos.length, "video") }} · {{ mmss(r.segundos) }} min · por producir</span></span>
+            <span class="block text-sm text-suave">{{ cuenta(r.videos.length, "video") }} · {{ mmss(r.segundos) }} min</span></span>
+          <button class="text-sm font-semibold text-acento hover:underline" @click="emit('ir', 'producir')">Producir</button>
         </li>
       </ol>
 
@@ -73,11 +75,9 @@ function frase(numeros: number[]) {
         </template>
         <template v-else>
           <h2 class="mt-2 text-2xl font-bold">Tu curso está listo para producir</h2>
-          <p class="mt-2 opacity-90">Descarga el paquete y entrégalo al equipo de producción: tiene el guion, la marca, la voz y la lista de videos.</p>
-          <a :href="`/api/trabajos/${t.id}/orden.json`"
-             class="mt-5 inline-flex items-center gap-2 rounded-lg bg-dorado px-4 py-2.5 text-sm font-bold text-[#1A1A1A] transition hover:brightness-110">
-            <Download class="size-4" /> Descargar para producción
-          </a>
+          <p class="mt-2 opacity-90">El guion, la marca y la voz están en orden. Produce los videos en este equipo y descárgalos listos para entregar.</p>
+          <button class="mt-5 inline-flex items-center gap-2 rounded-lg bg-dorado px-4 py-2.5 text-sm font-bold text-[#1A1A1A] transition hover:brightness-110"
+                  @click="emit('ir', 'producir')"><Clapperboard class="size-4" /> Producir los videos</button>
         </template>
         <svg class="pointer-events-none absolute -right-10 -bottom-12 size-44 opacity-25" viewBox="0 0 100 100" aria-hidden="true">
           <circle cx="50" cy="50" r="42" fill="none" stroke="#06C7FB" stroke-width="6" /><circle cx="50" cy="50" r="34" fill="none" stroke="#C8951A" stroke-width="1.5" />
@@ -124,6 +124,8 @@ function frase(numeros: number[]) {
       </div>
     </section>
 
+    <PanelAgentes :trabajo="t.id" donde="presentacion" @actualizado="(d) => emit('actualizado', d)" />
+
     <!-- Para el equipo técnico -->
     <details class="tarjeta group rounded-2xl">
       <summary class="flex cursor-pointer list-none items-center justify-between p-5 text-sm font-semibold text-suave hover:text-texto">
@@ -137,6 +139,8 @@ function frase(numeros: number[]) {
             <a :href="`/api/trabajos/${t.id}/orden.json`" class="boton-secundario"><Download class="size-4" /> Orden de producción</a>
             <a :href="`/api/trabajos/${t.id}/curso.json`" class="boton-secundario"><Download class="size-4" /> Contenido extraído</a>
             <a v-if="t.banco" :href="`/api/trabajos/${t.id}/banco.json`" class="boton-secundario"><Download class="size-4" /> Preguntas</a>
+            <a v-if="t.banco" :href="`/api/trabajos/${t.id}/banco.gift`" class="boton-secundario"><Download class="size-4" /> Preguntas para Moodle (GIFT)</a>
+            <a v-if="t.banco" :href="`/api/trabajos/${t.id}/banco.xml`" class="boton-secundario"><Download class="size-4" /> Moodle XML</a>
           </div>
         </div>
         <div class="border-t border-borde pt-5">

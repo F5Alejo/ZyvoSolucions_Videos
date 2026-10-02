@@ -14,7 +14,7 @@ ORIGEN = Path(__file__).resolve().parent.parent / "datos"
 @pytest.fixture()
 def cliente(tmp_path, monkeypatch):
     copia = tmp_path / "datos"
-    shutil.copytree(ORIGEN, copia, ignore=shutil.ignore_patterns("trabajos", "empresas"))
+    shutil.copytree(ORIGEN, copia, ignore=shutil.ignore_patterns("trabajos", "empresas", "musica"))
     from app import datos
     monkeypatch.setattr(datos, "RAIZ_DATOS", copia)
     from fastapi.testclient import TestClient

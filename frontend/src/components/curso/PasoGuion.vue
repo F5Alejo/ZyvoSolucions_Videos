@@ -1,17 +1,47 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { CircleHelp, LoaderCircle, RefreshCw, Search, TriangleAlert } from "lucide-vue-next";
+import { CircleHelp, LoaderCircle, Pencil, RefreshCw, RotateCcw, Save, Search, TriangleAlert } from "lucide-vue-next";
 import { api } from "../../api";
 import { avisar } from "../../composables/avisos";
 import { confirmar } from "../../composables/confirmar";
 import { abrirAyuda } from "../../composables/ayuda";
 import TextoResaltado from "../TextoResaltado.vue";
+import PanelAgentes from "./PanelAgentes.vue";
 import type { Lamina, TrabajoCompleto } from "../../tipos";
 import { cuenta, mmss, normalizar } from "../../utils";
 
 /** `videoInicial` y `soloRevisarInicial`: para llegar desde el Resumen directo a un video o a lo que hay que revisar. */
 const props = defineProps<{ datos: TrabajoCompleto; videoInicial?: number; soloRevisarInicial?: boolean }>();
 const emit = defineEmits<{ actualizado: [TrabajoCompleto] }>();
+
+// ── Editar una lámina (sin tocar el original del PPTX) ──
+const editando = ref<number | null>(null);
+const borrador = ref({ titulo: "", vinetas: "", notas: "" });
+const guardandoEdicion = ref(false);
+
+function editar(l: Lamina) {
+  editando.value = l.n;
+  borrador.value = { titulo: l.pantalla?.titulo ?? l.titulo, vinetas: (l.pantalla?.vinetas ?? []).join("\n"), notas: l.notas };
+}
+
+async function guardarEdicion(n: number, cambios: Record<string, unknown> | null) {
+  guardandoEdicion.value = true;
+  try {
+    const nuevo = await api.put<TrabajoCompleto>(`/api/trabajos/${props.datos.trabajo.id}/laminas/${n}/edicion`, { cambios });
+    emit("actualizado", nuevo);
+    editando.value = null;
+    avisar(cambios ? `Lámina ${n} guardada.` : `La lámina ${n} volvió a su texto original.`);
+  } catch (e) {
+    avisar((e as Error).message, "error");
+  } finally {
+    guardandoEdicion.value = false;
+  }
+}
+
+function guardarBorrador(n: number) {
+  const vinetas = borrador.value.vinetas.split("\n").map((x) => x.trim()).filter(Boolean);
+  guardarEdicion(n, { titulo: borrador.value.titulo, notas: borrador.value.notas, ...(vinetas.length ? { vinetas } : {}) });
+}
 
 const reagrupando = ref(false);
 async function reagrupar() {
@@ -122,6 +152,7 @@ const totalMostradas = computed(() => mostrados.value.reduce((s, v) => s + v.lam
 
       <!-- Diapositivas y frases -->
       <div class="min-w-0 space-y-6">
+        <PanelAgentes :trabajo="datos.trabajo.id" donde="guion" @actualizado="(d) => emit('actualizado', d)" />
         <p v-if="!mostrados.length" class="tarjeta p-8 text-center text-suave">Nada coincide con la búsqueda.</p>
         <article v-for="v in mostrados" :key="v.clave">
           <header class="mb-3">
@@ -134,11 +165,30 @@ const totalMostradas = computed(() => mostrados.value.reduce((s, v) => s + v.lam
                 <span class="rounded-md bg-entra/10 px-2 py-0.5 text-xs font-bold text-entra">Diapositiva {{ l.n }}</span>
                 <strong class="text-sm">{{ l.titulo }}</strong>
                 <span class="text-xs text-suave">~{{ Math.round(l.segundos) }} s<template v-if="l.fuente_narracion"> · {{ l.fuente_narracion }}</template></span>
+                <span v-if="l.editada" class="rounded-full bg-acento-suave px-2 py-0.5 text-[11px] font-semibold text-acento">editada</span>
+                <span class="ml-auto flex gap-1">
+                  <button v-if="l.editada && editando !== l.n" class="boton-fantasma !px-2 !py-1 text-xs" :disabled="guardandoEdicion"
+                          @click="guardarEdicion(l.n, null)"><RotateCcw class="size-3.5" /> Original</button>
+                  <button v-if="editando !== l.n" class="boton-fantasma !px-2 !py-1 text-xs" @click="editar(l)"><Pencil class="size-3.5" /> Editar</button>
+                </span>
               </div>
-              <ol v-if="l.frases.length" class="mt-3 list-decimal space-y-1.5 pl-6 text-[15px] leading-relaxed marker:text-suave">
+              <form v-if="editando === l.n" class="mt-3 space-y-3" @submit.prevent="guardarBorrador(l.n)">
+                <label class="block"><span class="etiqueta-campo">Título en pantalla</span>
+                  <input v-model="borrador.titulo" class="campo" maxlength="120" required /></label>
+                <label class="block"><span class="etiqueta-campo">Viñetas en pantalla (una por línea; vacío = las del PPTX)</span>
+                  <textarea v-model="borrador.vinetas" class="campo" rows="3" /></label>
+                <label class="block"><span class="etiqueta-campo">Lo que dice la voz</span>
+                  <textarea v-model="borrador.notas" class="campo" rows="4" /></label>
+                <div class="flex justify-end gap-2">
+                  <button type="button" class="boton-fantasma" @click="editando = null">Cancelar</button>
+                  <button class="boton-primario" :disabled="guardandoEdicion">
+                    <LoaderCircle v-if="guardandoEdicion" class="size-4 animate-spin" /><Save v-else class="size-4" /> Guardar</button>
+                </div>
+              </form>
+              <ol v-if="l.frases.length && editando !== l.n" class="mt-3 list-decimal space-y-1.5 pl-6 text-[15px] leading-relaxed marker:text-suave">
                 <li v-for="(f, i) in l.frases" :key="i"><TextoResaltado :texto="f" :citas="l.citas" /></li>
               </ol>
-              <p v-else class="mt-3 flex items-center gap-2 rounded-lg bg-aviso-fondo p-3 text-sm text-aviso">
+              <p v-else-if="editando !== l.n" class="mt-3 flex items-center gap-2 rounded-lg bg-aviso-fondo p-3 text-sm text-aviso">
                 <TriangleAlert class="size-4 shrink-0" /> Esta diapositiva no tiene notas: se vería sin voz. Escribe su guion en las notas del orador.
               </p>
             </div>

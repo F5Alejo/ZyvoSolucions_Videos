@@ -34,6 +34,8 @@ function elegir(id: string) {
             <span v-if="v.id === 'carlos'" class="rounded-full bg-exito-fondo px-2 py-0.5 text-[11px] font-semibold text-exito">Recomendada</span>
           </span>
           <span class="mt-0.5 line-clamp-2 text-xs text-suave">{{ v.descripcion }}</span>
+          <span v-if="v.falta" class="mt-1 block text-xs font-semibold text-aviso">Todavía no se puede producir: {{ v.falta }}</span>
+          <span v-else-if="v.solo_borrador" class="mt-1 block text-xs font-semibold text-aviso">Solo para borradores</span>
         </span>
         <span class="grid size-6 shrink-0 place-items-center rounded-full border-2 transition"
               :class="voz === v.id ? 'border-acento bg-acento text-sobre-acento' : 'border-borde'">
