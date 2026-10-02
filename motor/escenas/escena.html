@@ -30,23 +30,23 @@
 
   .cuerpo { flex: 1; display: flex; gap: 72px; align-items: center; min-height: 0; }
   .texto { flex: 1; min-width: 0; }
-  h1 { font-weight: 800; line-height: 1.08; letter-spacing: -.01em; font-size: {{ 64 if v.titulo|length > 55 else 76 }}px; }
-  .linea { width: 180px; height: 8px; background: var(--acento); border-radius: 4px; margin: 34px 0 38px; transform-origin: left; }
-  ul { list-style: none; display: grid; gap: 22px; }
-  li { font-size: {{ 36 if v.vinetas|length > 3 else 40 }}px; line-height: 1.3; font-weight: 500;
+  h1 { font-weight: 800; line-height: 1.08; letter-spacing: -.01em; font-size: {{ ((64 if v.titulo|length > 55 else 76) * k)|int }}px; }
+  .linea { width: 180px; height: 8px; background: var(--acento); border-radius: 4px; margin: {{ (34 * k)|int }}px 0 {{ (38 * k)|int }}px; transform-origin: left; }
+  ul { list-style: none; display: grid; gap: {{ (22 * k)|int }}px; }
+  li { font-size: {{ ((36 if v.vinetas|length > 3 else 40) * k)|int }}px; line-height: 1.3; font-weight: 500;
        padding-left: 44px; position: relative; }
   li::before { content: ""; position: absolute; left: 0; top: .5em; width: 18px; height: 18px;
                border-radius: 50%; background: var(--acento2); }
 
-  .foto { flex: 0 0 {{ 44 if not vertical else 100 }}%; height: {{ 78 if not vertical else 40 }}%;
+  .foto { flex: 0 0 {{ 44 if not vertical else 100 }}%; height: {{ 78 if not vertical else (40 if k == 1 else 30) }}%;
           border-radius: 28px; overflow: hidden; border: 4px solid var(--acento); }
   .foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
   /* Portada */
-  .portada h1 { font-size: {{ 84 if v.titulo|length > 50 else 104 }}px; max-width: 90%; }
+  .portada h1 { font-size: {{ ((84 if v.titulo|length > 50 else 104) * k)|int }}px; max-width: 90%; }
   .portada .kicker { font-size: 30px; font-weight: 700; color: var(--acento); text-transform: uppercase;
                      letter-spacing: .12em; margin-bottom: 28px; }
-  .portada li { font-size: 38px; opacity: .9; }
+  .portada li { font-size: {{ (38 * k)|int }}px; opacity: .9; }
 
   /* Avance dentro del video */
   .avance { position: absolute; left: 0; bottom: 0; height: 10px; background: var(--acento);
@@ -56,7 +56,8 @@
               background: #E6423C; color: #fff; font-weight: 800; font-size: 22px; border-radius: 6px; letter-spacing: .06em; }
 
   {% if vertical %}
-  .cuerpo { flex-direction: column-reverse; justify-content: center; gap: 56px; }
+  .cuerpo { flex-direction: column-reverse; justify-content: center; align-items: stretch; gap: {{ (56 * k)|int }}px; }
+  .texto { flex: none; width: 100%; }
   .foto { flex: none; width: 100%; }
   {% endif %}
 

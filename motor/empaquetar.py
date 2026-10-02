@@ -25,7 +25,7 @@ import numpy as np
 import soundfile as sf
 
 from app import configuracion, datos, taller
-from motor import escenas, render, subtitulos
+from motor import escenas, recursos, render, subtitulos
 from motor.escenas import animacion
 from motor.voz import FRECUENCIA
 
@@ -68,18 +68,19 @@ def _duracion(mp4: Path) -> float:
 
 def _tarjeta(t: dict, titulo: str, numero: int, conf: dict, destino: Path, trabajo: Path) -> None:
     """Una tarjeta con el título del video, del mismo formato que los videos (para unir sin recodificar)."""
-    from motor.produccion import _logo
 
     cv = conf["video"]
     fps, escala = int(cv["fps"]), configuracion.RESOLUCIONES[cv["resolucion"]]
     crf, preset = configuracion.CALIDADES[cv["calidad"]]
-    ancho, alto = escenas.FORMATOS["16:9"]
+    from motor.produccion import formato
+    f = formato(t)
+    ancho, alto = escenas.FORMATOS[f]
     marca = datos.marcas()[t["marca"]]
     lamina = {"n": 0, "formas": {"title": [titulo]}, "foto": None}
     vista = escenas.vista(lamina, 0, 1, titulo, None, f"Video {numero} · {t['nombre']}")
     segundos = conf["completo"]["duracion_tarjeta"]
     plan = animacion.plan(t, t["videos"][numero - 1]["laminas"][0]) if t["videos"][numero - 1]["laminas"] else None
-    html = escenas.html(vista, escenas.estilo(marca, _logo(marca)), plan=plan, segundos=segundos)
+    html = escenas.html(vista, escenas.estilo(marca, recursos.logo(marca)), f, plan=plan, segundos=segundos)
     ent_s, sal_s = animacion.duraciones(plan, vista) if plan else (1.2, 0.0)
     mudo = trabajo / "tarjeta-mudo.mp4"
     render.video([(html, render.cuadros(segundos, fps), ent_s, sal_s)], ancho, alto, mudo, trabajo / "escenas",

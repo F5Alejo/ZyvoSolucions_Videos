@@ -1,0 +1,14 @@
+{
+ "id": "educativo",
+ "version": 1,
+ "nombre": "Educativo",
+ "icono": "🎓",
+ "descripcion": "Claro y tranquilo para aprender: fundidos suaves y un acercamiento lento que acompaña la explicación.",
+ "animacion": "sobria",
+ "camara": "zoom_lento_entrada",
+ "transicion": "corte",
+ "subtitulos_quemados": false,
+ "sfx": null,
+ "musica": "calmada",
+ "formato": "16:9"
+}

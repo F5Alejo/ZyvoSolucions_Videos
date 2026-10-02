@@ -1,24 +1,57 @@
-# Estudio de video RiskMann
+# Zyvo · Videos desde tu PPTX
 
 [![Pruebas](https://github.com/F5Alejo/ZyvoSolucions_Videos/actions/workflows/pruebas.yml/badge.svg?branch=main)](https://github.com/F5Alejo/ZyvoSolucions_Videos/actions/workflows/pruebas.yml)
 [![Instalador en Windows](https://github.com/F5Alejo/ZyvoSolucions_Videos/actions/workflows/instalador-windows.yml/badge.svg)](https://github.com/F5Alejo/ZyvoSolucions_Videos/actions/workflows/instalador-windows.yml)
 
-**Entra un PPTX. Sale el curso en video.** La interfaz del motor de `riskmann2-marketing-videos`:
-el estudio donde entra la presentación del cliente y sale el curso, y el seguimiento de cada
-video hasta su aprobación.
+**Subes tu presentación y Zyvo se encarga del resto.** Convierte un PPTX en un video educativo o
+profesional con narración, animaciones, movimiento de cámara, música, efectos de sonido, subtítulos y
+control de calidad, sin que tengas que saber de codecs, FPS ni ffmpeg.
 
-## Cómo está hecho
+## Qué problema resuelve
+
+Pasar una capacitación de PowerPoint a video suele ser días de grabar voz, animar y editar. Zyvo lo
+hace en minutos y de forma repetible: lee lo que dice cada diapositiva y lo que está en sus notas del
+orador, y arma el video con la marca y la voz que elijas. Todo corre **en tu equipo**: el material del
+cliente no sale de él (la voz de ElevenLabs es opcional).
+
+## Cómo funciona
+
+```
+Subir PPTX → Analizar → Elegir estilo → Elegir voz → Opciones → ✨ Crear mi video → Ver, editar y exportar MP4
+```
+
+Por dentro: el PPTX se analiza, se arma un plano del video ([VideoSpec](docs/videospec.md)), se genera
+la voz frase por frase, se dibuja cada escena, se mezcla el audio y un control de calidad revisa el
+resultado. Cada etapa guarda lo que hizo: si algo falla, se reintenta o se rehace solo esa parte.
+Detalle en [`docs/pipeline.md`](docs/pipeline.md).
+
+## Arquitectura
 
 | Parte | Tecnología | Dónde |
-| --- | --- | --- |
-| Interfaz | **Vue 3** + TypeScript + **Tailwind CSS 4** + Vite, íconos Lucide, Montserrat incluida | `frontend/` |
-| API | FastAPI (Python), JSON en `/api/*`, documentación en `/api/docs` | `app/main.py` |
-| Lógica | Extractor de PPTX, taller (guion, videos, revisión) y datos | `app/extractor.py`, `app/taller.py`, `app/datos.py` |
-| Motor de video | Voz (Kokoro local o ElevenLabs), escenas HTML de marca dibujadas con Playwright, ffmpeg, subtítulos y control de calidad | `motor/` |
+|---|---|---|
+| Interfaz | **Vue 3** + TypeScript + **Tailwind CSS 4** + Vite | `frontend/` (el flujo de Zyvo en `/crear`) |
+| API | FastAPI (Python), JSON en `/api/*`, documentación en `/api/docs` | `app/` |
+| Motor | VideoSpec, voz (Kokoro, ElevenLabs, Piper), escenas HTML con Playwright, ffmpeg, cámara, música, efectos, subtítulos, control de calidad | `motor/` |
+| Agentes | Analizador, guionista, director de animación y más; con IA local (Ollama) o reglas | `motor/agentes/`, `motor/analisis.py` |
+| Datos | Archivos JSON y carpetas: sin base de datos ni nube | `datos/` |
 
-Vue porque es el framework de **app.riskmann.com** (Vue 3 + Vuex): el equipo de RiskMann ya lo conoce.
-Los colores son los de la app de RiskMann, con los contrastes medidos; los tokens están comentados en
-`frontend/src/estilos.css`.
+Más en [`docs/architecture.md`](docs/architecture.md) y [`ARCHITECTURE.md`](ARCHITECTURE.md).
+
+## Generar un video
+
+1. Abre **http://localhost:8765** y pulsa **«Crear video»**.
+2. **Arrastra tu PPTX.** Lo que escribas en las notas del orador es lo que dirá la voz.
+3. **Analizar:** Zyvo cuenta diapositivas, imágenes, tablas y gráficos, y avisa si alguna está sin notas.
+4. **Estilo:** Educativo, Corporativo, Tecnológico, Minimalista, Dinámico, Cinemático o Social.
+5. **Voz:** escucha y elige. Las que necesitan configuración aparecen apagadas.
+6. **Opciones:** música, subtítulos dentro de la imagen, animaciones y dónde se va a ver (Presentación,
+   Vertical, Cuadrado, Instagram). Lo técnico está en «Configuración avanzada».
+7. **✨ Crear mi video.** Verás cada paso y el porcentaje.
+8. **Resultado:** míralo, compara versiones, **Edita** escena por escena (texto de la voz, movimiento,
+   transición) y regenera solo esa escena, o **Exporta el MP4** (o todo en un ZIP).
+
+¿Algo salió mal? [`docs/troubleshooting.md`](docs/troubleshooting.md). El modo experto de antes, con
+el guion completo, la animación de cada elemento y los agentes, sigue en **Cursos**.
 
 ## Instalar en un equipo nuevo (Windows)
 
@@ -156,7 +189,7 @@ cada PR hacia `main`):
 
 | Trabajo | Qué revisa |
 | --- | --- |
-| API y motor (pytest) | Python 3.12, ffmpeg y Chromium: 75 pruebas, que producen videos de verdad con una voz de prueba y Ollama simulado (no necesitan modelos ni claves). Sube el artefacto **`video-de-muestra`** (MP4, subtítulos y control de calidad, 14 días) |
+| API y motor (pytest) | Python 3.12, ffmpeg y Chromium: 117 pruebas, que producen videos de verdad con una voz de prueba y Ollama simulado (no necesitan modelos ni claves). Sube el artefacto **`video-de-muestra`** (MP4, subtítulos y control de calidad, 14 días) |
 | Interfaz | Node 22: `vue-tsc`, Vitest y la compilación |
 | Estilo (ruff) | El código de Python, con las reglas de `pyproject.toml` |
 | Secretos (gitleaks) | Que ninguna clave haya llegado a la historia de git |
@@ -181,6 +214,8 @@ git switch Alejodev && git pull origin main       # deja Alejodev igual que main
 | Ruta | Qué hace |
 | --- | --- |
 | `/` | Inicio: cifras, cómo funciona, tus cursos y piezas de marketing ya hechas |
+| `/crear` | **Zyvo**: subir el PPTX y crear el video paso a paso |
+| `/crear/:id/editar/:clave` | Editor por escena con línea de tiempo |
 | `/cursos/nuevo` | Subir un PPTX (arrastrar y soltar, progreso de subida) |
 | `/cursos/:id` | El curso en cinco pasos: Presentación · Guion · Marca y voz · Animación · Resultado |
 | `/configuracion` | Cómo se producen los videos, música, agentes y qué tiene este equipo |
@@ -200,12 +235,17 @@ git switch Alejodev && git pull origin main       # deja Alejodev igual que main
 | Marca y voz | Las cuatro marcas y las voces con su muestra; se guarda solo | Funciona |
 | Resultado | Plan de videos, preguntas, revisión, `curso.json` y **orden de producción** | Funciona |
 | Animación | Estilo y entrada/salida de cada elemento, por curso o por lámina, con vista previa en vivo | Funciona |
-| Render | «Producir video» por tarjeta o «Producir lo que falta y el completo»: MP4 por video, MP4 completo con capítulos, subtítulos y paquete ZIP | Funciona (16:9) |
+| Render | «Producir video» por tarjeta o «Producir lo que falta y el completo»: MP4 por video, MP4 completo con capítulos, subtítulos y paquete ZIP | Funciona en 16:9, 9:16, 1:1 y 4:5, con cámara, fundidos, música, efectos y versiones |
 
 La duración se estima con la velocidad medida en csm (2,394 palabras por segundo con Carlos,
 más 2,3 s por lámina): para csm da 33:24 frente a los ~33 min reales.
 
 Lo que se sube queda en `datos/trabajos/`, que no va a git: es material del cliente.
+
+## Desarrollo
+
+Dónde está cada cosa, las reglas del proyecto y cómo agregar voces, estilos, efectos o agentes:
+[`docs/development.md`](docs/development.md). Las pruebas: [`docs/testing.md`](docs/testing.md).
 
 ## Los datos
 

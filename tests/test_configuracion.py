@@ -87,7 +87,8 @@ def test_la_musica_exige_licencia(cliente):
     r = cliente.post("/api/musica", files={"archivo": ("fondo.wav", _tono())}, data={"licencia": ""})
     assert r.status_code == 400
     r = cliente.post("/api/musica", files={"archivo": ("../fondo raro.wav", _tono())}, data={"licencia": "Pixabay Content License"})
-    assert r.status_code == 201 and r.json() == [{"archivo": "fondo-raro.wav", "licencia": "Pixabay Content License", "fuente": ""}]
+    assert r.status_code == 201
+    assert r.json() == [{"archivo": "fondo-raro.wav", "licencia": "Pixabay Content License", "fuente": "", "energia": None}]
     assert cliente.get("/api/musica/fondo-raro.wav").status_code == 200
     assert cliente.get("/api/musica/..%2Fconfiguracion.json").status_code == 404
 

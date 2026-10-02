@@ -28,6 +28,7 @@
   --c-motor: #87733D;
   --c-lateral: #073D7A;
   --c-lateral-2: #0A4A92;
+  --g-texto-chispa: linear-gradient(135deg, #5B2EE0, #0E7490);  /* 7,2:1 y 5,4:1 sobre blanco */
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -51,6 +52,7 @@
     --c-motor: #C8951A;
     --c-lateral: #040404;    /* --black de riskmann.com */
     --c-lateral-2: #161618;
+    --g-texto-chispa: linear-gradient(135deg, #B9A6FF, #5EE0F5);  /* claro sobre el fondo oscuro */
   }
 }
 
@@ -116,4 +118,26 @@
 }
 @utility cifra {
   @apply font-bold tabular-nums;
+}
+
+/*
+  La chispa de Zyvo: el degradado de la marca del producto (violeta → cian). Lleva texto blanco:
+  #5B2EE0 da 7,2:1, #3F51D8 6,2:1 y #0E7490 5,4:1 (medidos), así que todo el degradado pasa 4,5:1.
+*/
+@utility chispa {
+  background-image: linear-gradient(135deg, #5B2EE0 0%, #3F51D8 45%, #0E7490 100%);
+}
+@utility texto-chispa {
+  background-image: var(--g-texto-chispa);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@keyframes zyvo-aparecer { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@utility aparecer {
+  animation: zyvo-aparecer .35s ease-out both;
+}
+@keyframes zyvo-festejo { 0% { transform: scale(.6); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+@utility festejo {
+  animation: zyvo-festejo .6s cubic-bezier(.2, .9, .3, 1.3) both;
 }

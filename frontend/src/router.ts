@@ -5,6 +5,9 @@ const router = createRouter({
   scrollBehavior: (a, b, guardada) => guardada ?? (a.path === b.path ? undefined : { top: 0 }),
   routes: [
     { path: "/", name: "inicio", component: () => import("./views/InicioView.vue"), meta: { titulo: "Inicio" } },
+    { path: "/crear", name: "crear-video", component: () => import("./views/CrearVideoView.vue"), meta: { titulo: "Crear video" } },
+    { path: "/crear/:id", name: "crear-proyecto", component: () => import("./views/CrearVideoView.vue"), props: true, meta: { titulo: "Crear video" } },
+    { path: "/crear/:id/editar/:clave", name: "editor", component: () => import("./views/EditorVideoView.vue"), props: true, meta: { titulo: "Editar video" } },
     { path: "/cursos", name: "cursos", component: () => import("./views/CursosView.vue"), meta: { titulo: "Cursos" } },
     { path: "/cursos/nuevo", name: "crear", component: () => import("./views/CrearCursoView.vue"), meta: { titulo: "Crear curso" } },
     { path: "/cursos/:id", name: "curso", component: () => import("./views/CursoView.vue"), props: true, meta: { titulo: "Curso" } },
@@ -19,7 +22,7 @@ const router = createRouter({
 });
 
 router.afterEach((a) => {
-  document.title = `${(a.meta.titulo as string) ?? "Estudio"} · Estudio de video RiskMann`;
+  document.title = `${(a.meta.titulo as string) ?? "Estudio"} · Zyvo`;
 });
 
 export default router;
