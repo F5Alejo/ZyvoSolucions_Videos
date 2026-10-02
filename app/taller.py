@@ -95,6 +95,8 @@ def desde_pptx(nombre_archivo: str, contenido: bytes, nombre: str = "") -> dict:
     entrada = _raiz() / t["id"] / "entrada.pptx"
     tmp.replace(entrada)
     extractor.guardar_imagenes(entrada, _raiz() / t["id"] / "media")
+    from motor import analisis  # aquí: el motor también importa el taller
+    analisis.guardar(t)
     return t
 
 

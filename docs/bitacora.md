@@ -8,6 +8,17 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-10-02 · Agente 1 (Analizador), tablas y gráficos, y PPTX de prueba
+
+### Qué se hizo
+- **El extractor lee tablas y gráficos** (`tablas`: filas de texto; `graficos`: título, tipo, categorías y series con sus valores). Antes se perdían: no tienen `text_frame`. El `curso.json` exportado conserva el formato de csm.
+- **Una lámina que solo trae una tabla o un gráfico** muestra sus datos como viñetas («Hasta 20 km/h · 15 SMMLV», «2023: 98») en vez de quedar sin texto.
+- **`motor/analisis.py`, el Analizador:** `PresentationAnalysis` con láminas, títulos y secciones, cuáles tienen notas, imágenes, tablas y gráficos, láminas vacías o con demasiado texto, palabras, minutos estimados, estructura, tema (palabras más repetidas), dificultad (básica, media o avanzada) y puntos importantes (cifras y normas). Es determinista y solo lee. Se guarda en `analisis.json` al subir el PPTX; `GET /api/trabajos/{id}/analisis` lo entrega (`?rehacer=true` lo recalcula).
+- **`tests/fixtures/`:** los 7 PPTX de prueba (simple, images, tables, long_text, notes, empty_slide, mixed_content), generados por `scripts/generar_fixtures.py` para que sean reproducibles y sin material de clientes.
+- Pruebas: 101 (`tests/test_analisis.py`).
+
+---
+
 ## 2026-10-02 · Fases 4 y 5: proveedores y control de los agentes
 
 ### Qué se hizo

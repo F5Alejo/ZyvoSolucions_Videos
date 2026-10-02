@@ -156,7 +156,7 @@ cada PR hacia `main`):
 
 | Trabajo | Qué revisa |
 | --- | --- |
-| API y motor (pytest) | Python 3.12, ffmpeg y Chromium: 91 pruebas, que producen videos de verdad con una voz de prueba y Ollama simulado (no necesitan modelos ni claves). Sube el artefacto **`video-de-muestra`** (MP4, subtítulos y control de calidad, 14 días) |
+| API y motor (pytest) | Python 3.12, ffmpeg y Chromium: 101 pruebas, que producen videos de verdad con una voz de prueba y Ollama simulado (no necesitan modelos ni claves). Sube el artefacto **`video-de-muestra`** (MP4, subtítulos y control de calidad, 14 días) |
 | Interfaz | Node 22: `vue-tsc`, Vitest y la compilación |
 | Estilo (ruff) | El código de Python, con las reglas de `pyproject.toml` |
 | Secretos (gitleaks) | Que ninguna clave haya llegado a la historia de git |

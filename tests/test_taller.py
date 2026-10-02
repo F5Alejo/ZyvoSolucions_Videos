@@ -70,7 +70,8 @@ def test_extractor_lee_formas_notas_y_frases(tmp_path):
     ruta.write_bytes(pptx_de_prueba())
     laminas = extractor.leer_pptx(ruta)
     assert [l["n"] for l in laminas] == [1, 2, 3]
-    assert set(laminas[0]) == {"n", "formas", "notas", "frases", "foto", "icono"}  # formato de csm
+    assert {"n", "formas", "notas", "frases", "foto", "icono"} <= set(laminas[0])  # formato de csm (más tablas y gráficos)
+    assert laminas[0]["tablas"] == [] and laminas[0]["graficos"] == []
     assert "Dato" in laminas[0]["formas"] and "Dato (2)" in laminas[0]["formas"]  # no se pisan
     assert laminas[0]["formas"]["Dato"] == ["Primer párrafo", "Segundo párrafo"]
     assert laminas[0]["frases"][1].startswith("Lo exige la Ley 1503 de 2011:")

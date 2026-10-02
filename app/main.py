@@ -14,7 +14,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel
 
 from app import configuracion, datos, extractor, taller
-from motor import cola, diagnostico, empaquetar, escenas, logs, produccion, recursos
+from motor import analisis, cola, diagnostico, empaquetar, escenas, logs, produccion, recursos
 from motor import voz as motor_voz
 from motor.agentes import entrega as agentes_entrega
 from motor.agentes import registro as agentes
@@ -171,6 +171,13 @@ def api_reagrupar(id_: str):
 def api_eliminar_trabajo(id_: str):
     _trabajo_o_404(id_)
     taller.eliminar(id_)
+
+
+@app.get("/api/trabajos/{id_}/analisis")
+def api_analisis(id_: str, rehacer: bool = False):
+    """Qué trae la presentación: láminas, notas, imágenes, tablas, gráficos, tema, dificultad y avisos."""
+    t = _trabajo_o_404(id_)
+    return analisis.guardar(t) if rehacer else analisis.leer(t)
 
 
 @app.get("/api/trabajos/{id_}/curso.json")

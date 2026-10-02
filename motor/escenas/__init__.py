@@ -65,6 +65,25 @@ def _recortar(texto: str, largo: int) -> str:
     return texto if len(texto) <= largo else texto[: largo - 1].rsplit(" ", 1)[0] + "…"
 
 
+def _numero(v) -> str:
+    if isinstance(v, float) and v.is_integer():
+        v = int(v)
+    return f"{v:,}".replace(",", ".") if isinstance(v, int) else str(v).replace(".", ",")
+
+
+def datos_como_vinetas(lamina: dict) -> list[str]:
+    """Las filas de sus tablas («a · b · c») o los valores de su gráfico («Categoría: valor»)."""
+    salida = []
+    for tabla in lamina.get("tablas") or []:
+        salida += [" · ".join(c for c in fila if c) for fila in tabla if any(fila)]
+    for g in lamina.get("graficos") or []:
+        serie = (g.get("series") or [{}])[0]
+        for cat, val in zip(g.get("categorias") or [], serie.get("valores") or []):
+            if val is not None:
+                salida.append(f"{cat}: {_numero(val)}")
+    return salida
+
+
 def vista(lamina: dict, indice: int, total: int, video: str, media: Path | None, curso: str = "") -> dict:
     """Lo que se ve de una lámina: tipo de escena, título, viñetas e imagen.
 
@@ -80,6 +99,8 @@ def vista(lamina: dict, indice: int, total: int, video: str, media: Path | None,
             p = p.strip()
             if p and p not in resto and not titulo.startswith(p[:90]) and p != seccion:
                 resto.append(p)
+    if not resto:  # una lámina que solo trae una tabla o un gráfico: sus datos son las viñetas
+        resto = datos_como_vinetas(lamina)
 
     pantalla = lamina.get("pantalla") or {}
     if pantalla.get("titulo"):
