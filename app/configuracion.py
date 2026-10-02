@@ -14,7 +14,7 @@ from app import datos
 
 DEFECTO = {
     "cursos": {"marca": "riskmann", "voz": "carlos", "formatos": ["16:9"], "animacion": "dinamica"},
-    "video": {"resolucion": "1080p", "fps": 30, "calidad": "final", "subtitulos_quemados": False},
+    "video": {"resolucion": "1080p", "fps": 30, "calidad": "final", "subtitulos_quemados": False, "renderer": "playwright"},
     "tiempos": {"entrada": 1.0, "pausa": 0.35, "salida": 1.3},
     "audio": {"lufs": -14, "musica": None, "musica_volumen": -22, "respaldo_voz": True},
     "completo": {"tarjetas": True, "duracion_tarjeta": 3.0, "capitulos": True},
@@ -35,6 +35,7 @@ OPCIONES = {
     ("video", "resolucion"): {"1080p": "1920×1080 (Full HD)", "720p": "1280×720 (más liviano)"},
     ("video", "fps"): {25: "25 fps", 30: "30 fps", 60: "60 fps (animaciones más suaves, render más lento)"},
     ("video", "calidad"): {"final": "Final (CRF 18, más lento)", "borrador": "Borrador rápido (CRF 23)"},
+    ("video", "renderer"): {"playwright": "Navegador (Chromium) y ffmpeg"},
     ("audio", "lufs"): {-14: "-14 LUFS · YouTube y redes", -16: "-16 LUFS · podcast y web", -23: "-23 LUFS · TV (EBU R128)"},
 }
 RANGOS = {

@@ -8,6 +8,23 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-10-02 · Fases 4 y 5: proveedores y control de los agentes
+
+### Qué se hizo
+- **`motor/proveedores.py`:** las interfaces `TTSProvider`, `LLMProvider` y `VideoRenderer`, con dónde se registra cada implementación.
+- **`motor/renderers.py`:** `PlaywrightRenderer` (lo que antes estaba dentro de `produccion`) y el registro `RENDERERS`. La configuración elige el renderer (`video.renderer`, hoy solo `playwright`). Remotion no se agrega: pide licencia de pago a empresas.
+- **`Ollama` como `LLMProvider`:** los agentes ya no llaman a las funciones del módulo; usan `base.LLM`.
+- **Validación de la IA:** cada respuesta pasa por JSON → esquema → valores permitidos antes de usarse. En una lista, el elemento que no cumple se quita y se cuenta (`invalidas`); si la respuesta entera no sirve, el agente usa sus reglas. Nunca se ejecuta nada.
+- **Permisos de los agentes (`base.PERMISOS`):** cada agente declara qué lee y qué puede cambiar (el Director de animación solo `animacion`, el Redactor solo `ediciones`, el Revisor de voz nada). Al aceptar una propuesta se compara el curso antes y después: si tocó otra cosa, el cambio se deshace y se rechaza. Cada agente tiene además versión y tiempo máximo por pregunta.
+- **La firma no cambia con opciones que no afectan el video:** `respaldo_voz` y el renderer por defecto quedan fuera, así los videos ya producidos no aparecen desactualizados.
+- Pruebas: 91 (`tests/test_proveedores.py`).
+
+### Errores y cómo se resolvieron
+- **Validar la respuesta entera tiraba todo** si la IA se equivocaba en una sola lámina (el Director perdía también las láminas buenas). Ahora se descarta solo el elemento inválido.
+- **La firma de los cursos había cambiado en `62cfeb5`** al agregar `audio.respaldo_voz`. Se comprobó contra la fórmula original que ahora vuelve a ser la misma.
+
+---
+
 ## 2026-10-01 · Fases 6 y 7: errores con código, reintentos, voz de respaldo, registro técnico y detector de bugs
 
 ### Qué se hizo

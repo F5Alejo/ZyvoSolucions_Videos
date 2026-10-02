@@ -20,7 +20,7 @@ from datetime import datetime
 from pathlib import Path
 
 from app import configuracion, taller
-from motor import audio, bugs, errores, escenas, logs, render, subtitulos, videospec
+from motor import audio, bugs, errores, logs, render, renderers, subtitulos, videospec
 from motor import voz as motor_voz
 from motor.qa import revisar
 
@@ -28,7 +28,13 @@ from motor.qa import revisar
 def firma(t: dict) -> str:
     """Lo que cambia el resultado de un video. Si cambia, el video producido queda desactualizado."""
     conf = configuracion.para_trabajo(t)
-    base = {"marca": t["marca"], "voz": t["voz"], "conf": {g: conf[g] for g in configuracion.POR_CURSO},
+    grupos = {g: dict(conf[g]) for g in configuracion.POR_CURSO}
+    # Lo que no cambia el video, o que vale lo de siempre, no entra: así una opción nueva en la
+    # configuración no deja desactualizados los videos que ya estaban producidos.
+    grupos["audio"].pop("respaldo_voz", None)
+    if grupos["video"].get("renderer") == renderers.RENDERER_DEFECTO:
+        grupos["video"].pop("renderer")
+    base = {"marca": t["marca"], "voz": t["voz"], "conf": grupos,
             "animacion": t.get("animacion"), "ediciones": t.get("ediciones")}
     return hashlib.sha256(json.dumps(base, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()[:16]
 
@@ -62,33 +68,10 @@ def etapa_voz(t: dict, spec: videospec.VideoSpec, voz: dict, salida: Path, avisa
     return spec
 
 
-def escenas_html(spec: videospec.VideoSpec) -> list[tuple]:
-    """(html, cuadros, entrada, salida, huella) de cada escena, lo que recibe el render."""
-    v, fps = spec.video, spec.video.fps
-    salida = []
-    for e in spec.escenas:
-        html = escenas.html(e.vista, spec.estilo, v.formato, spec.voz.solo_borrador, e.animacion, e.cuadros / fps)
-        huella = videospec.huella(html, e.cuadros, e.entrada, e.salida, fps, v.escala, v.crf, v.preset,
-                                  e.camara, e.transicion)
-        salida.append((html, e.cuadros, e.entrada, e.salida, huella))
-    return salida
-
-
-def etapa_escenas(spec: videospec.VideoSpec, salida: Path, tmp: Path, avisar) -> tuple[Path, list[dict]]:
-    """Dibuja (o toma de la caché) cada escena y las une en un video mudo."""
-    v = spec.video
-    lista = escenas_html(spec)
-    cache = salida / "escenas"
-    mudo = tmp / "mudo.mp4"
-    encuadre = render.video(lista, v.ancho, v.alto, mudo, tmp / "escenas",
-                            avisar=lambda h, n: avisar(f"Imagen: lámina {h} de {n}", 0.5 + 0.33 * h / n),
-                            fps=v.fps, escala=v.escala, crf=v.crf, preset=v.preset, cache=cache)
-    # Las escenas que ya no usa el video (se editó la lámina) no se guardan para siempre.
-    vigentes = {x[4] for x in lista}
-    for viejo in cache.glob("*.*"):
-        if viejo.stem not in vigentes:
-            viejo.unlink()
-    return mudo, encuadre
+def etapa_escenas(spec: videospec.VideoSpec, salida: Path, tmp: Path, avisar, renderer: str | None = None):
+    """Dibuja (o toma de la caché `escenas/`) cada escena y las une en un video mudo."""
+    return renderers.renderer(renderer).render(
+        spec, salida / "escenas", tmp, avisar=lambda h, n: avisar(f"Imagen: lámina {h} de {n}", 0.5 + 0.33 * h / n))
 
 
 def etapa_audio(spec: videospec.VideoSpec, tmp: Path, avisar) -> Path:
@@ -206,7 +189,7 @@ def producir(t: dict, clave: str, avisar=lambda paso, progreso: None, fase=lambd
         avisar(f"Usando la voz {otra['nombre']}", 0.05)
         spec, voz = _con_voz(spec, otra, aviso), otra
         spec = correr(t, clave, "voz", lambda: etapa_voz(t, spec, voz, salida, avisar), fase)
-    mudo, encuadre = correr(t, clave, "escenas", lambda: etapa_escenas(spec, salida, tmp, avisar), fase)
+    mudo, encuadre = correr(t, clave, "escenas", lambda: etapa_escenas(spec, salida, tmp, avisar, conf["video"].get("renderer")), fase)
     norma = correr(t, clave, "audio", lambda: etapa_audio(spec, tmp, avisar), fase)
     mp4 = salida / f"{clave}.mp4"
     correr(t, clave, "unir", lambda: render.unir(mudo, norma, mp4), fase)

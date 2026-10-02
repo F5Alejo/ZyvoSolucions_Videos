@@ -96,7 +96,7 @@ def _trabajar() -> None:
             elif clave.startswith(PREFIJO_AGENTE):
                 from motor.agentes import registro
                 r = registro.ejecutar(id_, clave[len(PREFIJO_AGENTE):], avisar=avance)
-                _escribir(id_, clave, propuestas=r["propuestas"], con_ia=r["con_ia"])
+                _escribir(id_, clave, propuestas=r["propuestas"], con_ia=r["con_ia"], invalidas=r.get("invalidas", 0))
             else:
                 produccion.producir(t, clave, avisar=avance, fase=lambda f: _escribir(id_, clave, fase=f))
             _escribir(id_, clave, estado="listo", fase="COMPLETED", paso="Listo", progreso=1,
