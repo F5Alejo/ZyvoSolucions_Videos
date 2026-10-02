@@ -5,3 +5,5 @@ __pycache__/
 config.local.json
 # Material de los clientes: no va a git
 datos/trabajos/
+# Empresas registradas desde el estudio: datos de clientes
+datos/empresas/

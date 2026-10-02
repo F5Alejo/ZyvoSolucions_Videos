@@ -54,7 +54,7 @@ def _nuevo(nombre: str, origen: dict, laminas: list[dict], videos: list[dict],
     return t
 
 
-def desde_pptx(nombre_archivo: str, contenido: bytes, nombre: str = "") -> dict:
+def desde_pptx(nombre_archivo: str, contenido: bytes, nombre: str = "", marca: str = "") -> dict:
     tmp = _raiz() / f"_subida-{secrets.token_hex(4)}.pptx"
     tmp.parent.mkdir(parents=True, exist_ok=True)
     tmp.write_bytes(contenido)
@@ -73,6 +73,13 @@ def desde_pptx(nombre_archivo: str, contenido: bytes, nombre: str = "") -> dict:
         laminas, extractor.agrupar(laminas), excluidas={},
     )
     tmp.replace(_raiz() / t["id"] / "entrada.pptx")
+    # Si se crea desde una empresa, el curso arranca con su marca y, si la tiene, su voz.
+    m = datos.marcas().get(marca)
+    if m:
+        t["marca"] = marca
+        if m.get("voz_id") in {v["id"] for v in voces()}:
+            t["voz"] = m["voz_id"]
+        guardar(t)
     return t
 
 

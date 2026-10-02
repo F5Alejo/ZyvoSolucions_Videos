@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { Check } from "lucide-vue-next";
+import { useRoute } from "vue-router";
+import { Check, Plus } from "lucide-vue-next";
 import { catalogo } from "../composables/catalogo";
 
 const marca = defineModel<string>({ required: true });
 const emit = defineEmits<{ cambio: [string] }>();
+const ruta = useRoute();
 const marcas = computed(() => Object.values(catalogo.value?.marcas ?? {}));
 
 function elegir(id: string) {
@@ -36,5 +38,13 @@ function elegir(id: string) {
         <Check v-if="marca === m.id" class="size-3.5" stroke-width="3" />
       </span>
     </button>
+    <RouterLink :to="{ path: '/empresas/nueva', query: { volver: ruta.fullPath } }"
+      class="flex items-center gap-4 rounded-2xl border-2 border-dashed border-borde p-4 text-suave transition hover:border-acento hover:text-acento">
+      <span class="grid h-16 w-24 shrink-0 place-items-center rounded-xl bg-acento-suave text-acento"><Plus class="size-6" /></span>
+      <span>
+        <span class="block text-base font-bold">¿Tu empresa no está?</span>
+        <span class="mt-0.5 block text-xs">Regístrala con su logo y sus colores</span>
+      </span>
+    </RouterLink>
   </div>
 </template>

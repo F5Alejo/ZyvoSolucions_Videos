@@ -1,19 +1,18 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { Bell, ChevronDown, CircleHelp, Film, House, Moon, Plus, Presentation, Sun, Users } from "lucide-vue-next";
+import { Bell, Building2, ChevronDown, CircleHelp, Film, House, Moon, Plus, Presentation, Sun, Users } from "lucide-vue-next";
 import { catalogo } from "../composables/catalogo";
 import { abrirAyuda } from "../composables/ayuda";
 import { cambiarTema, tema } from "../composables/tema";
 
 const ruta = useRoute();
-const marcas = computed(() => Object.values(catalogo.value?.marcas ?? {}));
 const pendientes = computed(() => catalogo.value?.pendientes_abiertos ?? 0);
 
 // «Equipo de producción» va plegado: quien solo crea cursos no lo necesita.
 // Se abre solo en sus páginas y recuerda si la persona lo dejó abierto.
 const CLAVE = "estudio.equipo-abierto";
-const esDelEquipo = computed(() => /^\/(videos|pendientes|marcas|casos)/.test(ruta.path));
+const esDelEquipo = computed(() => /^\/(videos|pendientes|casos)/.test(ruta.path));
 const equipoAbierto = ref(leer() || esDelEquipo.value);
 watch(esDelEquipo, (si) => { if (si) equipoAbierto.value = true; });
 function leer() { try { return localStorage.getItem(CLAVE) === "1"; } catch { return false; } }
@@ -51,6 +50,12 @@ const activo = "bg-white/15 text-white";
             <Presentation class="size-[18px]" /> Mis cursos
           </RouterLink>
         </li>
+        <li>
+          <RouterLink to="/empresas" :class="[enlace, /^\/(empresas|marcas)/.test(ruta.path) && activo]"
+                      :aria-current="ruta.path === '/empresas' ? 'page' : undefined">
+            <Building2 class="size-[18px]" /> Empresas
+          </RouterLink>
+        </li>
       </ul>
 
       <!-- Herramientas del equipo de producción -->
@@ -69,14 +74,6 @@ const activo = "bg-white/15 text-white";
               <Bell class="size-[18px]" /> Pendientes
               <span v-if="pendientes" class="ml-auto rounded-full bg-dorado px-2 py-0.5 text-xs font-bold text-[#1A1A1A]"
                     :aria-label="`${pendientes} abiertos`">{{ pendientes }}</span>
-            </RouterLink>
-          </li>
-          <li v-for="m in marcas" :key="m.id">
-            <RouterLink :to="`/marcas/${m.id}`" :class="[enlace, 'py-2', ruta.path === `/marcas/${m.id}` && activo]">
-              <span class="flex h-3 w-[18px] overflow-hidden rounded-sm ring-1 ring-white/20" aria-hidden="true">
-                <i v-for="c in m.paleta.slice(0, 3)" :key="c.hex" class="flex-1" :style="{ background: c.hex }" />
-              </span>
-              Marca {{ m.nombre_corto }}
             </RouterLink>
           </li>
         </ul>

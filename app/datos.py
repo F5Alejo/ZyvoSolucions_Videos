@@ -73,8 +73,9 @@ def _leer(ruta: Path):
 
 
 def marcas() -> dict[str, dict]:
-    todas = (_leer(r) for r in sorted((RAIZ_DATOS / "marcas").glob("*.json")))
-    return {m["id"]: m for m in todas}
+    """Las marcas de siempre (`datos/marcas/`) y las empresas registradas en el estudio (`datos/empresas/`)."""
+    rutas = sorted((RAIZ_DATOS / "marcas").glob("*.json")) + sorted((RAIZ_DATOS / "empresas").glob("*.json"))
+    return {m["id"]: m for m in (_leer(r) for r in rutas)}
 
 
 def proyectos() -> list[dict]:
