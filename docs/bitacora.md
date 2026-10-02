@@ -8,6 +8,20 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-10-02 · Versiones de cada video, regeneración selectiva y muestra de voz
+
+### Qué se hizo
+- **Versiones (`motor/versiones.py`):** cada producción buena se guarda en `salida/<clave>/versiones/v001/`, `v002/`… con su MP4, su informe, su VideoSpec y sus subtítulos. Se guardan las últimas 5. El MP4 es un enlace duro: no ocupa más disco. `GET /api/trabajos/{id}/versiones/{clave}` y los archivos de cada versión.
+- **Regeneración selectiva:** `POST /api/trabajos/{id}/regenerar/{clave}` con `{"escena": n}` vuelve a dibujar solo esa escena; con `{"voz": true}` vuelve a generar solo el audio de la narración. Lo demás se reutiliza de la caché.
+- **Muestra de voz:** `GET /api/voces/{id}/muestra`, una frase corta con esa voz para el botón «Escuchar». Se genera una vez en `datos/cache/muestras/` (fuera de git).
+- Pruebas: 115 (`tests/test_versiones.py`).
+
+### Errores y cómo se resolvieron
+- **Un enlace duro habría cambiado las versiones viejas:** ffmpeg escribía `<clave>.mp4` encima del archivo anterior, y un enlace comparte ese archivo. Ahora el MP4 se arma en `tmp/` y reemplaza al anterior con `replace`: cada producción es un archivo nuevo y las versiones no cambian. La prueba lo comprueba.
+- `datos/cache/` no estaba en `.gitignore`: se agregó.
+
+---
+
 ## 2026-10-02 · Fases 11 a 13: línea de tiempo, efectos de sonido, director de música y estilos
 
 ### Qué se hizo

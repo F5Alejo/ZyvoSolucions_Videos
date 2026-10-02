@@ -20,7 +20,7 @@ from datetime import datetime
 from pathlib import Path
 
 from app import configuracion, taller
-from motor import audio, bugs, errores, escenas, logs, render, renderers, sfx, subtitulos, videospec
+from motor import audio, bugs, errores, escenas, logs, render, renderers, sfx, subtitulos, versiones, videospec
 from motor import voz as motor_voz
 from motor.qa import revisar
 
@@ -205,9 +205,12 @@ def producir(t: dict, clave: str, avisar=lambda paso, progreso: None, fase=lambd
         spec = correr(t, clave, "voz", lambda: etapa_voz(t, spec, voz, salida, avisar), fase)
     mudo, encuadre = correr(t, clave, "escenas", lambda: etapa_escenas(spec, salida, tmp, avisar, conf["video"].get("renderer")), fase)
     norma = correr(t, clave, "audio", lambda: etapa_audio(spec, tmp, avisar), fase)
-    mp4 = salida / f"{clave}.mp4"
-    correr(t, clave, "unir", lambda: render.unir(mudo, norma, mp4), fase)
-    correr(t, clave, "subtitulos", lambda: etapa_subtitulos(spec, mp4, salida, tmp, avisar), fase)
+    # El MP4 se arma en tmp/ y después reemplaza al anterior: siempre es un archivo nuevo, así las
+    # versiones guardadas (enlaces duros, motor/versiones.py) no cambian.
+    nuevo, mp4 = tmp / f"{clave}.mp4", salida / f"{clave}.mp4"
+    correr(t, clave, "unir", lambda: render.unir(mudo, norma, nuevo), fase)
+    correr(t, clave, "subtitulos", lambda: etapa_subtitulos(spec, nuevo, salida, tmp, avisar), fase)
+    nuevo.replace(mp4)
 
     avisar("Revisando el resultado", 0.95)
     v = spec.video
@@ -231,4 +234,5 @@ def producir(t: dict, clave: str, avisar=lambda paso, progreso: None, fase=lambd
     }
     (salida / "qa.json").write_text(json.dumps(informe, ensure_ascii=False, indent=1), encoding="utf-8")
     shutil.rmtree(tmp, ignore_errors=True)
+    informe["version"] = versiones.guardar(t, clave)["version"]
     return informe

@@ -24,6 +24,7 @@ de cada uno, con su fecha, está en la [bitácora](bitacora.md).
 | Un render de 40 s de lámina sería lento | Dibujar cada cuadro con Chromium es caro | Se dibujan cuadro a cuadro solo la entrada y la salida; ffmpeg sostiene lo del medio |
 | La plantilla vertical dejaba el texto arriba y angosto | En columna, `.texto` con `flex: 1` crece hacia abajo y `align-items: center` lo encoge | En vertical, `.texto` sin `flex` y a todo el ancho; `.cuerpo` con `align-items: stretch` |
 | Un zoom centrado recortaba la barra de avance | El zoom corta lo mismo arriba que abajo | La cámara mantiene fijo el borde de abajo (`y=ih-ih/zoom`) |
+| Un enlace duro habría cambiado las versiones viejas | ffmpeg escribía el MP4 nuevo encima del mismo archivo | El MP4 se arma en `tmp/` y reemplaza al anterior con `replace` |
 | El título repetido en la portada | El video toma su nombre de la primera lámina | La portada usa el nombre del curso como antetítulo |
 
 ## Interfaz (Vue)

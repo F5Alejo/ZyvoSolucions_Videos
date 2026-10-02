@@ -14,7 +14,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel
 
 from app import configuracion, datos, extractor, taller
-from motor import analisis, catalogo, cola, diagnostico, empaquetar, escenas, estilos, logs, produccion, recursos, videospec
+from motor import analisis, catalogo, cola, diagnostico, empaquetar, escenas, estilos, logs, produccion, recursos, versiones, videospec
 from motor import voz as motor_voz
 from motor.agentes import entrega as agentes_entrega
 from motor.agentes import registro as agentes
@@ -324,6 +324,65 @@ def api_salida(id_: str, clave: str, archivo: str, descargar: bool = False):
         raise HTTPException(404)
     return FileResponse(ruta, media_type=TIPOS_SALIDA[ruta.suffix], filename=f"{t['id']}-{archivo}" if descargar else None,
                         content_disposition_type="attachment" if descargar else "inline")
+
+
+def _video_o_404(t: dict, clave: str) -> None:
+    if clave not in {v["clave"] for v in t["videos"]}:
+        raise HTTPException(404, "Ese curso no tiene ese video")
+
+
+@app.get("/api/trabajos/{id_}/versiones/{clave}")
+def api_versiones(id_: str, clave: str):
+    """Las versiones producidas de un video (la más nueva primero), para compararlas."""
+    t = _trabajo_o_404(id_)
+    _video_o_404(t, clave)
+    return [{**v, "mp4": f"/api/trabajos/{id_}/versiones/{clave}/{v['version']}/video.mp4"} for v in versiones.lista(t, clave)]
+
+
+@app.get("/api/trabajos/{id_}/versiones/{clave}/{version}/{archivo}")
+def api_archivo_version(id_: str, clave: str, version: str, archivo: str, descargar: bool = False):
+    t = _trabajo_o_404(id_)
+    ruta = versiones.archivo(t, clave, version, archivo)
+    if ruta is None:
+        raise HTTPException(404)
+    nombre = f"{t['id']}-{clave}-{version}{ruta.suffix}" if descargar else None
+    return FileResponse(ruta, media_type=TIPOS_SALIDA[ruta.suffix], filename=nombre,
+                        content_disposition_type="attachment" if descargar else "inline")
+
+
+class Regenerar(BaseModel):
+    escena: int | None = None  # número de lámina: vuelve a dibujar solo esa escena
+    voz: bool = False          # vuelve a generar solo el audio de la narración
+
+
+@app.post("/api/trabajos/{id_}/regenerar/{clave}", status_code=202)
+def api_regenerar(id_: str, clave: str, cuerpo: Regenerar):
+    """Regenera por partes: lo que no se pide (y no cambió) se reutiliza tal cual."""
+    t = _trabajo_o_404(id_)
+    _video_o_404(t, clave)
+    if cuerpo.escena is not None:
+        if cuerpo.escena not in next(v["laminas"] for v in t["videos"] if v["clave"] == clave):
+            raise HTTPException(404, "Ese video no tiene esa lámina")
+        versiones.olvidar_escena(t, clave, cuerpo.escena)
+    if cuerpo.voz:
+        versiones.olvidar_voz(t, clave)
+    return api_producir(id_, clave)
+
+
+FRASE_MUESTRA = "Hola. Así sonará la narración de tu video, con esta voz."
+
+
+@app.get("/api/voces/{id_}/muestra")
+def api_muestra_voz(id_: str):
+    """Una frase corta con esa voz, para el botón «Escuchar». Se genera una vez y queda en caché."""
+    voz = next((v for v in taller.voces() if v["id"] == id_), None)
+    if voz is None:
+        raise HTTPException(404, "No existe esa voz")
+    falta = motor_voz.disponible(voz)
+    if falta:
+        raise ValueError(falta)
+    wav = motor_voz.frase(voz, FRASE_MUESTRA, datos.RAIZ_DATOS / "cache" / "muestras")
+    return FileResponse(wav, media_type="audio/wav")
 
 
 @app.get("/api/trabajos/{id_}/diagnostico/{clave}")
