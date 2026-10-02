@@ -22,7 +22,7 @@ from typing import Callable
 from pydantic import BaseModel, Field, ValidationError, field_validator, model_validator
 
 from app import configuracion, datos, extractor, taller
-from motor import catalogo, escenas, normalizar, recursos
+from motor import catalogo, escenas, estilos, normalizar, recursos, sfx
 from motor.escenas import animacion
 
 VERSION = 1
@@ -44,6 +44,27 @@ class Frase(BaseModel):
     duracion: float | None = None
 
 
+class Efecto(BaseModel):
+    id: str                          # del catálogo de motor/sfx.py
+    desfase: float = 0.0             # segundos desde que empieza la escena
+    volumen: float = sfx.VOLUMEN_DEFECTO
+    inicio: float | None = None      # segundo del video (cuando está resuelto)
+
+    @field_validator("id")
+    @classmethod
+    def _id(cls, v):
+        if v not in sfx.CATALOGO:
+            raise ValueError(f"el efecto de sonido «{v}» no está en el catálogo")
+        return v
+
+    @field_validator("volumen")
+    @classmethod
+    def _volumen(cls, v):
+        if v > sfx.VOLUMEN_MAXIMO:
+            raise ValueError(f"un efecto no puede sonar a más de {sfx.VOLUMEN_MAXIMO:g} dB: taparía la voz")
+        return v
+
+
 class Escena(BaseModel):
     id: str
     lamina: int
@@ -55,6 +76,7 @@ class Escena(BaseModel):
     narracion: list[Frase]
     camara: str = catalogo.CAMARA_DEFECTO
     transicion: str = catalogo.TRANSICION_DEFECTO
+    sfx: list[Efecto] = []
     duracion_estimada: float
     inicio: float | None = None
     cuadros: int | None = None
@@ -119,6 +141,7 @@ class Audio(BaseModel):
     lufs: float
     musica: str | None = None        # nombre del archivo en datos/musica/
     musica_volumen: float = -22.0
+    musica_elegida_por: str | None = None   # "configuración" o "estilo" (el director de música)
 
 
 class Tiempos(BaseModel):
@@ -147,6 +170,7 @@ class VideoSpec(BaseModel):
     audio: Audio
     tiempos: Tiempos
     estilo: dict                     # colores, nombre y logo de la marca para la escena
+    estilo_video: str | None = None  # el estilo elegido (motor/estilos.py), si hay
     escenas: list[Escena] = Field(min_length=1)
     avisos: list[str] = []
     resuelto: bool = False
@@ -246,11 +270,23 @@ def construir(t: dict, clave: str, firma: str, formato: str = "16:9") -> VideoSp
         if not narracion:
             avisos.append(f"{lista[-1]['id']}: la lámina {l['n']} no tiene narración")
 
+    estilo_video = estilos.del_curso(t)
+    efectos = sfx.dirigir([{"transicion_previa": lista[i - 1]["transicion"] if i else None} for i in range(len(lista))],
+                          (estilo_video or {}).get("sfx"))
+    for e, propios in zip(lista, efectos):
+        e["sfx"] = propios
+    musica, elegida_por = ca["musica"], "configuración" if ca["musica"] else None
+    if musica is None and estilo_video:
+        musica = estilos.elegir_musica(estilo_video.get("musica"), configuracion.pistas())
+        elegida_por = "estilo" if musica else None
+
     d = {"trabajo": t["id"], "clave": clave, "titulo": video["titulo"], "curso": t["nombre"], "marca": t["marca"],
          "firma": firma, "voz": {k: voz.get(k) for k in ("id", "nombre", "proveedor")} | {"solo_borrador": bool(voz.get("solo_borrador"))},
          "video": {"formato": formato, "ancho": ancho, "alto": alto, "escala": configuracion.RESOLUCIONES[cv["resolucion"]],
                    "fps": int(cv["fps"]), "crf": crf, "preset": preset, "subtitulos_quemados": bool(cv["subtitulos_quemados"])},
-         "audio": {"lufs": ca["lufs"], "musica": ca["musica"], "musica_volumen": ca["musica_volumen"]},
+         "audio": {"lufs": ca["lufs"], "musica": musica, "musica_volumen": ca["musica_volumen"],
+                   "musica_elegida_por": elegida_por},
+         "estilo_video": (estilo_video or {}).get("id"),
          "tiempos": ct, "estilo": escenas.estilo(marca, recursos.logo(marca)), "escenas": lista, "avisos": avisos}
     d, _ = sanear(d)
     return validar(d)
@@ -289,9 +325,42 @@ def resolver(spec: VideoSpec, generar: Callable[[str], Path], duracion_de: Calla
             hechas += 1
         e["cuadros"] = cuadros(dur, fps)
         e["inicio"] = round(t0, 6)
+        for x in e.get("sfx", []):
+            x["inicio"] = round(t0 + x["desfase"], 6)
         t0 += e["cuadros"] / fps
     d.update(resuelto=True, duracion=round(t0, 6))
     return validar(d)
+
+
+def linea_de_tiempo(spec: VideoSpec) -> dict:
+    """Las pistas del video para dibujarlas: escenas, voz, música, efectos y subtítulos.
+
+    Con un VideoSpec resuelto, los tiempos son los reales; con un plan, se estiman con la velocidad
+    de lectura medida (`extractor.PALABRAS_POR_SEGUNDO`).
+    """
+    escenas_, voz, efectos, t0 = [], [], [], 0.0
+    fps = spec.video.fps
+    for e in spec.escenas:
+        inicio = e.inicio if spec.resuelto else t0
+        dura = e.cuadros / fps if spec.resuelto else e.duracion_estimada
+        escenas_.append({"id": e.id, "lamina": e.lamina, "titulo": e.vista.get("titulo"), "tipo": e.vista.get("tipo"),
+                         "inicio": round(inicio, 2), "duracion": round(dura, 2), "camara": e.camara,
+                         "transicion": e.transicion, "plantilla": e.animacion.get("plantilla")})
+        cursor = inicio + spec.tiempos.entrada
+        for f in e.narracion:
+            a = f.inicio if spec.resuelto else cursor
+            d = f.duracion if spec.resuelto else len(f.texto_voz.split()) / extractor.PALABRAS_POR_SEGUNDO
+            voz.append({"escena": e.id, "inicio": round(a, 2), "fin": round(a + d, 2), "texto": f.texto})
+            cursor = a + d + spec.tiempos.pausa
+        for x in e.sfx:
+            efectos.append({"escena": e.id, "id": x.id, "nombre": sfx.CATALOGO[x.id],
+                            "inicio": round(x.inicio if spec.resuelto else inicio + x.desfase, 2)})
+        t0 = inicio + dura
+    total = spec.duracion if spec.resuelto else t0
+    musica = [{"inicio": 0.0, "fin": round(total, 2), "archivo": spec.audio.musica}] if spec.audio.musica else []
+    return {"clave": spec.clave, "titulo": spec.titulo, "resuelto": spec.resuelto, "duracion": round(total, 2),
+            "formato": spec.video.formato, "pistas": {"escenas": escenas_, "voz": voz, "musica": musica, "sfx": efectos,
+                                                       "subtitulos": voz}}
 
 
 def huella(*partes) -> str:

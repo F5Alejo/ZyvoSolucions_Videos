@@ -20,7 +20,7 @@ from datetime import datetime
 from pathlib import Path
 
 from app import configuracion, taller
-from motor import audio, bugs, errores, escenas, logs, render, renderers, subtitulos, videospec
+from motor import audio, bugs, errores, escenas, logs, render, renderers, sfx, subtitulos, videospec
 from motor import voz as motor_voz
 from motor.qa import revisar
 
@@ -41,6 +41,8 @@ def firma(t: dict) -> str:
         base["formato"] = formato(t)
     if t.get("escena"):  # cámara y transiciones
         base["escena"] = t["escena"]
+    if t.get("estilo"):  # efectos de sonido y música
+        base["estilo"] = t["estilo"]
     return hashlib.sha256(json.dumps(base, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()[:16]
 
 
@@ -88,6 +90,8 @@ def etapa_audio(spec: videospec.VideoSpec, tmp: Path, avisar) -> Path:
     avisar("Mezclando el audio", 0.85)
     crudo, norma = tmp / "narracion.wav", tmp / "narracion-norma.wav"
     segmentos = [(f.inicio, Path(f.audio)) for e in spec.escenas for f in e.narracion]
+    cache_sfx = tmp.parent.parent.parent / "cache" / "sfx"
+    segmentos += [(x.inicio, sfx.archivo(x.id, cache_sfx), x.volumen) for e in spec.escenas for x in e.sfx]
     audio.armar_pista(segmentos, spec.duracion, crudo)
     musica = configuracion.carpeta_musica() / spec.audio.musica if spec.audio.musica else None
     if musica is not None and musica.exists():

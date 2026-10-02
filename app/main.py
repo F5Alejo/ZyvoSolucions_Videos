@@ -14,7 +14,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel
 
 from app import configuracion, datos, extractor, taller
-from motor import analisis, catalogo, cola, diagnostico, empaquetar, escenas, logs, produccion, recursos
+from motor import analisis, catalogo, cola, diagnostico, empaquetar, escenas, estilos, logs, produccion, recursos, videospec
 from motor import voz as motor_voz
 from motor.agentes import entrega as agentes_entrega
 from motor.agentes import registro as agentes
@@ -381,6 +381,43 @@ def api_borrar_plantilla(id_: str):
     animacion.borrar_propia(id_)
 
 
+@app.get("/api/estilos")
+def api_estilos():
+    """Los estilos para elegir (Educativo, Corporativo, Social…), con lo que cambia cada uno."""
+    camaras, transiciones = catalogo.CAMARA, catalogo.TRANSICION
+    return [{**e, "camara_nombre": camaras[e["camara"]], "transicion_nombre": transiciones[e["transicion"]],
+             "musica_nombre": estilos.ENERGIAS.get(e["musica"]) if e["musica"] else None}
+            for e in estilos.estilos().values()]
+
+
+class EleccionEstilo(BaseModel):
+    estilo: str
+    con_formato: bool = True  # también cambia el formato al sugerido por el estilo
+
+
+@app.put("/api/trabajos/{id_}/estilo")
+def api_aplicar_estilo(id_: str, cuerpo: EleccionEstilo):
+    t = estilos.aplicar(_trabajo_o_404(id_), cuerpo.estilo, cuerpo.con_formato)
+    taller.guardar(t)
+    return _trabajo_completo(t)
+
+
+@app.get("/api/trabajos/{id_}/linea/{clave}")
+def api_linea_de_tiempo(id_: str, clave: str):
+    """La línea de tiempo de un video: escenas, voz, música, efectos y subtítulos.
+
+    Si el video ya se produjo, con los tiempos reales (`videospec.json`); si no, con los estimados del plan.
+    """
+    t = _trabajo_o_404(id_)
+    if clave not in {v["clave"] for v in t["videos"]}:
+        raise HTTPException(404, "Ese curso no tiene ese video")
+    ruta = produccion.carpeta_salida(t, clave) / "videospec.json"
+    real = videospec.leer(ruta) if ruta.exists() else None
+    if real is not None and real.firma != produccion.firma(t):
+        real = None  # se cambió algo después de producirlo: vale el plan nuevo
+    return videospec.linea_de_tiempo(real or videospec.construir(t, clave, produccion.firma(t), produccion.formato(t)))
+
+
 @app.get("/api/catalogo/escena")
 def api_catalogo_escena():
     """Los movimientos de cámara y las transiciones que se pueden elegir (nada fuera de aquí se ejecuta)."""
@@ -584,7 +621,8 @@ MAX_MUSICA = 50 * 1024 * 1024
 
 
 @app.post("/api/musica", status_code=201)
-async def api_subir_musica(archivo: UploadFile = File(...), licencia: str = Form(""), fuente: str = Form("")):
+async def api_subir_musica(archivo: UploadFile = File(...), licencia: str = Form(""), fuente: str = Form(""),
+                           energia: str = Form("")):
     """Sube una pista de música de fondo. La licencia es obligatoria: los videos se entregan a clientes."""
     nombre = Path(archivo.filename or "").name
     extension = Path(nombre).suffix.lower()
@@ -600,7 +638,8 @@ async def api_subir_musica(archivo: UploadFile = File(...), licencia: str = Form
     carpeta.mkdir(parents=True, exist_ok=True)
     (carpeta / f"{limpio}{extension}").write_bytes(contenido)
     (carpeta / f"{limpio}.json").write_text(
-        json.dumps({"licencia": licencia.strip(), "fuente": fuente.strip()}, ensure_ascii=False), encoding="utf-8")
+        json.dumps({"licencia": licencia.strip(), "fuente": fuente.strip(), "energia": energia if energia in estilos.ENERGIAS else None},
+                   ensure_ascii=False), encoding="utf-8")
     return configuracion.pistas()
 
 

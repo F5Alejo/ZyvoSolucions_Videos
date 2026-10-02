@@ -1,0 +1,14 @@
+{
+ "id": "minimalista",
+ "version": 1,
+ "nombre": "Minimalista",
+ "icono": "✨",
+ "descripcion": "Lo esencial: aparece con un fundido corto, sin movimiento ni efectos. Ideal para videos largos.",
+ "animacion": "minima",
+ "camara": "estatica",
+ "transicion": "corte",
+ "subtitulos_quemados": false,
+ "sfx": null,
+ "musica": null,
+ "formato": "16:9"
+}

@@ -1,0 +1,14 @@
+{
+ "id": "dinamico",
+ "version": 1,
+ "nombre": "Dinámico",
+ "icono": "⚡",
+ "descripcion": "La de siempre con más ritmo: el texto sube, las viñetas llegan una tras otra y suenan efectos sutiles.",
+ "animacion": "dinamica",
+ "camara": "zoom_lento_entrada",
+ "transicion": "corte",
+ "subtitulos_quemados": false,
+ "sfx": "sutil",
+ "musica": "media",
+ "formato": "16:9"
+}

@@ -161,5 +161,6 @@ def pistas() -> list[dict]:
         if f.suffix.lower() in EXTENSIONES_MUSICA:
             info = f.with_suffix(".json")
             meta = json.loads(info.read_text(encoding="utf-8")) if info.exists() else {}
-            salida.append({"archivo": f.name, "licencia": meta.get("licencia"), "fuente": meta.get("fuente")})
+            salida.append({"archivo": f.name, "licencia": meta.get("licencia"), "fuente": meta.get("fuente"),
+                           "energia": meta.get("energia")})
     return salida

@@ -8,6 +8,20 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-10-02 · Fases 11 a 13: línea de tiempo, efectos de sonido, director de música y estilos
+
+### Qué se hizo
+- **Efectos de sonido (`motor/sfx.py`):** whoosh, barrido suave, pop, clic, éxito, notificación, impacto y tecleo, **sintetizados con código** (ondas y ruido filtrado). Son originales, salen idénticos en cada render y no tienen licencia que revisar. Se generan una vez en `cache/sfx/`.
+- **Director de SFX (agente 6), por reglas:** como mucho un efecto por escena y nunca en la primera; suena al empezar la escena, antes de que entre la voz, a -26 dB. El VideoSpec rechaza cualquier efecto por encima de -12 dB.
+- **Director de música (agente 5):** si el curso no tiene música elegida y el estilo pide una energía (calmada, media o enérgica), toma la primera pista con esa energía entre las que la persona subió con su licencia. Nunca baja música de internet. Al subir una pista ya se puede declarar su energía.
+- **Estilos (`datos/estilos/`, `motor/estilos.py`):** Educativo, Corporativo, Tecnológico, Minimalista, Dinámico, Cinemático y Social. Cada uno combina solo cosas del catálogo: plantilla de animación, cámara, transición, subtítulos dentro de la imagen, efectos de sonido, energía de la música y formato sugerido (Social: 9:16 con subtítulos quemados). Aplicar un estilo conserva lo elegido por lámina. Un archivo de estilo con algo fuera del catálogo no se carga.
+- **Línea de tiempo (agente 7):** `GET /api/trabajos/{id}/linea/{clave}` con las pistas de escenas, voz, música, efectos y subtítulos; con los tiempos reales si el video está producido y al día, o estimados si no.
+- **API:** `GET /api/estilos` y `PUT /api/trabajos/{id}/estilo`.
+- El VideoSpec suma `sfx` por escena, la música elegida y quién la eligió, y el estilo (cambios compatibles: sigue en la versión 1).
+- Pruebas: 113 (`tests/test_estilos_audio.py`, con un video real con estilo, música y efectos).
+
+---
+
 ## 2026-10-02 · Fases 8 a 10: cámara, transiciones y formatos
 
 ### Qué se hizo
