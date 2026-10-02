@@ -276,7 +276,7 @@ def construir(t: dict, clave: str, firma: str, formato: str = "16:9") -> VideoSp
     for e, propios in zip(lista, efectos):
         e["sfx"] = propios
     musica, elegida_por = ca["musica"], "configuración" if ca["musica"] else None
-    if musica is None and estilo_video:
+    if musica is None and estilo_video and ca.get("musica_estilo", True):
         musica = estilos.elegir_musica(estilo_video.get("musica"), configuracion.pistas())
         elegida_por = "estilo" if musica else None
 

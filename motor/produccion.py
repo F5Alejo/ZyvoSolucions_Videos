@@ -32,6 +32,8 @@ def firma(t: dict) -> str:
     # Lo que no cambia el video, o que vale lo de siempre, no entra: así una opción nueva en la
     # configuración no deja desactualizados los videos que ya estaban producidos.
     grupos["audio"].pop("respaldo_voz", None)
+    if grupos["audio"].get("musica_estilo", True):
+        grupos["audio"].pop("musica_estilo", None)
     if grupos["video"].get("renderer") == renderers.RENDERER_DEFECTO:
         grupos["video"].pop("renderer")
     base = {"marca": t["marca"], "voz": t["voz"], "conf": grupos,

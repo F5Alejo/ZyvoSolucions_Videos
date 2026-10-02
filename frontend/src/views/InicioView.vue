@@ -42,9 +42,9 @@ async function abrirEjemplo() {
           Cada frase que dice el video sale de tu presentación.
         </p>
         <div class="mt-6 flex flex-wrap gap-3">
-          <RouterLink to="/cursos/nuevo"
-            class="inline-flex items-center gap-2 rounded-lg bg-dorado px-5 py-3 text-sm font-bold text-[#1A1A1A] transition hover:brightness-110">
-            <Upload class="size-4" /> Crear un curso
+          <RouterLink to="/crear"
+            class="chispa inline-flex items-center gap-2 rounded-lg px-5 py-3 text-sm font-bold text-white shadow transition hover:brightness-110">
+            <Upload class="size-4" /> Crear un video
           </RouterLink>
           <button v-if="d.ejemplo_disponible" @click="abrirEjemplo"
             class="inline-flex items-center gap-2 rounded-lg border border-white/40 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
@@ -111,7 +111,7 @@ async function abrirEjemplo() {
       </div>
       <VacioCaja v-else :icono="FileText" titulo="Todavía no hay cursos"
                  texto="Sube una presentación para crear el primero, o mira cómo quedó un curso real.">
-        <RouterLink to="/cursos/nuevo" class="boton-primario"><Upload class="size-4" /> Crear un curso</RouterLink>
+        <RouterLink to="/crear" class="boton-primario"><Upload class="size-4" /> Crear un video</RouterLink>
         <button v-if="d.ejemplo_disponible" class="boton-secundario" @click="abrirEjemplo">Ver el ejemplo</button>
       </VacioCaja>
     </section>

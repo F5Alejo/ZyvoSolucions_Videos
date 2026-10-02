@@ -36,6 +36,8 @@ de cada uno, con su fecha, está en la [bitácora](bitacora.md).
 | La tarjeta del video salía angosta | Una regla CSS posterior con la misma especificidad la pisaba | Más especificidad (`.videos-plan.salida-videos`). Hoy la interfaz es Tailwind |
 | Escalar el iframe con CSS no era confiable | Dividir unidades (`100cqw / 1920px`) no lo soportan todos los navegadores | `ResizeObserver` calcula la escala |
 | Aviso de paquete obsoleto | `lucide-vue-next` está obsoleto | Se migró a `@lucide/vue` |
+| Las miniaturas de los estilos salían vacías | Un `height` en % dentro de una grilla con filas automáticas da 0 | Alturas con `padding-top` en %, que va contra el ancho |
+| Los subtítulos se veían dos veces | Quemados en la imagen y la pista VTT activa por defecto en `<video>` | La pista `<track>` sin `default` |
 
 ## Agentes e IA local
 

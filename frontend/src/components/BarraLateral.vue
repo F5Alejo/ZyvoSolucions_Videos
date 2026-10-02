@@ -14,15 +14,16 @@ const pendientes = computed(() => catalogo.value?.pendientes_abiertos ?? 0);
 
 <template>
   <nav class="flex h-full flex-col overflow-y-auto border-r-2 border-dorado bg-lateral text-white" aria-label="Principal">
-    <RouterLink to="/" class="flex items-center gap-3 px-5 pt-6 pb-5">
-      <img src="/marca/riskmann_logo_blanco.png" alt="RiskMann by SOFU" class="h-9" />
-      <span class="border-l border-white/30 pl-3 text-sm leading-tight font-semibold">Estudio<br />de video</span>
+    <RouterLink to="/" class="flex items-center gap-3 px-5 pt-6 pb-5" aria-label="Zyvo, inicio">
+      <span class="chispa grid size-9 place-items-center rounded-xl text-lg font-black text-white shadow">Z</span>
+      <span class="leading-tight"><span class="block text-lg font-extrabold tracking-wide">Zyvo</span>
+        <span class="block text-xs text-white/70">Videos desde tu PPTX</span></span>
     </RouterLink>
 
     <div class="px-3">
-      <RouterLink to="/cursos/nuevo"
-        class="mb-4 flex items-center justify-center gap-2 rounded-lg bg-dorado px-4 py-2.5 text-sm font-bold text-[#1A1A1A] shadow-sm transition hover:brightness-110">
-        <Plus class="size-4" stroke-width="2.5" /> Crear un curso
+      <RouterLink to="/crear"
+        class="chispa mb-4 flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:brightness-110">
+        <Plus class="size-4" stroke-width="2.5" /> Crear video
       </RouterLink>
 
       <ul class="space-y-0.5">
@@ -64,6 +65,7 @@ const pendientes = computed(() => catalogo.value?.pendientes_abiertos ?? 0);
         <Settings class="size-[18px]" /> Configuración
       </RouterLink>
     </div>
-    <p class="px-6 py-5 text-xs text-white/40">RiskMann by SOFU</p>
+    <p class="flex items-center gap-2 px-6 py-5 text-xs text-white/50">Para
+      <img src="/marca/riskmann_logo_blanco.png" alt="RiskMann by SOFU" class="h-5 opacity-80" /></p>
   </nav>
 </template>

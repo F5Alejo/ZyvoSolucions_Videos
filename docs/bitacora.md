@@ -8,6 +8,26 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-10-02 · Fases 14 y 15: la interfaz de Zyvo y el editor por escena
+
+### Qué se hizo
+- **Flujo creativo `/crear`:** Subir → Analizar → Estilo → Voz → Opciones → Crear → Resultado. La persona no ve nada técnico: «Elegir voz» en vez de proveedor, «Presentación / Vertical / Cuadrado / Instagram» en vez de 16:9, pasos humanos en vez de fases del motor. El flujo de cinco pasos de antes sigue en «Cursos» como modo experto.
+- **Editor `/crear/:id/editar/:clave`:** la línea de tiempo (escenas, voz, música, efectos y subtítulos) y una tarjeta por escena con su vista previa, el texto de la voz, el movimiento de cámara, la transición y «Regenerar esta escena».
+- **Componentes (`frontend/src/components/zyvo/`):** ZonaSubida, PasosProgreso, TarjetaEstilo (con miniatura animada de cada estilo), TarjetaVoz (con «Escuchar»), EstadoGeneracion, MensajeError (con «Modo diagnóstico» escondido), ReproductorPrevio, LineaTiempo, TarjetaEscena, PanelExportar y AjustesAvanzados.
+- **Estado central (`composables/proyecto.ts`)**, **textos configurables (`mensajes.ts`)** y la traducción del motor a pasos humanos (`generacion.ts`, con prueba). Ningún mensaje técnico (traceback, ffmpeg, subprocess) llega a la pantalla.
+- **Identidad de Zyvo:** la «chispa» (degradado violeta → cian, contraste medido), el logotipo en la barra lateral y los títulos «· Zyvo». RiskMann queda como marca cliente al pie.
+- **Backend:** `audio.musica_estilo` para apagar la música aunque el estilo la pida.
+- **Prueba real en el navegador:** un PPTX de 3 láminas → estilo Dinámico → voz Dora (Kokoro, elegida sola por no haber clave de ElevenLabs) → subtítulos en la imagen → video de 18,9 s en ~20 s con todos los chequeos en verde (-14,17 LUFS, sin saturación, sin bugs). Luego, en el editor, la escena 2 pasó a cámara «Quieta» y al regenerar solo se volvió a dibujar esa escena; quedó la versión `v002`.
+- Pruebas: pytest 115, Vitest 18.
+
+### Errores y cómo se resolvieron
+- **Las miniaturas de los estilos salían vacías:** un `height` en % dentro de una grilla con filas automáticas da 0. Se usan alturas con `padding-top` en %, que se calcula sobre el ancho.
+- **El texto «ZYVO» casi no se veía en modo oscuro:** el degradado violeta oscuro sobre negro. En modo oscuro usa tonos claros (9,4:1 y 12,7:1).
+- **Los subtítulos salían dos veces:** quemados en la imagen y además la pista VTT activa por defecto en el reproductor. La pista queda disponible pero apagada.
+- Los pasos de la generación se leían en zigzag en dos columnas: ahora se leen de arriba abajo.
+
+---
+
 ## 2026-10-02 · Versiones de cada video, regeneración selectiva y muestra de voz
 
 ### Qué se hizo
