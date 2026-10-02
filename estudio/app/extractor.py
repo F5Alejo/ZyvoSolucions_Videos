@@ -96,6 +96,21 @@ def leer_pptx(ruta: Path) -> list[dict]:
     return laminas
 
 
+def guardar_imagenes(ruta: Path, carpeta: Path) -> int:
+    """Copia las imágenes del PPTX a `carpeta`, con el mismo nombre que `foto` e `icono` en curso.json."""
+    carpeta.mkdir(parents=True, exist_ok=True)
+    guardadas = 0
+    for lamina in Presentation(str(ruta)).slides:
+        for s in _formas(lamina.shapes):
+            if s.shape_type != MSO_SHAPE_TYPE.PICTURE:
+                continue
+            destino = carpeta / _nombre_imagen(lamina, s)
+            if not destino.exists():
+                destino.write_bytes(s.image.blob)
+                guardadas += 1
+    return guardadas
+
+
 # Nombres de forma que marcan el título y la sección de una lámina. Incluyen los que pone
 # PowerPoint por defecto («Título 1», «Title 1») y los del curso de moto («title», «section»).
 _TITULO = ("title", "titulo", "título", "cover-title")

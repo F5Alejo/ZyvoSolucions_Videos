@@ -35,15 +35,18 @@ def voces() -> list[dict]:
 
 def _nuevo(nombre: str, origen: dict, laminas: list[dict], videos: list[dict],
            excluidas: dict, banco: dict | None = None) -> dict:
+    from app import configuracion  # aquí para evitar un import circular al arrancar
+
     id_ = f"{_slug(nombre)}-{secrets.token_hex(3)}"
+    defecto = configuracion.leer()["cursos"]
     t = {
         "id": id_,
         "nombre": nombre,
         "creado": datetime.now().isoformat(timespec="seconds"),
         "origen": origen,
-        "marca": "riskmann",
-        "voz": "carlos",
-        "formatos": ["16:9"],
+        "marca": defecto["marca"],
+        "voz": defecto["voz"],
+        "formatos": list(defecto["formatos"]),
         "laminas": laminas,
         "videos": videos,
         "excluidas": {str(k): v for k, v in excluidas.items()},
@@ -54,7 +57,7 @@ def _nuevo(nombre: str, origen: dict, laminas: list[dict], videos: list[dict],
     return t
 
 
-def desde_pptx(nombre_archivo: str, contenido: bytes, nombre: str = "") -> dict:
+def desde_pptx(nombre_archivo: str, contenido: bytes, nombre: str = "", marca: str = "") -> dict:
     tmp = _raiz() / f"_subida-{secrets.token_hex(4)}.pptx"
     tmp.parent.mkdir(parents=True, exist_ok=True)
     tmp.write_bytes(contenido)
@@ -72,7 +75,16 @@ def desde_pptx(nombre_archivo: str, contenido: bytes, nombre: str = "") -> dict:
         {"tipo": "pptx", "archivo": nombre_archivo, "bytes": len(contenido)},
         laminas, extractor.agrupar(laminas), excluidas={},
     )
-    tmp.replace(_raiz() / t["id"] / "entrada.pptx")
+    entrada = _raiz() / t["id"] / "entrada.pptx"
+    tmp.replace(entrada)
+    extractor.guardar_imagenes(entrada, _raiz() / t["id"] / "media")
+    # Si se crea desde una empresa, el curso arranca con su marca y, si la tiene, su voz.
+    m = datos.marcas().get(marca)
+    if m:
+        t["marca"] = marca
+        if m.get("voz_id") in {v["id"] for v in voces()}:
+            t["voz"] = m["voz_id"]
+        guardar(t)
     return t
 
 
@@ -225,9 +237,67 @@ def ajustar(t: dict, marca: str, voz: str, formatos: list[str]) -> dict:
 
 # ── Lo que sale ──────────────────────────────────────────────────────────────
 
+# ── Ediciones: el texto corregido de una lámina, sin tocar el original del PPTX ──
+
+def laminas_efectivas(t: dict) -> list[dict]:
+    """Las láminas con sus ediciones aplicadas.
+
+    `trabajo["ediciones"]["n"]` puede traer `notas` (la narración), `titulo` y `vinetas` (lo que
+    se ve en pantalla). La lámina lleva `pantalla` si se editó lo que se ve, y `editada`.
+    """
+    ediciones = t.get("ediciones") or {}
+    imagenes = t.get("imagenes") or {}
+    salida = []
+    for l in t["laminas"]:
+        if l.get("foto") in imagenes:
+            l = {**l, "imagen_info": imagenes[l["foto"]]}
+        e = ediciones.get(str(l["n"]))
+        if not e:
+            salida.append(l)
+            continue
+        l = {**l, "editada": True}
+        if "notas" in e:
+            l["notas_original"] = l["notas"]
+            l["notas"] = e["notas"]
+            l["frases"] = extractor.frases(e["notas"])
+        if "titulo" in e or "vinetas" in e:
+            l["pantalla"] = {"titulo": e.get("titulo"), "vinetas": e.get("vinetas")}
+        salida.append(l)
+    return salida
+
+
+def editar_lamina(t: dict, n: int, cambios: dict | None) -> dict:
+    """Guarda (o borra, con None) la edición de una lámina: notas, título y viñetas."""
+    if n not in {l["n"] for l in t["laminas"]}:
+        raise ValueError(f"El curso no tiene la lámina {n}")
+    ediciones = t.setdefault("ediciones", {})
+    if cambios is None:
+        ediciones.pop(str(n), None)
+    else:
+        limpio = {}
+        if "notas" in cambios:
+            limpio["notas"] = str(cambios["notas"]).strip()
+        if "titulo" in cambios:
+            titulo = str(cambios["titulo"]).strip()
+            if not titulo:
+                raise ValueError("El título no puede quedar vacío")
+            limpio["titulo"] = titulo[:120]
+        if "vinetas" in cambios:
+            vinetas = [str(x).strip()[:160] for x in cambios["vinetas"] if str(x).strip()]
+            if len(vinetas) > 6:
+                raise ValueError("Máximo 6 viñetas por lámina")
+            limpio["vinetas"] = vinetas
+        ediciones[str(n)] = {**ediciones.get(str(n), {}), **limpio}
+    if not ediciones:
+        t.pop("ediciones", None)
+    guardar(t)
+    return t
+
+
 def resumen(t: dict) -> dict:
     """Todo lo calculado sobre el trabajo: guion por video, duraciones y verificación."""
-    por_n = {l["n"]: l for l in t["laminas"]}
+    laminas = laminas_efectivas(t)
+    por_n = {l["n"]: l for l in laminas}
     videos = []
     for v in t["videos"]:
         ls = [por_n[n] for n in v["laminas"] if n in por_n]
@@ -237,12 +307,14 @@ def resumen(t: dict) -> dict:
 
     en_video = {n for v in t["videos"] for n in v["laminas"]}
     excluidas = t.get("excluidas", {})
-    sin_uso = [l for l in t["laminas"] if l["n"] not in en_video and str(l["n"]) not in excluidas]
-    sin_notas = [l for l in t["laminas"] if l["n"] in en_video and not l["notas"].strip()]
+    sin_uso = [l for l in laminas if l["n"] not in en_video and str(l["n"]) not in excluidas]
+    sin_notas = [l for l in laminas if l["n"] in en_video and not l["notas"].strip()]
+    verificadas = t.get("verificadas") or {}
     normativas = [
-        {"lamina": l["n"], "citas": extractor.afirmaciones_normativas(l["notas"])}
-        for l in t["laminas"] if l["n"] in en_video and extractor.afirmaciones_normativas(l["notas"])
+        {"lamina": l["n"], "citas": [c for c in extractor.afirmaciones_normativas(l["notas"]) if f"{l['n']}|{c}" not in verificadas]}
+        for l in laminas if l["n"] in en_video and extractor.afirmaciones_normativas(l["notas"])
     ]
+    normativas = [x for x in normativas if x["citas"]]
     largos = [v for v in videos if v["segundos"] > 240]
     marca = datos.marcas().get(t["marca"], {})
     avisos_marca = [p["texto"] for p in marca.get("pendientes", [])
@@ -274,7 +346,9 @@ def resumen(t: dict) -> dict:
          "titulo": "Cifras y normas por comprobar" if normativas else "No hay cifras ni normas que comprobar",
          "detalle": f"{citas} {'cifra o norma' if citas == 1 else 'cifras o normas'} en "
                     f"{len(normativas)} {'diapositiva' if len(normativas) == 1 else 'diapositivas'}"
-                    if normativas else "El guion no cita leyes, porcentajes ni cifras",
+                    + (f" ({len(verificadas)} ya revisadas)" if verificadas else "")
+                    if normativas else (f"Las {len(verificadas)} ya tienen su fuente revisada" if verificadas
+                                        else "El guion no cita leyes, porcentajes ni cifras"),
          "ayuda": "Compruébalas contra su fuente antes de producir: un dato mal dicho en un video es difícil de corregir."
                   if normativas else ""},
         {"clave": "marca", "ok": None if avisos_marca else True,
@@ -286,7 +360,7 @@ def resumen(t: dict) -> dict:
         "videos": videos,
         "segundos": sum(v["segundos"] for v in videos),
         "frases": frases_total,
-        "palabras": sum(len(l["notas"].split()) for l in t["laminas"] if l["n"] in en_video),
+        "palabras": sum(len(l["notas"].split()) for l in laminas if l["n"] in en_video),
         "normativas": normativas,
         "chequeos": chequeos,
         "preguntas": sum(len(g["preguntas"]) for g in (t.get("banco") or {}).get("grupos", [])),
@@ -297,7 +371,7 @@ def resumen(t: dict) -> dict:
 def curso_json(t: dict) -> list[dict]:
     """El curso.json en el formato de csm/moto: lo que recibe el generador de plantillas."""
     campos = ("n", "formas", "notas", "frases", "foto", "icono")
-    return [{k: l.get(k) for k in campos} for l in t["laminas"]]
+    return [{k: l.get(k) for k in campos} for l in laminas_efectivas(t)]
 
 
 def orden_produccion(t: dict) -> dict:

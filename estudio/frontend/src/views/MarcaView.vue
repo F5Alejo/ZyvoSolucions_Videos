@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { Check, Copy, ExternalLink, FileText, Lightbulb, TriangleAlert } from "lucide-vue-next";
+import { useRouter } from "vue-router";
+import { Check, Copy, ExternalLink, FileText, Lightbulb, Pencil, Trash2, TriangleAlert, Upload } from "lucide-vue-next";
 import { api } from "../api";
 import { useCarga } from "../composables/carga";
 import { avisar } from "../composables/avisos";
-import { catalogo } from "../composables/catalogo";
+import { cargarCatalogo, catalogo } from "../composables/catalogo";
+import { confirmar } from "../composables/confirmar";
 import EncabezadoPagina from "../components/EncabezadoPagina.vue";
 import EstadoCarga from "../components/EstadoCarga.vue";
 import EstadoChip from "../components/EstadoChip.vue";
@@ -37,24 +39,47 @@ async function copiar(c: Color) {
     avisar("No se pudo copiar: el navegador no lo permitió.", "error");
   }
 }
+const router = useRouter();
+async function eliminar() {
+  if (!m.value) return;
+  const si = await confirmar({
+    titulo: `¿Eliminar ${m.value.nombre_corto}?`,
+    texto: "Se borran su ficha y su logo del estudio. Esto no se puede deshacer.",
+    aceptar: "Eliminar empresa", peligro: true,
+  });
+  if (!si) return;
+  try {
+    await api.delete(`/api/empresas/${m.value.id}`);
+    await cargarCatalogo(true);
+    avisar(`${m.value.nombre_corto} se eliminó.`);
+    router.push("/empresas");
+  } catch (e) {
+    avisar((e as Error).message, "error");
+  }
+}
 const abiertos = computed(() => (m.value?.pendientes.filter((p) => !p.hecho).length ?? 0) + (m.value?.pedir_al_cliente.filter((p) => !p.hecho).length ?? 0));
 </script>
 
 <template>
   <EstadoCarga v-if="!m" :cargando="cargando" :error="error" @reintentar="recargar()" />
   <div v-else class="space-y-10">
-    <EncabezadoPagina :titulo="m.nombre" :subtitulo="m.que_es" :migas="[{ texto: 'Marcas' }, { texto: m.nombre_corto }]">
+    <EncabezadoPagina :titulo="m.nombre" :subtitulo="m.que_es" :migas="[{ texto: 'Empresas', a: '/empresas' }, { texto: m.nombre_corto }]">
       <template #acciones>
         <span v-if="m.logo_url" class="rounded-xl border border-borde px-4 py-3" :class="m.logo?.fondo === 'oscuro' ? 'bg-[#0b0d0f]' : 'bg-white'">
           <img :src="m.logo_url" :alt="`Logo de ${m.nombre_corto}`" class="h-12 max-w-[220px] object-contain" />
         </span>
+        <div v-if="m.registrada" class="flex flex-wrap gap-2">
+          <RouterLink :to="`/cursos/nuevo?marca=${m.id}`" class="boton-primario"><Upload class="size-4" /> Crear un curso</RouterLink>
+          <RouterLink :to="`/empresas/${m.id}/editar`" class="boton-secundario"><Pencil class="size-4" /> Editar</RouterLink>
+          <button type="button" class="boton-fantasma" aria-label="Eliminar empresa" title="Eliminar empresa" @click="eliminar"><Trash2 class="size-4" /></button>
+        </div>
       </template>
       <template #debajo>
         <dl class="mt-4 flex flex-wrap gap-x-8 gap-y-2 text-sm">
-          <div><dt class="text-suave">Dominio</dt><dd class="font-semibold">{{ m.dominio ?? "Por confirmar" }}</dd></div>
-          <div><dt class="text-suave">Responsable</dt><dd class="font-semibold">{{ m.responsable ?? "Por confirmar" }}</dd></div>
-          <div><dt class="text-suave">Ficha revisada</dt><dd class="font-semibold">{{ fecha(m.revisada) }}</dd></div>
-          <div><dt class="text-suave">Pendientes</dt><dd class="font-semibold" :class="abiertos ? 'text-aviso' : ''">{{ abiertos }} abiertos</dd></div>
+          <div><dt class="text-suave">Sitio web</dt><dd class="font-semibold">{{ m.dominio ?? (m.registrada ? "Sin sitio web" : "Por confirmar") }}</dd></div>
+          <div><dt class="text-suave">{{ m.registrada ? "Contacto" : "Responsable" }}</dt><dd class="font-semibold">{{ m.responsable ?? (m.registrada ? "Sin contacto" : "Por confirmar") }}</dd></div>
+          <div><dt class="text-suave">{{ m.registrada ? "Registrada" : "Ficha revisada" }}</dt><dd class="font-semibold">{{ fecha(m.creada ?? m.revisada) }}</dd></div>
+          <div v-if="!m.registrada"><dt class="text-suave">Pendientes</dt><dd class="font-semibold" :class="abiertos ? 'text-aviso' : ''">{{ abiertos }} abiertos</dd></div>
         </dl>
       </template>
     </EncabezadoPagina>
@@ -88,7 +113,7 @@ const abiertos = computed(() => (m.value?.pendientes.filter((p) => !p.hecho).len
     <section class="grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-3" aria-label="Identidad">
       <div class="tarjeta p-5"><h3 class="text-sm font-semibold text-suave">Tipografía</h3><p class="mt-1 text-sm">{{ m.tipografia }}</p></div>
       <div class="tarjeta p-5"><h3 class="text-sm font-semibold text-suave">Voz</h3><p class="mt-1 text-sm">{{ m.voz }}</p></div>
-      <div class="tarjeta p-5"><h3 class="text-sm font-semibold text-suave">Llamado a la acción</h3><p class="mt-1 text-sm">{{ m.cta ?? "Faltan los datos de contacto y el CTA" }}</p></div>
+      <div class="tarjeta p-5"><h3 class="text-sm font-semibold text-suave">Llamado a la acción</h3><p class="mt-1 text-sm">{{ m.cta ?? (m.registrada ? "Sin cierre: puedes agregarlo en Editar" : "Faltan los datos de contacto y el CTA") }}</p></div>
     </section>
 
     <section v-if="m.hallazgos?.length" aria-labelledby="titulo-hallazgos">
@@ -105,7 +130,7 @@ const abiertos = computed(() => (m.value?.pendientes.filter((p) => !p.hecho).len
       </ul>
     </section>
 
-    <div class="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-2">
+    <div v-if="!m.registrada" class="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-2">
       <section aria-labelledby="titulo-pendientes">
         <h2 id="titulo-pendientes" class="mb-3 text-lg font-bold">Pendientes</h2>
         <ul class="tarjeta divide-y divide-borde">
@@ -136,7 +161,10 @@ const abiertos = computed(() => (m.value?.pendientes.filter((p) => !p.hecho).len
 
     <section aria-labelledby="titulo-videos-marca">
       <h2 id="titulo-videos-marca" class="mb-3 text-lg font-bold">Videos de {{ m.nombre_corto }}</h2>
-      <div class="tarjeta divide-y divide-borde">
+      <p v-if="!m.proyectos.length" class="tarjeta p-5 text-sm text-suave">
+        Todavía no hay videos. <RouterLink :to="`/cursos/nuevo?marca=${m.id}`" class="font-semibold text-acento hover:underline">Crea el primer curso de {{ m.nombre_corto }}</RouterLink>.
+      </p>
+      <div v-else class="tarjeta divide-y divide-borde">
         <RouterLink v-for="p in m.proyectos" :key="p.id" :to="`/videos/${p.id}`"
                     class="flex items-center justify-between gap-3 p-3 transition hover:bg-acento-suave/50">
           <span class="min-w-0"><span class="block truncate font-semibold">{{ p.titulo }}</span>

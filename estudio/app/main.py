@@ -5,14 +5,20 @@ del repositorio de videos en solo lectura. Cualquier otra ruta devuelve la aplic
 """
 
 import json
+import re
 from collections import Counter
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel
 
-from app import datos, extractor, taller
+from app import configuracion, datos, empresas, extractor, taller
+from motor import cola, diagnostico, empaquetar, escenas, produccion
+from motor.agentes import entrega as agentes_entrega
+from motor.agentes import registro as agentes
+from motor.escenas import animacion, efectos
+from motor import voz as motor_voz
 
 RAIZ = Path(__file__).resolve().parent.parent
 DIST = RAIZ / "frontend" / "dist"
@@ -22,6 +28,16 @@ EXTENSIONES_REPO = {".png", ".jpg", ".jpeg", ".webp", ".svg", ".pdf", ".md", ".t
 EXTENSIONES_ENTREGABLES = {".mp4", ".webm", ".mp3", ".txt"}
 
 app = FastAPI(title="Estudio de video RiskMann", docs_url="/api/docs", openapi_url="/api/openapi.json")
+
+
+@app.exception_handler(animacion.AnimacionInvalida)
+def _animacion_invalida(_, e: animacion.AnimacionInvalida):
+    return JSONResponse({"detail": str(e)}, status_code=400)
+
+
+@app.exception_handler(agentes.ErrorAgente)
+def _error_agente(_, e: agentes.ErrorAgente):
+    return JSONResponse({"detail": str(e)}, status_code=400)
 
 
 @app.exception_handler(ValueError)
@@ -40,10 +56,15 @@ def _casos() -> list[dict]:
 
 
 def _con_medios(m: dict) -> dict:
-    """Añade a la marca la URL de su logo si el archivo está en el repositorio."""
-    logo = m.get("logo")
-    url = f"/media/repo/{logo['archivo']}" if logo and datos.ruta_segura("repo_videos", logo["archivo"]) else None
-    return {**m, "logo_url": url}
+    """Añade a la marca la URL de su logo: el del repositorio de videos o el que subió la empresa."""
+    logo = m.get("logo") or {}
+    if logo.get("archivo_local") and empresas.ruta_logo(logo["archivo_local"]):
+        url = f"/media/empresas/{logo['archivo_local']}"
+    elif logo.get("archivo") and datos.ruta_segura("repo_videos", logo["archivo"]):
+        url = f"/media/repo/{logo['archivo']}"
+    else:
+        url = None
+    return {**m, "logo_url": url, "registrada": bool(m.get("registrada"))}
 
 
 def _trabajo_o_404(id_: str) -> dict:
@@ -56,9 +77,9 @@ def _trabajo_o_404(id_: str) -> dict:
 def _trabajo_completo(t: dict) -> dict:
     """El trabajo con lo que la interfaz necesita por lámina, y su resumen sin duplicar láminas."""
     laminas = [
-        {**l, "titulo": extractor.titulo_lamina(l), "segundos": extractor.segundos(l["notas"]),
-         "citas": extractor.afirmaciones_normativas(l["notas"])}
-        for l in t["laminas"]
+        {**l, "titulo": (l.get("pantalla") or {}).get("titulo") or extractor.titulo_lamina(l),
+         "segundos": extractor.segundos(l["notas"]), "citas": extractor.afirmaciones_normativas(l["notas"])}
+        for l in taller.laminas_efectivas(t)
     ]
     r = taller.resumen(t)
     r["videos"] = [{k: v for k, v in vid.items() if k != "laminas_detalle"} for vid in r["videos"]]
@@ -99,7 +120,8 @@ def api_catalogo():
         "formatos": taller.FORMATOS,
         "marcas": {k: _con_medios(m) for k, m in datos.marcas().items()},
         "voces": [{**v, "muestra_url": f"/media/entregables/{v['muestra']}"
-                   if v.get("muestra") and datos.ruta_segura("entregables", v["muestra"]) else None}
+                   if v.get("muestra") and datos.ruta_segura("entregables", v["muestra"]) else None,
+                   "falta": motor_voz.disponible(v)}
                   for v in taller.voces()],
         "pendientes_abiertos": sum(not x["hecho"] for x in datos.pendientes()),
     }
@@ -113,13 +135,13 @@ def api_trabajos():
 
 
 @app.post("/api/trabajos", status_code=201)
-async def api_crear_trabajo(archivo: UploadFile = File(...), nombre: str = Form("")):
+async def api_crear_trabajo(archivo: UploadFile = File(...), nombre: str = Form(""), marca: str = Form("")):
     if not (archivo.filename or "").lower().endswith(".pptx"):
         raise ValueError("El archivo tiene que ser un .pptx de PowerPoint")
     contenido = await archivo.read(MAX_PPTX + 1)
     if len(contenido) > MAX_PPTX:
         raise ValueError("El archivo pasa de 200 MB")
-    t = taller.desde_pptx(archivo.filename, contenido, nombre)
+    t = taller.desde_pptx(archivo.filename, contenido, nombre, marca)
     return {"id": t["id"]}
 
 
@@ -175,6 +197,384 @@ def api_banco(id_: str):
     return _descarga(t["banco"], "banco-preguntas.json")
 
 
+class Edicion(BaseModel):
+    cambios: dict | None  # {notas?, titulo?, vinetas?}; None vuelve al original del PPTX
+
+
+@app.put("/api/trabajos/{id_}/laminas/{n}/edicion")
+def api_editar_lamina(id_: str, n: int, cuerpo: Edicion):
+    """Corrige la narración o lo que se ve de una lámina, sin tocar lo extraído del PPTX."""
+    return _trabajo_completo(taller.editar_lamina(_trabajo_o_404(id_), n, cuerpo.cambios))
+
+
+# ── Motor: producir los videos de un curso ───────────────────────────────────
+
+def _produccion(t: dict) -> dict:
+    """Estado de cada video del curso en el motor, con lo que la interfaz necesita para mostrarlo."""
+    voz = next((v for v in taller.voces() if v["id"] == t["voz"]), {})
+    firma_actual = produccion.firma(t)
+    videos = {}
+    for clave, e in cola.estados(t).items():
+        if e is None:
+            videos[clave] = None
+            continue
+        base = f"/api/trabajos/{t['id']}/salida/{clave}/"
+        inf = e.get("informe")
+        videos[clave] = {
+            **{k: e.get(k) for k in ("estado", "paso", "progreso", "mensaje")},
+            "informe": inf,
+            "desactualizado": bool(inf) and inf.get("firma") != firma_actual,
+            "archivos": {"mp4": f"{base}{clave}.mp4", "vtt": f"{base}{clave}.vtt", "srt": f"{base}{clave}.srt"}
+            if e.get("estado") == "listo" else None,
+        }
+    c = cola.estado(t["id"], empaquetar.CLAVE)
+    completo = None
+    if c:
+        base = f"/api/trabajos/{t['id']}/salida/{empaquetar.CLAVE}/"
+        completo = {**{k: c.get(k) for k in ("estado", "paso", "progreso", "mensaje")}, "informe": c.get("informe"),
+                    "desactualizado": bool(c.get("informe")) and c["informe"].get("firma") != firma_actual,
+                    "archivos": {"mp4": f"{base}completo.mp4", "vtt": f"{base}completo.vtt", "srt": f"{base}completo.srt",
+                                 "capitulos": f"{base}capitulos.txt"} if c.get("estado") == "listo" else None}
+    listos = sum(1 for v in videos.values() if v and v["estado"] == "listo" and not v["desactualizado"])
+    return {"voz_falta": motor_voz.disponible(voz), "voz_borrador": bool(voz.get("solo_borrador")), "videos": videos,
+            "completo": completo, "listos": listos, "total": len(videos), "pendientes": empaquetar.pendientes(t)}
+
+
+@app.get("/api/trabajos/{id_}/produccion")
+def api_produccion(id_: str):
+    """Estado de producción de cada video; la interfaz lo consulta mientras produce."""
+    return _produccion(_trabajo_o_404(id_))
+
+
+@app.post("/api/trabajos/{id_}/producir/{clave}", status_code=202)
+def api_producir(id_: str, clave: str):
+    """Pone un video del curso en la cola del motor (un video a la vez, en segundo plano)."""
+    t = _trabajo_o_404(id_)
+    if clave not in {v["clave"] for v in t["videos"]}:
+        raise HTTPException(404, "Ese curso no tiene ese video")
+    voz = next(v for v in taller.voces() if v["id"] == t["voz"])
+    falta = motor_voz.disponible(voz)
+    if falta:
+        raise ValueError(falta)
+    cola.encolar(id_, clave)
+    return _produccion(t)
+
+
+@app.post("/api/trabajos/{id_}/producir-todo", status_code=202)
+def api_producir_todo(id_: str, completo: bool = True):
+    """Pone en la cola los videos que faltan o quedaron desactualizados y, al final, el MP4 completo."""
+    t = _trabajo_o_404(id_)
+    voz = next(v for v in taller.voces() if v["id"] == t["voz"])
+    falta = motor_voz.disponible(voz)
+    if falta:
+        raise ValueError(falta)
+    actual = produccion.firma(t)
+    for clave, e in cola.estados(t).items():
+        inf = (e or {}).get("informe")
+        if e and e.get("estado") == "listo" and inf and inf.get("firma") == actual:
+            continue
+        cola.encolar(id_, clave)
+    if completo:
+        cola.encolar(id_, empaquetar.CLAVE)
+    return _produccion(t)
+
+
+@app.post("/api/trabajos/{id_}/completo", status_code=202)
+def api_armar_completo(id_: str):
+    """Une los videos ya producidos en un solo MP4 con capítulos."""
+    t = _trabajo_o_404(id_)
+    faltan = empaquetar.pendientes(t)
+    if faltan:
+        raise ValueError("Antes hay que producir: " + "; ".join(faltan))
+    cola.encolar(id_, empaquetar.CLAVE)
+    return _produccion(t)
+
+
+@app.get("/api/trabajos/{id_}/paquete.zip")
+def api_paquete(id_: str):
+    """Todo lo producido del curso en un ZIP, con un manifiesto que trae el SHA-256 de cada archivo."""
+    t = _trabajo_o_404(id_)
+    try:
+        ruta = empaquetar.paquete(t)
+    except empaquetar.NoSePuedeArmar as e:
+        raise ValueError(str(e))
+    return FileResponse(ruta, media_type="application/zip", filename=f"{t['id']}.zip")
+
+
+# Lo que se puede bajar de la salida de un video.
+TIPOS_SALIDA = {".mp4": "video/mp4", ".vtt": "text/vtt", ".srt": "application/x-subrip", ".json": "application/json",
+                ".txt": "text/plain; charset=utf-8"}
+
+
+@app.get("/api/trabajos/{id_}/salida/{clave}/{archivo}")
+def api_salida(id_: str, clave: str, archivo: str, descargar: bool = False):
+    """Solo el mp4, los subtítulos y el qa.json de ese video: nada más de la carpeta del curso."""
+    t = _trabajo_o_404(id_)
+    if not re.fullmatch(r"[a-z0-9-]+", clave) or archivo not in {f"{clave}.mp4", f"{clave}.vtt", f"{clave}.srt", "qa.json", "capitulos.txt"}:
+        raise HTTPException(404)
+    ruta = taller.ruta_trabajo(t["id"]).parent / "salida" / clave / archivo
+    if not ruta.is_file():
+        raise HTTPException(404)
+    return FileResponse(ruta, media_type=TIPOS_SALIDA[ruta.suffix], filename=f"{t['id']}-{archivo}" if descargar else None,
+                        content_disposition_type="attachment" if descargar else "inline")
+
+
+class AjustesVideo(BaseModel):
+    ajustes: dict | None  # None: volver a la configuración global
+
+
+@app.put("/api/trabajos/{id_}/ajustes-video")
+def api_ajustes_video(id_: str, cuerpo: AjustesVideo):
+    """Ajustes de video propios del curso (solo lo que cambie respecto a la configuración)."""
+    t = configuracion.ajustar_trabajo(_trabajo_o_404(id_), cuerpo.ajustes)
+    taller.guardar(t)
+    return {**_trabajo_completo(t), "ajustes_efectivos": configuracion.para_trabajo(t)}
+
+
+@app.get("/api/trabajos/{id_}/ajustes-video")
+def api_ver_ajustes_video(id_: str):
+    t = _trabajo_o_404(id_)
+    return {"propios": t.get("ajustes_video") or {}, "efectivos": configuracion.para_trabajo(t)}
+
+
+# ── Animaciones ──────────────────────────────────────────────────────────────
+
+@app.get("/api/animaciones")
+def api_animaciones():
+    """Las plantillas y el catálogo: qué efectos admite cada elemento, curvas y límites."""
+    return {
+        "plantillas": list(animacion.plantillas().values()),
+        "elementos": {el: {"nombre": d["nombre"],
+                           "entrada": [{"id": x, "nombre": efectos.NOMBRES[x]} for x in d["entrada"]],
+                           "salida": [{"id": x, "nombre": efectos.NOMBRES[x]} for x in d["salida"]]}
+                      for el, d in efectos.ELEMENTOS.items()},
+        "curvas": [{"id": k, "nombre": v} for k, v in efectos.NOMBRES_CURVAS.items()],
+        "limites": {k: {"min": a, "max": b} for k, (a, b) in efectos.LIMITES.items()},
+        "continuos": list(efectos.CONTINUOS),
+    }
+
+
+@app.post("/api/animaciones", status_code=201)
+def api_guardar_plantilla(p: dict):
+    """Guarda una plantilla propia (duplicada o editada desde un curso)."""
+    return animacion.guardar_propia(p)
+
+
+@app.delete("/api/animaciones/{id_}", status_code=204)
+def api_borrar_plantilla(id_: str):
+    animacion.borrar_propia(id_)
+
+
+@app.get("/api/trabajos/{id_}/animacion")
+def api_animacion_curso(id_: str):
+    t = _trabajo_o_404(id_)
+    a = animacion.validar_curso(t.get("animacion"))
+    return {"animacion": a, "defecto": configuracion.leer()["cursos"]["animacion"],
+            "plantilla": animacion.plan(t, t["laminas"][0]["n"])["plantilla"] if t["laminas"] else None}
+
+
+@app.put("/api/trabajos/{id_}/animacion")
+def api_guardar_animacion_curso(id_: str, a: dict):
+    t = _trabajo_o_404(id_)
+    t["animacion"] = animacion.validar_curso(a)
+    taller.guardar(t)
+    return _trabajo_completo(t)
+
+
+def _escena_vista_previa(t: dict, n: int, a: dict | None, formato: str) -> str:
+    """El HTML de una lámina con sus animaciones corriendo en bucle, para verla en el navegador."""
+    from motor.produccion import _logo, _media
+    if formato not in escenas.FORMATOS:
+        raise ValueError("Formato desconocido")
+    lamina = next((l for l in t["laminas"] if l["n"] == n), None)
+    if lamina is None:
+        raise HTTPException(404, "Ese curso no tiene esa lámina")
+    video = next((v for v in t["videos"] if n in v["laminas"]), {"titulo": t["nombre"], "laminas": [n]})
+    indice = video["laminas"].index(n)
+    prueba = {**t, "animacion": animacion.validar_curso(a) if a is not None else t.get("animacion")}
+    plan = animacion.plan(prueba, n)
+    media = _media(t)
+    vista = escenas.vista(lamina, indice, len(video["laminas"]), video["titulo"], media, t["nombre"])
+    ent, sal = animacion.duraciones(plan, vista)
+    segundos = round(ent + 1.6 + sal, 2)
+    marca = datos.marcas()[t["marca"]]
+    logo = _logo(marca)
+    html = escenas.html(vista, escenas.estilo(marca, logo), formato, plan=plan, segundos=segundos)
+    # En el navegador no se abren rutas locales (file://): se sirven por la API.
+    html = html.replace(escenas.FUENTE.resolve().as_uri(), "/api/escenas/fuente.ttf")
+    if logo:
+        html = html.replace(logo.resolve().as_uri(), f"/api/escenas/logo/{t['marca']}")
+    if media:
+        html = html.replace(media.resolve().as_uri() + "/", f"/api/trabajos/{t['id']}/media/")
+    bucle = (f"<script>setInterval(() => {{ for (const a of document.getAnimations()) {{ a.currentTime = 0; a.play(); }} }},"
+             f" {int(segundos * 1000) + 700});</script>")
+    return html.replace("</body>", bucle + "</body>")
+
+
+class VistaPrevia(BaseModel):
+    animacion: dict | None = None  # sin guardar: lo que se está editando
+    formato: str = "16:9"
+
+
+@app.post("/api/trabajos/{id_}/escena/{n}", response_class=HTMLResponse)
+def api_vista_previa(id_: str, n: int, cuerpo: VistaPrevia):
+    return HTMLResponse(_escena_vista_previa(_trabajo_o_404(id_), n, cuerpo.animacion, cuerpo.formato))
+
+
+@app.get("/api/trabajos/{id_}/escena/{n}", response_class=HTMLResponse)
+def api_vista_previa_guardada(id_: str, n: int, formato: str = "16:9"):
+    return HTMLResponse(_escena_vista_previa(_trabajo_o_404(id_), n, None, formato))
+
+
+@app.get("/api/escenas/fuente.ttf")
+def api_fuente():
+    # La vista previa corre en un iframe aislado (origen «null»): la fuente (OFL, pública) se permite a cualquiera.
+    return FileResponse(escenas.FUENTE, media_type="font/ttf", headers={"Access-Control-Allow-Origin": "*"})
+
+
+@app.get("/api/escenas/logo/{marca}")
+def api_logo_escena(marca: str):
+    from motor.produccion import _logo
+    m = datos.marcas().get(marca)
+    ruta = _logo(m) if m else None
+    if ruta is None:
+        raise HTTPException(404)
+    return FileResponse(ruta)
+
+
+@app.get("/api/trabajos/{id_}/media/{nombre}")
+def api_media_trabajo(id_: str, nombre: str):
+    """Las imágenes extraídas del PPTX del curso (solo imágenes, solo de su carpeta)."""
+    t = _trabajo_o_404(id_)
+    ruta = taller.ruta_trabajo(t["id"]).parent / "media" / Path(nombre).name
+    if ruta.suffix.lower() not in {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".svg", ".tif", ".tiff", ".emf", ".wmf"} or not ruta.is_file():
+        raise HTTPException(404)
+    return FileResponse(ruta)
+
+
+# ── Agentes ──────────────────────────────────────────────────────────────────
+
+@app.get("/api/agentes")
+def api_agentes():
+    """Cada agente: qué hace, dónde aparece, si está activo y si hoy puede usar IA (Ollama y su modelo)."""
+    return agentes.estado_agentes()
+
+
+def _agentes_curso(t: dict) -> dict:
+    estados = {}
+    for a in agentes.REGISTRO:
+        e = cola.estado(t["id"], f"{cola.PREFIJO_AGENTE}{a}")
+        estados[a] = {k: e.get(k) for k in ("estado", "paso", "progreso", "mensaje", "propuestas", "con_ia")} if e else None
+    return {"agentes": agentes.estado_agentes(), "estados": estados, "propuestas": t.get("propuestas", [])}
+
+
+@app.get("/api/trabajos/{id_}/agentes")
+def api_agentes_curso(id_: str):
+    return _agentes_curso(_trabajo_o_404(id_))
+
+
+@app.post("/api/trabajos/{id_}/agentes/{agente}", status_code=202)
+def api_ejecutar_agente(id_: str, agente: str):
+    """Pone al agente en la cola (la misma de los renders: uno a la vez)."""
+    t = _trabajo_o_404(id_)
+    if agente not in agentes.REGISTRO:
+        raise HTTPException(404, "No existe ese agente")
+    if not configuracion.leer()["agentes"]["activos"].get(agente, True):
+        raise ValueError(f"{agentes.REGISTRO[agente].nombre} está desactivado en Configuración")
+    cola.encolar(id_, f"{cola.PREFIJO_AGENTE}{agente}")
+    return _agentes_curso(t)
+
+
+@app.post("/api/trabajos/{id_}/propuestas/{pid}/{accion}")
+def api_resolver_propuesta(id_: str, pid: str, accion: str):
+    """Acepta (aplica al curso) o descarta una propuesta. Devuelve el curso y los agentes."""
+    t = _trabajo_o_404(id_)
+    if accion == "aceptar":
+        t = agentes.aceptar(t, pid)
+    elif accion == "descartar":
+        t = agentes.descartar(t, pid)
+    else:
+        raise HTTPException(404)
+    return {**_trabajo_completo(t), **_agentes_curso(t)}
+
+
+@app.get("/api/trabajos/{id_}/banco.gift")
+def api_banco_gift(id_: str):
+    t = _trabajo_o_404(id_)
+    if not t.get("banco"):
+        raise HTTPException(404, "Este curso no tiene banco de preguntas")
+    return Response(agentes_entrega.a_gift(t["banco"]), media_type="text/plain; charset=utf-8",
+                    headers={"Content-Disposition": f'attachment; filename="{t["id"]}-preguntas.gift.txt"'})
+
+
+@app.get("/api/trabajos/{id_}/banco.xml")
+def api_banco_moodle(id_: str):
+    t = _trabajo_o_404(id_)
+    if not t.get("banco"):
+        raise HTTPException(404, "Este curso no tiene banco de preguntas")
+    return Response(agentes_entrega.a_moodle_xml(t["banco"]), media_type="application/xml",
+                    headers={"Content-Disposition": f'attachment; filename="{t["id"]}-preguntas.moodle.xml"'})
+
+
+# ── Configuración y diagnóstico ──────────────────────────────────────────────
+
+def _opciones() -> dict:
+    """Los valores permitidos, para que la interfaz arme sus listas."""
+    return {f"{g}.{k}": [{"valor": v, "texto": txt} for v, txt in ops.items()]
+            for (g, k), ops in configuracion.OPCIONES.items()} | {
+        f"{g}.{k}": {"min": a, "max": b} for (g, k), (a, b) in configuracion.RANGOS.items()}
+
+
+@app.get("/api/configuracion")
+def api_configuracion():
+    return {"configuracion": configuracion.leer(), "opciones": _opciones(), "musica": configuracion.pistas(),
+            "por_curso": list(configuracion.POR_CURSO)}
+
+
+@app.put("/api/configuracion")
+def api_guardar_configuracion(conf: dict):
+    return {"configuracion": configuracion.guardar(conf), "opciones": _opciones(), "musica": configuracion.pistas(),
+            "por_curso": list(configuracion.POR_CURSO)}
+
+
+@app.get("/api/sistema")
+def api_sistema(forzar: bool = False):
+    """Qué tiene este equipo para producir (ffmpeg, navegador, voces, clave, Ollama, disco)."""
+    return diagnostico.revisar(forzar)
+
+
+MAX_MUSICA = 50 * 1024 * 1024
+
+
+@app.post("/api/musica", status_code=201)
+async def api_subir_musica(archivo: UploadFile = File(...), licencia: str = Form(""), fuente: str = Form("")):
+    """Sube una pista de música de fondo. La licencia es obligatoria: los videos se entregan a clientes."""
+    nombre = Path(archivo.filename or "").name
+    extension = Path(nombre).suffix.lower()
+    if extension not in configuracion.EXTENSIONES_MUSICA:
+        raise ValueError("La música tiene que ser mp3, wav, m4a, ogg o flac")
+    if len(licencia.strip()) < 3:
+        raise ValueError("Escribe la licencia de la pista (p. ej. «Pixabay Content License»)")
+    limpio = re.sub(r"[^A-Za-z0-9._-]+", "-", Path(nombre).stem).strip("-")[:60] or "pista"
+    contenido = await archivo.read(MAX_MUSICA + 1)
+    if len(contenido) > MAX_MUSICA:
+        raise ValueError("La pista pasa de 50 MB")
+    carpeta = configuracion.carpeta_musica()
+    carpeta.mkdir(parents=True, exist_ok=True)
+    (carpeta / f"{limpio}{extension}").write_bytes(contenido)
+    (carpeta / f"{limpio}.json").write_text(
+        json.dumps({"licencia": licencia.strip(), "fuente": fuente.strip()}, ensure_ascii=False), encoding="utf-8")
+    return configuracion.pistas()
+
+
+@app.get("/api/musica/{archivo}")
+def api_escuchar_musica(archivo: str):
+    ruta = configuracion.carpeta_musica() / Path(archivo).name
+    if ruta.suffix.lower() not in configuracion.EXTENSIONES_MUSICA or not ruta.is_file():
+        raise HTTPException(404)
+    return FileResponse(ruta)
+
+
 # ── Videos producidos ────────────────────────────────────────────────────────
 
 @app.get("/api/proyectos")
@@ -207,6 +607,71 @@ def api_cambiar_estado(id_: str, cambio: CambioEstado):
     except KeyError:
         raise HTTPException(404, "No encontramos ese video")
     return datos.proyecto(id_)
+
+
+# ── Empresas ─────────────────────────────────────────────────────────────────
+
+@app.get("/api/empresas")
+def api_empresas():
+    """Todas las empresas: las marcas de siempre y las registradas, con cuánto se usan."""
+    cursos = Counter(t["marca"] for t in taller.lista())
+    videos = Counter(p["marca"] for p in datos.proyectos())
+    return [{**_con_medios(m), "cursos": cursos[m["id"]], "videos": videos[m["id"]]} for m in datos.marcas().values()]
+
+
+async def _leer_logo(logo: UploadFile | None) -> bytes | None:
+    if logo is None or not logo.filename:
+        return None
+    contenido = await logo.read(empresas.MAX_LOGO + 1)
+    if len(contenido) > empresas.MAX_LOGO:
+        raise ValueError("El logo pesa más de 5 MB")
+    return contenido
+
+
+def _campos(datos_json: str) -> dict:
+    try:
+        campos = json.loads(datos_json)
+    except json.JSONDecodeError:
+        raise ValueError("Los datos de la empresa no llegaron bien")
+    if not isinstance(campos, dict):
+        raise ValueError("Los datos de la empresa no llegaron bien")
+    return campos
+
+
+@app.post("/api/empresas/colores")
+async def api_colores_logo(logo: UploadFile = File(...)):
+    """Los colores que propone el estudio a partir del logo."""
+    contenido = await _leer_logo(logo)
+    if not contenido:
+        raise ValueError("Sube el logo para proponer sus colores")
+    return {"colores": empresas.colores_de_logo(contenido)}
+
+
+@app.post("/api/empresas", status_code=201)
+async def api_registrar_empresa(datos_empresa: str = Form(..., alias="datos"), logo: UploadFile | None = File(None)):
+    m = empresas.registrar(_campos(datos_empresa), await _leer_logo(logo))
+    return _con_medios(m)
+
+
+@app.put("/api/empresas/{id_}")
+async def api_editar_empresa(id_: str, datos_empresa: str = Form(..., alias="datos"), logo: UploadFile | None = File(None)):
+    if id_ in datos.marcas() and not empresas.es_registrada(id_):
+        raise ValueError("Esta es una de las marcas base del estudio: se edita en su ficha, no desde aquí")
+    try:
+        m = empresas.actualizar(id_, _campos(datos_empresa), await _leer_logo(logo))
+    except KeyError:
+        raise HTTPException(404, "No encontramos esa empresa")
+    return _con_medios(m)
+
+
+@app.delete("/api/empresas/{id_}", status_code=204)
+def api_eliminar_empresa(id_: str):
+    if id_ in datos.marcas() and not empresas.es_registrada(id_):
+        raise ValueError("Esta es una de las marcas base del estudio: no se puede eliminar")
+    try:
+        empresas.eliminar(id_)
+    except KeyError:
+        raise HTTPException(404, "No encontramos esa empresa")
 
 
 # ── Marcas, pendientes y casos ───────────────────────────────────────────────
@@ -247,6 +712,14 @@ def media_entregable(ruta: str):
     if archivo is None or archivo.suffix.lower() not in EXTENSIONES_ENTREGABLES:
         raise HTTPException(404)
     return FileResponse(archivo)
+
+
+@app.get("/media/empresas/{archivo}")
+def media_logo_empresa(archivo: str):
+    ruta = empresas.ruta_logo(archivo)
+    if ruta is None:
+        raise HTTPException(404)
+    return FileResponse(ruta, media_type="image/png")
 
 
 @app.get("/media/repo/{ruta:path}")

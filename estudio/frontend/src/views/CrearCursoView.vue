@@ -1,14 +1,21 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { CircleAlert, CircleHelp, FileText, LoaderCircle, NotebookPen, Scale, Sparkles, Upload, X } from "lucide-vue-next";
 import { api, subir } from "../api";
 import { avisar } from "../composables/avisos";
 import { abrirAyuda } from "../composables/ayuda";
+import { catalogo } from "../composables/catalogo";
 import { mb } from "../utils";
 
 const MAX = 200 * 1024 * 1024;
 const router = useRouter();
+const ruta = useRoute();
+/** Si se llega desde una empresa (?marca=id), el curso nace con su marca y su voz. */
+const empresa = computed(() => {
+  const id = typeof ruta.query.marca === "string" ? ruta.query.marca : "";
+  return catalogo.value?.marcas[id] ?? null;
+});
 
 const archivo = ref<File | null>(null);
 const nombre = ref("");
@@ -52,6 +59,7 @@ async function enviar() {
   const datos = new FormData();
   datos.append("archivo", archivo.value);
   datos.append("nombre", nombre.value.trim());
+  if (empresa.value) datos.append("marca", empresa.value.id);
   fase.value = "subiendo";
   avance.value = 0;
   try {
@@ -87,6 +95,15 @@ async function abrirEjemplo() {
       <h1 class="mt-3 text-3xl font-bold sm:text-4xl">Sube tu presentación</h1>
       <p class="mt-3 max-w-sm text-white/75">La leemos en segundos y te mostramos cómo quedaría cada video. Después eliges la marca y la voz.</p>
     </header>
+
+    <div v-if="empresa" class="tarjeta mb-5 flex items-center gap-4 rounded-2xl p-4">
+      <span class="grid h-12 w-20 shrink-0 place-items-center rounded-lg border border-borde" :class="empresa.logo?.fondo === 'oscuro' ? 'bg-[#0b0d0f]' : 'bg-white'">
+        <img v-if="empresa.logo_url" :src="empresa.logo_url" alt="" class="max-h-8 max-w-16 object-contain" />
+        <span v-else class="text-xs font-bold text-[#111]">{{ empresa.nombre_corto }}</span>
+      </span>
+      <p class="min-w-0 flex-1 text-sm">Curso para <strong>{{ empresa.nombre_corto }}</strong><span class="block text-suave">Saldrá con sus colores, su logo y su voz.</span></p>
+      <RouterLink to="/cursos/nuevo" class="boton-fantasma text-sm">Cambiar</RouterLink>
+    </div>
 
     <form class="space-y-5" @submit.prevent="enviar" novalidate>
       <!-- Zona para soltar el archivo -->

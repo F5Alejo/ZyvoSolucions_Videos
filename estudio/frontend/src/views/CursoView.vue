@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { LayoutDashboard, ListChecks, SlidersHorizontal } from "lucide-vue-next";
+import { Clapperboard, LayoutDashboard, ListChecks, SlidersHorizontal, Sparkles } from "lucide-vue-next";
 import { api } from "../api";
 import { useCarga } from "../composables/carga";
 import { avisar } from "../composables/avisos";
@@ -9,7 +9,9 @@ import { catalogo } from "../composables/catalogo";
 import { confirmar } from "../composables/confirmar";
 import EstadoCarga from "../components/EstadoCarga.vue";
 import PasoAjustes from "../components/curso/PasoAjustes.vue";
+import PasoAnimacion from "../components/curso/PasoAnimacion.vue";
 import PasoGuion from "../components/curso/PasoGuion.vue";
+import PasoResultado from "../components/curso/PasoResultado.vue";
 import PasoResumen from "../components/curso/PasoResumen.vue";
 import type { TrabajoCompleto } from "../tipos";
 import { cuenta, fecha, mmss } from "../utils";
@@ -19,8 +21,8 @@ const ruta = useRoute();
 const router = useRouter();
 const { datos: d, cargando, error, recargar } = useCarga(() => api.get<TrabajoCompleto>(`/api/trabajos/${props.id}`), () => props.id);
 
-type Vista = "resumen" | "guion" | "ajustes";
-const vista = computed<Vista>(() => (["guion", "ajustes"].includes(ruta.query.vista as string) ? ruta.query.vista : "resumen") as Vista);
+type Vista = "resumen" | "guion" | "ajustes" | "animacion" | "producir";
+const vista = computed<Vista>(() => (["guion", "ajustes", "animacion", "producir"].includes(ruta.query.vista as string) ? ruta.query.vista : "resumen") as Vista);
 const videoInicial = computed(() => (ruta.query.video !== undefined ? Number(ruta.query.video) : undefined));
 const soloRevisar = computed(() => ruta.query.revisar === "1");
 
@@ -85,6 +87,8 @@ function actualizar(nuevo: TrabajoCompleto) { d.value = nuevo; }
           { id: 'resumen', texto: 'Resumen', icono: LayoutDashboard },
           { id: 'guion', texto: 'Guion', icono: ListChecks },
           { id: 'ajustes', texto: 'Marca y voz', icono: SlidersHorizontal },
+          { id: 'animacion', texto: 'Animación', icono: Sparkles },
+          { id: 'producir', texto: 'Producir', icono: Clapperboard },
         ] as const)" :key="p.id" type="button" :aria-current="vista === p.id ? 'page' : undefined" @click="ir(p.id)"
           class="flex shrink-0 items-center gap-2 border-b-[3px] px-3 py-3.5 text-sm font-semibold whitespace-nowrap transition sm:px-4"
           :class="vista === p.id ? 'border-acento text-acento' : 'border-transparent text-suave hover:border-borde hover:text-texto'">
@@ -95,9 +99,11 @@ function actualizar(nuevo: TrabajoCompleto) { d.value = nuevo; }
       </nav>
     </div>
 
-    <PasoResumen v-if="vista === 'resumen'" :datos="d" @ir="ir" @eliminar="eliminar" />
+    <PasoResumen v-if="vista === 'resumen'" :datos="d" @ir="ir" @eliminar="eliminar" @actualizado="actualizar" />
     <PasoGuion v-else-if="vista === 'guion'" :key="`${videoInicial}-${soloRevisar}`" :datos="d"
                :video-inicial="videoInicial" :solo-revisar-inicial="soloRevisar" @actualizado="actualizar" />
-    <PasoAjustes v-else :datos="d" @actualizado="actualizar" />
+    <PasoAjustes v-else-if="vista === 'ajustes'" :datos="d" @actualizado="actualizar" />
+    <PasoAnimacion v-else-if="vista === 'animacion'" :datos="d" @actualizado="actualizar" />
+    <PasoResultado v-else :datos="d" @actualizado="actualizar" />
   </div>
 </template>

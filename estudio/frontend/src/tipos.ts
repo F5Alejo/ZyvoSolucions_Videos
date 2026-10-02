@@ -27,8 +27,26 @@ export interface Marca {
   fuentes: Fuente[];
   pendientes: Item[];
   pedir_al_cliente: Item[];
-  logo?: { archivo: string; fondo: "claro" | "oscuro" };
+  logo?: { archivo?: string; archivo_local?: string; fondo: "claro" | "oscuro" };
   logo_url: string | null;
+  /** true si la registró una empresa desde el estudio; false en las marcas base. */
+  registrada: boolean;
+  voz_id?: string | null;
+  creada?: string;
+}
+
+export interface EmpresaFila extends Marca { cursos: number; videos: number }
+
+/** Lo que se envía al registrar o editar una empresa. */
+export interface DatosEmpresa {
+  nombre: string;
+  nombre_corto: string;
+  que_es: string;
+  sitio_web: string;
+  responsable: string;
+  colores: string[];
+  voz: string;
+  cta: string;
 }
 
 export interface Voz {
@@ -38,6 +56,10 @@ export interface Voz {
   proveedor: string;
   voice_id: string | null;
   muestra_url: string | null;
+  /** Lo que falta para producir con esta voz (modelo, clave…); null si ya se puede. */
+  falta: string | null;
+  /** Su licencia no permite entregar: los videos salen con sello «BORRADOR». */
+  solo_borrador?: boolean;
 }
 
 export interface Catalogo {
@@ -83,6 +105,10 @@ export interface Lamina {
   segundos: number;
   citas: string[];
   fuente_narracion?: string;
+  /** Tiene una edición propia (el original del PPTX no cambia). */
+  editada?: boolean;
+  notas_original?: string;
+  pantalla?: { titulo: string | null; vinetas: string[] | null };
 }
 
 export interface VideoPlan { clave: string; titulo: string; laminas: number[]; segundos: number; frases: number }
@@ -108,6 +134,7 @@ export interface Trabajo {
   videos: { clave: string; titulo: string; laminas: number[] }[];
   excluidas: Record<string, string>;
   banco: Banco | null;
+  animacion?: { plantilla: string | null } | null;
 }
 
 export interface Resumen {
@@ -122,6 +149,47 @@ export interface Resumen {
 }
 
 export interface TrabajoCompleto { trabajo: Trabajo; resumen: Resumen }
+
+/** El motor (GET /api/trabajos/:id/produccion). */
+export type EstadoRender = "en_cola" | "produciendo" | "listo" | "error";
+
+export interface InformeRender {
+  video: string;
+  titulo: string;
+  creado: string;
+  marca: string;
+  voz: string;
+  borrador: boolean;
+  duracion: number;
+  chequeos: Chequeo[];
+}
+
+export interface VideoRender {
+  estado: EstadoRender;
+  paso: string | null;
+  progreso: number | null;
+  mensaje: string | null;
+  informe: InformeRender | null;
+  /** Se produjo con otra marca o voz que la elegida ahora. */
+  desactualizado: boolean;
+  archivos: { mp4: string; vtt: string; srt: string } | null;
+}
+
+export interface CompletoRender extends Omit<VideoRender, "informe" | "archivos"> {
+  informe: (Omit<InformeRender, "chequeos"> & { chequeos: Chequeo[]; capitulos: { inicio: number; titulo: string }[] }) | null;
+  archivos: { mp4: string; vtt: string; srt: string; capitulos: string } | null;
+}
+
+export interface Produccion {
+  voz_falta: string | null;
+  voz_borrador: boolean;
+  videos: Record<string, VideoRender | null>;
+  completo: CompletoRender | null;
+  listos: number;
+  total: number;
+  /** Videos que faltan o quedaron desactualizados («Título (sin producir)»). */
+  pendientes: string[];
+}
 
 export interface TrabajoFila {
   id: string;
@@ -156,4 +224,89 @@ export interface Caso {
   salida: Proyecto[];
   videos: (Entregable & { existe: boolean })[];
   documento_url: string | null;
+}
+
+/** Configuración del estudio (GET /api/configuracion). */
+export interface AjustesVideo {
+  video: { resolucion: "1080p" | "720p"; fps: 25 | 30 | 60; calidad: "final" | "borrador"; subtitulos_quemados: boolean };
+  tiempos: { entrada: number; pausa: number; salida: number };
+  audio: { lufs: number; musica: string | null; musica_volumen: number };
+  completo: { tarjetas: boolean; duracion_tarjeta: number; capitulos: boolean };
+}
+
+export interface Configuracion extends AjustesVideo {
+  cursos: { marca: string; voz: string; formatos: string[]; animacion: string };
+  agentes: { url: string; modelo_texto: string; modelo_vision: string; activos: Record<string, boolean> };
+}
+
+export type OpcionesConfig = Record<string, { valor: string | number; texto: string }[] | { min: number; max: number }>;
+export interface PistaMusica { archivo: string; licencia: string | null; fuente: string | null }
+
+export interface RespuestaConfig {
+  configuracion: Configuracion;
+  opciones: OpcionesConfig;
+  musica: PistaMusica[];
+  por_curso: (keyof AjustesVideo)[];
+}
+
+/** Diagnóstico del equipo (GET /api/sistema). */
+export interface Revision { ok: boolean; detalle: string; arreglo?: string | null }
+export interface Sistema {
+  ffmpeg: Revision;
+  chromium: Revision;
+  elevenlabs: Revision;
+  voces: { id: string; nombre: string; proveedor: string; ok: boolean; detalle: string }[];
+  ollama: Revision & { encendido: boolean; modelos: string[] };
+  disco: Revision;
+}
+
+/** Animación (GET /api/animaciones y /api/trabajos/:id/animacion). */
+export type Fase = "entrada" | "salida";
+export interface PasoAnim { efecto: string; duracion: number; retardo: number; curva: string; escalonado: number }
+export type ElementosAnim = Record<string, Record<Fase, PasoAnim>>;
+export type AjustesAnim = Record<string, Partial<Record<Fase, Partial<PasoAnim>>>>;
+export interface PlantillaAnim { id: string; nombre: string; descripcion: string; elementos: ElementosAnim; propia: boolean }
+export interface AnimacionCurso {
+  plantilla: string | null;
+  ajustes: AjustesAnim;
+  laminas: Record<string, { plantilla: string | null; ajustes: AjustesAnim }>;
+}
+export interface CatalogoAnim {
+  plantillas: PlantillaAnim[];
+  elementos: Record<string, { nombre: string; entrada: { id: string; nombre: string }[]; salida: { id: string; nombre: string }[] }>;
+  curvas: { id: string; nombre: string }[];
+  limites: Record<"duracion" | "retardo" | "escalonado", { min: number; max: number }>;
+  continuos: string[];
+}
+
+/** Agentes (GET /api/trabajos/:id/agentes). */
+export interface AgenteInfo {
+  id: string;
+  nombre: string;
+  que: string;
+  donde: "presentacion" | "guion" | "animacion" | "resultado";
+  modelo: string | null;
+  activo: boolean;
+  con_ia: boolean;
+  necesita_ia: boolean;
+  acepta: boolean;
+}
+export interface Propuesta {
+  id: string;
+  agente: string;
+  lamina: number | null;
+  video: string | null;
+  titulo: string;
+  antes: unknown;
+  despues: Record<string, unknown>;
+  razon: string;
+  estado: "pendiente" | "aceptada" | "descartada";
+  hecha_con: string;
+  creada: string;
+}
+export interface AgentesCurso {
+  agentes: AgenteInfo[];
+  estados: Record<string, { estado: EstadoRender; paso: string | null; progreso: number | null; mensaje: string | null;
+    propuestas: number | null; con_ia: boolean | null } | null>;
+  propuestas: Propuesta[];
 }

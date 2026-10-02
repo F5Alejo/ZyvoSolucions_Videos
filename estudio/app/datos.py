@@ -11,6 +11,21 @@ from datetime import date
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
+
+
+def _cargar_env(ruta: Path) -> None:
+    """Lee `.env` (claves como ELEVENLABS_API_KEY; no va a git). Una variable del sistema manda sobre él."""
+    if not ruta.exists():
+        return
+    for linea in ruta.read_text(encoding="utf-8").splitlines():
+        linea = linea.strip()
+        if linea and not linea.startswith("#") and "=" in linea:
+            clave, valor = (x.strip() for x in linea.split("=", 1))
+            if valor:
+                os.environ.setdefault(clave, valor.strip("\"'"))
+
+
+_cargar_env(RAIZ / ".env")
 RAIZ_DATOS = Path(os.environ.get("INTERFAZ_DATOS", RAIZ / "datos"))
 
 
@@ -82,8 +97,9 @@ def _leer(ruta: Path):
 
 
 def marcas() -> dict[str, dict]:
-    todas = (_leer(r) for r in sorted((RAIZ_DATOS / "marcas").glob("*.json")))
-    return {m["id"]: m for m in todas}
+    """Las marcas de siempre (`datos/marcas/`) y las empresas registradas en el estudio (`datos/empresas/`)."""
+    rutas = sorted((RAIZ_DATOS / "marcas").glob("*.json")) + sorted((RAIZ_DATOS / "empresas").glob("*.json"))
+    return {m["id"]: m for m in (_leer(r) for r in rutas)}
 
 
 def proyectos() -> list[dict]:
