@@ -8,6 +8,26 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-10-02 · Fases 8 a 10: cámara, transiciones y formatos
+
+### Qué se hizo
+- **Cámara (`motor/camara.py`):** quieta, acercarse despacio, alejarse despacio y recorrer hacia la izquierda o la derecha. Se aplica con ffmpeg (`zoompan`) sobre la escena ya dibujada, con una curva suave y la imagen ampliada al doble para que no salte. Cuesta ~0,3 veces la duración (10 s de 1080p en 2,9 s).
+- **Transiciones:** corte y fundido al color de fondo de la marca. El fundido no se solapa con la escena vecina: la duración de cada escena y la voz no se mueven.
+- **Formatos:** 16:9, 9:16, 1:1 (1080×1080) y 4:5 (1080×1350). Se produce en el primer formato elegido (`produccion.formato`). En 1:1 y 4:5 el texto se achica (`ESCALA_TEXTO`) y la foto ocupa menos alto. La tarjeta del curso completo sale en el mismo formato.
+- **API:** `GET /api/catalogo/escena` (cámaras, transiciones y formatos) y `PUT /api/trabajos/{id}/escena` (para el curso o por lámina), validado contra el catálogo.
+- La firma solo incluye el formato y la escena cuando no son los de siempre: los cursos de antes no quedan desactualizados.
+- Pruebas: 108 (`tests/test_escena.py`, con un video 9:16 real con cámara y fundidos).
+
+### Errores y cómo se resolvieron
+- **El diseño vertical de la plantilla estaba roto** (nunca se había producido: el motor fijaba 16:9). En columna, `.texto` con `flex: 1` crecía hacia abajo y `align-items: center` lo dejaba angosto: el texto quedaba arriba y centrado a lo ancho. Ahora ocupa el ancho y el conjunto queda centrado en la altura.
+
+### Decisiones
+- **La cámara mantiene fijo el borde de abajo:** un zoom centrado recortaba la barra de avance.
+- **Fuera del catálogo por ahora:** paralaje y enfoque (necesitan la escena en capas), paneos verticales (recortarían la barra), fundido cruzado y deslizamiento (solapan escenas y moverían la voz).
+- **La cámara se hace en ffmpeg y no en el navegador:** con CSS habría que dibujar cada cuadro y el render costaría más del doble.
+
+---
+
 ## 2026-10-02 · Agente 1 (Analizador), tablas y gráficos, y PPTX de prueba
 
 ### Qué se hizo

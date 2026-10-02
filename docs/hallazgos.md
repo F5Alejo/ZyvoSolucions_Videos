@@ -22,6 +22,8 @@ de cada uno, con su fecha, está en la [bitácora](bitacora.md).
 | La salida de una animación pisaba la entrada | Con dos animaciones `both` en el mismo elemento, la salida aplicaba su estado antes de tiempo | Entrada con `fill-mode: both` y salida con `forwards` |
 | El fondo y el logo parpadeaban entre láminas | Entraban y salían en cada escena | Solo entran en la primera escena del video y solo salen en la última |
 | Un render de 40 s de lámina sería lento | Dibujar cada cuadro con Chromium es caro | Se dibujan cuadro a cuadro solo la entrada y la salida; ffmpeg sostiene lo del medio |
+| La plantilla vertical dejaba el texto arriba y angosto | En columna, `.texto` con `flex: 1` crece hacia abajo y `align-items: center` lo encoge | En vertical, `.texto` sin `flex` y a todo el ancho; `.cuerpo` con `align-items: stretch` |
+| Un zoom centrado recortaba la barra de avance | El zoom corta lo mismo arriba que abajo | La cámara mantiene fijo el borde de abajo (`y=ih-ih/zoom`) |
 | El título repetido en la portada | El video toma su nombre de la primera lámina | La portada usa el nombre del curso como antetítulo |
 
 ## Interfaz (Vue)

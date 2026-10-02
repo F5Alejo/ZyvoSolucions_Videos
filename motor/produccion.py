@@ -20,7 +20,7 @@ from datetime import datetime
 from pathlib import Path
 
 from app import configuracion, taller
-from motor import audio, bugs, errores, logs, render, renderers, subtitulos, videospec
+from motor import audio, bugs, errores, escenas, logs, render, renderers, subtitulos, videospec
 from motor import voz as motor_voz
 from motor.qa import revisar
 
@@ -36,7 +36,17 @@ def firma(t: dict) -> str:
         grupos["video"].pop("renderer")
     base = {"marca": t["marca"], "voz": t["voz"], "conf": grupos,
             "animacion": t.get("animacion"), "ediciones": t.get("ediciones")}
+    # Solo si no son los de siempre: así la firma de un curso de antes no cambia.
+    if formato(t) != "16:9":
+        base["formato"] = formato(t)
+    if t.get("escena"):  # cámara y transiciones
+        base["escena"] = t["escena"]
     return hashlib.sha256(json.dumps(base, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()[:16]
+
+
+def formato(t: dict) -> str:
+    """El formato en que se produce el curso: el primero que eligió la persona."""
+    return next((f for f in t.get("formatos") or [] if f in escenas.FORMATOS), "16:9")
 
 
 class ErrorProduccion(RuntimeError):
@@ -174,7 +184,7 @@ def producir(t: dict, clave: str, avisar=lambda paso, progreso: None, fase=lambd
     shutil.rmtree(tmp, ignore_errors=True)
     tmp.mkdir(parents=True)
 
-    spec = correr(t, clave, "plan", lambda: etapa_plan(t, clave, salida), fase)
+    spec = correr(t, clave, "plan", lambda: etapa_plan(t, clave, salida, formato(t)), fase)
     respaldo = None
     try:
         spec = correr(t, clave, "voz", lambda: etapa_voz(t, spec, voz, salida, avisar), fase)

@@ -18,7 +18,9 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 AQUI = Path(__file__).resolve().parent
 FUENTE = AQUI / "fuentes" / "Montserrat.ttf"
 
-FORMATOS = {"16:9": (1920, 1080), "9:16": (1080, 1920)}
+FORMATOS = {"16:9": (1920, 1080), "9:16": (1080, 1920), "1:1": (1080, 1080), "4:5": (1080, 1350)}
+# Cuánto se achica el texto en los formatos con poco alto (cuadrado e Instagram).
+ESCALA_TEXTO = {"16:9": 1.0, "9:16": 1.0, "1:1": 0.72, "4:5": 0.82}
 
 _entorno = Environment(loader=FileSystemLoader(AQUI), autoescape=select_autoescape(["html"]))
 
@@ -145,5 +147,5 @@ def html(v: dict, e: dict, formato: str = "16:9", borrador: bool = False,
     reglas, partir = animacion.css(plan, v, segundos, 100 * v["indice"] / v["total"], 100 * (v["indice"] + 1) / v["total"])
     ancho, alto = FORMATOS[formato]
     return _entorno.get_template("escena.html").render(
-        v=v, e=e, ancho=ancho, alto=alto, vertical=formato == "9:16", borrador=borrador,
+        v=v, e=e, ancho=ancho, alto=alto, vertical=formato != "16:9", k=ESCALA_TEXTO[formato], borrador=borrador,
         fuente=FUENTE.resolve().as_uri(), animaciones=reglas, partir=partir)

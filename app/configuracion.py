@@ -100,7 +100,7 @@ def _validar(conf: dict, estricto: bool = True) -> dict:
     ids_voces = {v["id"] for v in json.loads((datos.RAIZ_DATOS / "voces.json").read_text(encoding="utf-8"))}
     if c["voz"] not in ids_voces:
         raise ValueError("La voz por defecto no existe")
-    if not c["formatos"] or any(f not in ("16:9", "9:16") for f in c["formatos"]):
+    if not c["formatos"] or any(f not in ("16:9", "9:16", "1:1", "4:5") for f in c["formatos"]):
         raise ValueError("Elige al menos un formato válido")
 
     musica = conf["audio"]["musica"]

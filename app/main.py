@@ -14,7 +14,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel
 
 from app import configuracion, datos, extractor, taller
-from motor import analisis, cola, diagnostico, empaquetar, escenas, logs, produccion, recursos
+from motor import analisis, catalogo, cola, diagnostico, empaquetar, escenas, logs, produccion, recursos
 from motor import voz as motor_voz
 from motor.agentes import entrega as agentes_entrega
 from motor.agentes import registro as agentes
@@ -379,6 +379,28 @@ def api_guardar_plantilla(p: dict):
 @app.delete("/api/animaciones/{id_}", status_code=204)
 def api_borrar_plantilla(id_: str):
     animacion.borrar_propia(id_)
+
+
+@app.get("/api/catalogo/escena")
+def api_catalogo_escena():
+    """Los movimientos de cámara y las transiciones que se pueden elegir (nada fuera de aquí se ejecuta)."""
+    return {"camaras": [{"id": k, "nombre": v} for k, v in catalogo.CAMARA.items()],
+            "transiciones": [{"id": k, "nombre": v} for k, v in catalogo.TRANSICION.items()],
+            "formatos": [{"id": k, "nombre": v, "ancho": escenas.FORMATOS[k][0], "alto": escenas.FORMATOS[k][1]}
+                         for k, v in taller.FORMATOS.items()]}
+
+
+@app.put("/api/trabajos/{id_}/escena")
+def api_guardar_escena(id_: str, e: dict):
+    """Cámara y transición del curso y, si se quiere, de cada lámina."""
+    t = _trabajo_o_404(id_)
+    limpio = catalogo.validar_escena(e)
+    if limpio:
+        t["escena"] = limpio
+    else:
+        t.pop("escena", None)
+    taller.guardar(t)
+    return _trabajo_completo(t)
 
 
 @app.get("/api/trabajos/{id_}/animacion")

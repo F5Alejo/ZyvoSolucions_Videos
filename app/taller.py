@@ -15,7 +15,7 @@ from pathlib import Path
 
 from app import datos, extractor
 
-FORMATOS = {"16:9": "Horizontal 16:9", "9:16": "Vertical 9:16"}
+FORMATOS = {"16:9": "Horizontal 16:9", "9:16": "Vertical 9:16", "1:1": "Cuadrado 1:1", "4:5": "Instagram 4:5"}
 
 
 def _raiz() -> Path:
