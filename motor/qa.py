@@ -36,7 +36,10 @@ def revisar(mp4: Path, ancho: int, alto: int, duracion_esperada: float, estimada
     real = num / den
 
     sonoridad = audio.medir(mp4) if a else None
-    negros = re.findall(r"black_start:([\d.]+) black_end:([\d.]+)", _filtro(mp4, "-vf", "blackdetect=d=1.0:pix_th=0.05", "-an"))
+    # pic_th=0.999: una lámina de fondo oscuro (el negro de RiskMann) con poco texto tiene más del 98 % de
+    # píxeles oscuros y con el valor por defecto contaba como «pantalla negra». Una falla real es negra entera.
+    negros = re.findall(r"black_start:([\d.]+) black_end:([\d.]+)",
+                        _filtro(mp4, "-vf", "blackdetect=d=1.0:pix_th=0.05:pic_th=0.999", "-an"))
     silencios = re.findall(r"silence_start: ([\d.]+)", _filtro(mp4, "-af", "silencedetect=noise=-50dB:d=4", "-vn"))
     picos = re.findall(r"Overall.*?Peak level dB: (-?[\d.]+|-inf)", _filtro(mp4, "-af", "astats=measure_perchannel=none", "-vn"),
                        re.S)

@@ -8,6 +8,18 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-10-02 · Fase 16: prueba de punta a punta y un falso positivo del control de calidad
+
+### Qué se hizo
+- **`tests/test_e2e.py`:** como lo hace la interfaz. Sube `mixed_content.pptx` (9 láminas con imágenes, tabla, gráfico y una lámina sin notas), lo analiza, aplica el estilo Corporativo, elige la voz, produce todo por la cola y revisa que cada MP4 sea H.264 + AAC, que exista su versión `v001`, que la línea de tiempo esté resuelta con fundidos, que el completo traiga capítulos y que el ZIP se arme.
+- Pruebas: 117.
+
+### Errores y cómo se resolvieron
+- **Falso positivo «Pantalla negra»:** la prueba encontró una «pantalla negra» de 5,8 s que en realidad era la lámina «Cierre». Tiene el fondo casi negro de RiskMann (#020202) y poco texto, así que más del 98 % de sus píxeles son oscuros, que es el umbral por defecto de `blackdetect`. Ahora se exige el 99,9 % (`pic_th=0.999`): una falla real es negra entera y se sigue detectando. Hay una prueba para cada caso.
+- **La lámina sin notas queda en silencio y el control de calidad lo marca** (bug `AUDIO_003`, recuperación «revisar el guion»). Es lo esperado: el Analizador ya lo había avisado al subir.
+
+---
+
 ## 2026-10-02 · Fases 14 y 15: la interfaz de Zyvo y el editor por escena
 
 ### Qué se hizo
