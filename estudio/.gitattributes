@@ -1,2 +1,0 @@
-# Los scripts de PowerShell se guardan con CRLF (Windows PowerShell 5.1)
-*.ps1 text eol=crlf

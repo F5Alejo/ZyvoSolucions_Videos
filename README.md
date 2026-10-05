@@ -1,11 +1,12 @@
 # riskmann2-marketing-videos
 Repositorio dedicado a la elaboración de videos para presentaciones, marketing y capacitación de la plataforma RiskMann, producidos con [HyperFrames](https://github.com/heygen-com/hyperframes) (HTML → MP4).
 
-## Estudio de video
+## Estudio de video (Zyvo)
 
-En [`estudio/`](estudio/) vive el **estudio de video**: la aplicación donde entra un PPTX y sale el curso
-en video, con el seguimiento de las piezas de cada marca. Vue 3 + TypeScript + Tailwind y una API en
-FastAPI. Lee este repositorio en solo lectura. Cómo arrancarlo: [`estudio/README.md`](estudio/README.md).
+El estudio de video, la aplicación donde entra un PPTX y sale el curso en video, vive en la rama
+`juandev` y en `main` de este repositorio (Zyvo). Esta rama guarda los proyectos de video hechos con
+HyperFrames, las fichas de marca y el material fuente, con toda su historia. El estudio puede leerla:
+basta con poner su ruta en `repo_videos` de `config.local.json`.
 
 ## Cómo trabajamos: una rama por persona
 
@@ -44,7 +45,6 @@ Antes de cambiar de rama o renderizar, **commit y push**: el trabajo que solo vi
 ## Estructura
 
 ```
-estudio/                 el estudio de video (aplicación Vue + API)
 assets/                  material fuente compartido (marca, iconos, capturas, grabaciones)
   fotos-pixabay/         fotos candidatas ya revisadas para la serie PESV
 docs/                    informes (PoC)
