@@ -53,6 +53,19 @@ Más en [`docs/architecture.md`](docs/architecture.md) y [`ARCHITECTURE.md`](ARC
 ¿Algo salió mal? [`docs/troubleshooting.md`](docs/troubleshooting.md). El modo experto de antes, con
 el guion completo, la animación de cada elemento y los agentes, sigue en **Cursos**.
 
+### Identidad
+
+- **Colores: la guía del manual de identidad de RiskMann**, en sus dos modos (selector en la barra lateral,
+  oscuro por defecto). Oscuro: `#020202` fondo, `#272725` separadores, `#C8951A` dorado, `#06C7FB` cian,
+  `#999999` gris, `#FF3333` énfasis. Claro: `#26367D` institucional, `#333366` texto, `#336699`.
+  Los que no llegan a 4,5:1 como texto sobre blanco se oscurecen solo para texto; cada token dice su
+  origen y su contraste en `frontend/src/estilos.css`.
+- **Imágenes: el banco de RiskMann.** El caballero del manual en la portada y en Crear curso; las
+  ilustraciones de su app en los estados vacíos, el error de conexión y la página 404. El origen de cada
+  una está en `frontend/public/marca/banco/FUENTES.md`.
+- **Tipografía:** Dubai, la del manual, cuando está instalada (viene con Windows); si no, Montserrat.
+  Dubai no se incluye en el proyecto: es de Microsoft y su licencia no permite redistribuirla en la web.
+
 ## Instalar en un equipo nuevo (Windows)
 
 Con Python 3.12+ y Node 20+ instalados, después de clonar:
@@ -217,11 +230,28 @@ git switch Alejodev && git pull origin main       # deja Alejodev igual que main
 | `/crear` | **Zyvo**: subir el PPTX y crear el video paso a paso |
 | `/crear/:id/editar/:clave` | Editor por escena con línea de tiempo |
 | `/cursos/nuevo` | Subir un PPTX (arrastrar y soltar, progreso de subida) |
-| `/cursos/:id` | El curso en cinco pasos: Presentación · Guion · Marca y voz · Animación · Resultado |
+| `/cursos/:id/asistente` | Después de subir: lo que encontramos → marca (con vista previa en vivo) → voz (con muestras) → formato → listo |
+| `/empresas` | Las empresas: las cuatro marcas base y las que se registran desde el estudio |
+| `/empresas/nueva` | Registrar una empresa en cuatro pasos: datos → logo (propone los colores del logo) → colores → voz y cierre, con vista previa en vivo |
+| `/cursos/:id` | El curso en cinco pestañas: **Resumen** (estado, siguiente paso, vistas previas, agentes), **Guion**, **Marca y voz** (con los ajustes de producción del curso), **Animación** y **Producir** |
 | `/configuracion` | Cómo se producen los videos, música, agentes y qué tiene este equipo |
+
+Pensado para una persona que no es del equipo de producción:
+
+- **Un paso a la vez.** El asistente guía después de subir; cada elección se guarda sola y «atrás» funciona.
+- **Siempre un siguiente paso.** El Resumen dice qué hacer ahora y lleva al lugar exacto del guion.
+- **Sus palabras.** «Diapositivas», no «láminas»; cada aviso dice qué pasa y qué hacer.
+- **Ver antes de producir.** Cada video tiene una vista previa con la marca; el color del texto se elige por
+  contraste medido, nunca por la paleta a ciegas.
+- **Ayuda a mano.** Panel de ayuda con un dibujo de dónde están las notas del orador en PowerPoint.
+- **Cualquier empresa entra sola.** «¿Tu empresa no está?» al elegir la marca lleva al registro y vuelve al curso.
+- **Lo del equipo, aparte.** Videos y Pendientes van plegados en «Equipo de producción».
+
+| Ruta del equipo | Qué hace |
+| --- | --- |
 | `/videos` | Todos los videos, con filtros que quedan en la dirección y columnas ordenables |
 | `/videos/:id` | Un video: reproducción, siguiente paso (aprobar, entregar…) e historial |
-| `/marcas/:id` | Ficha de la marca; RiskMann con su paleta en cuatro capas y la fuente de cada color |
+| `/marcas/:id` | Ficha de la marca (las registradas se editan, se eliminan si no tienen cursos, o abren un curso nuevo con su marca y su voz); RiskMann con su paleta en cuatro capas y la fuente de cada color |
 | `/pendientes` | Lo pendiente con cada marca y los videos sin estado |
 | `/casos/:id` | Una pieza de marketing: qué entró, qué se hizo y qué salió |
 
@@ -230,9 +260,9 @@ git switch Alejodev && git pull origin main       # deja Alejodev igual que main
 | Paso | Qué hace | Estado |
 | --- | --- | --- |
 | Entra | Lee el PPTX: formas con nombre, notas del orador, imágenes → `curso.json` (formato de csm/moto) | Funciona |
-| Guion | Cada frase con la lámina de la que sale; cifras, normas y umbrales resaltados | Funciona |
+| Guion | Cada frase con la diapositiva de la que sale; cifras, normas y umbrales resaltados | Funciona |
 | Videos | Un video por sección si el PPTX las marca (forma `section`); si no, por duración | Funciona |
-| Marca y voz | Las cuatro marcas y las voces con su muestra; se guarda solo | Funciona |
+| Marca y voz | Las marcas base, las empresas registradas y las voces con su muestra; se guarda solo | Funciona |
 | Resultado | Plan de videos, preguntas, revisión, `curso.json` y **orden de producción** | Funciona |
 | Animación | Estilo y entrada/salida de cada elemento, por curso o por lámina, con vista previa en vivo | Funciona |
 | Render | «Producir video» por tarjeta o «Producir lo que falta y el completo»: MP4 por video, MP4 completo con capítulos, subtítulos y paquete ZIP | Funciona en 16:9, 9:16, 1:1 y 4:5, con cámara, fundidos, música, efectos y versiones |
@@ -250,6 +280,8 @@ Dónde está cada cosa, las reglas del proyecto y cómo agregar voces, estilos, 
 ## Los datos
 
 - `datos/marcas/<marca>.json`: una ficha por marca (SOFU, RiskMann, FEGIR, Dr. Yezid Ricaurte).
+- `datos/empresas/<id>.json` y `datos/empresas/logos/<id>.png`: las empresas registradas desde el estudio. Son datos
+  de clientes y no van a git. El logo se valida (PNG, JPG o WebP de hasta 5 MB) y se guarda re-codificado en PNG.
 - `datos/proyectos.json`: un registro por video, con sus carpetas de `videos/`, sus entregables y su historial.
 - `datos/voces.json` y `datos/casos.json`: voces para elegir y piezas de marketing de ejemplo.
 

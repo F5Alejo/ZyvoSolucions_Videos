@@ -8,11 +8,15 @@ const router = createRouter({
     { path: "/crear", name: "crear-video", component: () => import("./views/CrearVideoView.vue"), meta: { titulo: "Crear video" } },
     { path: "/crear/:id", name: "crear-proyecto", component: () => import("./views/CrearVideoView.vue"), props: true, meta: { titulo: "Crear video" } },
     { path: "/crear/:id/editar/:clave", name: "editor", component: () => import("./views/EditorVideoView.vue"), props: true, meta: { titulo: "Editar video" } },
-    { path: "/cursos", name: "cursos", component: () => import("./views/CursosView.vue"), meta: { titulo: "Cursos" } },
+    { path: "/cursos", name: "cursos", component: () => import("./views/CursosView.vue"), meta: { titulo: "Mis cursos" } },
     { path: "/cursos/nuevo", name: "crear", component: () => import("./views/CrearCursoView.vue"), meta: { titulo: "Crear curso" } },
+    { path: "/cursos/:id/asistente", name: "asistente", component: () => import("./views/AsistenteView.vue"), props: true, meta: { titulo: "Preparar curso" } },
     { path: "/cursos/:id", name: "curso", component: () => import("./views/CursoView.vue"), props: true, meta: { titulo: "Curso" } },
     { path: "/videos", name: "videos", component: () => import("./views/VideosView.vue"), meta: { titulo: "Videos" } },
     { path: "/videos/:id", name: "video", component: () => import("./views/VideoView.vue"), props: true, meta: { titulo: "Video" } },
+    { path: "/empresas", name: "empresas", component: () => import("./views/EmpresasView.vue"), meta: { titulo: "Empresas" } },
+    { path: "/empresas/nueva", name: "registrar-empresa", component: () => import("./views/RegistrarEmpresaView.vue"), meta: { titulo: "Registrar empresa" } },
+    { path: "/empresas/:id/editar", name: "editar-empresa", component: () => import("./views/RegistrarEmpresaView.vue"), props: true, meta: { titulo: "Editar empresa" } },
     { path: "/marcas/:id", name: "marca", component: () => import("./views/MarcaView.vue"), props: true, meta: { titulo: "Marca" } },
     { path: "/pendientes", name: "pendientes", component: () => import("./views/PendientesView.vue"), meta: { titulo: "Pendientes" } },
     { path: "/configuracion", name: "configuracion", component: () => import("./views/ConfiguracionView.vue"), meta: { titulo: "Configuración" } },
@@ -22,7 +26,7 @@ const router = createRouter({
 });
 
 router.afterEach((a) => {
-  document.title = `${(a.meta.titulo as string) ?? "Estudio"} · Zyvo`;
+  document.title = `${(a.meta.titulo as string) ?? "Estudio"} · Estudio de video RiskMann`;
 });
 
 export default router;

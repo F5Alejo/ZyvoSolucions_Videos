@@ -1,21 +1,21 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, watch } from "vue";
-import { ChevronDown, CircleAlert, CircleCheck, CircleX, Clapperboard, Download, FileArchive, Film, Info, ListVideo, LoaderCircle, RefreshCw, Trash2 } from "@lucide/vue";
+import { ChevronDown, CircleAlert, CircleCheck, CircleX, Clapperboard, Download, FileArchive, Film, Info, ListVideo, LoaderCircle, RefreshCw } from "@lucide/vue";
 import { api } from "../../api";
 import { avisar } from "../../composables/avisos";
 import { catalogo } from "../../composables/catalogo";
 import type { Produccion, TrabajoCompleto, VideoRender } from "../../tipos";
 import PanelAgentes from "./PanelAgentes.vue";
-import { cuenta, mmss } from "../../utils";
+import { cuenta, mmss, tintaLegible } from "../../utils";
 
 const props = defineProps<{ datos: TrabajoCompleto }>();
-const emit = defineEmits<{ eliminar: []; actualizado: [TrabajoCompleto] }>();
+const emit = defineEmits<{ actualizado: [TrabajoCompleto] }>();
 
 const t = computed(() => props.datos.trabajo);
 const r = computed(() => props.datos.resumen);
 const marca = computed(() => catalogo.value?.marcas[t.value.marca]);
 const fondo = computed(() => marca.value?.paleta[0]?.hex ?? "#020202");
-const tinta = computed(() => marca.value?.paleta[1]?.hex ?? "#FFFFFF");
+const tinta = computed(() => tintaLegible(fondo.value, (marca.value?.paleta ?? []).slice(1).map((c) => c.hex)));
 const vertical = computed(() => t.value.formatos.length === 1 && t.value.formatos[0] === "9:16");
 
 // ── El motor: estado de cada video; mientras alguno se produce, se consulta cada 3 s ──
@@ -102,7 +102,7 @@ function fallas(v: VideoRender): number {
       <CircleAlert class="mt-0.5 size-5 shrink-0 text-aviso" />
       <p class="text-sm">
         <strong>Esta voz no se puede usar todavía.</strong> {{ produccion.voz_falta }}.
-        Elige otra en <em>Marca y voz</em>: las voces Kokoro son gratuitas y se pueden entregar.
+        Elige otra en la pestaña <em>Marca y voz</em>: las voces Kokoro son gratuitas y se pueden entregar.
       </p>
     </div>
     <div v-else-if="produccion?.voz_borrador" class="flex gap-3 rounded-xl border-l-4 border-aviso bg-aviso-fondo p-4" role="status">
@@ -242,68 +242,5 @@ function fallas(v: VideoRender): number {
 
     <PanelAgentes :trabajo="t.id" donde="resultado" @actualizado="(d) => emit('actualizado', d)" />
 
-    <!-- Revisión -->
-    <div>
-      <h3 class="mb-3 text-lg font-bold">Revisión</h3>
-      <ul class="space-y-2">
-        <li v-for="c in r.chequeos" :key="c.titulo" class="tarjeta flex items-start gap-3 p-4">
-          <CircleCheck v-if="c.ok === true" class="size-5 shrink-0 text-exito" aria-label="Bien" />
-          <CircleX v-else-if="c.ok === false" class="size-5 shrink-0 text-error" aria-label="Falla" />
-          <CircleAlert v-else class="size-5 shrink-0 text-aviso" aria-label="Revisar" />
-          <span><strong class="block text-sm">{{ c.titulo }}</strong><span class="text-sm text-suave">{{ c.detalle }}</span></span>
-        </li>
-      </ul>
-      <details v-if="r.normativas.length" class="tarjeta group mt-3 p-4">
-        <summary class="flex cursor-pointer list-none items-center justify-between text-sm font-semibold">
-          Ver cada cifra y norma, lámina por lámina <ChevronDown class="size-4 transition group-open:rotate-180" />
-        </summary>
-        <dl class="mt-3 divide-y divide-borde text-sm">
-          <div v-for="x in r.normativas" :key="x.lamina" class="grid grid-cols-[90px_1fr] gap-3 py-2">
-            <dt class="text-suave">Lámina {{ x.lamina }}</dt><dd>{{ x.citas.join(" · ") }}</dd>
-          </div>
-        </dl>
-      </details>
-    </div>
-
-    <!-- Preguntas -->
-    <div v-if="t.banco">
-      <h3 class="text-lg font-bold">Preguntas de evaluación · {{ r.preguntas }}</h3>
-      <p class="mt-1 mb-3 text-sm text-suave">Cada pregunta indica de qué lámina sale. La respuesta correcta va en verde.</p>
-      <div class="space-y-2">
-        <details v-for="g in t.banco.grupos" :key="g.clave" class="tarjeta group">
-          <summary class="flex cursor-pointer list-none items-center justify-between gap-3 p-4">
-            <span><strong>{{ g.titulo }}</strong> <span class="text-sm text-suave">· {{ g.tema }} · {{ cuenta(g.preguntas.length, "pregunta") }}</span></span>
-            <ChevronDown class="size-4 shrink-0 transition group-open:rotate-180" />
-          </summary>
-          <ol class="list-decimal space-y-4 border-t border-borde px-4 py-4 pl-10">
-            <li v-for="(p, i) in g.preguntas" :key="i">
-              <p class="font-semibold">{{ p.enunciado }}</p>
-              <ul class="mt-1.5 space-y-1 text-sm">
-                <li class="flex gap-2 font-semibold text-exito"><CircleCheck class="mt-0.5 size-4 shrink-0" />{{ p.correcta }}</li>
-                <li v-for="x in p.distractores" :key="x" class="pl-6 text-suave">{{ x }}</li>
-              </ul>
-              <span class="mt-2 inline-block rounded-md bg-entra/10 px-2 py-0.5 text-xs font-semibold text-entra">{{ p.fuente }}</span>
-            </li>
-          </ol>
-        </details>
-      </div>
-    </div>
-
-    <!-- Archivos -->
-    <div class="tarjeta p-5">
-      <h3 class="font-bold">Archivos para el equipo técnico</h3>
-      <p class="mt-1 text-sm text-suave">Lo que recibirá el generador de video. No hace falta abrirlos para revisar el curso.</p>
-      <div class="mt-4 flex flex-wrap gap-2">
-        <a :href="`/api/trabajos/${t.id}/orden.json`" class="boton-secundario"><Download class="size-4" /> Orden de producción</a>
-        <a :href="`/api/trabajos/${t.id}/curso.json`" class="boton-secundario"><Download class="size-4" /> Contenido extraído</a>
-        <a v-if="t.banco" :href="`/api/trabajos/${t.id}/banco.json`" class="boton-secundario"><Download class="size-4" /> Preguntas</a>
-        <a v-if="t.banco" :href="`/api/trabajos/${t.id}/banco.gift`" class="boton-secundario"><Download class="size-4" /> Preguntas para Moodle (GIFT)</a>
-        <a v-if="t.banco" :href="`/api/trabajos/${t.id}/banco.xml`" class="boton-secundario"><Download class="size-4" /> Moodle XML</a>
-      </div>
-    </div>
-
-    <div class="flex justify-end">
-      <button class="boton-peligro" @click="$emit('eliminar')"><Trash2 class="size-4" /> Eliminar este curso</button>
-    </div>
   </section>
 </template>

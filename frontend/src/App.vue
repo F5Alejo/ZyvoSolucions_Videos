@@ -6,6 +6,7 @@ import BarraLateral from "./components/BarraLateral.vue";
 import AvisosFlotantes from "./components/AvisosFlotantes.vue";
 import DialogoConfirmar from "./components/DialogoConfirmar.vue";
 import EstadoCarga from "./components/EstadoCarga.vue";
+import PanelAyuda from "./components/PanelAyuda.vue";
 import { catalogo, cargarCatalogo } from "./composables/catalogo";
 
 const ruta = useRoute();
@@ -33,8 +34,8 @@ watch(() => ruta.fullPath, () => (menuAbierto.value = false));
   <!-- Móvil: barra superior y menú deslizable -->
   <header class="sticky top-0 z-30 flex items-center justify-between border-b-2 border-dorado bg-lateral px-4 py-3 lg:hidden">
     <RouterLink to="/" class="flex items-center gap-2">
-      <span class="chispa grid size-7 place-items-center rounded-lg text-sm font-black text-white">Z</span>
-      <span class="text-sm font-extrabold tracking-wide text-white">Zyvo</span>
+      <img src="/marca/riskmann_logo_blanco.png" alt="RiskMann by SOFU" class="h-7" />
+      <span class="border-l border-white/30 pl-2 text-sm font-semibold text-white">Estudio de video</span>
     </RouterLink>
     <button class="rounded-lg p-2 text-white hover:bg-white/10" :aria-expanded="menuAbierto" aria-controls="menu-movil"
             aria-label="Abrir el menú" @click="menuAbierto = true">
@@ -66,4 +67,5 @@ watch(() => ruta.fullPath, () => (menuAbierto.value = false));
 
   <AvisosFlotantes />
   <DialogoConfirmar />
+  <PanelAyuda />
 </template>

@@ -77,11 +77,11 @@ async function cambiar(estado: Estado) {
 
     <p v-if="p.nota" class="mb-6 flex gap-2 rounded-lg bg-aviso-fondo p-4 text-sm text-aviso"><Info class="mt-0.5 size-4 shrink-0" />{{ p.nota }}</p>
 
-    <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
+    <div class="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
       <!-- Videos -->
       <section aria-labelledby="titulo-videos">
         <h2 id="titulo-videos" class="mb-4 text-lg font-bold">Videos</h2>
-        <div v-if="p.entregables_detalle?.length" class="grid gap-5" :class="vertical ? 'grid-cols-2 sm:grid-cols-3' : 'sm:grid-cols-2'">
+        <div v-if="p.entregables_detalle?.length" class="grid grid-cols-[minmax(0,1fr)] gap-5" :class="vertical ? 'grid-cols-2 sm:grid-cols-3' : 'sm:grid-cols-2'">
           <ReproductorVideo v-for="e in p.entregables_detalle" :key="e.archivo" :archivo="e.archivo" :titulo="e.nota" :existe="e.existe" :vertical="vertical" />
         </div>
         <div v-else class="rounded-xl border-2 border-dashed border-borde p-8 text-center">
@@ -146,7 +146,7 @@ async function cambiar(estado: Estado) {
       <summary class="flex cursor-pointer list-none items-center justify-between text-sm font-semibold text-suave">
         Detalles técnicos <ChevronDown class="size-4 transition group-open:rotate-180" />
       </summary>
-      <dl class="mt-4 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-[200px_1fr]">
+      <dl class="mt-4 grid grid-cols-[minmax(0,1fr)] gap-x-6 gap-y-3 text-sm sm:grid-cols-[200px_1fr]">
         <dt class="text-suave">Identificador</dt><dd><code>{{ p.id }}</code></dd>
         <dt class="text-suave">Estado según la documentación</dt><dd>{{ p.estado_original }}</dd>
         <dt class="text-suave">Dónde está el final</dt><dd>{{ p.donde ?? "sin registrar" }}</dd>

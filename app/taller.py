@@ -74,7 +74,7 @@ def _nuevo(nombre: str, origen: dict, laminas: list[dict], videos: list[dict],
     return t
 
 
-def desde_pptx(nombre_archivo: str, contenido: bytes, nombre: str = "") -> dict:
+def desde_pptx(nombre_archivo: str, contenido: bytes, nombre: str = "", marca: str = "") -> dict:
     tmp = _raiz() / f"_subida-{secrets.token_hex(4)}.pptx"
     tmp.parent.mkdir(parents=True, exist_ok=True)
     tmp.write_bytes(contenido)
@@ -85,7 +85,7 @@ def desde_pptx(nombre_archivo: str, contenido: bytes, nombre: str = "") -> dict:
         raise ValueError("No se pudo leer el archivo: ¿es un PPTX de PowerPoint?")
     if not laminas:
         tmp.unlink()
-        raise ValueError("El PPTX no tiene láminas")
+        raise ValueError("La presentación no tiene diapositivas")
     nombre = nombre.strip() or Path(nombre_archivo).stem
     t = _nuevo(
         nombre,
@@ -97,6 +97,13 @@ def desde_pptx(nombre_archivo: str, contenido: bytes, nombre: str = "") -> dict:
     extractor.guardar_imagenes(entrada, _raiz() / t["id"] / "media")
     from motor import analisis  # aquí: el motor también importa el taller
     analisis.guardar(t)
+    # Si se crea desde una empresa, el curso arranca con su marca y, si la tiene, su voz.
+    m = datos.marcas().get(marca)
+    if m:
+        t["marca"] = marca
+        if m.get("voz_id") in {v["id"] for v in voces()}:
+            t["voz"] = m["voz_id"]
+        guardar(t)
     return t
 
 
@@ -333,23 +340,40 @@ def resumen(t: dict) -> dict:
                     if not p["hecho"] and re.search(r"licencia|voz|umbral", p["texto"], re.I)]
 
     frases_total = sum(v["frases"] for v in videos)
+    diapos = lambda ls: ", ".join(str(l["n"]) for l in ls)  # noqa: E731
+    citas = sum(len(x["citas"]) for x in normativas)
+    # Cada comprobación, en palabras de quien usa el estudio: qué pasa y qué hacer.
     chequeos = [
-        {"ok": True, "titulo": "Cada frase del guion dice de qué lámina sale",
-         "detalle": f"{frases_total} frases trazadas a su lámina y a las notas del orador"},
-        {"ok": not sin_notas, "titulo": "Todas las láminas del video tienen narración",
-         "detalle": ", ".join(f"lámina {l['n']}" for l in sin_notas) or "Ninguna lámina queda muda"},
-        {"ok": not sin_uso, "titulo": "Ninguna lámina se queda fuera sin motivo",
-         "detalle": ", ".join(f"lámina {l['n']}" for l in sin_uso) or
-                    (f"{len(excluidas)} excluidas con su motivo" if excluidas else "Todas entran a un video")},
-        {"ok": not largos, "titulo": "Ningún video pasa de 4 minutos",
-         "detalle": ", ".join(v["titulo"] for v in largos) or "Todos dentro del rango"},
-        {"ok": None if normativas else True, "titulo": "Cifras y normas para revisar contra su fuente",
-         "detalle": f"{sum(len(x['citas']) for x in normativas)} citas en {len(normativas)} láminas"
+        {"clave": "fuente", "ok": True, "titulo": "Cada frase sale de tu presentación",
+         "detalle": f"{frases_total} frases, cada una con la diapositiva de la que viene", "ayuda": ""},
+        {"clave": "sin_notas", "ok": not sin_notas,
+         "titulo": "Todas las diapositivas tienen voz" if not sin_notas else "Hay diapositivas sin voz",
+         "detalle": f"Diapositivas {diapos(sin_notas)}: no tienen notas del orador" if sin_notas
+                    else "Todas tienen su guion en las notas del orador",
+         "ayuda": "Escribe su guion en las notas del orador y vuelve a subir la presentación." if sin_notas else ""},
+        {"clave": "sin_uso", "ok": not sin_uso,
+         "titulo": "Ninguna diapositiva se queda por fuera" if not sin_uso else "Hay diapositivas que no entran a ningún video",
+         "detalle": f"Diapositivas {diapos(sin_uso)}" if sin_uso
+                    else (f"{len(excluidas)} se dejan fuera a propósito, cada una con su motivo" if excluidas
+                          else "Todas entran a algún video"),
+         "ayuda": "Vuelve a proponer los videos desde el Guion." if sin_uso else ""},
+        {"clave": "largos", "ok": not largos,
+         "titulo": "Ningún video es demasiado largo" if not largos else "Hay videos de más de 4 minutos",
+         "detalle": ", ".join(v["titulo"] for v in largos) or "Todos duran menos de 4 minutos",
+         "ayuda": "Conviene partirlos: un video corto se termina de ver." if largos else ""},
+        {"clave": "normativas", "ok": None if normativas else True,
+         "titulo": "Cifras y normas por comprobar" if normativas else "No hay cifras ni normas que comprobar",
+         "detalle": f"{citas} {'cifra o norma' if citas == 1 else 'cifras o normas'} en "
+                    f"{len(normativas)} {'diapositiva' if len(normativas) == 1 else 'diapositivas'}"
                     + (f" ({len(verificadas)} ya revisadas)" if verificadas else "")
-                    if normativas else (f"Las {len(verificadas)} citas ya tienen su fuente revisada" if verificadas
-                                        else "El guion no cita normas ni cifras")},
-        {"ok": None if avisos_marca else True, "titulo": f"Pendientes de la marca {marca.get('nombre_corto', '')}",
-         "detalle": "; ".join(avisos_marca) or "Sin pendientes que afecten la producción"},
+                    if normativas else (f"Las {len(verificadas)} ya tienen su fuente revisada" if verificadas
+                                        else "El guion no cita leyes, porcentajes ni cifras"),
+         "ayuda": "Compruébalas contra su fuente antes de producir: un dato mal dicho en un video es difícil de corregir."
+                  if normativas else ""},
+        {"clave": "marca", "ok": None if avisos_marca else True,
+         "titulo": f"Pendientes de la marca {marca.get('nombre_corto', '')}",
+         "detalle": "; ".join(avisos_marca) or "Nada pendiente que afecte al video",
+         "ayuda": "Resuélvelos con el cliente antes de producir." if avisos_marca else ""},
     ]
     return {
         "videos": videos,

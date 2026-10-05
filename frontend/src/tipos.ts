@@ -27,8 +27,26 @@ export interface Marca {
   fuentes: Fuente[];
   pendientes: Item[];
   pedir_al_cliente: Item[];
-  logo?: { archivo: string; fondo: "claro" | "oscuro" };
+  logo?: { archivo?: string; archivo_local?: string; fondo: "claro" | "oscuro" };
   logo_url: string | null;
+  /** true si la registró una empresa desde el estudio; false en las marcas base. */
+  registrada: boolean;
+  voz_id?: string | null;
+  creada?: string;
+}
+
+export interface EmpresaFila extends Marca { cursos: number; videos: number }
+
+/** Lo que se envía al registrar o editar una empresa. */
+export interface DatosEmpresa {
+  nombre: string;
+  nombre_corto: string;
+  que_es: string;
+  sitio_web: string;
+  responsable: string;
+  colores: string[];
+  voz: string;
+  cta: string;
 }
 
 export interface Voz {
@@ -94,7 +112,13 @@ export interface Lamina {
 }
 
 export interface VideoPlan { clave: string; titulo: string; laminas: number[]; segundos: number; frases: number }
-export interface Chequeo { ok: boolean | null; titulo: string; detalle: string }
+export interface Chequeo {
+  clave: "fuente" | "sin_notas" | "sin_uso" | "largos" | "normativas" | "marca";
+  ok: boolean | null;
+  titulo: string;
+  detalle: string;
+  ayuda: string;
+}
 export interface Pregunta { enunciado: string; correcta: string; distractores: string[]; fuente: string }
 export interface Banco { nombre: string | null; grupos: { clave: string; titulo: string; tema: string; preguntas: Pregunta[] }[] }
 

@@ -25,6 +25,33 @@ export function fecha(iso: string): string {
   return d.toLocaleDateString("es-CO", { day: "numeric", month: "short", year: "numeric" });
 }
 
+// ── Color ───────────────────────────────────────────────────────────────────
+
+function luminancia(hex: string): number {
+  const c = hex.replace("#", "");
+  const [r, g, b] = [0, 2, 4].map((i) => {
+    const v = parseInt(c.slice(i, i + 2), 16) / 255;
+    return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
+}
+
+/** Contraste WCAG entre dos colores (1 a 21). */
+export function contraste(a: string, b: string): number {
+  const [x, y] = [luminancia(a), luminancia(b)].sort((m, n) => n - m);
+  return (x! + 0.05) / (y! + 0.05);
+}
+
+/**
+ * El primer color de `candidatos` que se lee sobre `fondo` (≥ `minimo`:1).
+ * Si ninguno llega, blanco o casi negro: el que más contraste dé.
+ */
+export function tintaLegible(fondo: string, candidatos: string[] = [], minimo = 4.5): string {
+  const bueno = candidatos.find((c) => contraste(c, fondo) >= minimo);
+  if (bueno) return bueno;
+  return contraste("#FFFFFF", fondo) >= contraste("#111111", fondo) ? "#FFFFFF" : "#111111";
+}
+
 export interface Trozo { texto: string; marcado: boolean }
 
 /**

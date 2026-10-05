@@ -53,7 +53,7 @@ def repo_falso(raiz: Path) -> Path:
 @pytest.fixture()
 def cliente(tmp_path, monkeypatch):
     copia = tmp_path / "datos"
-    shutil.copytree(ORIGEN, copia, ignore=shutil.ignore_patterns("trabajos"))
+    shutil.copytree(ORIGEN, copia, ignore=shutil.ignore_patterns("trabajos", "empresas", "musica"))
     from app import datos
     monkeypatch.setattr(datos, "RAIZ_DATOS", copia)
     monkeypatch.setitem(datos.CONFIG, "repo_videos", repo_falso(tmp_path / "repo"))
@@ -142,8 +142,9 @@ def test_entra_pptx_y_sale_el_curso(cliente, monkeypatch):
     orden = c.get(f"/api/trabajos/{id_}/orden.json").json()
     assert orden["marca"]["id"] == "riskmann" and orden["voz"]["id"] == "carlos"
     assert sum(len(v["laminas"]) for v in orden["videos"]) == 3
-    falla = next(x for x in orden["verificacion"] if x["titulo"].startswith("Todas las láminas del video tienen"))
-    assert falla["ok"] is False and "lámina 2" in falla["detalle"]
+    falla = next(x for x in orden["verificacion"] if x["clave"] == "sin_notas")
+    assert falla["ok"] is False and falla["titulo"] == "Hay diapositivas sin voz"
+    assert "Diapositivas 2" in falla["detalle"] and "notas del orador" in falla["ayuda"]
 
 
 def test_cambiar_marca_voz_y_formato(cliente):
