@@ -192,13 +192,19 @@ npm test                           # utilidades y componentes (Vitest)
 
 ### GitHub Actions y ramas
 
+Las normas completas están en [`docs/GIT_WORKFLOW.md`](docs/GIT_WORKFLOW.md), que **hay que leer
+antes de cada commit, merge o push**. En corto:
+
 | Rama | Para qué | Cómo se actualiza |
 | --- | --- | --- |
-| `Alejodev` | Pruebas y mejoras: aquí se desarrolla | Push directo; Actions corre todo en cada push |
-| `main` | La versión estable (protegida) | **Solo por pull request desde `Alejodev`**, con las pruebas en verde |
+| `feature/*` `fix/*` `refactor/*` `docs/*` `chore/*` | Un objetivo cada una | Nacen de `develop` y vuelven a `develop` por pull request (squash) |
+| `develop` | Integra el trabajo terminado para la próxima versión | Solo por pull request, con las pruebas en verde |
+| `main` | La versión publicada: cada commit es una versión | Solo desde `release/*` o `hotfix/*`, con merge commit (`--no-ff`) y su tag `vX.Y.Z` |
 
-**Flujo «Pruebas»** (`.github/workflows/pruebas.yml`, Ubuntu 24.04, en cada push a las dos ramas y en
-cada PR hacia `main`):
+Nunca se hace commit directo a `main` ni a `develop`.
+
+**Flujo «Pruebas»** (`.github/workflows/pruebas.yml`, Ubuntu 24.04, en cada push a `main` y
+`develop`, y en **todos** los pull request):
 
 | Trabajo | Qué revisa |
 | --- | --- |
@@ -211,16 +217,21 @@ cada PR hacia `main`):
 -SinModelos -Probar` en un Windows limpio, como en un equipo nuevo. Corre cada lunes, a mano
 (pestaña Actions → «Run workflow») y cuando cambian el instalador o las dependencias.
 
-**Dependabot** (`.github/dependabot.yml`): cada lunes propone PR agrupados hacia `Alejodev` con las
+**Dependabot** (`.github/dependabot.yml`): cada lunes propone PR agrupados hacia `develop` con las
 actualizaciones de pip, npm y las acciones.
 
-**Para llevar `Alejodev` a `main`:**
+**Para empezar un cambio:**
 ```sh
-gh pr create --base main --head Alejodev --fill   # abre el PR
+git switch develop && git pull
+git switch -c feature/mi-cambio                   # o fix/, refactor/, docs/, chore/
+# … trabajar y hacer commits con formato Conventional Commits …
+gh pr create --base develop --fill                # abre el PR
 gh pr checks --watch                              # espera las pruebas
-gh pr merge --merge                               # fusiona cuando están en verde
-git switch Alejodev && git pull origin main       # deja Alejodev igual que main
+gh pr merge --squash --delete-branch              # fusiona cuando están en verde
 ```
+
+**Para publicar una versión** (`release/x.y.z` → `main`, con su tag): el procedimiento completo
+está en [`docs/GIT_WORKFLOW.md`](docs/GIT_WORKFLOW.md), sección 4.
 
 ## Pantallas
 

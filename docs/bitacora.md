@@ -1,6 +1,6 @@
 # Bitácora del motor de video
 
-Todo lo que se hace, se decide o falla en la rama `Alejodev`, en orden. Lo más nuevo va arriba.
+Todo lo que se hace, se decide o falla, en orden. Lo más nuevo va arriba.
 El plan completo está en [`plan-motor.md`](plan-motor.md).
 
 Cada entrada lleva: **Qué se hizo**, **Decisiones** (con su porqué), **Errores** (y cómo se

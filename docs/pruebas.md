@@ -29,4 +29,4 @@ el script, se vuelven a generar y se suben con el cambio.
 
 Antes y después de tocar el motor: **todas** las pruebas. Si algo que funcionaba se rompe, se arregla
 eso antes de seguir. (Una vez se corrió solo una parte después del último cambio y Actions quedó en
-rojo: ver `hallazgos.md`.) GitHub Actions corre todo en cada push a `Alejodev` y `main`.
+rojo: ver `hallazgos.md`.) GitHub Actions corre todo en cada push a `develop` y `main`, y en todos los pull request.
