@@ -22,7 +22,7 @@ viñetas.
 5. Las escenas se unen sin recodificar.
 
 Un renderer nuevo solo tiene que cumplir `VideoRenderer` (`motor/proveedores.py`) y registrarse en
-`RENDERERS`. **Remotion no está incluido:** pide licencia de pago a empresas (ver `ARCHITECTURE.md`).
+`RENDERERS`. **Remotion no está incluido:** pide licencia de pago a empresas (ver `plan-migracion.md`).
 
 ## Catálogos (lo único que se puede pedir)
 

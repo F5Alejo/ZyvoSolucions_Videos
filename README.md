@@ -23,7 +23,7 @@ Subir PPTX → Analizar → Elegir estilo → Elegir voz → Opciones → ✨ Cr
 Por dentro: el PPTX se analiza, se arma un plano del video ([VideoSpec](docs/videospec.md)), se genera
 la voz frase por frase, se dibuja cada escena, se mezcla el audio y un control de calidad revisa el
 resultado. Cada etapa guarda lo que hizo: si algo falla, se reintenta o se rehace solo esa parte.
-Detalle en [`docs/pipeline.md`](docs/pipeline.md).
+Detalle en [`docs/produccion.md`](docs/produccion.md).
 
 ## Arquitectura
 
@@ -35,7 +35,7 @@ Detalle en [`docs/pipeline.md`](docs/pipeline.md).
 | Agentes | Analizador, guionista, director de animación y más; con IA local (Ollama) o reglas | `motor/agentes/`, `motor/analisis.py` |
 | Datos | Archivos JSON y carpetas: sin base de datos ni nube | `datos/` |
 
-Más en [`docs/architecture.md`](docs/architecture.md) y [`ARCHITECTURE.md`](ARCHITECTURE.md).
+Más en [`docs/arquitectura.md`](docs/arquitectura.md) y [`docs/plan-migracion.md`](docs/plan-migracion.md).
 
 ## Generar un video
 
@@ -50,7 +50,7 @@ Más en [`docs/architecture.md`](docs/architecture.md) y [`ARCHITECTURE.md`](ARC
 8. **Resultado:** míralo, compara versiones, **Edita** escena por escena (texto de la voz, movimiento,
    transición) y regenera solo esa escena, o **Exporta el MP4** (o todo en un ZIP).
 
-¿Algo salió mal? [`docs/troubleshooting.md`](docs/troubleshooting.md). El modo experto de antes, con
+¿Algo salió mal? [`docs/errores.md`](docs/errores.md). El modo experto de antes, con
 el guion completo, la animación de cada elemento y los agentes, sigue en **Cursos**.
 
 ### Identidad
@@ -275,7 +275,7 @@ Lo que se sube queda en `datos/trabajos/`, que no va a git: es material del clie
 ## Desarrollo
 
 Dónde está cada cosa, las reglas del proyecto y cómo agregar voces, estilos, efectos o agentes:
-[`docs/development.md`](docs/development.md). Las pruebas: [`docs/testing.md`](docs/testing.md).
+[`docs/desarrollo.md`](docs/desarrollo.md). Las pruebas: [`docs/pruebas.md`](docs/pruebas.md).
 
 ## Los datos
 

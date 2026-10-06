@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { mount } from "@vue/test-utils";
-import EstadoGeneracion from "./components/zyvo/EstadoGeneracion.vue";
-import MensajeError from "./components/zyvo/MensajeError.vue";
-import PasosProgreso from "./components/zyvo/PasosProgreso.vue";
+import EstadoGeneracion from "./components/video/EstadoGeneracion.vue";
+import MensajeError from "./components/video/MensajeError.vue";
+import PasosProgreso from "./components/video/PasosProgreso.vue";
 import { mensajeHumano, pasos, resumen } from "./generacion";
 import type { Produccion, VideoRender } from "./tipos";
 

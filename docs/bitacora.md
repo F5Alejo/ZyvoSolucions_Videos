@@ -25,7 +25,7 @@ resolvieron) y **Pendiente**.
 ### Qué se hizo
 - **Flujo creativo `/crear`:** Subir → Analizar → Estilo → Voz → Opciones → Crear → Resultado. La persona no ve nada técnico: «Elegir voz» en vez de proveedor, «Presentación / Vertical / Cuadrado / Instagram» en vez de 16:9, pasos humanos en vez de fases del motor. El flujo de cinco pasos de antes sigue en «Cursos» como modo experto.
 - **Editor `/crear/:id/editar/:clave`:** la línea de tiempo (escenas, voz, música, efectos y subtítulos) y una tarjeta por escena con su vista previa, el texto de la voz, el movimiento de cámara, la transición y «Regenerar esta escena».
-- **Componentes (`frontend/src/components/zyvo/`):** ZonaSubida, PasosProgreso, TarjetaEstilo (con miniatura animada de cada estilo), TarjetaVoz (con «Escuchar»), EstadoGeneracion, MensajeError (con «Modo diagnóstico» escondido), ReproductorPrevio, LineaTiempo, TarjetaEscena, PanelExportar y AjustesAvanzados.
+- **Componentes (`frontend/src/components/video/`, entonces `zyvo/`):** ZonaSubida, PasosProgreso, TarjetaEstilo (con miniatura animada de cada estilo), TarjetaVoz (con «Escuchar»), EstadoGeneracion, MensajeError (con «Modo diagnóstico» escondido), ReproductorPrevio, LineaTiempo, TarjetaEscena, PanelExportar y AjustesAvanzados.
 - **Estado central (`composables/proyecto.ts`)**, **textos configurables (`mensajes.ts`)** y la traducción del motor a pasos humanos (`generacion.ts`, con prueba). Ningún mensaje técnico (traceback, ffmpeg, subprocess) llega a la pantalla.
 - **Identidad de Zyvo:** la «chispa» (degradado violeta → cian, contraste medido), el logotipo en la barra lateral y los títulos «· Zyvo». RiskMann queda como marca cliente al pie.
 - **Backend:** `audio.musica_estilo` para apagar la música aunque el estilo la pida.
@@ -169,7 +169,7 @@ resolvieron) y **Pendiente**.
 ## 2026-10-01 · Fase 1 del prompt maestro: análisis y plan de arquitectura
 
 ### Qué se hizo
-- `ARCHITECTURE.md` en la raíz: la arquitectura actual frente al objetivo (VideoSpec, pipeline por etapas, agentes, proveedores), los problemas encontrados, las decisiones y el plan de migración por fases. No se cambió código.
+- `ARCHITECTURE.md` en la raíz (hoy [`plan-migracion.md`](plan-migracion.md)): la arquitectura actual frente al objetivo (VideoSpec, pipeline por etapas, agentes, proveedores), los problemas encontrados, las decisiones y el plan de migración por fases. No se cambió código.
 
 ### Decisiones (aceptadas por el usuario)
 - **Remotion no entra** salvo que se compre su licencia: se crea `VideoRenderer` con el renderer actual (Playwright + ffmpeg) como principal.
@@ -227,7 +227,7 @@ documentado en [`plan-nube.md`](plan-nube.md) como siguiente etapa.
   - **primera ejecución en verde en 3 min**: instaló todo y pasaron 75 pruebas de pytest y 10 de Vitest.
 - **«Pruebas»** quedó con 4 trabajos en verde: API y motor (75 pruebas en 50 s, sin avisos), Interfaz, Estilo y Secretos.
 - **Documentación nueva:**
-  - [`arquitectura-actual.md`](arquitectura-actual.md): cómo funciona hoy;
+  - [`arquitectura-anterior.md`](arquitectura-anterior.md): cómo funciona hoy;
   - [`hallazgos.md`](hallazgos.md): cada problema con su causa y su solución;
   - [`plan-nube.md`](plan-nube.md): arquitectura en cuatro piezas, herramientas, prueba 100 % gratuita en Oracle Cloud Always Free, y SaaS y escala;
   - [`README.md`](README.md): índice;

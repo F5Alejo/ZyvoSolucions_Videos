@@ -1,7 +1,10 @@
-# Arquitectura actual (octubre 2026)
+# Arquitectura anterior a la migración (octubre 2026)
 
-Cómo funciona el estudio **hoy**, tal como está en la rama `Alejodev`. Para el plan de llevarlo a
-la nube, ver [`plan-nube.md`](plan-nube.md); para lo aprendido por el camino, [`hallazgos.md`](hallazgos.md).
+Cómo funcionaba el estudio **antes** de la migración, tal como estaba en la rama `Alejodev` el
+1 de octubre de 2026. Se conserva como registro: para la arquitectura de hoy ver
+[`arquitectura.md`](arquitectura.md), y para el análisis y el plan que llevaron a cambiarla,
+[`plan-migracion.md`](plan-migracion.md). El plan de llevarla a la nube sigue en
+[`plan-nube.md`](plan-nube.md); lo aprendido por el camino, en [`hallazgos.md`](hallazgos.md).
 
 ## Piezas
 

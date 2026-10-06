@@ -6,9 +6,20 @@
 |---|---|
 | `app/` | API (FastAPI): `main.py` (rutas), `taller.py` (cursos), `extractor.py` (PPTX), `configuracion.py`, `datos.py` |
 | `motor/` | El pipeline: `produccion.py` (etapas), `videospec.py`, `analisis.py`, `voz.py`, `renderers.py`, `render.py`, `camara.py`, `audio.py`, `sfx.py`, `estilos.py`, `qa.py`, `bugs.py`, `errores.py`, `logs.py`, `versiones.py`, `cola.py`, `catalogo.py`, `proveedores.py`, `escenas/`, `agentes/` |
-| `frontend/` | Vue 3 + TypeScript + Tailwind 4. El flujo de Zyvo en `views/CrearVideoView.vue` y `views/EditorVideoView.vue`, sus piezas en `components/zyvo/`, el estado en `composables/proyecto.ts` y los textos en `mensajes.ts` |
+| `frontend/` | Vue 3 + TypeScript + Tailwind 4. Una vista por ruta en `views/`, el estado en `composables/` y los textos en `mensajes.ts` |
+
+### Los componentes de la interfaz
+
+Hay **dos flujos vivos**, y cada uno tiene su carpeta. Un componente va a la raíz de
+`components/` solo cuando lo usan los dos.
+
+| Carpeta | Para qué |
+|---|---|
+| `components/` | Lo compartido: barra lateral, avisos, diálogos, estados de carga, reproductor |
+| `components/video/` | El flujo de Zyvo (`/crear` y `/videos`): `CrearVideoView.vue` y `EditorVideoView.vue` |
+| `components/curso/` | El flujo de cursos desde un PPTX (`/cursos`), el modo experto: `CursoView.vue` |
 | `datos/` | Catálogos que van a git: marcas, voces, animaciones, estilos, configuración. Lo de cada equipo (`trabajos/`, `musica/`, `cache/`) no va a git |
-| `tests/` | pytest y `fixtures/` (ver `testing.md`) |
+| `tests/` | pytest y `fixtures/` (ver `pruebas.md`) |
 | `scripts/` | Descargar modelos de voz y generar los PPTX de prueba |
 
 ## Correr en modo desarrollo
@@ -22,7 +33,7 @@ cd frontend && npm run dev                  # http://localhost:5173, se recarga 
 
 - **Local primero:** archivos y JSON. Nada de bases de datos, Redis ni nube obligatoria.
 - **Licencias:** solo MIT, Apache, BSD o servicios ya pagados (por eso no Remotion, y Piper solo para borradores).
-- **La IA propone, no ejecuta:** todo valor sale de un catálogo y se valida (ver `agents.md` y `videospec.md`).
+- **La IA propone, no ejecuta:** todo valor sale de un catálogo y se valida (ver `agentes.md` y `videospec.md`).
 - **Nombres:** el código está en español (`trabajo`, `lamina`, `producir`); los conceptos nuevos usan
   los nombres del objetivo (`VideoSpec`, `TTSProvider`, `VideoRenderer`).
 - **Estable antes que mucho:** pocos efectos que funcionan bien antes que muchos inestables.
@@ -40,5 +51,8 @@ cd frontend && npm run dev                  # http://localhost:5173, se recarga 
 
 ## Git
 
-Se trabaja en `Alejodev`; `main` solo cambia por pull request con las pruebas en verde. Los commits
-van en español y **sin coautoría**. Cada cambio importante lleva su entrada en `bitacora.md`.
+Las normas completas de ramas, commits e integración están en
+[`GIT_WORKFLOW.md`](GIT_WORKFLOW.md): **hay que leerlo antes de cada commit, merge o push**. En
+corto: `main` solo cambia por pull request con las pruebas en verde, y los commits van **sin
+coautoría ni firmas automáticas**. Cada cambio importante lleva su entrada en `bitacora.md`, y cada
+error con su causa y su solución, en `hallazgos.md`.
