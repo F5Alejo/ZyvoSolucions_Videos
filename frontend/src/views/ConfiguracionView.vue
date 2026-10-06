@@ -97,7 +97,9 @@ const AGENTES: { id: string; nombre: string; que: string }[] = [
 
 const REVISIONES = [
   { clave: "ffmpeg", titulo: "ffmpeg", para: "Codificar los videos" },
-  { clave: "chromium", titulo: "Navegador de escenas", para: "Dibujar las láminas" },
+  { clave: "hyperframes", titulo: "HyperFrames", para: "El motor de video (texto cinético)" },
+  { clave: "chromium", titulo: "Navegador de escenas", para: "El motor clásico (respaldo)" },
+  { clave: "ia", titulo: "IA de los agentes", para: "Dirigir los videos y proponer mejoras" },
   { clave: "elevenlabs", titulo: "Clave de ElevenLabs", para: "Voces de pago (Carlos)" },
   { clave: "ollama", titulo: "Ollama", para: "Los agentes con IA local" },
   { clave: "disco", titulo: "Espacio en disco", para: "Videos y caché de voz" },
@@ -200,9 +202,25 @@ const REVISIONES = [
 
     <!-- Agentes -->
     <section aria-labelledby="t-agentes" class="mb-10">
-      <h2 id="t-agentes" class="mb-1 text-lg font-bold">Agentes con IA local (Ollama)</h2>
-      <p class="mb-3 text-sm text-suave">Proponen mejoras que alguien acepta o descarta; nunca cambian nada solos. Sin Ollama usan reglas simples.</p>
-      <div class="tarjeta grid gap-4 p-5 sm:grid-cols-3">
+      <h2 id="t-agentes" class="mb-1 text-lg font-bold">IA de los agentes</h2>
+      <p class="mb-3 text-sm text-suave">La IA dirige cada video (qué texto sale en pantalla y qué toma va de fondo) y los agentes
+        proponen mejoras que alguien acepta o descarta. Sin IA, todo se hace con reglas simples.</p>
+      <div class="tarjeta mb-3 grid gap-3 p-5 sm:grid-cols-2" role="radiogroup" aria-label="Proveedor de IA">
+        <label class="flex cursor-pointer items-start gap-3 rounded-lg border p-3" :class="borrador.agentes.proveedor === 'ollama' ? 'border-acento bg-acento-suave/40' : 'border-borde'">
+          <input v-model="borrador.agentes.proveedor" type="radio" value="ollama" class="mt-1 accent-[var(--c-acento)]" />
+          <span><strong class="block text-sm">Ollama (en este equipo)</strong>
+            <span class="text-xs text-suave">Gratis. El material del cliente no sale del equipo.</span></span>
+        </label>
+        <label class="flex cursor-pointer items-start gap-3 rounded-lg border p-3" :class="borrador.agentes.proveedor === 'claude' ? 'border-acento bg-acento-suave/40' : 'border-borde'">
+          <input v-model="borrador.agentes.proveedor" type="radio" value="claude" class="mt-1 accent-[var(--c-acento)]" />
+          <span><strong class="block text-sm">Claude (API de Anthropic)</strong>
+            <span class="text-xs text-suave">Mejor criterio creativo. El texto del curso sale a la nube y se cobra por uso;
+              necesita <code>ANTHROPIC_API_KEY</code> en <code>.env</code>.</span></span>
+        </label>
+        <label v-if="borrador.agentes.proveedor === 'claude'" class="block sm:col-span-2"><span class="etiqueta-campo">Modelo de Claude</span>
+          <input v-model="borrador.agentes.modelo_claude" class="campo" /></label>
+      </div>
+      <div v-if="borrador.agentes.proveedor === 'ollama'" class="tarjeta grid gap-4 p-5 sm:grid-cols-3">
         <label class="block"><span class="etiqueta-campo">Dirección de Ollama</span><input v-model="borrador.agentes.url" class="campo" /></label>
         <label class="block"><span class="etiqueta-campo">Modelo de texto</span><input v-model="borrador.agentes.modelo_texto" class="campo" /></label>
         <label class="block"><span class="etiqueta-campo">Modelo con visión</span><input v-model="borrador.agentes.modelo_vision" class="campo" /></label>
@@ -214,7 +232,7 @@ const REVISIONES = [
             <span><strong class="block text-sm">{{ a.nombre }}</strong><span class="text-xs text-suave">{{ a.que }}</span>
               <span v-if="estadoAgentes[a.id]" class="mt-1 block text-xs font-semibold"
                     :class="estadoAgentes[a.id]!.con_ia ? 'text-exito' : 'text-suave'">
-                {{ estadoAgentes[a.id]!.con_ia ? `Con IA: ${estadoAgentes[a.id]!.modelo}` : estadoAgentes[a.id]!.necesita_ia ? "Necesita Ollama" : estadoAgentes[a.id]!.modelo ? "Sin IA: usa reglas" : "No usa IA" }}
+                {{ estadoAgentes[a.id]!.con_ia ? `Con IA: ${estadoAgentes[a.id]!.modelo}` : estadoAgentes[a.id]!.necesita_ia ? "Necesita IA" : estadoAgentes[a.id]!.modelo ? "Sin IA: usa reglas" : "No usa IA" }}
               </span></span>
           </label>
         </li>

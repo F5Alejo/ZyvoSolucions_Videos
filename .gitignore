@@ -16,3 +16,7 @@ modelos/
 !.env.ejemplo
 # Música de fondo: cada equipo sube sus pistas (con su licencia) desde Configuración
 datos/musica/
+# Las dependencias de Node del renderer HyperFrames (se instalan con instalar.ps1)
+motor/hyperframes/node_modules/
+# Banco de medios de cada marca (clips y fotos de clientes)
+datos/bancos/

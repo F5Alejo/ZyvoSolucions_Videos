@@ -8,6 +8,46 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-10-06 · HyperFrames como motor principal, Director de ritmo y banco de medios
+
+### Qué se hizo
+- **El problema:** cada lámina era una sola imagen durante toda su narración (30 s de un ícono fijo con
+  3 viñetas recortadas mientras la voz decía 13 frases). El video de referencia (`datos/Ejemplo.mp4`)
+  es otra cosa: tomas reales que cambian cada ~2,5 s, frases de 2 o 3 palabras en cajas que entran
+  palabra por palabra con una resaltada, una etiqueta encima y barridos de marca.
+- **Director de ritmo (`motor/direccion.py`):** después de la voz, cada frase (o trozo de una frase
+  larga) es un momento (`videospec.Beat`): de 1 a 6 palabras en pantalla sacadas de lo que dice la
+  voz, la resaltada, la etiqueta, el estilo (`cajas`, `termino`, `cifra`) y la toma de fondo. Cada
+  palabra lleva el segundo en que la voz la dice (repartido por longitud dentro de su frase).
+- **IA configurable:** lo decide la IA de los agentes (Ollama por defecto; Claude con
+  `agentes.proveedor = "claude"` y `ANTHROPIC_API_KEY`, `motor/agentes/claude.py`) o, sin IA, reglas.
+  La IA solo elige: palabras seguidas de la frase y tomas del banco. Lo demás se descarta.
+- **Banco de medios (`app/banco.py`, `/api/marcas/{marca}/banco`, ficha de la marca):** cada empresa
+  sube sus clips y fotos con descripción y etiquetas; `general` sirve para cualquier momento. Sin
+  banco, el fondo es la imagen de la lámina animada sobre el fondo de la marca.
+- **Renderer HyperFrames (`motor/hyperframes/`):** una composición con todo el video (plantilla
+  Jinja `composicion.html`, GSAP) y `hyperframes render` con versión fija (0.8.138). Es el de por
+  defecto (`video.renderer = "hyperframes"`); el clásico queda de respaldo si faltan Node o las
+  dependencias. Va al caché por la huella de la composición.
+
+### Decisiones
+- **HyperFrames (Apache 2.0)**: licencia comercial libre, HTML + GSAP, salida determinista.
+  Telemetría apagada (`HYPERFRAMES_NO_TELEMETRY`) y nunca `publish`: el material no sale del equipo.
+  GSAP y la fuente se copian al proyecto del render; no se descarga nada al renderizar.
+- **Un render por video, no por escena:** en este equipo cada `hyperframes render` tarda ~50 s en
+  arrancar (prueba de GPU, carga del navegador), aunque el video dure 3 s.
+- **Las negaciones nunca se quitan** del texto en pantalla («No produce efecto psicoactivo» no puede
+  quedar «produce efecto psicoactivo»), ni con reglas ni con IA.
+- Un ícono oscuro de la lámina va sobre un disco claro: sobre el fondo oscuro no se veía.
+
+### Pendiente
+- Tiempos por palabra reales (Whisper con marcas de palabra) en vez del reparto por longitud.
+- El editor por escena todavía edita lo del motor clásico (cámara, transición), no los momentos.
+- «Regenerar esta escena» vuelve a renderizar el video entero con HyperFrames.
+- Cierre de marca al final del video (logo + lema, como el ejemplo).
+
+---
+
 ## 2026-10-06 · Cola en paralelo y aceptar guiones sin esperas
 
 ### Qué se hizo

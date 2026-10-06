@@ -13,7 +13,7 @@ from tests.test_motor import ORIGEN, VozDePrueba, hay_ffmpeg, pptx_con_foto
 @pytest.fixture()
 def datos_copia(tmp_path, monkeypatch):
     copia = tmp_path / "datos"
-    shutil.copytree(ORIGEN, copia, ignore=shutil.ignore_patterns("trabajos", "empresas", "musica"))
+    shutil.copytree(ORIGEN, copia, ignore=shutil.ignore_patterns("trabajos", "empresas", "musica", "bancos", "cache", "*.mp4"))
     from app import datos
     monkeypatch.setattr(datos, "RAIZ_DATOS", copia)
     return copia

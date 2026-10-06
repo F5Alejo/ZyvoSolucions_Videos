@@ -14,16 +14,20 @@ from app import datos
 
 DEFECTO = {
     "cursos": {"marca": "riskmann", "voz": "carlos", "formatos": ["16:9"], "animacion": "dinamica"},
-    "video": {"resolucion": "1080p", "fps": 30, "calidad": "final", "subtitulos_quemados": False, "renderer": "playwright"},
+    "video": {"resolucion": "1080p", "fps": 30, "calidad": "final", "subtitulos_quemados": False, "renderer": "hyperframes"},
     "tiempos": {"entrada": 1.0, "pausa": 0.35, "salida": 1.3},
     "audio": {"lufs": -14, "musica": None, "musica_volumen": -22, "respaldo_voz": True, "musica_estilo": True},
     "completo": {"tarjetas": True, "duracion_tarjeta": 3.0, "capitulos": True},
     # Cuántos trabajos corren a la vez en cada carril de la cola (motor/cola.py). Renders None: según los núcleos.
     "cola": {"render": None, "agentes": 4},
     "agentes": {
+        # La IA de los agentes: "ollama" (local, el material no sale del equipo) o "claude"
+        # (API de Anthropic, necesita ANTHROPIC_API_KEY en .env; el texto del curso sale a la nube).
+        "proveedor": "ollama",
         "url": "http://localhost:11434",
         "modelo_texto": "qwen3:4b",
         "modelo_vision": "qwen3.5:2b",
+        "modelo_claude": "claude-opus-5",
         "activos": {"redactor": True, "director": True, "guionista": True, "verificador": True,
                     "evaluador": True, "publicador": True, "descriptor": True, "revisor_voz": True},
     },
@@ -37,7 +41,8 @@ OPCIONES = {
     ("video", "resolucion"): {"1080p": "1920×1080 (Full HD)", "720p": "1280×720 (más liviano)"},
     ("video", "fps"): {25: "25 fps", 30: "30 fps", 60: "60 fps (animaciones más suaves, render más lento)"},
     ("video", "calidad"): {"final": "Final (CRF 18, más lento)", "borrador": "Borrador rápido (CRF 23)"},
-    ("video", "renderer"): {"playwright": "Navegador (Chromium) y ffmpeg"},
+    ("video", "renderer"): {"hyperframes": "HyperFrames: texto cinético al ritmo de la voz y tomas del banco",
+                            "playwright": "Clásico: una imagen por lámina con entrada y salida animadas"},
     ("audio", "lufs"): {-14: "-14 LUFS · YouTube y redes", -16: "-16 LUFS · podcast y web", -23: "-23 LUFS · TV (EBU R128)"},
 }
 RANGOS = {
@@ -120,6 +125,8 @@ def _validar(conf: dict, estricto: bool = True) -> dict:
             raise ValueError(f"«cola.{carril}» tiene que ser un número entero entre 1 y 8")
 
     a = conf["agentes"]
+    if a["proveedor"] not in ("ollama", "claude"):
+        raise ValueError("La IA de los agentes tiene que ser «ollama» o «claude»")
     if not str(a["url"]).startswith(("http://", "https://")):
         raise ValueError("La dirección de Ollama tiene que empezar por http:// o https://")
     a["activos"] = {k: bool(a["activos"].get(k, True)) for k in DEFECTO["agentes"]["activos"]}

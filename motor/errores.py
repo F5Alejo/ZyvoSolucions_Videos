@@ -24,7 +24,7 @@ CODIGOS = {
 }
 
 # Qué código lleva una falla de cada etapa cuando no hay uno más preciso.
-POR_ETAPA = {"plan": "SPEC_001", "voz": "TTS_002", "escenas": "RENDER_001", "audio": "AUDIO_001",
+POR_ETAPA = {"plan": "SPEC_001", "voz": "TTS_002", "direccion": "SPEC_001", "escenas": "RENDER_001", "audio": "AUDIO_001",
              "unir": "VIDEO_001", "subtitulos": "VIDEO_001", "qa": "QA_001"}
 
 

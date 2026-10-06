@@ -1,0 +1,149 @@
+<!doctype html>
+{#- La composición HyperFrames de un video entero (motor/hyperframes/__init__.py la llena).
+
+    Capas, de atrás hacia adelante: la toma de cada momento (clip, foto, imagen de la lámina o
+    fondo de marca), un velo para que el texto se lea, el texto cinético con su etiqueta, el
+    logo y la barra de avance, y el barrido diagonal entre láminas. Todo lo que se mueve está en
+    UNA línea de tiempo GSAP pausada: HyperFrames la lleva a cada cuadro, así el render es exacto.
+-#}
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width={{ ancho }}, height={{ alto }}">
+<script src="assets/gsap.min.js"></script>
+<style>
+@font-face { font-family: "Montserrat"; src: url("assets/Montserrat.ttf"); font-weight: 100 900; }
+:root {
+  --fondo: {{ c.fondo }}; --superficie: {{ c.superficie }}; --texto: {{ c.texto }};
+  --acento: {{ c.acento }}; --acento2: {{ c.acento2 }};
+  --caja: {{ c.caja }}; --caja-texto: {{ c.caja_texto }}; --resalte-texto: {{ c.resalte_texto }};
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: {{ ancho }}px; height: {{ alto }}px; overflow: hidden; background: var(--fondo); }
+#root { position: relative; width: 100%; height: 100%; overflow: hidden; font-family: "Montserrat", sans-serif; }
+
+/* Tomas */
+.toma { position: absolute; inset: 0; overflow: hidden; background: var(--fondo); }
+.toma video, .toma > img.cubre { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.marca-fondo { position: absolute; inset: -20%; background:
+    radial-gradient(60% 50% at 70% 30%, color-mix(in srgb, var(--acento2) 35%, transparent), transparent 70%),
+    radial-gradient(55% 45% at 20% 80%, color-mix(in srgb, var(--acento) 30%, transparent), transparent 70%),
+    var(--fondo); }
+.franjas { position: absolute; inset: -50%; background: repeating-linear-gradient(115deg,
+    transparent 0 140px, color-mix(in srgb, var(--texto) 5%, transparent) 140px 150px); }
+.lamina .icono { position: absolute; left: 50%; top: {{ capa.icono_y }}%; width: {{ capa.icono }}px; height: {{ capa.icono }}px;
+    margin-left: -{{ capa.icono // 2 }}px; margin-top: -{{ capa.icono // 2 }}px; object-fit: contain;
+    filter: drop-shadow(0 30px 60px rgba(0,0,0,.45)); }
+.lamina .aro { position: absolute; left: 50%; top: {{ capa.icono_y }}%; width: {{ capa.icono * 1.5 }}px; height: {{ capa.icono * 1.5 }}px;
+    margin-left: -{{ capa.icono * 0.75 }}px; margin-top: -{{ capa.icono * 0.75 }}px; border-radius: 50%;
+    border: 6px solid color-mix(in srgb, var(--acento2) 55%, transparent); }
+.lamina .disco { display: none; position: absolute; left: 50%; top: {{ capa.icono_y }}%; width: {{ capa.icono * 1.25 }}px;
+    height: {{ capa.icono * 1.25 }}px; margin-left: -{{ capa.icono * 0.625 }}px; margin-top: -{{ capa.icono * 0.625 }}px;
+    border-radius: 50%; background: radial-gradient(circle, #FFFFFF 0%, color-mix(in srgb, var(--texto) 88%, var(--acento2)) 100%);
+    box-shadow: 0 0 120px color-mix(in srgb, var(--acento2) 45%, transparent); }
+.lamina.oscura .disco { display: block; }
+.lamina.oscura .icono { width: {{ capa.icono * 0.8 }}px; height: {{ capa.icono * 0.8 }}px;
+    margin-left: -{{ capa.icono * 0.4 }}px; margin-top: -{{ capa.icono * 0.4 }}px; filter: none; }
+.velo { position: absolute; inset: 0; pointer-events: none; background: {{ capa.velo }}; }
+
+/* Texto cinético */
+.texto { position: absolute; left: {{ capa.x }}px; right: {{ capa.x }}px; top: {{ capa.y }}px; }
+.etiqueta { display: inline-flex; align-items: center; gap: 12px; margin-bottom: 18px; font-size: {{ capa.etiqueta }}px;
+    font-weight: 800; letter-spacing: .14em; color: var(--texto); text-transform: uppercase;
+    background: color-mix(in srgb, var(--fondo) 70%, transparent); padding: 6px 14px 6px 10px; }
+.etiqueta i { display: inline-block; width: 34px; height: 6px; background: var(--acento2); }
+.linea { display: flex; flex-wrap: wrap; gap: {{ capa.hueco }}px; align-items: flex-start; }
+.w { display: inline-block; font-weight: 900; text-transform: uppercase; line-height: 1; letter-spacing: -.01em;
+    background: var(--caja); color: var(--caja-texto); padding: .1em .16em .08em; }
+.w.on { background: var(--acento); color: var(--resalte-texto); }
+.termino .w { padding: .08em .2em .06em; }
+.cifra .w.on { background: var(--acento2); color: var(--fondo); }
+
+/* Marco */
+#logo { position: absolute; left: {{ capa.logo_x }}px; top: {{ capa.logo_y }}px; width: auto; height: {{ capa.logo }}px; opacity: .95; }
+#barra { position: absolute; left: 0; right: 0; bottom: 0; height: 10px; background: color-mix(in srgb, var(--texto) 15%, transparent); }
+#barra i { display: block; height: 100%; background: var(--acento2); transform-origin: left center; }
+.barrido { position: absolute; left: 50%; top: 50%; width: {{ capa.barrido }}px; height: {{ capa.barrido * 0.45 }}px;
+    margin-left: -{{ capa.barrido // 2 }}px; margin-top: -{{ capa.barrido * 0.225 }}px; background: var(--acento2); }
+.barrido b { position: absolute; left: 0; right: 0; top: 18%; height: 10%; background: var(--acento); }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="{{ total }}" data-width="{{ ancho }}" data-height="{{ alto }}">
+{% for t in tomas %}
+  {%- if t.tipo == "clip" %}
+  <video id="{{ t.id }}" class="clip toma" src="{{ t.src }}" muted playsinline data-start="{{ t.inicio }}" data-duration="{{ t.duracion }}" data-media-start="{{ t.desde }}"></video>
+  {%- elif t.tipo == "foto" %}
+  <div id="{{ t.id }}" class="clip toma" data-start="{{ t.inicio }}" data-duration="{{ t.duracion }}"><img class="cubre" src="{{ t.src }}" alt=""></div>
+  {%- elif t.tipo == "lamina" %}
+  <div id="{{ t.id }}" class="clip toma lamina{{ ' oscura' if t.oscura }}" data-start="{{ t.inicio }}" data-duration="{{ t.duracion }}"><div class="marca-fondo"></div><div class="franjas"></div><div class="aro"></div><div class="disco"></div><img class="icono" src="{{ t.src }}" alt=""></div>
+  {%- else %}
+  <div id="{{ t.id }}" class="clip toma marca" data-start="{{ t.inicio }}" data-duration="{{ t.duracion }}"><div class="marca-fondo"></div><div class="franjas"></div></div>
+  {%- endif %}
+{%- endfor %}
+  <div id="velo" class="clip velo" data-start="0" data-duration="{{ total }}"></div>
+{% for b in beats %}
+  <div id="{{ b.id }}" class="clip texto {{ b.estilo }}" data-start="{{ b.inicio }}" data-duration="{{ b.duracion }}">
+    {%- if b.etiqueta %}<div class="etiqueta"><i></i>{{ b.etiqueta }}</div>{% endif %}
+    <div class="linea" style="font-size: {{ b.tam }}px">
+      {%- for w in b.palabras %}<span class="w{{ ' on' if w.on }}"{% if w.cuenta %} data-cuenta="{{ w.cuenta }}"{% endif %}>{{ w.texto }}</span>{% endfor -%}
+    </div>
+  </div>
+{%- endfor %}
+  {%- if logo %}
+  {#- Sin la clase «clip»: HyperFrames le daría el tamaño de la pantalla y lo estiraría. #}
+  <img id="logo" src="{{ logo }}" alt="">
+  {%- endif %}
+  <div id="barra" class="clip" data-start="0" data-duration="{{ total }}"><i></i></div>
+{% for x in barridos %}
+  <div id="{{ x.id }}" class="clip barrido" data-start="{{ x.inicio }}" data-duration="{{ x.duracion }}"><b></b></div>
+{%- endfor %}
+</div>
+<script>
+const tl = gsap.timeline({ paused: true });
+const D = {{ datos | tojson }};
+// Tomas: un movimiento lento durante toda la toma (nunca una imagen quieta).
+D.tomas.forEach((t, i) => {
+  const sel = "#" + t.id;
+  if (t.tipo === "clip") tl.fromTo(sel, { scale: 1.0 }, { scale: 1.08, duration: t.duracion, ease: "none" }, t.inicio);
+  if (t.tipo === "foto") tl.fromTo(sel + " img", { scale: 1.18, xPercent: i % 2 ? 3 : -3 },
+                                   { scale: 1.04, xPercent: i % 2 ? -3 : 3, duration: t.duracion, ease: "none" }, t.inicio);
+  if (t.tipo === "lamina") {
+    tl.fromTo(sel + " .icono", { scale: 0.6, opacity: 0, rotation: -8 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.7, ease: "back.out(1.8)" }, t.inicio);
+    tl.fromTo(sel + " .icono", { y: 0 }, { y: -40, duration: t.duracion, ease: "sine.inOut" }, t.inicio);
+    tl.fromTo(sel + " .disco", { scale: 0 }, { scale: 1, duration: 0.6, ease: "back.out(1.6)" }, t.inicio);
+    tl.fromTo(sel + " .aro", { scale: 0.7, opacity: 0 }, { scale: 1.1, opacity: 1, duration: t.duracion, ease: "power1.out" }, t.inicio);
+  }
+  if (t.tipo !== "clip") tl.fromTo(sel + " .franjas", { x: 0 }, { x: -300, duration: t.duracion, ease: "none" }, t.inicio);
+});
+// Texto: cada palabra entra cuando la voz la dice; el bloque sale justo antes del siguiente momento.
+D.beats.forEach((b) => {
+  const sel = "#" + b.id;
+  if (b.etiqueta) tl.fromTo(sel + " .etiqueta", { xPercent: -30, opacity: 0 }, { xPercent: 0, opacity: 1, duration: 0.3, ease: "power3.out" }, b.inicio);
+  document.querySelectorAll(sel + " .w").forEach((el, k) => {
+    const t0 = b.tiempos[k];
+    if (b.estilo === "termino") tl.fromTo(el, { scale: 0.3, opacity: 0, rotation: -5 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.45, ease: "back.out(2.4)" }, t0);
+    else tl.fromTo(el, { yPercent: 70, opacity: 0, scale: 0.85 }, { yPercent: 0, opacity: 1, scale: 1, duration: 0.28, ease: "back.out(2)" }, t0);
+    const fin = Number(el.dataset.cuenta || 0);
+    if (fin) {
+      const o = { v: 0 };
+      tl.to(o, { v: fin, duration: 0.8, ease: "power2.out", onUpdate: () => { el.textContent = Math.round(o.v) + el.dataset.resto; } }, t0);
+    }
+  });
+  tl.to(sel, { opacity: 0, y: -24, duration: 0.18, ease: "power2.in" }, b.inicio + b.duracion - 0.18);
+});
+// Barrido diagonal de marca entre láminas: cubre el corte de una toma a la otra.
+D.barridos.forEach((x) => {
+  tl.fromTo("#" + x.id, { x: -{{ capa.barrido }}, y: {{ capa.barrido * 0.4 }}, rotation: -28 },
+            { x: {{ capa.barrido }}, y: -{{ capa.barrido * 0.4 }}, rotation: -28, duration: x.duracion, ease: "power2.inOut" }, x.inicio);
+});
+tl.fromTo("#barra i", { scaleX: 0 }, { scaleX: 1, duration: {{ total }}, ease: "none" }, 0);
+document.querySelectorAll("[data-cuenta]").forEach((el) => {
+  el.dataset.resto = el.textContent.replace(/^\d+/, "");
+});
+window.__timelines = window.__timelines || {};
+window.__timelines["main"] = tl;
+tl.seek(0);
+</script>
+</body>
+</html>

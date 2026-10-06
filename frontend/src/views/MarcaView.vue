@@ -9,6 +9,7 @@ import { cargarCatalogo, catalogo } from "../composables/catalogo";
 import { confirmar } from "../composables/confirmar";
 import EncabezadoPagina from "../components/EncabezadoPagina.vue";
 import EstadoCarga from "../components/EstadoCarga.vue";
+import BancoMedios from "../components/BancoMedios.vue";
 import EstadoChip from "../components/EstadoChip.vue";
 import type { Color, Marca, Proyecto } from "../tipos";
 import { fecha } from "../utils";
@@ -158,6 +159,8 @@ const abiertos = computed(() => (m.value?.pendientes.filter((p) => !p.hecho).len
         </ul>
       </section>
     </div>
+
+    <BancoMedios :marca="m.id" :nombre="m.nombre_corto" />
 
     <section aria-labelledby="titulo-videos-marca">
       <h2 id="titulo-videos-marca" class="mb-3 text-lg font-bold">Videos de {{ m.nombre_corto }}</h2>
