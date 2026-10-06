@@ -21,7 +21,9 @@ Subir PPTX → Analizar → Elegir estilo → Elegir voz → Opciones → ✨ Cr
 ```
 
 Por dentro: el PPTX se analiza, se arma un plano del video ([VideoSpec](docs/videospec.md)), se genera
-la voz frase por frase, se dibuja cada escena, se mezcla el audio y un control de calidad revisa el
+la voz frase por frase, el **Director de ritmo** convierte cada frase en un momento visual (2 a 6
+palabras en pantalla que entran al ritmo de la voz, una resaltada, y una toma de fondo del banco de
+la empresa), **HyperFrames** dibuja el video, se mezcla el audio y un control de calidad revisa el
 resultado. Cada etapa guarda lo que hizo: si algo falla, se reintenta o se rehace solo esa parte.
 Detalle en [`docs/produccion.md`](docs/produccion.md).
 
@@ -31,8 +33,9 @@ Detalle en [`docs/produccion.md`](docs/produccion.md).
 |---|---|---|
 | Interfaz | **Vue 3** + TypeScript + **Tailwind CSS 4** + Vite | `frontend/` (el flujo de Zyvo en `/crear`) |
 | API | FastAPI (Python), JSON en `/api/*`, documentación en `/api/docs` | `app/` |
-| Motor | VideoSpec, voz (Kokoro, ElevenLabs, Piper), escenas HTML con Playwright, ffmpeg, cámara, música, efectos, subtítulos, control de calidad | `motor/` |
-| Agentes | Analizador, guionista, director de animación y más; con IA local (Ollama) o reglas | `motor/agentes/`, `motor/analisis.py` |
+| Motor | VideoSpec, voz (Kokoro, ElevenLabs, Piper), Director de ritmo, render con **HyperFrames** (Node) o el motor clásico (Playwright) de respaldo, ffmpeg, música, efectos, subtítulos, control de calidad | `motor/`, `motor/hyperframes/` |
+| Agentes | Analizador, Director de ritmo, guionista, director de animación y más; con IA local (Ollama), Claude (API, opcional) o reglas | `motor/agentes/`, `motor/direccion.py` |
+| Banco de medios | Clips y fotos propios de cada empresa, con descripción y etiquetas, que el Director pone de fondo | `app/banco.py`, `datos/bancos/` |
 | Datos | Archivos JSON y carpetas: sin base de datos ni nube | `datos/` |
 
 Más en [`docs/arquitectura.md`](docs/arquitectura.md) y [`docs/plan-migracion.md`](docs/plan-migracion.md).
@@ -68,7 +71,7 @@ el guion completo, la animación de cada elemento y los agentes, sigue en **Curs
 
 ## Instalar en un equipo nuevo (Windows)
 
-Con Python 3.12+ y Node 20+ instalados, después de clonar:
+Con Python 3.12+ y Node 22+ instalados, después de clonar:
 
 ```powershell
 git clone https://github.com/F5Alejo/ZyvoSolucions_Videos.git
@@ -88,7 +91,7 @@ equipo) y los cursos de `datos/trabajos/` (material de clientes, se quedan en ca
 
 ## Puesta en marcha
 
-Requisitos: Python 3.12 y Node 20 o superior.
+Requisitos: Python 3.12 y Node 22 o superior (lo pide HyperFrames).
 
 ```sh
 # API
@@ -101,6 +104,12 @@ cd frontend
 npm install
 npm run build                      # compila en frontend/dist, que sirve la API
 cd ..
+
+# Motor de video HyperFrames (versión fija en motor/hyperframes/package.json)
+cd motor/hyperframes
+npm install
+node node_modules/hyperframes/bin/hyperframes.mjs browser ensure
+cd ../..
 
 uvicorn app.main:app --port 8765   # http://localhost:8765
 ```
