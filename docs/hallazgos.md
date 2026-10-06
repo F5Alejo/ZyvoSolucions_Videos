@@ -71,6 +71,7 @@ de cada uno, con su fecha, está en la [bitácora](bitacora.md).
 | `juandev` llegó a la integración con 5 errores de ruff | «Pruebas» solo se activaba con push a `main` y `Alejodev`: los push a `juandev` no corrían nada | Push también en `juandev`, y `pull_request` **sin filtro de ramas** |
 | `git show rama:.archivo` falla en Git Bash | MSYS traduce la ruta y la convierte en `rama;.archivo` | `MSYS_NO_PATHCONV=1`, o leer el archivo del árbol de trabajo |
 | `videos-marketing` no se puede unir a `main` | No comparten ancestro: son dos historias distintas, y esa rama quitó el estudio a propósito (387 MB de video) | Se deja aparte; el estudio vive en `main` |
+| La prueba de recorrido de rutas fallaba solo en Actions | Usaba «el content-type no es JSON» como señal de que no se filtró el archivo, y sin `frontend/dist` el catch-all de Vue responde 503 **con JSON**. El job «API y motor» no compila el frontend | La prueba comprueba lo que importa: que el cuerpo no traiga el archivo de afuera y que no sea un **200** de tipo JSON |
 
 ## Despliegue
 

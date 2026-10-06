@@ -139,7 +139,10 @@ def test_eliminar_una_empresa_sin_uso(cliente):
 def test_los_logos_no_se_salen_de_su_carpeta(cliente):
     c, _ = cliente
     registrar(c)
-    # «..» nunca entrega un archivo de afuera (como mucho, la ruta cae en la aplicación Vue).
+    # «..» nunca entrega un archivo de afuera. La ruta cae en la aplicación Vue: index.html si el
+    # frontend está compilado, y un 503 si no lo está (como en el CI, que no lo compila). Lo que se
+    # comprueba es que no sea el JSON de afuera: ni su contenido, ni un 200 de tipo JSON.
     r = c.get("/media/empresas/..%2F..%2Fproyectos.json")
-    assert "estado_original" not in r.text and "application/json" not in r.headers.get("content-type", "")
+    assert "estado_original" not in r.text
+    assert r.status_code != 200 or "application/json" not in r.headers.get("content-type", "")
     assert c.get("/media/empresas/transllano.json").status_code == 404   # solo PNG de la carpeta de logos
