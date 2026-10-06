@@ -18,6 +18,7 @@ def cliente(tmp_path, monkeypatch):
     from app import datos
     monkeypatch.setattr(datos, "RAIZ_DATOS", copia)
     from fastapi.testclient import TestClient
+
     from app.main import app
     return TestClient(app), copia
 
@@ -27,7 +28,9 @@ def logo_png(colores=((200, 30, 40), (20, 60, 160)), fondo=(255, 255, 255, 0)) -
     im = Image.new("RGBA", (200, 100), fondo)
     for i, c in enumerate(colores):
         im.paste(c + (255,), (i * 100 + 10, 10, i * 100 + 90, 90))
-    b = io.BytesIO(); im.save(b, "PNG"); return b.getvalue()
+    b = io.BytesIO()
+    im.save(b, "PNG")
+    return b.getvalue()
 
 
 def registrar(c, logo: bytes | None = logo_png(), **campos):
@@ -41,7 +44,6 @@ def test_propone_los_colores_del_logo_sin_el_fondo(cliente):
     r = c.post("/api/empresas/colores", files={"logo": ("l.png", logo_png(fondo=(255, 255, 255, 255)), "image/png")})
     colores = r.json()["colores"]
     assert "#FFFFFF" not in colores
-    rojo, azul = (int(colores[0][i:i + 2], 16) for i in (1, 3, 5)), None
     assert len(colores) == 2
     assert any(int(h[1:3], 16) > 150 and int(h[5:7], 16) < 90 for h in colores)   # el rojo
     assert any(int(h[5:7], 16) > 120 and int(h[1:3], 16) < 60 for h in colores)   # el azul
