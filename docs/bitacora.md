@@ -169,7 +169,7 @@ resolvieron) y **Pendiente**.
 ## 2026-10-01 · Fase 1 del prompt maestro: análisis y plan de arquitectura
 
 ### Qué se hizo
-- `ARCHITECTURE.md` en la raíz: la arquitectura actual frente al objetivo (VideoSpec, pipeline por etapas, agentes, proveedores), los problemas encontrados, las decisiones y el plan de migración por fases. No se cambió código.
+- `ARCHITECTURE.md` en la raíz (hoy [`plan-migracion.md`](plan-migracion.md)): la arquitectura actual frente al objetivo (VideoSpec, pipeline por etapas, agentes, proveedores), los problemas encontrados, las decisiones y el plan de migración por fases. No se cambió código.
 
 ### Decisiones (aceptadas por el usuario)
 - **Remotion no entra** salvo que se compre su licencia: se crea `VideoRenderer` con el renderer actual (Playwright + ffmpeg) como principal.
@@ -227,7 +227,7 @@ documentado en [`plan-nube.md`](plan-nube.md) como siguiente etapa.
   - **primera ejecución en verde en 3 min**: instaló todo y pasaron 75 pruebas de pytest y 10 de Vitest.
 - **«Pruebas»** quedó con 4 trabajos en verde: API y motor (75 pruebas en 50 s, sin avisos), Interfaz, Estilo y Secretos.
 - **Documentación nueva:**
-  - [`arquitectura-actual.md`](arquitectura-actual.md): cómo funciona hoy;
+  - [`arquitectura-anterior.md`](arquitectura-anterior.md): cómo funciona hoy;
   - [`hallazgos.md`](hallazgos.md): cada problema con su causa y su solución;
   - [`plan-nube.md`](plan-nube.md): arquitectura en cuatro piezas, herramientas, prueba 100 % gratuita en Oracle Cloud Always Free, y SaaS y escala;
   - [`README.md`](README.md): índice;

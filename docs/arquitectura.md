@@ -1,7 +1,7 @@
 # Arquitectura de Zyvo (después de la migración)
 
 El análisis completo, con lo que había, los problemas y las decisiones, está en
-[`ARCHITECTURE.md`](../ARCHITECTURE.md). Aquí, cómo quedó.
+[`plan-migracion.md`](plan-migracion.md). Aquí, cómo quedó.
 
 ```
 Navegador ── http://localhost:8765 ─▶ FastAPI (app/main.py)
@@ -37,4 +37,4 @@ Datos locales: datos/ (catálogos en git) · datos/trabajos/<id>/ (cada proyecto
 | `config/` (voices, styles, animations…) | `datos/voces.json`, `datos/estilos/`, `datos/animaciones/`, `datos/configuracion.json` |
 
 Se decidió **no mover las carpetas**: el código ya está separado por responsabilidad y moverlo solo
-rompería imports y la historia de git sin mejorar el video (ver `ARCHITECTURE.md`, sección 5.3).
+rompería imports y la historia de git sin mejorar el video (ver `plan-migracion.md`, sección 5.3).

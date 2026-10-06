@@ -6,7 +6,7 @@
 
 Decisiones del usuario: **primero el equipo, después SaaS** (la arquitectura queda pensada para
 clientes externos), y **la prueba se monta con todo gratis**. Para cómo funciona hoy, ver
-[`arquitectura-actual.md`](arquitectura-actual.md).
+[`arquitectura-anterior.md`](arquitectura-anterior.md).
 
 ## 1. ¿Sirve tal como está para dar el servicio?
 

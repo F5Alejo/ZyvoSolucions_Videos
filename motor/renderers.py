@@ -2,7 +2,7 @@
 
 Hoy hay uno, `PlaywrightRenderer` (Chromium dibuja la entrada y la salida de cada escena, ffmpeg
 sostiene lo del medio y luego le aplica la cámara y los fundidos). Remotion no se incluye: pide
-licencia de pago a empresas (ver `ARCHITECTURE.md`, sección 5.1). Un renderer nuevo solo tiene
+licencia de pago a empresas (ver `docs/plan-migracion.md`, sección 5.1). Un renderer nuevo solo tiene
 que cumplir `VideoRenderer` (`motor/proveedores.py`) y registrarse en `RENDERERS`.
 """
 

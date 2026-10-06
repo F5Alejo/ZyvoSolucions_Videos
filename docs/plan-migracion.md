@@ -2,13 +2,13 @@
 
 > **Fase 1 del «prompt maestro»** (2026-10-01). Este documento solo analiza: no cambia código.
 > Está escrito sobre la rama `Alejodev` (igual a `main`, commit `0201136`). Lo que ya está
-> documentado se enlaza en lugar de repetirse: [`docs/arquitectura-actual.md`](docs/arquitectura-actual.md),
-> [`docs/hallazgos.md`](docs/hallazgos.md) y [`docs/bitacora.md`](docs/bitacora.md).
+> documentado se enlaza en lugar de repetirse: [`arquitectura-anterior.md`](arquitectura-anterior.md),
+> [`hallazgos.md`](hallazgos.md) y [`bitacora.md`](bitacora.md).
 
 ## Estado de la migración (2026-10-02)
 
 Las secciones 1 a 6 son el análisis de partida y siguen como registro. Así quedó cada fase (detalle
-en [`docs/bitacora.md`](docs/bitacora.md); cómo quedó la arquitectura en [`docs/architecture.md`](docs/architecture.md)):
+en [`bitacora.md`](bitacora.md); cómo quedó la arquitectura en [`arquitectura.md`](arquitectura.md)):
 
 | Fase | Estado | Dónde |
 |---|---|---|
