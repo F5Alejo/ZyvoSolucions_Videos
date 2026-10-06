@@ -9,7 +9,7 @@ from tests.test_motor import ORIGEN, hay_ffmpeg
 @pytest.fixture()
 def datos_copia(tmp_path, monkeypatch):
     copia = tmp_path / "datos"
-    shutil.copytree(ORIGEN, copia, ignore=shutil.ignore_patterns("trabajos", "empresas", "musica"))
+    shutil.copytree(ORIGEN, copia, ignore=shutil.ignore_patterns("trabajos", "empresas", "musica", "bancos", "cache", "*.mp4"))
     from app import datos
     monkeypatch.setattr(datos, "RAIZ_DATOS", copia)
     return copia

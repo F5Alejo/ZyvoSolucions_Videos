@@ -65,6 +65,56 @@ class Efecto(BaseModel):
         return v
 
 
+TOMAS = ("clip", "foto", "lamina", "marca")   # de dónde sale el fondo de un momento
+ESTILOS_BEAT = ("cajas", "termino", "cifra")
+
+
+class Toma(BaseModel):
+    tipo: str                        # clip o foto del banco de la empresa, imagen de la lámina, o fondo de marca
+    archivo: str | None = None       # ruta absoluta (None en «marca»)
+    desde: float = 0.0               # segundo del clip en que empieza la toma
+    id: str | None = None            # id en el banco de medios (motor/banco)
+
+    @field_validator("tipo")
+    @classmethod
+    def _tipo(cls, v):
+        if v not in TOMAS:
+            raise ValueError(f"la toma «{v}» no existe")
+        return v
+
+
+class Beat(BaseModel):
+    """Un momento del video: lo que se ve mientras la voz dice una frase (o un trozo de ella)."""
+    inicio: float                    # segundos desde que empieza la escena
+    fin: float
+    texto: str                       # 1 a 6 palabras en pantalla, sacadas de lo que dice la voz
+    resaltado: list[int] = []        # índices de las palabras resaltadas (color de acento)
+    etiqueta: str | None = None      # rótulo corto encima del texto («MODELADO 3D»)
+    estilo: str = "cajas"            # cómo entra el texto (ESTILOS_BEAT)
+    toma: Toma = Toma(tipo="marca")
+    palabras: list[float] = []       # segundo (desde la escena) en que la voz dice cada palabra
+
+    @field_validator("estilo")
+    @classmethod
+    def _estilo(cls, v):
+        if v not in ESTILOS_BEAT:
+            raise ValueError(f"el estilo de texto «{v}» no existe")
+        return v
+
+    @model_validator(mode="after")
+    def _coherencia(self):
+        n = len(self.texto.split())
+        if not 1 <= n <= 8:
+            raise ValueError(f"«{self.texto}»: en pantalla van de 1 a 8 palabras")
+        if self.fin <= self.inicio:
+            raise ValueError(f"«{self.texto}»: termina antes de empezar")
+        if self.palabras and len(self.palabras) != n:
+            raise ValueError(f"«{self.texto}»: tiene {n} palabras y {len(self.palabras)} tiempos")
+        if any(not 0 <= i < n for i in self.resaltado):
+            raise ValueError(f"«{self.texto}»: resalta una palabra que no está")
+        return self
+
+
 class Escena(BaseModel):
     id: str
     lamina: int
@@ -80,6 +130,7 @@ class Escena(BaseModel):
     duracion_estimada: float
     inicio: float | None = None
     cuadros: int | None = None
+    beats: list[Beat] = []           # la dirección visual (motor/direccion.py), para el renderer HyperFrames
 
     @field_validator("camara")
     @classmethod

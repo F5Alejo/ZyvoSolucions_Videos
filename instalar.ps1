@@ -52,9 +52,9 @@ foreach ($candidato in @("python", "py")) {
 if (-not $python) { Fallar "Hace falta Python 3.12 o superior: https://www.python.org/downloads/ (marca «Add python.exe to PATH»)." }
 Bien "Python $version"
 
-if (-not (Existe "node")) { Fallar "Hace falta Node 20 o superior: https://nodejs.org/" }
+if (-not (Existe "node")) { Fallar "Hace falta Node 22 o superior: https://nodejs.org/" }
 $node = (& node --version).TrimStart("v")
-if ([version]$node -lt [version]"20.0") { Fallar "Node $node es muy viejo: hace falta 20 o superior." }
+if ([version]$node -lt [version]"22.0") { Fallar "Node $node es muy viejo: hace falta 22 o superior (lo pide HyperFrames)." }
 Bien "Node $node"
 
 if (Existe "ffmpeg") {
@@ -78,6 +78,18 @@ Bien "Librerías instaladas"
 Paso "Navegador que dibuja las escenas (Chromium de Playwright)"
 Correr $py @("-m", "playwright", "install", "chromium") "Instalar Chromium"
 Bien "Chromium listo"
+
+Paso "HyperFrames, el motor de video (motor/hyperframes)"
+Push-Location "motor\hyperframes"
+try {
+    Correr "npm.cmd" @("install", "--no-audit", "--no-fund") "Instalar HyperFrames"
+    # Su navegador propio; la telemetría va apagada (el material del cliente no sale del equipo).
+    $env:HYPERFRAMES_NO_TELEMETRY = "1"
+    Correr "node" @("node_modules\hyperframes\bin\hyperframes.mjs", "browser", "ensure") "Instalar el navegador de HyperFrames"
+} finally {
+    Pop-Location
+}
+Bien "HyperFrames listo"
 
 # ── 3. Modelos de voz ───────────────────────────────────────────────────────
 if ($SinModelos) {

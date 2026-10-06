@@ -1,0 +1,12 @@
+{
+  "name": "zyvo-hyperframes",
+  "private": true,
+  "description": "El renderer HyperFrames de Zyvo (motor/hyperframes.py). Versiones fijas: el mismo video en cada render.",
+  "dependencies": {
+    "gsap": "3.14.2",
+    "hyperframes": "0.8.138"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true
+  }
+}

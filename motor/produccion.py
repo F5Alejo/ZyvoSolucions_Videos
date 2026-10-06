@@ -20,7 +20,7 @@ from datetime import datetime
 from pathlib import Path
 
 from app import configuracion, taller
-from motor import audio, bugs, errores, escenas, logs, render, renderers, sfx, subtitulos, versiones, videospec
+from motor import audio, bugs, direccion, errores, escenas, logs, render, renderers, sfx, subtitulos, versiones, videospec
 from motor import voz as motor_voz
 from motor.qa import revisar
 
@@ -34,8 +34,8 @@ def firma(t: dict) -> str:
     grupos["audio"].pop("respaldo_voz", None)
     if grupos["audio"].get("musica_estilo", True):
         grupos["audio"].pop("musica_estilo", None)
-    if grupos["video"].get("renderer") == renderers.RENDERER_DEFECTO:
-        grupos["video"].pop("renderer")
+    if grupos["video"].get("renderer") == renderers.RENDERER_RESPALDO:
+        grupos["video"].pop("renderer")  # el motor de antes: la firma de los videos de siempre no cambia
     base = {"marca": t["marca"], "voz": t["voz"], "conf": grupos,
             "animacion": t.get("animacion"), "ediciones": t.get("ediciones")}
     # Solo si no son los de siempre: así la firma de un curso de antes no cambia.
@@ -78,6 +78,14 @@ def etapa_voz(t: dict, spec: videospec.VideoSpec, voz: dict, salida: Path, avisa
     spec = videospec.resolver(spec, generar=lambda texto: motor_voz.frase(voz, texto, cache),
                               duracion_de=lambda wav: sf.info(str(wav)).duration,
                               avisar=lambda paso, x: avisar(paso, 0.05 + 0.45 * x))
+    spec.guardar(salida / "videospec.json")
+    return spec
+
+
+def etapa_direccion(t: dict, spec: videospec.VideoSpec, salida: Path, avisar) -> videospec.VideoSpec:
+    """El Director de ritmo: un momento visual por frase, con su texto, su resaltado y su toma."""
+    spec = direccion.para_produccion(spec, t, direccion.carpeta_cache(t),
+                                     avisar=lambda paso, x: avisar(paso, 0.5 + 0.05 * x))
     spec.guardar(salida / "videospec.json")
     return spec
 
@@ -128,7 +136,8 @@ REINTENTOS = {"voz": 3, "escenas": 2}  # el resto se repetiría igual: no se rei
 # Estado del video mientras se produce: (al empezar la etapa, al terminarla). La interfaz los dice
 # en lenguaje humano; la cola agrega COMPLETED y FAILED.
 FASES = {"plan": ("SCRIPTING", "SCRIPT_READY"), "voz": ("GENERATING_AUDIO", "AUDIO_READY"),
-         "escenas": ("BUILDING_SCENES", "SCENES_READY"), "audio": ("RENDERING", None), "unir": ("RENDERING", None),
+         "direccion": ("BUILDING_SCENES", None), "escenas": ("BUILDING_SCENES", "SCENES_READY"),
+         "audio": ("RENDERING", None), "unir": ("RENDERING", None),
          "subtitulos": ("RENDERING", "RENDERED"), "qa": ("QA_RUNNING", None)}
 
 
@@ -155,6 +164,21 @@ def correr(t: dict, clave: str, etapa: str, fn, fase=lambda nombre: None):
         if al_terminar:
             fase(al_terminar)
         return r
+
+
+def reemplazar(nuevo: Path, destino: Path, segundos: float = 15.0) -> None:
+    """Pone el video nuevo en su lugar. En Windows falla mientras alguien reproduce el anterior: se espera un poco."""
+    import time
+    fin = time.monotonic() + segundos
+    while True:
+        try:
+            nuevo.replace(destino)
+            return
+        except PermissionError:
+            if time.monotonic() > fin:
+                raise ErrorProduccion("El video anterior está abierto (¿se está reproduciendo?). Ciérralo y vuelve a "
+                                      "producir: lo demás ya quedó listo y tardará poco.") from None
+            time.sleep(0.5)
 
 
 def voz_respaldo(voz: dict, conf: dict) -> dict | None:
@@ -205,14 +229,20 @@ def producir(t: dict, clave: str, avisar=lambda paso, progreso: None, fase=lambd
         avisar(f"Usando la voz {otra['nombre']}", 0.05)
         spec, voz = _con_voz(spec, otra, aviso), otra
         spec = correr(t, clave, "voz", lambda: etapa_voz(t, spec, voz, salida, avisar), fase)
-    mudo, encuadre = correr(t, clave, "escenas", lambda: etapa_escenas(spec, salida, tmp, avisar, conf["video"].get("renderer")), fase)
+    usado = renderers.renderer(conf["video"].get("renderer")).nombre
+    if usado != (conf["video"].get("renderer") or renderers.RENDERER_DEFECTO):
+        from motor import hyperframes
+        spec.avisos.append(f"Se usó el motor clásico porque {hyperframes.disponible()}")
+    if usado == "hyperframes":
+        spec = correr(t, clave, "direccion", lambda: etapa_direccion(t, spec, salida, avisar), fase)
+    mudo, encuadre = correr(t, clave, "escenas", lambda: etapa_escenas(spec, salida, tmp, avisar, usado), fase)
     norma = correr(t, clave, "audio", lambda: etapa_audio(spec, tmp, avisar), fase)
     # El MP4 se arma en tmp/ y después reemplaza al anterior: siempre es un archivo nuevo, así las
     # versiones guardadas (enlaces duros, motor/versiones.py) no cambian.
     nuevo, mp4 = tmp / f"{clave}.mp4", salida / f"{clave}.mp4"
     correr(t, clave, "unir", lambda: render.unir(mudo, norma, nuevo), fase)
     correr(t, clave, "subtitulos", lambda: etapa_subtitulos(spec, nuevo, salida, tmp, avisar), fase)
-    nuevo.replace(mp4)
+    reemplazar(nuevo, mp4)
 
     avisar("Revisando el resultado", 0.95)
     v = spec.video

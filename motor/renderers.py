@@ -1,11 +1,16 @@
 """Los renderers: VideoSpec resuelto → video mudo.
 
-Hoy hay uno, `PlaywrightRenderer` (Chromium dibuja la entrada y la salida de cada escena, ffmpeg
-sostiene lo del medio y luego le aplica la cámara y los fundidos). Remotion no se incluye: pide
-licencia de pago a empresas (ver `docs/plan-migracion.md`, sección 5.1). Un renderer nuevo solo tiene
-que cumplir `VideoRenderer` (`motor/proveedores.py`) y registrarse en `RENDERERS`.
+- `HyperFramesRenderer` (el de por defecto): el video entero como una composición HyperFrames,
+  con un momento visual por frase de la voz (motor/direccion.py, motor/hyperframes/).
+- `PlaywrightRenderer` (el de respaldo): Chromium dibuja la entrada y la salida de cada escena, ffmpeg
+  sostiene lo del medio y luego le aplica la cámara y los fundidos.
+
+Remotion no se incluye: pide licencia de pago a empresas (ver `docs/plan-migracion.md`, sección 5.1).
+Un renderer nuevo solo tiene que cumplir `VideoRenderer` (`motor/proveedores.py`) y registrarse en `RENDERERS`.
 """
 
+import shutil
+import subprocess
 from pathlib import Path
 
 from motor import camara, escenas, render, videospec
@@ -57,9 +62,63 @@ class PlaywrightRenderer:
         return mudo, encuadre
 
 
-RENDERERS = {PlaywrightRenderer.nombre: PlaywrightRenderer}
-RENDERER_DEFECTO = PlaywrightRenderer.nombre
+def _cuadros(video: Path) -> int:
+    r = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-count_packets", "-show_entries",
+                        "stream=nb_read_packets", "-of", "csv=p=0", str(video)], capture_output=True, text=True)
+    return int((r.stdout or "0").strip() or 0)
+
+
+class HyperFramesRenderer:
+    """El video entero como una composición HyperFrames: texto cinético al ritmo de la voz y tomas de fondo.
+
+    Necesita los momentos de cada escena (`Escena.beats`, de motor/direccion.py). El video se
+    guarda en `cache` con la huella de su composición: si nada cambió, no se vuelve a renderizar.
+    """
+    nombre = "hyperframes"
+    descripcion = "HyperFrames: texto cinético al ritmo de la voz, con tomas del banco de la empresa"
+
+    def render(self, spec: videospec.VideoSpec, cache: Path, tmp: Path, avisar=lambda hechas, total: None) -> tuple[Path, list[dict]]:
+        from motor import hyperframes
+        if any(e.narracion and not e.beats for e in spec.escenas):
+            raise ValueError("El video no tiene dirección (momentos por escena): falta la etapa del Director")
+        v = spec.video
+        proyecto = tmp / "hyperframes"
+        shutil.rmtree(proyecto, ignore_errors=True)
+        indice, usados = hyperframes.componer(spec, proyecto)
+        cache.mkdir(parents=True, exist_ok=True)
+        guardado = cache / f"hf-{hyperframes.huella(indice, usados, spec)}.mp4"
+        cuadros = sum(e.cuadros for e in spec.escenas)
+        if not guardado.exists():
+            crudo = proyecto / "render.mp4"
+            avisar(0, 1)
+            hyperframes.renderizar(proyecto, crudo, v.fps, v.crf, cuadros / v.fps, avisar=avisar)
+            nuevo = cache / f"{guardado.stem}.tmp.mp4"
+            if v.escala == 1 and _cuadros(crudo) == cuadros:
+                shutil.move(str(crudo), nuevo)
+            else:  # la voz manda: exactamente los cuadros del VideoSpec, y al tamaño pedido
+                subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(crudo), "-an",
+                                "-vf", f"scale={v.ancho_real}:{v.alto_real}:flags=lanczos,tpad=stop_mode=clone:stop=-1",
+                                "-frames:v", str(cuadros), "-c:v", "libx264", "-crf", v.crf, "-preset", v.preset,
+                                "-pix_fmt", "yuv420p", str(nuevo)], check=True)
+            nuevo.replace(guardado)
+            for viejo in cache.glob("hf-*.mp4"):
+                if viejo != guardado:
+                    viejo.unlink(missing_ok=True)
+        mudo = tmp / "mudo.mp4"
+        shutil.copy2(guardado, mudo)
+        return mudo, []
+
+
+RENDERERS = {PlaywrightRenderer.nombre: PlaywrightRenderer, HyperFramesRenderer.nombre: HyperFramesRenderer}
+RENDERER_DEFECTO = HyperFramesRenderer.nombre
+RENDERER_RESPALDO = PlaywrightRenderer.nombre  # si a este equipo le falta Node o HyperFrames
 
 
 def renderer(nombre: str | None = None):
-    return RENDERERS.get(nombre or RENDERER_DEFECTO, RENDERERS[RENDERER_DEFECTO])()
+    """El renderer pedido; si es HyperFrames y este equipo no lo tiene, el de respaldo."""
+    nombre = nombre if nombre in RENDERERS else RENDERER_DEFECTO
+    if nombre == HyperFramesRenderer.nombre:
+        from motor import hyperframes
+        if hyperframes.disponible():
+            nombre = RENDERER_RESPALDO
+    return RENDERERS[nombre]()

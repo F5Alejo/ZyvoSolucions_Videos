@@ -11,7 +11,7 @@ ORIGEN = Path(__file__).resolve().parent.parent / "datos"
 def cliente(tmp_path, monkeypatch):
     """Cada prueba trabaja sobre una copia de `datos/`, nunca sobre el original."""
     copia = tmp_path / "datos"
-    shutil.copytree(ORIGEN, copia, ignore=shutil.ignore_patterns("trabajos", "empresas", "musica"))
+    shutil.copytree(ORIGEN, copia, ignore=shutil.ignore_patterns("trabajos", "empresas", "musica", "bancos", "cache", "*.mp4"))
 
     # Un repositorio de videos y unos entregables falsos, para no depender del equipo.
     repo, entregables = tmp_path / "repo", tmp_path / "entregables"

@@ -13,7 +13,7 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel
 
-from app import configuracion, datos, empresas, extractor, taller
+from app import banco, configuracion, datos, empresas, extractor, taller
 from motor import analisis, catalogo, cola, diagnostico, empaquetar, escenas, estilos, logs, produccion, recursos, versiones, videospec
 from motor import voz as motor_voz
 from motor.agentes import entrega as agentes_entrega
@@ -820,6 +820,65 @@ def api_eliminar_empresa(id_: str):
         empresas.eliminar(id_)
     except KeyError:
         raise HTTPException(404, "No encontramos esa empresa")
+
+
+# ── Banco de medios de cada marca (app/banco.py) ─────────────────────────────
+
+def _marca_o_404(marca: str) -> str:
+    if marca not in datos.marcas():
+        raise HTTPException(404, "No encontramos esa marca")
+    return marca
+
+
+@app.get("/api/marcas/{marca}/banco")
+def api_banco_medios(marca: str):
+    return banco.listar(_marca_o_404(marca))
+
+
+@app.post("/api/marcas/{marca}/banco", status_code=201)
+async def api_banco_medios_subir(marca: str, archivo: UploadFile = File(...), descripcion: str = Form(""),
+                          etiquetas: str = Form("")):
+    """Sube un clip o una foto al banco. Se escribe a disco por partes: un clip puede pesar cientos de MB."""
+    _marca_o_404(marca)
+    carpeta = banco.carpeta(marca)
+    carpeta.mkdir(parents=True, exist_ok=True)
+    tmp = carpeta / f"_subida-{re.sub(r'[^a-z0-9]', '', (archivo.filename or '').lower())[-20:]}.part"
+    escrito = 0
+    with tmp.open("wb") as f:
+        while parte := await archivo.read(1024 * 1024):
+            escrito += len(parte)
+            if escrito > banco.MAX_BYTES:
+                f.close()
+                tmp.unlink(missing_ok=True)
+                raise ValueError(f"El archivo pasa de {banco.MAX_BYTES // 1024 // 1024} MB")
+            f.write(parte)
+    return banco.agregar(marca, archivo.filename or "", tmp, descripcion, etiquetas)
+
+
+class CambiosToma(BaseModel):
+    descripcion: str | None = None
+    etiquetas: list[str] | None = None
+
+
+@app.patch("/api/marcas/{marca}/banco/{id_}")
+def api_banco_medios_editar(marca: str, id_: str, cambios: CambiosToma):
+    return banco.actualizar(_marca_o_404(marca), id_, cambios.descripcion, cambios.etiquetas)
+
+
+@app.delete("/api/marcas/{marca}/banco/{id_}", status_code=204)
+def api_banco_medios_eliminar(marca: str, id_: str):
+    banco.eliminar(_marca_o_404(marca), id_)
+
+
+@app.get("/api/marcas/{marca}/banco/{id_}/{cual}")
+def api_banco_medios_archivo(marca: str, id_: str, cual: str):
+    """El archivo de la toma (`archivo`) o su miniatura (`miniatura`)."""
+    item = next((x for x in banco.listar(_marca_o_404(marca)) if x["id"] == id_), None)
+    nombre = item.get(cual) if item and cual in ("archivo", "miniatura") else None
+    ruta = banco.ruta(marca, nombre) if nombre else None
+    if ruta is None:
+        raise HTTPException(404)
+    return FileResponse(ruta)
 
 
 # ── Marcas, pendientes y casos ───────────────────────────────────────────────
