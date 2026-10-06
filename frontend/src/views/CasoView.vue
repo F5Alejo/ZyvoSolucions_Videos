@@ -19,7 +19,7 @@ const { datos: c, cargando, error, recargar } = useCarga(() => api.get<Caso>(`/a
     <EncabezadoPagina :titulo="c.titulo" :subtitulo="c.resumen"
       :migas="[{ texto: 'Inicio', a: '/' }, { texto: catalogo?.marcas[c.marca]?.nombre_corto ?? c.marca, a: `/marcas/${c.marca}` }, { texto: c.titulo }]" />
 
-    <section class="grid items-stretch gap-3 lg:grid-cols-[1fr_auto_1.3fr_auto_1fr]" aria-label="Recorrido de la pieza">
+    <section class="grid grid-cols-[minmax(0,1fr)] items-stretch gap-3 lg:grid-cols-[1fr_auto_1.3fr_auto_1fr]" aria-label="Recorrido de la pieza">
       <div class="tarjeta border-t-4 border-t-entra p-5">
         <p class="text-xs font-bold tracking-wider text-entra uppercase">Entra</p>
         <ul class="mt-3 space-y-3 text-sm">

@@ -1,0 +1,14 @@
+{
+ "id": "social",
+ "version": 1,
+ "nombre": "Social",
+ "icono": "📱",
+ "descripcion": "Para redes: vertical, con subtítulos dentro de la imagen (se ve sin sonido) y ritmo rápido.",
+ "animacion": "cinetica",
+ "camara": "zoom_lento_entrada",
+ "transicion": "corte",
+ "subtitulos_quemados": true,
+ "sfx": "sutil",
+ "musica": "energica",
+ "formato": "9:16"
+}

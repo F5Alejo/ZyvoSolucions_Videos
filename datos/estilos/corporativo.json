@@ -1,0 +1,14 @@
+{
+ "id": "corporativo",
+ "version": 1,
+ "nombre": "Corporativo",
+ "icono": "💼",
+ "descripcion": "Formal y prolijo: los textos se revelan como una cortina y las escenas se unen con fundidos.",
+ "animacion": "corporativa",
+ "camara": "estatica",
+ "transicion": "fundido",
+ "subtitulos_quemados": false,
+ "sfx": null,
+ "musica": "calmada",
+ "formato": "16:9"
+}

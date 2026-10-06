@@ -1,0 +1,14 @@
+{
+ "id": "cinematico",
+ "version": 1,
+ "nombre": "Cinemático",
+ "icono": "🎬",
+ "descripcion": "Pausado y envolvente: la cámara se aleja despacio y cada escena se funde con la siguiente.",
+ "animacion": "sobria",
+ "camara": "zoom_lento_salida",
+ "transicion": "fundido",
+ "subtitulos_quemados": false,
+ "sfx": null,
+ "musica": "calmada",
+ "formato": "16:9"
+}

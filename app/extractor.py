@@ -68,8 +68,13 @@ def leer_pptx(ruta: Path) -> list[dict]:
     pres = Presentation(str(ruta))
     laminas = []
     for n, lamina in enumerate(pres.slides, start=1):
-        formas, imagenes = {}, []
+        formas, imagenes, tablas, graficos = {}, [], [], []
         for s in _formas(lamina.shapes):
+            if getattr(s, "has_table", False) and s.has_table:
+                filas = [[c.text.strip() for c in fila.cells] for fila in s.table.rows]
+                tablas.append([f for f in filas if any(f)])
+            if getattr(s, "has_chart", False) and s.has_chart:
+                graficos.append(_grafico(s.chart))
             if s.has_text_frame:
                 parrafos = [p.text.strip() for p in s.text_frame.paragraphs if p.text.strip()]
                 if parrafos:
@@ -92,8 +97,34 @@ def leer_pptx(ruta: Path) -> list[dict]:
             "frases": frases(notas),
             "foto": imagenes[0][1] if imagenes else None,
             "icono": imagenes[-1][1] if len(imagenes) > 1 else None,
+            "tablas": tablas,
+            "graficos": graficos,
         })
     return laminas
+
+
+def _grafico(chart) -> dict:
+    """Lo que dice un gráfico: título, tipo, categorías y series con sus valores."""
+    titulo = None
+    try:
+        if chart.has_title and chart.chart_title.has_text_frame:
+            titulo = chart.chart_title.text_frame.text.strip() or None
+    except Exception:  # un gráfico raro no impide leer el resto de la lámina
+        pass
+    try:
+        categorias = [str(c) for c in chart.plots[0].categories] if len(chart.plots) else []
+    except Exception:
+        categorias = []
+    series = []
+    for plot in chart.plots:
+        for serie in plot.series:
+            try:
+                valores = [v for v in serie.values]
+            except Exception:
+                valores = []
+            series.append({"nombre": serie.name, "valores": valores})
+    return {"titulo": titulo, "tipo": str(chart.chart_type).split(" ")[0].lower(), "categorias": categorias,
+            "series": series}
 
 
 def guardar_imagenes(ruta: Path, carpeta: Path) -> int:

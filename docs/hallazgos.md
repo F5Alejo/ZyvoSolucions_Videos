@@ -22,6 +22,10 @@ de cada uno, con su fecha, está en la [bitácora](bitacora.md).
 | La salida de una animación pisaba la entrada | Con dos animaciones `both` en el mismo elemento, la salida aplicaba su estado antes de tiempo | Entrada con `fill-mode: both` y salida con `forwards` |
 | El fondo y el logo parpadeaban entre láminas | Entraban y salían en cada escena | Solo entran en la primera escena del video y solo salen en la última |
 | Un render de 40 s de lámina sería lento | Dibujar cada cuadro con Chromium es caro | Se dibujan cuadro a cuadro solo la entrada y la salida; ffmpeg sostiene lo del medio |
+| «Pantalla negra» en una lámina oscura con poco texto | `blackdetect` cuenta como negro un cuadro con más del 98 % de píxeles oscuros, y el fondo de RiskMann es #020202 | `pic_th=0.999`: solo un cuadro negro entero cuenta |
+| La plantilla vertical dejaba el texto arriba y angosto | En columna, `.texto` con `flex: 1` crece hacia abajo y `align-items: center` lo encoge | En vertical, `.texto` sin `flex` y a todo el ancho; `.cuerpo` con `align-items: stretch` |
+| Un zoom centrado recortaba la barra de avance | El zoom corta lo mismo arriba que abajo | La cámara mantiene fijo el borde de abajo (`y=ih-ih/zoom`) |
+| Un enlace duro habría cambiado las versiones viejas | ffmpeg escribía el MP4 nuevo encima del mismo archivo | El MP4 se arma en `tmp/` y reemplaza al anterior con `replace` |
 | El título repetido en la portada | El video toma su nombre de la primera lámina | La portada usa el nombre del curso como antetítulo |
 
 ## Interfaz (Vue)
@@ -33,6 +37,8 @@ de cada uno, con su fecha, está en la [bitácora](bitacora.md).
 | La tarjeta del video salía angosta | Una regla CSS posterior con la misma especificidad la pisaba | Más especificidad (`.videos-plan.salida-videos`). Hoy la interfaz es Tailwind |
 | Escalar el iframe con CSS no era confiable | Dividir unidades (`100cqw / 1920px`) no lo soportan todos los navegadores | `ResizeObserver` calcula la escala |
 | Aviso de paquete obsoleto | `lucide-vue-next` está obsoleto | Se migró a `@lucide/vue` |
+| Las miniaturas de los estilos salían vacías | Un `height` en % dentro de una grilla con filas automáticas da 0 | Alturas con `padding-top` en %, que va contra el ancho |
+| Los subtítulos se veían dos veces | Quemados en la imagen y la pista VTT activa por defecto en `<video>` | La pista `<track>` sin `default` |
 
 ## Agentes e IA local
 
@@ -60,6 +66,12 @@ de cada uno, con su fecha, está en la [bitácora](bitacora.md).
 | Los PR de Dependabot no se probaban | «Pruebas» solo se activaba con PR hacia `main` | También con PR hacia `Alejodev` |
 | TypeScript 7 rompe `vue-tsc` | `ERR_PACKAGE_PATH_NOT_EXPORTED` (`./lib/tsc`) | Dependabot ignora las versiones mayores de TypeScript hasta que `vue-tsc` las soporte |
 | El servidor local se apagaba solo | Las tareas en segundo plano del asistente tienen un tiempo máximo | El servidor se lanza en su propia ventana de PowerShell |
+| `instalar.ps1` se quedaba esperando la clave sin ventana | `Read-Host` no falla cuando no hay quien escriba: espera para siempre | Solo pregunta si la sesión es interactiva y la entrada no está redirigida |
+| Un commit dejó Actions en rojo tras mover un fixture | Se quitó `ORIGEN` de `test_motor.py`, que importan otras pruebas, y solo se corrió un subconjunto | Correr **todas** las pruebas después del último cambio |
+| `juandev` llegó a la integración con 5 errores de ruff | «Pruebas» solo se activaba con push a `main` y `Alejodev`: los push a `juandev` no corrían nada | Push también en `juandev`, y `pull_request` **sin filtro de ramas** |
+| `git show rama:.archivo` falla en Git Bash | MSYS traduce la ruta y la convierte en `rama;.archivo` | `MSYS_NO_PATHCONV=1`, o leer el archivo del árbol de trabajo |
+| `videos-marketing` no se puede unir a `main` | No comparten ancestro: son dos historias distintas, y esa rama quitó el estudio a propósito (387 MB de video) | Se deja aparte; el estudio vive en `main` |
+| La prueba de recorrido de rutas fallaba solo en Actions | Usaba «el content-type no es JSON» como señal de que no se filtró el archivo, y sin `frontend/dist` el catch-all de Vue responde 503 **con JSON**. El job «API y motor» no compila el frontend | La prueba comprueba lo que importa: que el cuerpo no traiga el archivo de afuera y que no sea un **200** de tipo JSON |
 
 ## Despliegue
 

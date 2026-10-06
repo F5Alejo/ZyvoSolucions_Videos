@@ -9,6 +9,7 @@ Al terminar la entrada se revisa el encuadre: si algún texto se sale de la pant
 caja, se informa (el control de calidad lo muestra como «Todo el texto cabe»).
 """
 
+import json
 import math
 import shutil
 import subprocess
@@ -48,64 +49,100 @@ def cuadros(segundos: float, fps: int = FPS) -> int:
 
 def video(escenas: list[tuple], ancho: int, alto: int, destino: Path, trabajo: Path,
           avisar=lambda hechas, total: None, fps: int = FPS, escala: float = 1.0,
-          crf: str = "18", preset: str = "medium") -> list[dict]:
+          crf: str = "18", preset: str = "medium", cache: Path | None = None,
+          posproceso=None) -> list[dict]:
     """Escribe `destino` (mp4 sin audio) y devuelve los problemas de encuadre encontrados.
 
-    `escenas`: (html, cuadros) o (html, cuadros, segundos_de_entrada, segundos_de_salida).
+    `escenas`: (html, cuadros) o (html, cuadros, segundos_de_entrada, segundos_de_salida[, huella]).
     El HTML siempre se diseña en el lienzo `ancho`×`alto`; `escala` lo dibuja más pequeño
     (p. ej. 2/3 para 720p) sin cambiar la composición.
+
+    Con `cache` y una `huella` por escena, cada escena dibujada se guarda como `<huella>.mp4` (y sus
+    problemas de encuadre en `<huella>.json`): si la escena no cambió, no se vuelve a dibujar.
+    `posproceso(i, parte, trabajo)` puede transformar la parte de la escena `i` (cámara, transición)
+    antes de guardarla.
     """
-    from playwright.sync_api import sync_playwright
-
     trabajo.mkdir(parents=True, exist_ok=True)
-    partes, problemas = [], []
-    with sync_playwright() as p:
-        navegador = p.chromium.launch()
-        pagina = navegador.new_page(viewport={"width": ancho, "height": alto}, device_scale_factor=escala)
-        for i, escena in enumerate(escenas):
-            html, total = escena[0], escena[1]
-            ent_s = escena[2] if len(escena) > 2 else 1.2
-            sal_s = escena[3] if len(escena) > 3 else 0.0
-            carpeta = trabajo / f"escena-{i:03d}"
-            (carpeta / "e").mkdir(parents=True, exist_ok=True)
-            (carpeta / "x").mkdir(exist_ok=True)
-            pagina_html = carpeta / "escena.html"
-            pagina_html.write_text(html, encoding="utf-8")
-            pagina.goto(pagina_html.resolve().as_uri())
-            pagina.evaluate(_LISTO)
-
-            a = min(total, math.ceil(ent_s * fps) + 1)
-            b = min(total - a, math.ceil(sal_s * fps) + 1) if sal_s > 0 else 0
-            if total - a - b < 2:  # escena corta: se dibuja entera
-                a, b = total, 0
-            for f in range(a):
-                pagina.evaluate(_IR_A, f * 1000 / fps)
-                pagina.screenshot(path=str(carpeta / "e" / f"{f:04d}.png"))
-            pagina.evaluate(_IR_A, ent_s * 1000)
-            problemas += [{"escena": i, "detalle": d} for d in pagina.evaluate(_ENCUADRE)]
-            for j, f in enumerate(range(total - b, total)):
-                pagina.evaluate(_IR_A, f * 1000 / fps)
-                pagina.screenshot(path=str(carpeta / "x" / f"{j:04d}.png"))
-
-            parte = trabajo / f"parte-{i:03d}.mp4"
-            entradas = ["-framerate", str(fps), "-i", str(carpeta / "e" / "%04d.png")]
-            if b:
-                entradas += ["-framerate", str(fps), "-i", str(carpeta / "x" / "%04d.png")]
-                filtro = f"[0:v]tpad=stop_mode=clone:stop={total - a - b}[m];[m][1:v]concat=n=2:v=1:a=0[v]"
-            else:
-                filtro = f"[0:v]tpad=stop_mode=clone:stop={total - a}[v]"
-            subprocess.run(["ffmpeg", "-v", "error", "-y", *entradas, "-filter_complex", filtro, "-map", "[v]",
-                            "-frames:v", str(total), *codificar(fps, crf, preset), "-an", str(parte)], check=True)
-            shutil.rmtree(carpeta)
-            partes.append(parte)
+    if cache is not None:
+        cache.mkdir(parents=True, exist_ok=True)
+    partes: list[Path | None] = [None] * len(escenas)
+    problemas: list[dict] = []
+    faltan = []
+    for i, escena in enumerate(escenas):
+        huella = escena[4] if len(escena) > 4 else None
+        if cache is not None and huella and (cache / f"{huella}.mp4").exists() and (cache / f"{huella}.json").exists():
+            partes[i] = cache / f"{huella}.mp4"
+            problemas += [{"escena": i, "detalle": x} for x in json.loads((cache / f"{huella}.json").read_text(encoding="utf-8"))]
             avisar(i + 1, len(escenas))
-        navegador.close()
+        else:
+            faltan.append(i)
+
+    if faltan:
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as p:
+            navegador = p.chromium.launch()
+            pagina = navegador.new_page(viewport={"width": ancho, "height": alto}, device_scale_factor=escala)
+            for i in faltan:
+                escena = escenas[i]
+                parte, encuadre = _dibujar(pagina, i, escena, trabajo, fps, crf, preset)
+                if posproceso is not None:
+                    parte = posproceso(i, parte, trabajo) or parte
+                huella = escena[4] if len(escena) > 4 else None
+                if cache is not None and huella:
+                    guardada = cache / f"{huella}.mp4"
+                    shutil.move(str(parte), guardada)
+                    (cache / f"{huella}.json").write_text(json.dumps(encuadre, ensure_ascii=False), encoding="utf-8")
+                    parte = guardada
+                partes[i] = parte
+                problemas += [{"escena": i, "detalle": x} for x in encuadre]
+                avisar(len([x for x in partes if x]), len(escenas))
+            navegador.close()
 
     lista = trabajo / "partes.txt"
-    lista.write_text("".join(f"file '{x.name}'\n" for x in partes), encoding="utf-8")
+    lista.write_text("".join(f"file '{x.resolve().as_posix()}'\n" for x in partes), encoding="utf-8")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(lista),
                     "-c", "copy", str(destino)], check=True)
-    return problemas
+    return sorted(problemas, key=lambda x: x["escena"])
+
+
+def _dibujar(pagina, i: int, escena: tuple, trabajo: Path, fps: int, crf: str, preset: str) -> tuple[Path, list[str]]:
+    """Dibuja una escena: la entrada y la salida cuadro a cuadro; ffmpeg sostiene lo del medio."""
+    html, total = escena[0], escena[1]
+    ent_s = escena[2] if len(escena) > 2 else 1.2
+    sal_s = escena[3] if len(escena) > 3 else 0.0
+    carpeta = trabajo / f"escena-{i:03d}"
+    shutil.rmtree(carpeta, ignore_errors=True)
+    (carpeta / "e").mkdir(parents=True, exist_ok=True)
+    (carpeta / "x").mkdir(exist_ok=True)
+    pagina_html = carpeta / "escena.html"
+    pagina_html.write_text(html, encoding="utf-8")
+    pagina.goto(pagina_html.resolve().as_uri())
+    pagina.evaluate(_LISTO)
+
+    a = min(total, math.ceil(ent_s * fps) + 1)
+    b = min(total - a, math.ceil(sal_s * fps) + 1) if sal_s > 0 else 0
+    if total - a - b < 2:  # escena corta: se dibuja entera
+        a, b = total, 0
+    for f in range(a):
+        pagina.evaluate(_IR_A, f * 1000 / fps)
+        pagina.screenshot(path=str(carpeta / "e" / f"{f:04d}.png"))
+    pagina.evaluate(_IR_A, ent_s * 1000)
+    encuadre = list(pagina.evaluate(_ENCUADRE))
+    for j, f in enumerate(range(total - b, total)):
+        pagina.evaluate(_IR_A, f * 1000 / fps)
+        pagina.screenshot(path=str(carpeta / "x" / f"{j:04d}.png"))
+
+    parte = trabajo / f"parte-{i:03d}.mp4"
+    entradas = ["-framerate", str(fps), "-i", str(carpeta / "e" / "%04d.png")]
+    if b:
+        entradas += ["-framerate", str(fps), "-i", str(carpeta / "x" / "%04d.png")]
+        filtro = f"[0:v]tpad=stop_mode=clone:stop={total - a - b}[m];[m][1:v]concat=n=2:v=1:a=0[v]"
+    else:
+        filtro = f"[0:v]tpad=stop_mode=clone:stop={total - a}[v]"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", *entradas, "-filter_complex", filtro, "-map", "[v]",
+                    "-frames:v", str(total), *codificar(fps, crf, preset), "-an", str(parte)], check=True)
+    shutil.rmtree(carpeta)
+    return parte, encuadre
 
 
 def unir(video_mudo: Path, audio: Path, destino: Path) -> None:

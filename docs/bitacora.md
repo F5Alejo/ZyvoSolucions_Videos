@@ -8,6 +8,181 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-10-02 · Fase 16: prueba de punta a punta y un falso positivo del control de calidad
+
+### Qué se hizo
+- **`tests/test_e2e.py`:** como lo hace la interfaz. Sube `mixed_content.pptx` (9 láminas con imágenes, tabla, gráfico y una lámina sin notas), lo analiza, aplica el estilo Corporativo, elige la voz, produce todo por la cola y revisa que cada MP4 sea H.264 + AAC, que exista su versión `v001`, que la línea de tiempo esté resuelta con fundidos, que el completo traiga capítulos y que el ZIP se arme.
+- Pruebas: 117.
+
+### Errores y cómo se resolvieron
+- **Falso positivo «Pantalla negra»:** la prueba encontró una «pantalla negra» de 5,8 s que en realidad era la lámina «Cierre». Tiene el fondo casi negro de RiskMann (#020202) y poco texto, así que más del 98 % de sus píxeles son oscuros, que es el umbral por defecto de `blackdetect`. Ahora se exige el 99,9 % (`pic_th=0.999`): una falla real es negra entera y se sigue detectando. Hay una prueba para cada caso.
+- **La lámina sin notas queda en silencio y el control de calidad lo marca** (bug `AUDIO_003`, recuperación «revisar el guion»). Es lo esperado: el Analizador ya lo había avisado al subir.
+
+---
+
+## 2026-10-02 · Fases 14 y 15: la interfaz de Zyvo y el editor por escena
+
+### Qué se hizo
+- **Flujo creativo `/crear`:** Subir → Analizar → Estilo → Voz → Opciones → Crear → Resultado. La persona no ve nada técnico: «Elegir voz» en vez de proveedor, «Presentación / Vertical / Cuadrado / Instagram» en vez de 16:9, pasos humanos en vez de fases del motor. El flujo de cinco pasos de antes sigue en «Cursos» como modo experto.
+- **Editor `/crear/:id/editar/:clave`:** la línea de tiempo (escenas, voz, música, efectos y subtítulos) y una tarjeta por escena con su vista previa, el texto de la voz, el movimiento de cámara, la transición y «Regenerar esta escena».
+- **Componentes (`frontend/src/components/zyvo/`):** ZonaSubida, PasosProgreso, TarjetaEstilo (con miniatura animada de cada estilo), TarjetaVoz (con «Escuchar»), EstadoGeneracion, MensajeError (con «Modo diagnóstico» escondido), ReproductorPrevio, LineaTiempo, TarjetaEscena, PanelExportar y AjustesAvanzados.
+- **Estado central (`composables/proyecto.ts`)**, **textos configurables (`mensajes.ts`)** y la traducción del motor a pasos humanos (`generacion.ts`, con prueba). Ningún mensaje técnico (traceback, ffmpeg, subprocess) llega a la pantalla.
+- **Identidad de Zyvo:** la «chispa» (degradado violeta → cian, contraste medido), el logotipo en la barra lateral y los títulos «· Zyvo». RiskMann queda como marca cliente al pie.
+- **Backend:** `audio.musica_estilo` para apagar la música aunque el estilo la pida.
+- **Prueba real en el navegador:** un PPTX de 3 láminas → estilo Dinámico → voz Dora (Kokoro, elegida sola por no haber clave de ElevenLabs) → subtítulos en la imagen → video de 18,9 s en ~20 s con todos los chequeos en verde (-14,17 LUFS, sin saturación, sin bugs). Luego, en el editor, la escena 2 pasó a cámara «Quieta» y al regenerar solo se volvió a dibujar esa escena; quedó la versión `v002`.
+- Pruebas: pytest 115, Vitest 18.
+
+### Errores y cómo se resolvieron
+- **Las miniaturas de los estilos salían vacías:** un `height` en % dentro de una grilla con filas automáticas da 0. Se usan alturas con `padding-top` en %, que se calcula sobre el ancho.
+- **El texto «ZYVO» casi no se veía en modo oscuro:** el degradado violeta oscuro sobre negro. En modo oscuro usa tonos claros (9,4:1 y 12,7:1).
+- **Los subtítulos salían dos veces:** quemados en la imagen y además la pista VTT activa por defecto en el reproductor. La pista queda disponible pero apagada.
+- Los pasos de la generación se leían en zigzag en dos columnas: ahora se leen de arriba abajo.
+
+---
+
+## 2026-10-02 · Versiones de cada video, regeneración selectiva y muestra de voz
+
+### Qué se hizo
+- **Versiones (`motor/versiones.py`):** cada producción buena se guarda en `salida/<clave>/versiones/v001/`, `v002/`… con su MP4, su informe, su VideoSpec y sus subtítulos. Se guardan las últimas 5. El MP4 es un enlace duro: no ocupa más disco. `GET /api/trabajos/{id}/versiones/{clave}` y los archivos de cada versión.
+- **Regeneración selectiva:** `POST /api/trabajos/{id}/regenerar/{clave}` con `{"escena": n}` vuelve a dibujar solo esa escena; con `{"voz": true}` vuelve a generar solo el audio de la narración. Lo demás se reutiliza de la caché.
+- **Muestra de voz:** `GET /api/voces/{id}/muestra`, una frase corta con esa voz para el botón «Escuchar». Se genera una vez en `datos/cache/muestras/` (fuera de git).
+- Pruebas: 115 (`tests/test_versiones.py`).
+
+### Errores y cómo se resolvieron
+- **Un enlace duro habría cambiado las versiones viejas:** ffmpeg escribía `<clave>.mp4` encima del archivo anterior, y un enlace comparte ese archivo. Ahora el MP4 se arma en `tmp/` y reemplaza al anterior con `replace`: cada producción es un archivo nuevo y las versiones no cambian. La prueba lo comprueba.
+- `datos/cache/` no estaba en `.gitignore`: se agregó.
+
+---
+
+## 2026-10-02 · Fases 11 a 13: línea de tiempo, efectos de sonido, director de música y estilos
+
+### Qué se hizo
+- **Efectos de sonido (`motor/sfx.py`):** whoosh, barrido suave, pop, clic, éxito, notificación, impacto y tecleo, **sintetizados con código** (ondas y ruido filtrado). Son originales, salen idénticos en cada render y no tienen licencia que revisar. Se generan una vez en `cache/sfx/`.
+- **Director de SFX (agente 6), por reglas:** como mucho un efecto por escena y nunca en la primera; suena al empezar la escena, antes de que entre la voz, a -26 dB. El VideoSpec rechaza cualquier efecto por encima de -12 dB.
+- **Director de música (agente 5):** si el curso no tiene música elegida y el estilo pide una energía (calmada, media o enérgica), toma la primera pista con esa energía entre las que la persona subió con su licencia. Nunca baja música de internet. Al subir una pista ya se puede declarar su energía.
+- **Estilos (`datos/estilos/`, `motor/estilos.py`):** Educativo, Corporativo, Tecnológico, Minimalista, Dinámico, Cinemático y Social. Cada uno combina solo cosas del catálogo: plantilla de animación, cámara, transición, subtítulos dentro de la imagen, efectos de sonido, energía de la música y formato sugerido (Social: 9:16 con subtítulos quemados). Aplicar un estilo conserva lo elegido por lámina. Un archivo de estilo con algo fuera del catálogo no se carga.
+- **Línea de tiempo (agente 7):** `GET /api/trabajos/{id}/linea/{clave}` con las pistas de escenas, voz, música, efectos y subtítulos; con los tiempos reales si el video está producido y al día, o estimados si no.
+- **API:** `GET /api/estilos` y `PUT /api/trabajos/{id}/estilo`.
+- El VideoSpec suma `sfx` por escena, la música elegida y quién la eligió, y el estilo (cambios compatibles: sigue en la versión 1).
+- Pruebas: 113 (`tests/test_estilos_audio.py`, con un video real con estilo, música y efectos).
+
+---
+
+## 2026-10-02 · Fases 8 a 10: cámara, transiciones y formatos
+
+### Qué se hizo
+- **Cámara (`motor/camara.py`):** quieta, acercarse despacio, alejarse despacio y recorrer hacia la izquierda o la derecha. Se aplica con ffmpeg (`zoompan`) sobre la escena ya dibujada, con una curva suave y la imagen ampliada al doble para que no salte. Cuesta ~0,3 veces la duración (10 s de 1080p en 2,9 s).
+- **Transiciones:** corte y fundido al color de fondo de la marca. El fundido no se solapa con la escena vecina: la duración de cada escena y la voz no se mueven.
+- **Formatos:** 16:9, 9:16, 1:1 (1080×1080) y 4:5 (1080×1350). Se produce en el primer formato elegido (`produccion.formato`). En 1:1 y 4:5 el texto se achica (`ESCALA_TEXTO`) y la foto ocupa menos alto. La tarjeta del curso completo sale en el mismo formato.
+- **API:** `GET /api/catalogo/escena` (cámaras, transiciones y formatos) y `PUT /api/trabajos/{id}/escena` (para el curso o por lámina), validado contra el catálogo.
+- La firma solo incluye el formato y la escena cuando no son los de siempre: los cursos de antes no quedan desactualizados.
+- Pruebas: 108 (`tests/test_escena.py`, con un video 9:16 real con cámara y fundidos).
+
+### Errores y cómo se resolvieron
+- **El diseño vertical de la plantilla estaba roto** (nunca se había producido: el motor fijaba 16:9). En columna, `.texto` con `flex: 1` crecía hacia abajo y `align-items: center` lo dejaba angosto: el texto quedaba arriba y centrado a lo ancho. Ahora ocupa el ancho y el conjunto queda centrado en la altura.
+
+### Decisiones
+- **La cámara mantiene fijo el borde de abajo:** un zoom centrado recortaba la barra de avance.
+- **Fuera del catálogo por ahora:** paralaje y enfoque (necesitan la escena en capas), paneos verticales (recortarían la barra), fundido cruzado y deslizamiento (solapan escenas y moverían la voz).
+- **La cámara se hace en ffmpeg y no en el navegador:** con CSS habría que dibujar cada cuadro y el render costaría más del doble.
+
+---
+
+## 2026-10-02 · Agente 1 (Analizador), tablas y gráficos, y PPTX de prueba
+
+### Qué se hizo
+- **El extractor lee tablas y gráficos** (`tablas`: filas de texto; `graficos`: título, tipo, categorías y series con sus valores). Antes se perdían: no tienen `text_frame`. El `curso.json` exportado conserva el formato de csm.
+- **Una lámina que solo trae una tabla o un gráfico** muestra sus datos como viñetas («Hasta 20 km/h · 15 SMMLV», «2023: 98») en vez de quedar sin texto.
+- **`motor/analisis.py`, el Analizador:** `PresentationAnalysis` con láminas, títulos y secciones, cuáles tienen notas, imágenes, tablas y gráficos, láminas vacías o con demasiado texto, palabras, minutos estimados, estructura, tema (palabras más repetidas), dificultad (básica, media o avanzada) y puntos importantes (cifras y normas). Es determinista y solo lee. Se guarda en `analisis.json` al subir el PPTX; `GET /api/trabajos/{id}/analisis` lo entrega (`?rehacer=true` lo recalcula).
+- **`tests/fixtures/`:** los 7 PPTX de prueba (simple, images, tables, long_text, notes, empty_slide, mixed_content), generados por `scripts/generar_fixtures.py` para que sean reproducibles y sin material de clientes.
+- Pruebas: 101 (`tests/test_analisis.py`).
+
+---
+
+## 2026-10-02 · Fases 4 y 5: proveedores y control de los agentes
+
+### Qué se hizo
+- **`motor/proveedores.py`:** las interfaces `TTSProvider`, `LLMProvider` y `VideoRenderer`, con dónde se registra cada implementación.
+- **`motor/renderers.py`:** `PlaywrightRenderer` (lo que antes estaba dentro de `produccion`) y el registro `RENDERERS`. La configuración elige el renderer (`video.renderer`, hoy solo `playwright`). Remotion no se agrega: pide licencia de pago a empresas.
+- **`Ollama` como `LLMProvider`:** los agentes ya no llaman a las funciones del módulo; usan `base.LLM`.
+- **Validación de la IA:** cada respuesta pasa por JSON → esquema → valores permitidos antes de usarse. En una lista, el elemento que no cumple se quita y se cuenta (`invalidas`); si la respuesta entera no sirve, el agente usa sus reglas. Nunca se ejecuta nada.
+- **Permisos de los agentes (`base.PERMISOS`):** cada agente declara qué lee y qué puede cambiar (el Director de animación solo `animacion`, el Redactor solo `ediciones`, el Revisor de voz nada). Al aceptar una propuesta se compara el curso antes y después: si tocó otra cosa, el cambio se deshace y se rechaza. Cada agente tiene además versión y tiempo máximo por pregunta.
+- **La firma no cambia con opciones que no afectan el video:** `respaldo_voz` y el renderer por defecto quedan fuera, así los videos ya producidos no aparecen desactualizados.
+- Pruebas: 91 (`tests/test_proveedores.py`).
+
+### Errores y cómo se resolvieron
+- **Validar la respuesta entera tiraba todo** si la IA se equivocaba en una sola lámina (el Director perdía también las láminas buenas). Ahora se descarta solo el elemento inválido.
+- **La firma de los cursos había cambiado en `62cfeb5`** al agregar `audio.respaldo_voz`. Se comprobó contra la fórmula original que ahora vuelve a ser la misma.
+
+---
+
+## 2026-10-01 · Fases 6 y 7: errores con código, reintentos, voz de respaldo, registro técnico y detector de bugs
+
+### Qué se hizo
+- **`motor/errores.py`:** cada falla se clasifica con un código estable (`PPTX_001`, `TTS_001`, `TTS_002`, `RENDER_001`, `AUDIO_001`, `VIDEO_001`, `SPEC_001`, `QA_001`, `MOTOR_001`…), una severidad (CRITICAL a INFO), un mensaje para la persona y una recuperación sugerida.
+- **Reintentos (`produccion.correr`):** la voz se reintenta hasta 3 veces y las escenas hasta 2, **solo** si la falla es pasajera (red, ElevenLabs 5xx o 429, el navegador que se cayó). Un ffmpeg con datos malos o una clave que falta no se reintentan.
+- **Voz de respaldo:** si ElevenLabs falla, el video entero se rehace con la primera voz Kokoro lista (nunca Piper) y el informe lo dice (`respaldo_voz` y un aviso). Se apaga con `audio.respaldo_voz`.
+- **Registro técnico (`motor/logs.py`):** una línea JSON por evento en `datos/trabajos/<id>/logs/<clave>.jsonl`, con etapa, intento, código, severidad y *traceback*. `GET /api/trabajos/{id}/diagnostico/{clave}` lo entrega para el modo diagnóstico. La interfaz nunca recibe el *traceback*.
+- **Fases del pipeline** en `estado.json` y en la API: QUEUED, SCRIPTING, SCRIPT_READY, GENERATING_AUDIO, AUDIO_READY, BUILDING_SCENES, SCENES_READY, RENDERING, RENDERED, QA_RUNNING, QA_PASSED / QA_FAILED, COMPLETED y FAILED.
+- **Control de calidad:** cada chequeo lleva un `id` estable. Nuevos: «El audio no se satura» (pico por debajo de -0,1 dBFS), «Textos sin caracteres extraños» y «Todas las láminas e imágenes están en el video».
+- **Detector de bugs (`motor/bugs.py`):** cada chequeo fallido se vuelve un bug con código, severidad, escena y recuperación, ordenados de más a menos grave, en `qa.json["bugs"]`. No corrige nada solo.
+- Pruebas: 86 (`tests/test_robustez.py`).
+
+### Errores y cómo se resolvieron
+- **El commit `e3eea68` dejó Actions en rojo:** al pasar `datos_copia` a `conftest.py` se quitó `ORIGEN` de `test_motor.py`, que importan otras tres pruebas. Después de ese cambio solo se había corrido un subconjunto. Se arregló en `1d2071e`. Lección: correr **todas** las pruebas después del último cambio, no antes.
+
+### Decisiones
+- **No se detectan «cuadros congelados»:** una lámina quieta mientras habla la voz es a propósito, así que `freezedetect` marcaría casi todo el video. Las pantallas negras y los silencios largos sí se detectan.
+
+---
+
+## 2026-10-01 · Fases 2, 3 y 6: VideoSpec, producción por etapas y caché de escenas
+
+### Qué se hizo
+- **`motor/videospec.py`:** el contrato de un video en Pydantic (versión 1). `construir()` arma el plan con duraciones estimadas (`videospec.plan.json`); `resolver()` le pone el audio a cada frase y fija cada escena en cuadros exactos (`videospec.json`). Se valida esquema, catálogo y coherencia; `sanear()` cambia lo desconocido por el valor por defecto con el aviso `INVALID_EFFECT`. Ver `docs/videospec.md`.
+- **`motor/catalogo.py`:** catálogos cerrados de cámara y transición (por ahora `estatica` y `corte`, lo que el render ya sabe hacer).
+- **`motor/produccion.py` por etapas:** plan → voz → escenas → audio → subtítulos → QA, todas sobre el VideoSpec. Los tiempos son los mismos de antes.
+- **Caché de escenas (`salida/<clave>/escenas/<huella>.mp4`):** cada escena dibujada se guarda con un hash de su HTML y sus ajustes. Si se edita una lámina, solo esa escena se vuelve a dibujar; las que ya no se usan se borran.
+- **`motor/recursos.py`:** `logo()` y `media()` dejaron de ser funciones privadas de `produccion` que importaban `main.py` y `empaquetar.py`. `escenas` usa `extractor.seccion_lamina` en vez de `_forma` y `_SECCION`.
+- `qa.json` trae además cámara y transición por lámina, los avisos del VideoSpec y su nombre de archivo.
+- `tests/conftest.py` con el fixture `datos_copia` compartido. Pruebas: 80 (4 nuevas en `tests/test_videospec.py`).
+
+### Decisiones
+- **Las escenas se cachean por su HTML, no por el número de lámina:** el HTML ya incluye texto, imagen, colores, animación y duración, así que cualquier cambio que se vea invalida solo esa escena.
+
+---
+
+## 2026-10-01 · Línea base, voz inicial que funciona e instalador sin preguntas colgadas
+
+### Qué se hizo
+- **Línea base en este equipo:** Python 3.12.10 y ffmpeg 9.0.2 instalados para el usuario, luego `instalar.ps1 -Probar`: pytest 75/75, Vitest 10/10, `vue-tsc` y ruff sin avisos.
+- **Voz inicial (`taller.voz_inicial`):** un curso nuevo toma la voz de la configuración solo si el equipo la puede usar; si no, la primera que se pueda entregar (Kokoro sin clave de ElevenLabs). Nunca Piper. Si ninguna está lista, queda la de la configuración y el taller dice qué falta.
+- **Instalador:** no pregunta la clave de ElevenLabs cuando nadie puede responder.
+- Pruebas: 76 (una nueva para la voz inicial).
+
+### Errores y cómo se resolvieron
+- **`instalar.ps1` se quedaba esperando para siempre** en «Pega la clave de ElevenLabs» al correr sin ventana: `Read-Host` no lanza error, espera. Ahora solo pregunta si la sesión es interactiva, la entrada no está redirigida y no se pasó `-NonInteractive`.
+- Dos pruebas daban por hecho que la voz de un curso nuevo es Carlos: ahora la eligen de forma explícita.
+
+---
+
+## 2026-10-01 · Fase 1 del prompt maestro: análisis y plan de arquitectura
+
+### Qué se hizo
+- `ARCHITECTURE.md` en la raíz: la arquitectura actual frente al objetivo (VideoSpec, pipeline por etapas, agentes, proveedores), los problemas encontrados, las decisiones y el plan de migración por fases. No se cambió código.
+
+### Decisiones (aceptadas por el usuario)
+- **Remotion no entra** salvo que se compre su licencia: se crea `VideoRenderer` con el renderer actual (Playwright + ffmpeg) como principal.
+- **Respaldo de voz: ElevenLabs → Kokoro.** Piper davefx sigue solo para borradores, nunca como respaldo de un video final.
+- **Nombres nuevos (`VideoSpec`, `TTSProvider`, `VideoRenderer`) dentro de `motor/` y `app/`**; la reorganización de carpetas se deja para cuando el pipeline ya esté en etapas.
+- **SFX:** solo con archivos de licencia comercial clara, guardada al lado.
+
+### Pendiente
+- Línea base de pruebas en este equipo (no tenía Python ni ffmpeg).
+- Fase 0b: voz por defecto que funcione en un equipo nuevo (Carlos depende de una clave caducada).
+
+---
+
 ## 2026-10-01 · `main` protegida, primer PR y ajustes de Dependabot
 
 ### Qué se hizo

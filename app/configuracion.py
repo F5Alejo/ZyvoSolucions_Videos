@@ -14,9 +14,9 @@ from app import datos
 
 DEFECTO = {
     "cursos": {"marca": "riskmann", "voz": "carlos", "formatos": ["16:9"], "animacion": "dinamica"},
-    "video": {"resolucion": "1080p", "fps": 30, "calidad": "final", "subtitulos_quemados": False},
+    "video": {"resolucion": "1080p", "fps": 30, "calidad": "final", "subtitulos_quemados": False, "renderer": "playwright"},
     "tiempos": {"entrada": 1.0, "pausa": 0.35, "salida": 1.3},
-    "audio": {"lufs": -14, "musica": None, "musica_volumen": -22},
+    "audio": {"lufs": -14, "musica": None, "musica_volumen": -22, "respaldo_voz": True, "musica_estilo": True},
     "completo": {"tarjetas": True, "duracion_tarjeta": 3.0, "capitulos": True},
     "agentes": {
         "url": "http://localhost:11434",
@@ -35,6 +35,7 @@ OPCIONES = {
     ("video", "resolucion"): {"1080p": "1920×1080 (Full HD)", "720p": "1280×720 (más liviano)"},
     ("video", "fps"): {25: "25 fps", 30: "30 fps", 60: "60 fps (animaciones más suaves, render más lento)"},
     ("video", "calidad"): {"final": "Final (CRF 18, más lento)", "borrador": "Borrador rápido (CRF 23)"},
+    ("video", "renderer"): {"playwright": "Navegador (Chromium) y ffmpeg"},
     ("audio", "lufs"): {-14: "-14 LUFS · YouTube y redes", -16: "-16 LUFS · podcast y web", -23: "-23 LUFS · TV (EBU R128)"},
 }
 RANGOS = {
@@ -88,7 +89,8 @@ def _validar(conf: dict, estricto: bool = True) -> dict:
             raise ValueError(f"«{grupo}.{clave}» no admite {conf[grupo][clave]!r}")
     for grupo, clave in RANGOS:
         conf[grupo][clave] = _numero(grupo, clave, conf[grupo][clave])
-    for grupo, clave in (("video", "subtitulos_quemados"), ("completo", "tarjetas"), ("completo", "capitulos")):
+    for grupo, clave in (("video", "subtitulos_quemados"), ("completo", "tarjetas"), ("completo", "capitulos"),
+                         ("audio", "respaldo_voz"), ("audio", "musica_estilo")):
         if not isinstance(conf[grupo][clave], bool):
             raise ValueError(f"«{grupo}.{clave}» tiene que ser sí o no")
 
@@ -98,7 +100,7 @@ def _validar(conf: dict, estricto: bool = True) -> dict:
     ids_voces = {v["id"] for v in json.loads((datos.RAIZ_DATOS / "voces.json").read_text(encoding="utf-8"))}
     if c["voz"] not in ids_voces:
         raise ValueError("La voz por defecto no existe")
-    if not c["formatos"] or any(f not in ("16:9", "9:16") for f in c["formatos"]):
+    if not c["formatos"] or any(f not in ("16:9", "9:16", "1:1", "4:5") for f in c["formatos"]):
         raise ValueError("Elige al menos un formato válido")
 
     musica = conf["audio"]["musica"]
@@ -159,5 +161,6 @@ def pistas() -> list[dict]:
         if f.suffix.lower() in EXTENSIONES_MUSICA:
             info = f.with_suffix(".json")
             meta = json.loads(info.read_text(encoding="utf-8")) if info.exists() else {}
-            salida.append({"archivo": f.name, "licencia": meta.get("licencia"), "fuente": meta.get("fuente")})
+            salida.append({"archivo": f.name, "licencia": meta.get("licencia"), "fuente": meta.get("fuente"),
+                           "energia": meta.get("energia")})
     return salida

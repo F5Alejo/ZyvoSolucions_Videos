@@ -1,8 +1,25 @@
 import { describe, expect, it } from "vitest";
 import { mount } from "@vue/test-utils";
 import TextoResaltado from "./components/TextoResaltado.vue";
-import { cuenta, diferencias, fijarAjuste, mmss, normalizar, resaltar, resolverAnimacion } from "./utils";
+import { contraste, cuenta, diferencias, fijarAjuste, mmss, normalizar, resaltar, resolverAnimacion, tintaLegible } from "./utils";
 import type { PlantillaAnim } from "./tipos";
+
+describe("color legible", () => {
+  it("mide el contraste como WCAG", () => {
+    expect(contraste("#000000", "#FFFFFF")).toBeCloseTo(21, 0);
+    expect(contraste("#073D7A", "#F3F3F3")).toBeCloseTo(9.67, 1);   // medido para la app
+  });
+
+  it("descarta el color de marca que no se lee y cae a blanco o negro", () => {
+    // Dr. Yezid: oliva #80804A sobre verde #336666 da 1,75:1 → ilegible.
+    expect(contraste("#80804A", "#336666")).toBeLessThan(2);
+    expect(tintaLegible("#336666", ["#80804A"])).toBe("#FFFFFF");
+    // RiskMann: dorado #C8951A sobre #020202 sí se lee.
+    expect(tintaLegible("#020202", ["#C8951A"])).toBe("#C8951A");
+    // Fondo claro: texto oscuro.
+    expect(tintaLegible("#F1ECB0")).toBe("#111111");
+  });
+});
 
 describe("utilidades", () => {
   it("formatea minutos y segundos", () => {
@@ -14,7 +31,7 @@ describe("utilidades", () => {
   it("pone el plural solo cuando hace falta", () => {
     expect(cuenta(1, "video")).toBe("1 video");
     expect(cuenta(15, "video")).toBe("15 videos");
-    expect(cuenta(2, "lámina muda", "láminas mudas")).toBe("2 láminas mudas");
+    expect(cuenta(2, "diapositiva sin voz", "diapositivas sin voz")).toBe("2 diapositivas sin voz");
   });
 
   it("busca sin importar tildes ni mayúsculas", () => {

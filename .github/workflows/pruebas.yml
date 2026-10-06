@@ -1,17 +1,17 @@
 # Pruebas del estudio en cada cambio.
 #
-# - Alejodev es la rama de pruebas y mejoras: cada push corre todo.
+# - Alejodev y juandev son las ramas de trabajo: cada push corre todo.
 # - main es la versión estable: cada push y cada pull request hacia main corren todo.
-# - Los PR hacia Alejodev (los de Dependabot) también se prueban.
-#   main solo se actualiza desde Alejodev cuando estas pruebas pasan.
+# - Todos los pull request se prueban, sin importar la rama de destino: cuando el filtro
+#   era [main, Alejodev], el trabajo de juandev llegó a integrarse sin pasar por ruff.
+#   main solo se actualiza cuando estas pruebas pasan.
 
 name: Pruebas
 
 on:
   push:
-    branches: [main, Alejodev]
-  pull_request:
-    branches: [main, Alejodev]  # también los PR de Dependabot hacia Alejodev
+    branches: [main, Alejodev, juandev]
+  pull_request:  # sin filtro de ramas: ningún PR se integra sin pruebas
   workflow_dispatch:
 
 concurrency:

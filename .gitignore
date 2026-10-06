@@ -5,6 +5,9 @@ __pycache__/
 config.local.json
 # Material de los clientes: no va a git
 datos/trabajos/
+datos/cache/
+# Empresas registradas desde el estudio: datos de clientes
+datos/empresas/
 # Modelos de voz descargados (scripts/descargar_modelos.py): pesan cientos de MB
 modelos/
 # Claves y secretos (ElevenLabs, etc.): solo en este equipo. Plantilla: .env.ejemplo

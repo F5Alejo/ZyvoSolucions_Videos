@@ -13,8 +13,8 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel
 
-from app import configuracion, datos, extractor, taller
-from motor import cola, diagnostico, empaquetar, escenas, produccion
+from app import configuracion, datos, empresas, extractor, taller
+from motor import analisis, catalogo, cola, diagnostico, empaquetar, escenas, estilos, logs, produccion, recursos, versiones, videospec
 from motor import voz as motor_voz
 from motor.agentes import entrega as agentes_entrega
 from motor.agentes import registro as agentes
@@ -56,10 +56,15 @@ def _casos() -> list[dict]:
 
 
 def _con_medios(m: dict) -> dict:
-    """Añade a la marca la URL de su logo si el archivo está en el repositorio."""
-    logo = m.get("logo")
-    url = f"/media/repo/{logo['archivo']}" if logo and datos.ruta_segura("repo_videos", logo["archivo"]) else None
-    return {**m, "logo_url": url}
+    """Añade a la marca la URL de su logo: el del repositorio de videos o el que subió la empresa."""
+    logo = m.get("logo") or {}
+    if logo.get("archivo_local") and empresas.ruta_logo(logo["archivo_local"]):
+        url = f"/media/empresas/{logo['archivo_local']}"
+    elif logo.get("archivo") and datos.ruta_segura("repo_videos", logo["archivo"]):
+        url = f"/media/repo/{logo['archivo']}"
+    else:
+        url = None
+    return {**m, "logo_url": url, "registrada": bool(m.get("registrada"))}
 
 
 def _trabajo_o_404(id_: str) -> dict:
@@ -130,13 +135,13 @@ def api_trabajos():
 
 
 @app.post("/api/trabajos", status_code=201)
-async def api_crear_trabajo(archivo: UploadFile = File(...), nombre: str = Form("")):
+async def api_crear_trabajo(archivo: UploadFile = File(...), nombre: str = Form(""), marca: str = Form("")):
     if not (archivo.filename or "").lower().endswith(".pptx"):
         raise ValueError("El archivo tiene que ser un .pptx de PowerPoint")
     contenido = await archivo.read(MAX_PPTX + 1)
     if len(contenido) > MAX_PPTX:
         raise ValueError("El archivo pasa de 200 MB")
-    t = taller.desde_pptx(archivo.filename, contenido, nombre)
+    t = taller.desde_pptx(archivo.filename, contenido, nombre, marca)
     return {"id": t["id"]}
 
 
@@ -173,6 +178,13 @@ def api_eliminar_trabajo(id_: str):
     taller.eliminar(id_)
 
 
+@app.get("/api/trabajos/{id_}/analisis")
+def api_analisis(id_: str, rehacer: bool = False):
+    """Qué trae la presentación: láminas, notas, imágenes, tablas, gráficos, tema, dificultad y avisos."""
+    t = _trabajo_o_404(id_)
+    return analisis.guardar(t) if rehacer else analisis.leer(t)
+
+
 @app.get("/api/trabajos/{id_}/curso.json")
 def api_curso_json(id_: str):
     return _descarga(taller.curso_json(_trabajo_o_404(id_)), "curso.json")
@@ -204,6 +216,10 @@ def api_editar_lamina(id_: str, n: int, cuerpo: Edicion):
 
 # ── Motor: producir los videos de un curso ───────────────────────────────────
 
+# Lo que la interfaz recibe del estado de cada video en la cola.
+CAMPOS_ESTADO = ("estado", "fase", "paso", "progreso", "mensaje", "codigo", "recuperacion")
+
+
 def _produccion(t: dict) -> dict:
     """Estado de cada video del curso en el motor, con lo que la interfaz necesita para mostrarlo."""
     voz = next((v for v in taller.voces() if v["id"] == t["voz"]), {})
@@ -216,7 +232,7 @@ def _produccion(t: dict) -> dict:
         base = f"/api/trabajos/{t['id']}/salida/{clave}/"
         inf = e.get("informe")
         videos[clave] = {
-            **{k: e.get(k) for k in ("estado", "paso", "progreso", "mensaje")},
+            **{k: e.get(k) for k in CAMPOS_ESTADO},
             "informe": inf,
             "desactualizado": bool(inf) and inf.get("firma") != firma_actual,
             "archivos": {"mp4": f"{base}{clave}.mp4", "vtt": f"{base}{clave}.vtt", "srt": f"{base}{clave}.srt"}
@@ -226,7 +242,7 @@ def _produccion(t: dict) -> dict:
     completo = None
     if c:
         base = f"/api/trabajos/{t['id']}/salida/{empaquetar.CLAVE}/"
-        completo = {**{k: c.get(k) for k in ("estado", "paso", "progreso", "mensaje")}, "informe": c.get("informe"),
+        completo = {**{k: c.get(k) for k in CAMPOS_ESTADO}, "informe": c.get("informe"),
                     "desactualizado": bool(c.get("informe")) and c["informe"].get("firma") != firma_actual,
                     "archivos": {"mp4": f"{base}completo.mp4", "vtt": f"{base}completo.vtt", "srt": f"{base}completo.srt",
                                  "capitulos": f"{base}capitulos.txt"} if c.get("estado") == "listo" else None}
@@ -315,6 +331,74 @@ def api_salida(id_: str, clave: str, archivo: str, descargar: bool = False):
                         content_disposition_type="attachment" if descargar else "inline")
 
 
+def _video_o_404(t: dict, clave: str) -> None:
+    if clave not in {v["clave"] for v in t["videos"]}:
+        raise HTTPException(404, "Ese curso no tiene ese video")
+
+
+@app.get("/api/trabajos/{id_}/versiones/{clave}")
+def api_versiones(id_: str, clave: str):
+    """Las versiones producidas de un video (la más nueva primero), para compararlas."""
+    t = _trabajo_o_404(id_)
+    _video_o_404(t, clave)
+    return [{**v, "mp4": f"/api/trabajos/{id_}/versiones/{clave}/{v['version']}/video.mp4"} for v in versiones.lista(t, clave)]
+
+
+@app.get("/api/trabajos/{id_}/versiones/{clave}/{version}/{archivo}")
+def api_archivo_version(id_: str, clave: str, version: str, archivo: str, descargar: bool = False):
+    t = _trabajo_o_404(id_)
+    ruta = versiones.archivo(t, clave, version, archivo)
+    if ruta is None:
+        raise HTTPException(404)
+    nombre = f"{t['id']}-{clave}-{version}{ruta.suffix}" if descargar else None
+    return FileResponse(ruta, media_type=TIPOS_SALIDA[ruta.suffix], filename=nombre,
+                        content_disposition_type="attachment" if descargar else "inline")
+
+
+class Regenerar(BaseModel):
+    escena: int | None = None  # número de lámina: vuelve a dibujar solo esa escena
+    voz: bool = False          # vuelve a generar solo el audio de la narración
+
+
+@app.post("/api/trabajos/{id_}/regenerar/{clave}", status_code=202)
+def api_regenerar(id_: str, clave: str, cuerpo: Regenerar):
+    """Regenera por partes: lo que no se pide (y no cambió) se reutiliza tal cual."""
+    t = _trabajo_o_404(id_)
+    _video_o_404(t, clave)
+    if cuerpo.escena is not None:
+        if cuerpo.escena not in next(v["laminas"] for v in t["videos"] if v["clave"] == clave):
+            raise HTTPException(404, "Ese video no tiene esa lámina")
+        versiones.olvidar_escena(t, clave, cuerpo.escena)
+    if cuerpo.voz:
+        versiones.olvidar_voz(t, clave)
+    return api_producir(id_, clave)
+
+
+FRASE_MUESTRA = "Hola. Así sonará la narración de tu video, con esta voz."
+
+
+@app.get("/api/voces/{id_}/muestra")
+def api_muestra_voz(id_: str):
+    """Una frase corta con esa voz, para el botón «Escuchar». Se genera una vez y queda en caché."""
+    voz = next((v for v in taller.voces() if v["id"] == id_), None)
+    if voz is None:
+        raise HTTPException(404, "No existe esa voz")
+    falta = motor_voz.disponible(voz)
+    if falta:
+        raise ValueError(falta)
+    wav = motor_voz.frase(voz, FRASE_MUESTRA, datos.RAIZ_DATOS / "cache" / "muestras")
+    return FileResponse(wav, media_type="audio/wav")
+
+
+@app.get("/api/trabajos/{id_}/diagnostico/{clave}")
+def api_diagnostico(id_: str, clave: str):
+    """Modo diagnóstico: el registro técnico de un video (etapas, intentos, códigos y *tracebacks*)."""
+    t = _trabajo_o_404(id_)
+    if not re.fullmatch(r"[a-z0-9-]+", clave):
+        raise HTTPException(404)
+    return {"eventos": logs.leer(t["id"], clave), "estado": cola.estado(t["id"], clave)}
+
+
 class AjustesVideo(BaseModel):
     ajustes: dict | None  # None: volver a la configuración global
 
@@ -361,6 +445,65 @@ def api_borrar_plantilla(id_: str):
     animacion.borrar_propia(id_)
 
 
+@app.get("/api/estilos")
+def api_estilos():
+    """Los estilos para elegir (Educativo, Corporativo, Social…), con lo que cambia cada uno."""
+    camaras, transiciones = catalogo.CAMARA, catalogo.TRANSICION
+    return [{**e, "camara_nombre": camaras[e["camara"]], "transicion_nombre": transiciones[e["transicion"]],
+             "musica_nombre": estilos.ENERGIAS.get(e["musica"]) if e["musica"] else None}
+            for e in estilos.estilos().values()]
+
+
+class EleccionEstilo(BaseModel):
+    estilo: str
+    con_formato: bool = True  # también cambia el formato al sugerido por el estilo
+
+
+@app.put("/api/trabajos/{id_}/estilo")
+def api_aplicar_estilo(id_: str, cuerpo: EleccionEstilo):
+    t = estilos.aplicar(_trabajo_o_404(id_), cuerpo.estilo, cuerpo.con_formato)
+    taller.guardar(t)
+    return _trabajo_completo(t)
+
+
+@app.get("/api/trabajos/{id_}/linea/{clave}")
+def api_linea_de_tiempo(id_: str, clave: str):
+    """La línea de tiempo de un video: escenas, voz, música, efectos y subtítulos.
+
+    Si el video ya se produjo, con los tiempos reales (`videospec.json`); si no, con los estimados del plan.
+    """
+    t = _trabajo_o_404(id_)
+    if clave not in {v["clave"] for v in t["videos"]}:
+        raise HTTPException(404, "Ese curso no tiene ese video")
+    ruta = produccion.carpeta_salida(t, clave) / "videospec.json"
+    real = videospec.leer(ruta) if ruta.exists() else None
+    if real is not None and real.firma != produccion.firma(t):
+        real = None  # se cambió algo después de producirlo: vale el plan nuevo
+    return videospec.linea_de_tiempo(real or videospec.construir(t, clave, produccion.firma(t), produccion.formato(t)))
+
+
+@app.get("/api/catalogo/escena")
+def api_catalogo_escena():
+    """Los movimientos de cámara y las transiciones que se pueden elegir (nada fuera de aquí se ejecuta)."""
+    return {"camaras": [{"id": k, "nombre": v} for k, v in catalogo.CAMARA.items()],
+            "transiciones": [{"id": k, "nombre": v} for k, v in catalogo.TRANSICION.items()],
+            "formatos": [{"id": k, "nombre": v, "ancho": escenas.FORMATOS[k][0], "alto": escenas.FORMATOS[k][1]}
+                         for k, v in taller.FORMATOS.items()]}
+
+
+@app.put("/api/trabajos/{id_}/escena")
+def api_guardar_escena(id_: str, e: dict):
+    """Cámara y transición del curso y, si se quiere, de cada lámina."""
+    t = _trabajo_o_404(id_)
+    limpio = catalogo.validar_escena(e)
+    if limpio:
+        t["escena"] = limpio
+    else:
+        t.pop("escena", None)
+    taller.guardar(t)
+    return _trabajo_completo(t)
+
+
 @app.get("/api/trabajos/{id_}/animacion")
 def api_animacion_curso(id_: str):
     t = _trabajo_o_404(id_)
@@ -379,7 +522,6 @@ def api_guardar_animacion_curso(id_: str, a: dict):
 
 def _escena_vista_previa(t: dict, n: int, a: dict | None, formato: str) -> str:
     """El HTML de una lámina con sus animaciones corriendo en bucle, para verla en el navegador."""
-    from motor.produccion import _logo, _media
     if formato not in escenas.FORMATOS:
         raise ValueError("Formato desconocido")
     lamina = next((l for l in t["laminas"] if l["n"] == n), None)
@@ -389,12 +531,12 @@ def _escena_vista_previa(t: dict, n: int, a: dict | None, formato: str) -> str:
     indice = video["laminas"].index(n)
     prueba = {**t, "animacion": animacion.validar_curso(a) if a is not None else t.get("animacion")}
     plan = animacion.plan(prueba, n)
-    media = _media(t)
+    media = recursos.media(t)
     vista = escenas.vista(lamina, indice, len(video["laminas"]), video["titulo"], media, t["nombre"])
     ent, sal = animacion.duraciones(plan, vista)
     segundos = round(ent + 1.6 + sal, 2)
     marca = datos.marcas()[t["marca"]]
-    logo = _logo(marca)
+    logo = recursos.logo(marca)
     html = escenas.html(vista, escenas.estilo(marca, logo), formato, plan=plan, segundos=segundos)
     # En el navegador no se abren rutas locales (file://): se sirven por la API.
     html = html.replace(escenas.FUENTE.resolve().as_uri(), "/api/escenas/fuente.ttf")
@@ -430,9 +572,8 @@ def api_fuente():
 
 @app.get("/api/escenas/logo/{marca}")
 def api_logo_escena(marca: str):
-    from motor.produccion import _logo
     m = datos.marcas().get(marca)
-    ruta = _logo(m) if m else None
+    ruta = recursos.logo(m) if m else None
     if ruta is None:
         raise HTTPException(404)
     return FileResponse(ruta)
@@ -544,7 +685,8 @@ MAX_MUSICA = 50 * 1024 * 1024
 
 
 @app.post("/api/musica", status_code=201)
-async def api_subir_musica(archivo: UploadFile = File(...), licencia: str = Form(""), fuente: str = Form("")):
+async def api_subir_musica(archivo: UploadFile = File(...), licencia: str = Form(""), fuente: str = Form(""),
+                           energia: str = Form("")):
     """Sube una pista de música de fondo. La licencia es obligatoria: los videos se entregan a clientes."""
     nombre = Path(archivo.filename or "").name
     extension = Path(nombre).suffix.lower()
@@ -560,7 +702,8 @@ async def api_subir_musica(archivo: UploadFile = File(...), licencia: str = Form
     carpeta.mkdir(parents=True, exist_ok=True)
     (carpeta / f"{limpio}{extension}").write_bytes(contenido)
     (carpeta / f"{limpio}.json").write_text(
-        json.dumps({"licencia": licencia.strip(), "fuente": fuente.strip()}, ensure_ascii=False), encoding="utf-8")
+        json.dumps({"licencia": licencia.strip(), "fuente": fuente.strip(), "energia": energia if energia in estilos.ENERGIAS else None},
+                   ensure_ascii=False), encoding="utf-8")
     return configuracion.pistas()
 
 
@@ -606,6 +749,71 @@ def api_cambiar_estado(id_: str, cambio: CambioEstado):
     return datos.proyecto(id_)
 
 
+# ── Empresas ─────────────────────────────────────────────────────────────────
+
+@app.get("/api/empresas")
+def api_empresas():
+    """Todas las empresas: las marcas de siempre y las registradas, con cuánto se usan."""
+    cursos = Counter(t["marca"] for t in taller.lista())
+    videos = Counter(p["marca"] for p in datos.proyectos())
+    return [{**_con_medios(m), "cursos": cursos[m["id"]], "videos": videos[m["id"]]} for m in datos.marcas().values()]
+
+
+async def _leer_logo(logo: UploadFile | None) -> bytes | None:
+    if logo is None or not logo.filename:
+        return None
+    contenido = await logo.read(empresas.MAX_LOGO + 1)
+    if len(contenido) > empresas.MAX_LOGO:
+        raise ValueError("El logo pesa más de 5 MB")
+    return contenido
+
+
+def _campos(datos_json: str) -> dict:
+    try:
+        campos = json.loads(datos_json)
+    except json.JSONDecodeError:
+        raise ValueError("Los datos de la empresa no llegaron bien")
+    if not isinstance(campos, dict):
+        raise ValueError("Los datos de la empresa no llegaron bien")
+    return campos
+
+
+@app.post("/api/empresas/colores")
+async def api_colores_logo(logo: UploadFile = File(...)):
+    """Los colores que propone el estudio a partir del logo."""
+    contenido = await _leer_logo(logo)
+    if not contenido:
+        raise ValueError("Sube el logo para proponer sus colores")
+    return {"colores": empresas.colores_de_logo(contenido)}
+
+
+@app.post("/api/empresas", status_code=201)
+async def api_registrar_empresa(datos_empresa: str = Form(..., alias="datos"), logo: UploadFile | None = File(None)):
+    m = empresas.registrar(_campos(datos_empresa), await _leer_logo(logo))
+    return _con_medios(m)
+
+
+@app.put("/api/empresas/{id_}")
+async def api_editar_empresa(id_: str, datos_empresa: str = Form(..., alias="datos"), logo: UploadFile | None = File(None)):
+    if id_ in datos.marcas() and not empresas.es_registrada(id_):
+        raise ValueError("Esta es una de las marcas base del estudio: se edita en su ficha, no desde aquí")
+    try:
+        m = empresas.actualizar(id_, _campos(datos_empresa), await _leer_logo(logo))
+    except KeyError:
+        raise HTTPException(404, "No encontramos esa empresa")
+    return _con_medios(m)
+
+
+@app.delete("/api/empresas/{id_}", status_code=204)
+def api_eliminar_empresa(id_: str):
+    if id_ in datos.marcas() and not empresas.es_registrada(id_):
+        raise ValueError("Esta es una de las marcas base del estudio: no se puede eliminar")
+    try:
+        empresas.eliminar(id_)
+    except KeyError:
+        raise HTTPException(404, "No encontramos esa empresa")
+
+
 # ── Marcas, pendientes y casos ───────────────────────────────────────────────
 
 @app.get("/api/marcas/{id_}")
@@ -644,6 +852,14 @@ def media_entregable(ruta: str):
     if archivo is None or archivo.suffix.lower() not in EXTENSIONES_ENTREGABLES:
         raise HTTPException(404)
     return FileResponse(archivo)
+
+
+@app.get("/media/empresas/{archivo}")
+def media_logo_empresa(archivo: str):
+    ruta = empresas.ruta_logo(archivo)
+    if ruta is None:
+        raise HTTPException(404)
+    return FileResponse(ruta, media_type="image/png")
 
 
 @app.get("/media/repo/{ruta:path}")
