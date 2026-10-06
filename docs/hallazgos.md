@@ -68,6 +68,9 @@ de cada uno, con su fecha, está en la [bitácora](bitacora.md).
 | El servidor local se apagaba solo | Las tareas en segundo plano del asistente tienen un tiempo máximo | El servidor se lanza en su propia ventana de PowerShell |
 | `instalar.ps1` se quedaba esperando la clave sin ventana | `Read-Host` no falla cuando no hay quien escriba: espera para siempre | Solo pregunta si la sesión es interactiva y la entrada no está redirigida |
 | Un commit dejó Actions en rojo tras mover un fixture | Se quitó `ORIGEN` de `test_motor.py`, que importan otras pruebas, y solo se corrió un subconjunto | Correr **todas** las pruebas después del último cambio |
+| `juandev` llegó a la integración con 5 errores de ruff | «Pruebas» solo se activaba con push a `main` y `Alejodev`: los push a `juandev` no corrían nada | Push también en `juandev`, y `pull_request` **sin filtro de ramas** |
+| `git show rama:.archivo` falla en Git Bash | MSYS traduce la ruta y la convierte en `rama;.archivo` | `MSYS_NO_PATHCONV=1`, o leer el archivo del árbol de trabajo |
+| `videos-marketing` no se puede unir a `main` | No comparten ancestro: son dos historias distintas, y esa rama quitó el estudio a propósito (387 MB de video) | Se deja aparte; el estudio vive en `main` |
 
 ## Despliegue
 
