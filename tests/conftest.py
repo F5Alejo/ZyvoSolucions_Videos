@@ -14,3 +14,9 @@ def datos_copia(tmp_path, monkeypatch):
     from app import datos
     monkeypatch.setattr(datos, "RAIZ_DATOS", copia)
     return copia
+
+
+@pytest.fixture()
+def sin_ollama(monkeypatch):
+    from motor.agentes import ollama
+    monkeypatch.setattr(ollama, "estado", lambda: {"encendido": False, "modelos": [], "faltan": ["qwen3:4b"]})

@@ -90,7 +90,10 @@ def video(escenas: list[tuple], ancho: int, alto: int, destino: Path, trabajo: P
                 huella = escena[4] if len(escena) > 4 else None
                 if cache is not None and huella:
                     guardada = cache / f"{huella}.mp4"
-                    shutil.move(str(parte), guardada)
+                    if guardada.exists():  # otro render en paralelo dibujó la misma escena
+                        Path(parte).unlink(missing_ok=True)
+                    else:
+                        shutil.move(str(parte), guardada)
                     (cache / f"{huella}.json").write_text(json.dumps(encuadre, ensure_ascii=False), encoding="utf-8")
                     parte = guardada
                 partes[i] = parte
