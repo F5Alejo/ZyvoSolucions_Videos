@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { LoaderCircle, Pencil, RefreshCw, RotateCcw, Save, Search, TriangleAlert } from "@lucide/vue";
+import { CircleHelp, LoaderCircle, Pencil, RefreshCw, RotateCcw, Save, Search, TriangleAlert } from "@lucide/vue";
 import { api } from "../../api";
 import { avisar } from "../../composables/avisos";
 import { confirmar } from "../../composables/confirmar";
+import { abrirAyuda } from "../../composables/ayuda";
 import TextoResaltado from "../TextoResaltado.vue";
 import PanelAgentes from "./PanelAgentes.vue";
 import type { Lamina, TrabajoCompleto } from "../../tipos";
 import { cuenta, mmss, normalizar } from "../../utils";
 
-const props = defineProps<{ datos: TrabajoCompleto }>();
+/** `videoInicial` y `soloRevisarInicial`: para llegar desde el Resumen directo a un video o a lo que hay que revisar. */
+const props = defineProps<{ datos: TrabajoCompleto; videoInicial?: number; soloRevisarInicial?: boolean }>();
 const emit = defineEmits<{ actualizado: [TrabajoCompleto] }>();
 
 // ── Editar una lámina (sin tocar el original del PPTX) ──
@@ -45,7 +47,7 @@ const reagrupando = ref(false);
 async function reagrupar() {
   const si = await confirmar({
     titulo: "¿Volver a proponer los videos?",
-    texto: "El estudio arma de nuevo los videos a partir de las láminas: un video por sección si tu presentación las marca, o por duración si no. El guion no cambia.",
+    texto: "El estudio arma de nuevo los videos a partir de las diapositivas: un video por sección si tu presentación las marca, o por duración si no. El guion no cambia.",
     aceptar: "Proponer de nuevo",
   });
   if (!si) return;
@@ -67,9 +69,9 @@ const r = computed(() => props.datos.resumen);
 const porN = computed(() => new Map(t.value.laminas.map((l) => [l.n, l])));
 const porRevisar = computed(() => r.value.chequeos.filter((c) => c.ok !== true));
 
-const elegido = ref(0);
+const elegido = ref(props.videoInicial ?? 0);
 const busqueda = ref("");
-const soloRevisar = ref(false);
+const soloRevisar = ref(props.soloRevisarInicial ?? false);
 const filtrando = computed(() => !!normalizar(busqueda.value) || soloRevisar.value);
 
 const videos = computed(() =>
@@ -83,7 +85,7 @@ function pasa(l: Lamina): boolean {
   const q = normalizar(busqueda.value);
   return (!q || normalizar(`${l.titulo} ${l.notas}`).includes(q)) && (!soloRevisar.value || l.citas.length > 0 || !l.frases.length);
 }
-/** Sin filtro, el video elegido; con filtro, todos los videos que tengan alguna lámina que pase. */
+/** Sin filtro, el video elegido; con filtro, todos los videos que tengan alguna diapositiva que pase. */
 const mostrados = computed(() =>
   filtrando.value
     ? videos.value.map((v) => ({ ...v, laminas: v.laminas.filter(pasa) })).filter((v) => v.laminas.length)
@@ -101,14 +103,15 @@ const totalMostradas = computed(() => mostrados.value.reduce((s, v) => s + v.lam
       </button>
     </div>
     <p class="mt-1 max-w-3xl text-sm text-suave">
-      Esto es lo que dirá la voz, frase por frase. Cada frase indica la lámina de la que sale: nada se inventa.
+      Esto es lo que dirá la voz, frase por frase, tal como está en las notas de tu presentación.
       Lo <mark>resaltado</mark> son cifras y normas que conviene comprobar.
+      <button class="inline-flex items-center gap-1 font-semibold text-acento hover:underline" @click="abrirAyuda('resaltado')"><CircleHelp class="size-3.5" /> ¿Por qué?</button>
     </p>
 
     <div v-if="porRevisar.length" class="mt-5 rounded-xl border border-aviso/40 bg-aviso-fondo p-4">
       <p class="flex items-center gap-2 font-bold text-aviso"><TriangleAlert class="size-5" /> Antes de seguir, revisa esto</p>
       <ul class="mt-2 space-y-1 pl-7 text-sm">
-        <li v-for="c in porRevisar" :key="c.titulo" class="list-disc"><strong>{{ c.titulo }}.</strong> {{ c.detalle }}</li>
+        <li v-for="c in porRevisar" :key="c.clave" class="list-disc"><strong>{{ c.titulo }}.</strong> {{ c.detalle }}. <span v-if="c.ayuda" class="text-suave">{{ c.ayuda }}</span></li>
       </ul>
     </div>
 
@@ -121,10 +124,10 @@ const totalMostradas = computed(() => mostrados.value.reduce((s, v) => s + v.lam
       <label class="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-borde bg-superficie px-3 py-2.5 text-sm has-[:checked]:border-aviso has-[:checked]:bg-aviso-fondo">
         <input v-model="soloRevisar" type="checkbox" class="size-4 accent-[var(--c-aviso)]" /> Solo lo que hay que revisar
       </label>
-      <span v-if="filtrando" class="text-sm text-suave" aria-live="polite">{{ cuenta(totalMostradas, "lámina") }}</span>
+      <span v-if="filtrando" class="text-sm text-suave" aria-live="polite">{{ cuenta(totalMostradas, "diapositiva") }}</span>
     </div>
 
-    <div class="mt-5 grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+    <div class="mt-5 grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
       <!-- Lista de videos -->
       <nav aria-label="Videos del curso" class="lg:sticky lg:top-24 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto">
         <ol class="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:overflow-visible lg:pb-0">
@@ -139,7 +142,7 @@ const totalMostradas = computed(() => mostrados.value.reduce((s, v) => s + v.lam
                 <span class="mt-0.5 flex flex-wrap gap-x-2 text-xs text-suave">
                   <span>{{ mmss(v.segundos) }}</span><span>{{ cuenta(v.frases, "frase") }}</span>
                   <span v-if="v.citas" class="font-semibold text-aviso">{{ v.citas }} por revisar</span>
-                  <span v-if="v.mudas" class="font-semibold text-aviso">{{ cuenta(v.mudas, "lámina muda", "láminas mudas") }}</span>
+                  <span v-if="v.mudas" class="font-semibold text-aviso">{{ cuenta(v.mudas, "diapositiva sin voz", "diapositivas sin voz") }}</span>
                 </span>
               </span>
             </button>
@@ -147,7 +150,7 @@ const totalMostradas = computed(() => mostrados.value.reduce((s, v) => s + v.lam
         </ol>
       </nav>
 
-      <!-- Láminas y frases -->
+      <!-- Diapositivas y frases -->
       <div class="min-w-0 space-y-6">
         <PanelAgentes :trabajo="datos.trabajo.id" donde="guion" @actualizado="(d) => emit('actualizado', d)" />
         <p v-if="!mostrados.length" class="tarjeta p-8 text-center text-suave">Nada coincide con la búsqueda.</p>
@@ -159,7 +162,7 @@ const totalMostradas = computed(() => mostrados.value.reduce((s, v) => s + v.lam
           <div class="space-y-3">
             <div v-for="l in v.laminas" :key="l.n" class="tarjeta p-4">
               <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <span class="rounded-md bg-entra/10 px-2 py-0.5 text-xs font-bold text-entra">Lámina {{ l.n }}</span>
+                <span class="rounded-md bg-entra/10 px-2 py-0.5 text-xs font-bold text-entra">Diapositiva {{ l.n }}</span>
                 <strong class="text-sm">{{ l.titulo }}</strong>
                 <span class="text-xs text-suave">~{{ Math.round(l.segundos) }} s<template v-if="l.fuente_narracion"> · {{ l.fuente_narracion }}</template></span>
                 <span v-if="l.editada" class="rounded-full bg-acento-suave px-2 py-0.5 text-[11px] font-semibold text-acento">editada</span>
@@ -186,7 +189,7 @@ const totalMostradas = computed(() => mostrados.value.reduce((s, v) => s + v.lam
                 <li v-for="(f, i) in l.frases" :key="i"><TextoResaltado :texto="f" :citas="l.citas" /></li>
               </ol>
               <p v-else-if="editando !== l.n" class="mt-3 flex items-center gap-2 rounded-lg bg-aviso-fondo p-3 text-sm text-aviso">
-                <TriangleAlert class="size-4 shrink-0" /> Esta lámina no tiene notas: se vería sin voz. Escribe su guion en las notas del orador.
+                <TriangleAlert class="size-4 shrink-0" /> Esta diapositiva no tiene notas: se vería sin voz. Escribe su guion en las notas del orador.
               </p>
             </div>
           </div>

@@ -53,7 +53,7 @@ def repo_falso(raiz: Path) -> Path:
 @pytest.fixture()
 def cliente(tmp_path, monkeypatch):
     copia = tmp_path / "datos"
-    shutil.copytree(ORIGEN, copia, ignore=shutil.ignore_patterns("trabajos"))
+    shutil.copytree(ORIGEN, copia, ignore=shutil.ignore_patterns("trabajos", "empresas", "musica"))
     from app import datos
     monkeypatch.setattr(datos, "RAIZ_DATOS", copia)
     monkeypatch.setitem(datos.CONFIG, "repo_videos", repo_falso(tmp_path / "repo"))
@@ -70,7 +70,8 @@ def test_extractor_lee_formas_notas_y_frases(tmp_path):
     ruta.write_bytes(pptx_de_prueba())
     laminas = extractor.leer_pptx(ruta)
     assert [l["n"] for l in laminas] == [1, 2, 3]
-    assert set(laminas[0]) == {"n", "formas", "notas", "frases", "foto", "icono"}  # formato de csm
+    assert {"n", "formas", "notas", "frases", "foto", "icono"} <= set(laminas[0])  # formato de csm (más tablas y gráficos)
+    assert laminas[0]["tablas"] == [] and laminas[0]["graficos"] == []
     assert "Dato" in laminas[0]["formas"] and "Dato (2)" in laminas[0]["formas"]  # no se pisan
     assert laminas[0]["formas"]["Dato"] == ["Primer párrafo", "Segundo párrafo"]
     assert laminas[0]["frases"][1].startswith("Lo exige la Ley 1503 de 2011:")
@@ -122,7 +123,8 @@ def crear(c, nombre="Curso de prueba"):
     return r.json()["id"]
 
 
-def test_entra_pptx_y_sale_el_curso(cliente):
+def test_entra_pptx_y_sale_el_curso(cliente, monkeypatch):
+    monkeypatch.setenv("ELEVENLABS_API_KEY", "de-prueba")  # Carlos, la voz de la configuración, está lista
     c, copia = cliente
     id_ = crear(c)
     assert (copia / "trabajos" / id_ / "entrada.pptx").exists()
@@ -140,8 +142,9 @@ def test_entra_pptx_y_sale_el_curso(cliente):
     orden = c.get(f"/api/trabajos/{id_}/orden.json").json()
     assert orden["marca"]["id"] == "riskmann" and orden["voz"]["id"] == "carlos"
     assert sum(len(v["laminas"]) for v in orden["videos"]) == 3
-    falla = next(x for x in orden["verificacion"] if x["titulo"].startswith("Todas las láminas del video tienen"))
-    assert falla["ok"] is False and "lámina 2" in falla["detalle"]
+    falla = next(x for x in orden["verificacion"] if x["clave"] == "sin_notas")
+    assert falla["ok"] is False and falla["titulo"] == "Hay diapositivas sin voz"
+    assert "Diapositivas 2" in falla["detalle"] and "notas del orador" in falla["ayuda"]
 
 
 def test_cambiar_marca_voz_y_formato(cliente):
@@ -237,3 +240,18 @@ def test_volver_a_proponer_los_videos(cliente):
     ej = c.post("/api/trabajos/ejemplo-csm").json()["id"]
     r = c.post(f"/api/trabajos/{ej}/reagrupar")
     assert r.status_code == 400  # el ejemplo conserva los módulos con los que se produjo
+
+
+def test_curso_nuevo_toma_una_voz_que_este_equipo_pueda_usar(cliente, monkeypatch):
+    from motor import voz
+    c, _ = cliente
+    monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
+    # Sin clave de ElevenLabs, con Kokoro listo: la primera voz que se puede entregar (nunca Piper).
+    monkeypatch.setattr(voz, "disponible", lambda v: None if v["proveedor"] in ("Kokoro", "Piper") else "falta")
+    assert c.get(f"/api/trabajos/{crear(c)}").json()["trabajo"]["voz"] == "kokoro-dora"
+    # Si nada está listo, queda la de la configuración y el taller dice qué le falta.
+    monkeypatch.setattr(voz, "disponible", lambda v: "falta")
+    assert c.get(f"/api/trabajos/{crear(c)}").json()["trabajo"]["voz"] == "carlos"
+    # Con la clave, la de la configuración.
+    monkeypatch.setattr(voz, "disponible", lambda v: None)
+    assert c.get(f"/api/trabajos/{crear(c)}").json()["trabajo"]["voz"] == "carlos"

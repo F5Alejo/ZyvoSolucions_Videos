@@ -1,0 +1,14 @@
+{
+ "id": "tecnologico",
+ "version": 1,
+ "nombre": "Tecnológico",
+ "icono": "🚀",
+ "descripcion": "Con energía: el título llega palabra por palabra, la cámara recorre la lámina y suenan efectos sutiles.",
+ "animacion": "cinetica",
+ "camara": "paneo_derecha",
+ "transicion": "corte",
+ "subtitulos_quemados": false,
+ "sfx": "sutil",
+ "musica": "energica",
+ "formato": "16:9"
+}

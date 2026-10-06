@@ -27,8 +27,26 @@ export interface Marca {
   fuentes: Fuente[];
   pendientes: Item[];
   pedir_al_cliente: Item[];
-  logo?: { archivo: string; fondo: "claro" | "oscuro" };
+  logo?: { archivo?: string; archivo_local?: string; fondo: "claro" | "oscuro" };
   logo_url: string | null;
+  /** true si la registró una empresa desde el estudio; false en las marcas base. */
+  registrada: boolean;
+  voz_id?: string | null;
+  creada?: string;
+}
+
+export interface EmpresaFila extends Marca { cursos: number; videos: number }
+
+/** Lo que se envía al registrar o editar una empresa. */
+export interface DatosEmpresa {
+  nombre: string;
+  nombre_corto: string;
+  que_es: string;
+  sitio_web: string;
+  responsable: string;
+  colores: string[];
+  voz: string;
+  cta: string;
 }
 
 export interface Voz {
@@ -94,7 +112,13 @@ export interface Lamina {
 }
 
 export interface VideoPlan { clave: string; titulo: string; laminas: number[]; segundos: number; frases: number }
-export interface Chequeo { ok: boolean | null; titulo: string; detalle: string }
+export interface Chequeo {
+  clave: "fuente" | "sin_notas" | "sin_uso" | "largos" | "normativas" | "marca";
+  ok: boolean | null;
+  titulo: string;
+  detalle: string;
+  ayuda: string;
+}
 export interface Pregunta { enunciado: string; correcta: string; distractores: string[]; fuente: string }
 export interface Banco { nombre: string | null; grupos: { clave: string; titulo: string; tema: string; preguntas: Pregunta[] }[] }
 
@@ -111,6 +135,8 @@ export interface Trabajo {
   excluidas: Record<string, string>;
   banco: Banco | null;
   animacion?: { plantilla: string | null } | null;
+  estilo?: string | null;
+  escena?: EscenaCurso | null;
 }
 
 export interface Resumen {
@@ -141,6 +167,9 @@ export interface InformeRender {
 }
 
 export interface VideoRender {
+  fase?: FaseMotor | null;
+  codigo?: string | null;
+  recuperacion?: string | null;
   estado: EstadoRender;
   paso: string | null;
   progreso: number | null;
@@ -206,7 +235,7 @@ export interface Caso {
 export interface AjustesVideo {
   video: { resolucion: "1080p" | "720p"; fps: 25 | 30 | 60; calidad: "final" | "borrador"; subtitulos_quemados: boolean };
   tiempos: { entrada: number; pausa: number; salida: number };
-  audio: { lufs: number; musica: string | null; musica_volumen: number };
+  audio: { lufs: number; musica: string | null; musica_volumen: number; respaldo_voz?: boolean; musica_estilo?: boolean };
   completo: { tarjetas: boolean; duracion_tarjeta: number; capitulos: boolean };
 }
 
@@ -216,7 +245,7 @@ export interface Configuracion extends AjustesVideo {
 }
 
 export type OpcionesConfig = Record<string, { valor: string | number; texto: string }[] | { min: number; max: number }>;
-export interface PistaMusica { archivo: string; licencia: string | null; fuente: string | null }
+export interface PistaMusica { archivo: string; licencia: string | null; fuente: string | null; energia?: string | null }
 
 export interface RespuestaConfig {
   configuracion: Configuracion;
@@ -285,4 +314,96 @@ export interface AgentesCurso {
   estados: Record<string, { estado: EstadoRender; paso: string | null; progreso: number | null; mensaje: string | null;
     propuestas: number | null; con_ia: boolean | null } | null>;
   propuestas: Propuesta[];
+}
+
+/** Flujo creativo (/crear): análisis, estilos, escena, línea de tiempo y versiones. */
+export interface Analisis {
+  laminas: number;
+  titulos: { lamina: number; titulo: string; seccion: string | null }[];
+  con_notas: number;
+  sin_notas: number[];
+  imagenes: number[];
+  tablas: number[];
+  graficos: number[];
+  vacias: number[];
+  texto_largo: number[];
+  palabras: number;
+  minutos: number;
+  videos: number;
+  estructura: string;
+  tema: string[];
+  dificultad: string;
+  puntos_importantes: { lamina: number; cita: string }[];
+  avisos: string[];
+}
+
+export interface Estilo {
+  id: string;
+  nombre: string;
+  icono: string;
+  descripcion: string;
+  animacion: string;
+  camara: string;
+  transicion: string;
+  subtitulos_quemados: boolean;
+  sfx: string | null;
+  musica: string | null;
+  formato: string;
+  camara_nombre: string;
+  transicion_nombre: string;
+  musica_nombre: string | null;
+}
+
+export interface OpcionCatalogo { id: string; nombre: string }
+export interface CatalogoEscena {
+  camaras: OpcionCatalogo[];
+  transiciones: OpcionCatalogo[];
+  formatos: (OpcionCatalogo & { ancho: number; alto: number })[];
+}
+
+export interface EscenaCurso { camara?: string; transicion?: string; laminas?: Record<string, { camara?: string; transicion?: string }> }
+
+export interface LineaDeTiempo {
+  clave: string;
+  titulo: string;
+  resuelto: boolean;
+  duracion: number;
+  formato: string;
+  pistas: {
+    escenas: { id: string; lamina: number; titulo: string; tipo: string; inicio: number; duracion: number; camara: string;
+      transicion: string; plantilla: string }[];
+    voz: { escena: string; inicio: number; fin: number; texto: string }[];
+    musica: { inicio: number; fin: number; archivo: string }[];
+    sfx: { escena: string; id: string; nombre: string; inicio: number }[];
+    subtitulos: { escena: string; inicio: number; fin: number; texto: string }[];
+  };
+}
+
+export interface VersionVideo {
+  version: string;
+  numero: number;
+  creado: string | null;
+  voz: string | null;
+  duracion: number | null;
+  formato: string | null;
+  fallas: number;
+  bugs: number;
+  avisos: string[];
+  mp4: string;
+}
+
+/** Fases del motor mientras produce (produccion.FASES y la cola). */
+export type FaseMotor = "QUEUED" | "SCRIPTING" | "SCRIPT_READY" | "GENERATING_AUDIO" | "AUDIO_READY" | "BUILDING_SCENES"
+  | "SCENES_READY" | "RENDERING" | "RENDERED" | "QA_RUNNING" | "QA_PASSED" | "QA_FAILED" | "COMPLETED" | "FAILED";
+
+export interface EventoRegistro {
+  timestamp: string;
+  stage: string;
+  status: string;
+  message: string;
+  retry?: number;
+  error_code?: string | null;
+  severity?: string | null;
+  recovery?: string | null;
+  stacktrace?: string;
 }

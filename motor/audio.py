@@ -19,11 +19,16 @@ LUFS = -14.0
 PICO = -1.5
 
 
-def armar_pista(segmentos: list[tuple[float, Path]], duracion: float, destino: Path) -> None:
-    """Coloca cada WAV (48 kHz, mono) en su segundo de inicio sobre una pista de silencio."""
+def armar_pista(segmentos: list[tuple], duracion: float, destino: Path) -> None:
+    """Coloca cada WAV (48 kHz, mono) en su segundo de inicio sobre una pista de silencio.
+
+    Cada segmento es (inicio, wav) o (inicio, wav, ganancia_db): los efectos de sonido entran bajos.
+    """
     pista = np.zeros(int(round(duracion * FRECUENCIA)), dtype=np.float32)
-    for inicio, wav in segmentos:
+    for inicio, wav, *resto in segmentos:
         datos, frecuencia = sf.read(str(wav), dtype="float32")
+        if resto:
+            datos = datos * np.float32(10 ** (resto[0] / 20))
         if frecuencia != FRECUENCIA:
             raise ValueError(f"{wav.name} está a {frecuencia} Hz; se esperaba {FRECUENCIA}")
         a = int(round(inicio * FRECUENCIA))

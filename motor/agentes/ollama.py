@@ -64,3 +64,17 @@ def descargar(modelo: str) -> None:
         httpx.post(f"{_url()}/api/generate", json={"model": modelo, "keep_alive": 0}, timeout=10)
     except httpx.HTTPError:
         pass
+
+
+class Ollama:
+    """El `LLMProvider` (motor/proveedores.py) de Ollama. Llama a las funciones del módulo en cada uso."""
+    nombre = "ollama"
+
+    def estado(self) -> dict:
+        return estado()
+
+    def chat(self, modelo, sistema, usuario, esquema, imagenes=None, tiempo=300) -> dict:
+        return chat(modelo, sistema, usuario, esquema, imagenes, tiempo)
+
+    def liberar(self, modelo: str) -> None:
+        descargar(modelo)

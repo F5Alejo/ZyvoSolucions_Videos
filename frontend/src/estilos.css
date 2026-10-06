@@ -2,60 +2,67 @@
 @import "@fontsource-variable/montserrat";
 
 /*
-  Identidad RiskMann (datos/marcas/riskmann.json, capas «app», «web» y «manual»).
-  Claro = app.riskmann.com: fondo #F3F3F3, texto #3C3C44, principal #073D7A, Montserrat.
-  Oscuro = riskmann.com y el manual: negro, dorado y cian.
-  Contrastes medidos: todo texto ≥ 4,5:1 sobre su fondo.
+  Identidad RiskMann: la guía de colores del manual de identidad (docs/marcas/riskmann/manual-identidad*.pdf).
+  Oscuro (predeterminado) = manual en modo oscuro: #020202 fondo · #272725 separadores · #C8951A dorado ·
+    #06C7FB cian · #999999 gris · #FF3333 énfasis. Todos pasan 4,5:1 como texto sobre sus fondos.
+  Claro = manual claro: #26367D institucional · #333366 texto · #336699 · #FF3333 · #999999.
+    #999999, #FF3333 y #C8951A no llegan a 4,5:1 sobre blanco: para texto se oscurecen (anotado en cada uno).
+  Tipografía del manual: Dubai (viene con Windows); si no está, Montserrat.
+  El tema se elige en la barra lateral y se guarda (html[data-tema]).
 */
-:root {
-  --c-fondo: #F3F3F3;
+:root, [data-tema="claro"] {
+  color-scheme: light;
+  --c-fondo: #F4F4F7;
   --c-superficie: #FFFFFF;
-  --c-superficie-2: #F8FAFC;
-  --c-texto: #3C3C44;        /* 9,9:1 */
-  --c-suave: #5F636B;        /* el #70747C de la app baja a 4,2:1 sobre #F3F3F3 */
-  --c-borde: #E2E8F0;
-  --c-acento: #073D7A;       /* theme_color de la app, 9,7:1 */
-  --c-acento-suave: #E4E8F3;
+  --c-superficie-2: #F0F1F6;
+  --c-texto: #333366;        /* «RiskMann» en el manual · 10,6:1 */
+  --c-suave: #6B6B7B;        /* #999999 del manual oscurecido (2,6 → 4,8:1) */
+  --c-borde: #E1E2EA;
+  --c-acento: #26367D;       /* institucional del manual · 10:1 */
+  --c-acento-suave: #E7E9F4;
   --c-sobre-acento: #FFFFFF;
-  --c-dorado: #AC841D;       /* solo detalles, nunca texto (3,5:1) */
-  --c-aviso: #B4530A;        /* naranja de la app oscurecido a 5:1 */
-  --c-aviso-fondo: #FFF4E5;
-  --c-error: #C0302A;        /* rojo #E6423C de la app, oscurecido para texto */
+  --c-dorado: #C8951A;       /* toques de prestigio: detalle, nunca texto */
+  --c-cian: #336699;         /* el azul de acento del manual claro */
+  --c-aviso: #A0560B;
+  --c-aviso-fondo: #FDF3E6;
+  --c-error: #C62828;        /* #FF3333 del manual oscurecido para texto (3,3 → 5,1:1) */
   --c-error-fondo: #FDECEC;
-  --c-exito: #208454;
-  --c-exito-fondo: #E7F4EC;
-  --c-entra: #3A55A3;
-  --c-motor: #87733D;
-  --c-lateral: #073D7A;
-  --c-lateral-2: #0A4A92;
+  --c-exito: #1D7A4E;
+  --c-exito-fondo: #E6F4EC;
+  --c-entra: #336699;
+  --c-motor: #8A6512;        /* el dorado, oscurecido para texto */
+  --c-lateral: #26367D;
+  --c-lateral-2: #2E418F;
+  --g-texto-chispa: linear-gradient(135deg, #5B2EE0, #0E7490);  /* 7,2:1 y 5,4:1 sobre blanco */
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --c-fondo: #0A0A0A;      /* --dark de riskmann.com */
-    --c-superficie: #161618;
-    --c-superficie-2: #1E1E21;
-    --c-texto: #F3F3F3;
-    --c-suave: #9A989B;      /* gris del logo, 6,3:1 */
-    --c-borde: #2A2A2E;
-    --c-acento: #8FD3FF;     /* azul claro de la app, 11:1 */
-    --c-acento-suave: #10263A;
-    --c-sobre-acento: #0A0A0A;
-    --c-dorado: #C8951A;     /* dorado del manual */
-    --c-aviso: #FFB74D;
-    --c-aviso-fondo: #2A2112;
-    --c-error: #FF6B66;
-    --c-error-fondo: #2C1413;
-    --c-exito: #4ADE80;
-    --c-exito-fondo: #0F2A1A;
-    --c-entra: #7D95E0;
-    --c-motor: #C8951A;
-    --c-lateral: #040404;    /* --black de riskmann.com */
-    --c-lateral-2: #161618;
-  }
+[data-tema="oscuro"] {
+  color-scheme: dark;
+  --c-fondo: #020202;        /* fondo principal */
+  --c-superficie: #121211;
+  --c-superficie-2: #1B1B1A;
+  --c-texto: #F2F2F2;
+  --c-suave: #999999;        /* gris del manual · 6,5:1 */
+  --c-borde: #272725;        /* separadores */
+  --c-acento: #C8951A;       /* dorado: botones y lo activo · 6,8:1 */
+  --c-acento-suave: #2A2210;
+  --c-sobre-acento: #020202;
+  --c-dorado: #C8951A;
+  --c-cian: #06C7FB;         /* gráficos acento: cifras y datos · 9,3:1 */
+  --c-aviso: #FFB74D;
+  --c-aviso-fondo: #2A2112;
+  --c-error: #FF3333;        /* énfasis y alertas del manual · 5:1 */
+  --c-error-fondo: #2C1112;
+  --c-exito: #4ADE80;
+  --c-exito-fondo: #0F2A1A;
+  --c-entra: #06C7FB;
+  --c-motor: #C8951A;
+  --c-lateral: #020202;
+  --c-lateral-2: #121211;
+  --g-texto-chispa: linear-gradient(135deg, #B9A6FF, #5EE0F5);  /* claro sobre el fondo oscuro */
 }
 
 @theme inline {
-  --font-sans: "Montserrat Variable", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  --font-sans: "Dubai", "Montserrat Variable", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
   --color-fondo: var(--c-fondo);
   --color-superficie: var(--c-superficie);
   --color-superficie-2: var(--c-superficie-2);
@@ -76,6 +83,7 @@
   --color-motor: var(--c-motor);
   --color-lateral: var(--c-lateral);
   --color-lateral-2: var(--c-lateral-2);
+  --color-cian: var(--c-cian);
 }
 
 @layer base {
@@ -116,4 +124,26 @@
 }
 @utility cifra {
   @apply font-bold tabular-nums;
+}
+
+/*
+  La chispa de Zyvo: el degradado de la marca del producto (violeta → cian). Lleva texto blanco:
+  #5B2EE0 da 7,2:1, #3F51D8 6,2:1 y #0E7490 5,4:1 (medidos), así que todo el degradado pasa 4,5:1.
+*/
+@utility chispa {
+  background-image: linear-gradient(135deg, #5B2EE0 0%, #3F51D8 45%, #0E7490 100%);
+}
+@utility texto-chispa {
+  background-image: var(--g-texto-chispa);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@keyframes zyvo-aparecer { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@utility aparecer {
+  animation: zyvo-aparecer .35s ease-out both;
+}
+@keyframes zyvo-festejo { 0% { transform: scale(.6); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+@utility festejo {
+  animation: zyvo-festejo .6s cubic-bezier(.2, .9, .3, 1.3) both;
 }

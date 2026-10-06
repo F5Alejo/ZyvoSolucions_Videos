@@ -107,12 +107,16 @@ if (Test-Path ".env") {
 } else {
     Copy-Item ".env.ejemplo" ".env"
     $clave = ""
-    try {
+    # Sin nadie frente a la ventana (Actions, -NonInteractive o entrada redirigida), Read-Host espera
+    # para siempre: no se pregunta.
+    $interactiva = [Environment]::UserInteractive -and -not [Console]::IsInputRedirected -and
+        -not ([Environment]::GetCommandLineArgs() -match '^-NonI')
+    if ($interactiva) { try {
         $segura = Read-Host "    Pega la clave de ElevenLabs (Enter para dejarla vacía)" -AsSecureString
         $clave = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($segura))
     } catch {
         # Sin terminal interactiva: se deja vacía.
-    }
+    } }
     if ($clave) {
         (Get-Content ".env") -replace "^ELEVENLABS_API_KEY=.*$", "ELEVENLABS_API_KEY=$clave" | Set-Content ".env" -Encoding ASCII
         Bien "Clave guardada en .env"

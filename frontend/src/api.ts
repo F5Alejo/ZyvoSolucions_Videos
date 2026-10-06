@@ -32,6 +32,19 @@ export const api = {
   delete: (url: string) => pedir<void>("DELETE", url),
 };
 
+/** Envía un formulario con archivos (multipart). */
+export async function enviarFormulario<T>(metodo: "POST" | "PUT", url: string, datos: FormData): Promise<T> {
+  let r: Response;
+  try {
+    r = await fetch(url, { method: metodo, body: datos });
+  } catch {
+    throw new Error("No hay conexión con el servidor. ¿Está encendido?");
+  }
+  const cuerpo = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(mensajeDeError(cuerpo, r.status));
+  return cuerpo as T;
+}
+
 /** Sube un archivo mostrando el progreso (fetch todavía no informa el avance de la subida). */
 export function subir<T>(url: string, datos: FormData, alAvanzar: (fraccion: number) => void): Promise<T> {
   return new Promise((resolver, rechazar) => {

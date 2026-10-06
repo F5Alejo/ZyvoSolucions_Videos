@@ -10,7 +10,7 @@ from tests.test_taller import pptx_de_prueba
 @pytest.fixture()
 def datos_copia(tmp_path, monkeypatch):
     copia = tmp_path / "datos"
-    shutil.copytree(ORIGEN, copia, ignore=shutil.ignore_patterns("trabajos", "musica"))
+    shutil.copytree(ORIGEN, copia, ignore=shutil.ignore_patterns("trabajos", "empresas", "musica"))
     from app import datos
     monkeypatch.setattr(datos, "RAIZ_DATOS", copia)
     return copia
@@ -94,7 +94,7 @@ def test_guionista_propone_narracion_para_la_lamina_muda(datos_copia, sin_ollama
     p = next(p for p in _propuestas(t, "guionista") if p["lamina"] == 2)
     assert p["antes"]["notas"] == "" and "Lámina sin guion" in p["despues"]["notas"]
     t = registro.aceptar(taller.cargar(t["id"]), p["id"])
-    falla = next(c for c in taller.resumen(t)["chequeos"] if c["titulo"].startswith("Todas las láminas del video"))
+    falla = next(c for c in taller.resumen(t)["chequeos"] if c["clave"] == "sin_notas")
     assert falla["ok"] is True  # ya no queda ninguna lámina muda
 
 
@@ -107,7 +107,7 @@ def test_verificador_pregunta_la_fuente_y_se_marca_revisada(datos_copia):
     assert {p["despues"]["cita"] for p in props} == {"Ley 1503 de 2011", "30 %"}
     for p in props:
         t = registro.aceptar(taller.cargar(t["id"]), p["id"])
-    chequeo = next(c for c in taller.resumen(t)["chequeos"] if c["titulo"].startswith("Cifras y normas"))
+    chequeo = next(c for c in taller.resumen(t)["chequeos"] if c["clave"] == "normativas")
     assert chequeo["ok"] is True and "ya tienen su fuente revisada" in chequeo["detalle"]
     registro.ejecutar(t["id"], "verificador")
     assert _propuestas(t, "verificador") == []  # lo revisado no se vuelve a preguntar

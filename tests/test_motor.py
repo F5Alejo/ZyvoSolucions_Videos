@@ -11,7 +11,6 @@ from pptx import Presentation
 from pptx.util import Inches
 
 ORIGEN = Path(__file__).resolve().parent.parent / "datos"
-
 hay_ffmpeg = shutil.which("ffmpeg") is not None
 
 
@@ -35,15 +34,6 @@ def pptx_con_foto() -> bytes:
     buf = io.BytesIO()
     pres.save(buf)
     return buf.getvalue()
-
-
-@pytest.fixture()
-def datos_copia(tmp_path, monkeypatch):
-    copia = tmp_path / "datos"
-    shutil.copytree(ORIGEN, copia, ignore=shutil.ignore_patterns("trabajos"))
-    from app import datos
-    monkeypatch.setattr(datos, "RAIZ_DATOS", copia)
-    return copia
 
 
 class VozDePrueba:
@@ -228,7 +218,7 @@ def test_producir_desde_la_api(datos_copia, monkeypatch):
     assert r.status_code == 202
     cola.esperar()
     v = c.get(f"/api/trabajos/{id_}/produccion").json()["videos"]["v01"]
-    assert v["estado"] == "listo" and v["desactualizado"] is False
+    assert v["estado"] == "listo" and v["desactualizado"] is False and v["fase"] == "COMPLETED"
     assert not [x for x in v["informe"]["chequeos"] if x["ok"] is False]
 
     r = c.get(v["archivos"]["mp4"] + "?descargar=1")
@@ -250,7 +240,8 @@ def test_producir_con_voz_no_disponible_avisa(datos_copia, monkeypatch):
     from app.main import app
     monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
     c = TestClient(app)
-    id_ = _crear(c)  # la voz por defecto es Carlos (ElevenLabs), aquí sin clave
+    id_ = _crear(c)
+    c.patch(f"/api/trabajos/{id_}", json={"marca": "riskmann", "voz": "carlos", "formatos": ["16:9"]})  # ElevenLabs, sin clave
     assert "Falta la clave de ElevenLabs" in c.get(f"/api/trabajos/{id_}/produccion").json()["voz_falta"]
     r = c.post(f"/api/trabajos/{id_}/producir/v01")
     assert r.status_code == 400 and "ElevenLabs" in r.json()["detail"]
