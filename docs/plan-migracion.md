@@ -23,7 +23,7 @@ en [`bitacora.md`](bitacora.md); cómo quedó la arquitectura en [`arquitectura.
 | 11 · Línea de tiempo | Hecha | `videospec.linea_de_tiempo`, `GET /api/trabajos/{id}/linea/{clave}` |
 | 12 · Audio: efectos y director de música | Hecha | `motor/sfx.py`, `motor/estilos.py` |
 | 13 · Estilos | Hecha | `datos/estilos/` |
-| 14–15 · Interfaz y editor | Hecha | `frontend/src/views/CrearVideoView.vue`, `EditorVideoView.vue`, `components/zyvo/` |
+| 14–15 · Interfaz y editor | Hecha | `frontend/src/views/CrearVideoView.vue`, `EditorVideoView.vue`, `components/video/` |
 | 16 · Fixtures y prueba de punta a punta | Hecha | `tests/fixtures/`, `tests/test_e2e.py` |
 | Versiones del video y regeneración selectiva | Hecha | `motor/versiones.py` |
 

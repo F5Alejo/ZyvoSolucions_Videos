@@ -13,16 +13,16 @@ import {
 import { FORMATOS_HUMANOS, MENSAJES } from "../mensajes";
 import type { RespuestaConfig, VersionVideo } from "../tipos";
 import { cuenta, mmss } from "../utils";
-import AjustesAvanzados from "../components/zyvo/AjustesAvanzados.vue";
-import EstadoGeneracion from "../components/zyvo/EstadoGeneracion.vue";
+import AjustesAvanzados from "../components/video/AjustesAvanzados.vue";
+import EstadoGeneracion from "../components/video/EstadoGeneracion.vue";
 import EstadoCarga from "../components/EstadoCarga.vue";
-import MensajeError from "../components/zyvo/MensajeError.vue";
-import PanelExportar from "../components/zyvo/PanelExportar.vue";
-import PasosProgreso from "../components/zyvo/PasosProgreso.vue";
-import ReproductorPrevio from "../components/zyvo/ReproductorPrevio.vue";
-import TarjetaEstilo from "../components/zyvo/TarjetaEstilo.vue";
-import TarjetaVoz from "../components/zyvo/TarjetaVoz.vue";
-import ZonaSubida from "../components/zyvo/ZonaSubida.vue";
+import MensajeError from "../components/video/MensajeError.vue";
+import PanelExportar from "../components/video/PanelExportar.vue";
+import PasosProgreso from "../components/video/PasosProgreso.vue";
+import ReproductorPrevio from "../components/video/ReproductorPrevio.vue";
+import TarjetaEstilo from "../components/video/TarjetaEstilo.vue";
+import TarjetaVoz from "../components/video/TarjetaVoz.vue";
+import ZonaSubida from "../components/video/ZonaSubida.vue";
 
 const props = defineProps<{ id?: string }>();
 const ruta = useRoute();

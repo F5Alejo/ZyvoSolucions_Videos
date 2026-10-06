@@ -25,7 +25,7 @@ resolvieron) y **Pendiente**.
 ### Qué se hizo
 - **Flujo creativo `/crear`:** Subir → Analizar → Estilo → Voz → Opciones → Crear → Resultado. La persona no ve nada técnico: «Elegir voz» en vez de proveedor, «Presentación / Vertical / Cuadrado / Instagram» en vez de 16:9, pasos humanos en vez de fases del motor. El flujo de cinco pasos de antes sigue en «Cursos» como modo experto.
 - **Editor `/crear/:id/editar/:clave`:** la línea de tiempo (escenas, voz, música, efectos y subtítulos) y una tarjeta por escena con su vista previa, el texto de la voz, el movimiento de cámara, la transición y «Regenerar esta escena».
-- **Componentes (`frontend/src/components/zyvo/`):** ZonaSubida, PasosProgreso, TarjetaEstilo (con miniatura animada de cada estilo), TarjetaVoz (con «Escuchar»), EstadoGeneracion, MensajeError (con «Modo diagnóstico» escondido), ReproductorPrevio, LineaTiempo, TarjetaEscena, PanelExportar y AjustesAvanzados.
+- **Componentes (`frontend/src/components/video/`, entonces `zyvo/`):** ZonaSubida, PasosProgreso, TarjetaEstilo (con miniatura animada de cada estilo), TarjetaVoz (con «Escuchar»), EstadoGeneracion, MensajeError (con «Modo diagnóstico» escondido), ReproductorPrevio, LineaTiempo, TarjetaEscena, PanelExportar y AjustesAvanzados.
 - **Estado central (`composables/proyecto.ts`)**, **textos configurables (`mensajes.ts`)** y la traducción del motor a pasos humanos (`generacion.ts`, con prueba). Ningún mensaje técnico (traceback, ffmpeg, subprocess) llega a la pantalla.
 - **Identidad de Zyvo:** la «chispa» (degradado violeta → cian, contraste medido), el logotipo en la barra lateral y los títulos «· Zyvo». RiskMann queda como marca cliente al pie.
 - **Backend:** `audio.musica_estilo` para apagar la música aunque el estilo la pida.

@@ -11,9 +11,9 @@ import {
 import { MENSAJES } from "../mensajes";
 import type { LineaDeTiempo } from "../tipos";
 import EstadoCarga from "../components/EstadoCarga.vue";
-import EstadoGeneracion from "../components/zyvo/EstadoGeneracion.vue";
-import LineaTiempo from "../components/zyvo/LineaTiempo.vue";
-import TarjetaEscena from "../components/zyvo/TarjetaEscena.vue";
+import EstadoGeneracion from "../components/video/EstadoGeneracion.vue";
+import LineaTiempo from "../components/video/LineaTiempo.vue";
+import TarjetaEscena from "../components/video/TarjetaEscena.vue";
 
 const props = defineProps<{ id: string; clave: string }>();
 const router = useRouter();
