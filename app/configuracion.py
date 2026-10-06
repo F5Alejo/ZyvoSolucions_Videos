@@ -18,6 +18,8 @@ DEFECTO = {
     "tiempos": {"entrada": 1.0, "pausa": 0.35, "salida": 1.3},
     "audio": {"lufs": -14, "musica": None, "musica_volumen": -22, "respaldo_voz": True, "musica_estilo": True},
     "completo": {"tarjetas": True, "duracion_tarjeta": 3.0, "capitulos": True},
+    # Cuántos trabajos corren a la vez en cada carril de la cola (motor/cola.py). Renders None: según los núcleos.
+    "cola": {"render": None, "agentes": 4},
     "agentes": {
         "url": "http://localhost:11434",
         "modelo_texto": "qwen3:4b",
@@ -108,6 +110,14 @@ def _validar(conf: dict, estricto: bool = True) -> dict:
         if estricto:
             raise ValueError("Esa pista de música no está en datos/musica")
         conf["audio"]["musica"] = None
+
+    for carril, n in conf["cola"].items():
+        if carril not in DEFECTO["cola"]:
+            raise ValueError(f"La cola no tiene el carril «{carril}»")
+        if n is None and carril == "render":
+            continue
+        if isinstance(n, bool) or not isinstance(n, int) or not 1 <= n <= 8:
+            raise ValueError(f"«cola.{carril}» tiene que ser un número entero entre 1 y 8")
 
     a = conf["agentes"]
     if not str(a["url"]).startswith(("http://", "https://")):

@@ -17,12 +17,6 @@ def datos_copia(tmp_path, monkeypatch):
 
 
 @pytest.fixture()
-def sin_ollama(monkeypatch):
-    from motor.agentes import ollama
-    monkeypatch.setattr(ollama, "estado", lambda: {"encendido": False, "modelos": [], "faltan": ["qwen3:4b"]})
-
-
-@pytest.fixture()
 def ollama_falso(monkeypatch):
     """Ollama «encendido» con los modelos; `respuestas` decide qué devuelve según el esquema pedido."""
     from motor.agentes import ollama

@@ -259,7 +259,7 @@ def api_produccion(id_: str):
 
 @app.post("/api/trabajos/{id_}/producir/{clave}", status_code=202)
 def api_producir(id_: str, clave: str):
-    """Pone un video del curso en la cola del motor (un video a la vez, en segundo plano)."""
+    """Pone un video del curso en la cola del motor (en segundo plano, en el carril de los renders)."""
     t = _trabajo_o_404(id_)
     if clave not in {v["clave"] for v in t["videos"]}:
         raise HTTPException(404, "Ese curso no tiene ese video")
@@ -613,7 +613,7 @@ def api_agentes_curso(id_: str):
 
 @app.post("/api/trabajos/{id_}/agentes/{agente}", status_code=202)
 def api_ejecutar_agente(id_: str, agente: str):
-    """Pone al agente en la cola (la misma de los renders: uno a la vez)."""
+    """Pone al agente en la cola, en su propio carril: no espera a los renders."""
     t = _trabajo_o_404(id_)
     if agente not in agentes.REGISTRO:
         raise HTTPException(404, "No existe ese agente")
@@ -626,23 +626,21 @@ def api_ejecutar_agente(id_: str, agente: str):
 @app.post("/api/trabajos/{id_}/agentes/{agente}/aceptar")
 def api_aceptar_todas(id_: str, agente: str):
     """Acepta todas las propuestas pendientes de un agente en una sola petición."""
-    t = _trabajo_o_404(id_)
     if agente not in agentes.REGISTRO:
         raise HTTPException(404, "No existe ese agente")
-    t, errores = agentes.aceptar_todas(t, agente)
+    with taller.candado(id_):
+        t, errores = agentes.aceptar_todas(_trabajo_o_404(id_), agente)
     return {**_trabajo_completo(t), **_agentes_curso(t), "errores": errores}
 
 
 @app.post("/api/trabajos/{id_}/propuestas/{pid}/{accion}")
 def api_resolver_propuesta(id_: str, pid: str, accion: str):
     """Acepta (aplica al curso) o descarta una propuesta. Devuelve el curso y los agentes."""
-    t = _trabajo_o_404(id_)
-    if accion == "aceptar":
-        t = agentes.aceptar(t, pid)
-    elif accion == "descartar":
-        t = agentes.descartar(t, pid)
-    else:
+    if accion not in ("aceptar", "descartar"):
         raise HTTPException(404)
+    with taller.candado(id_):
+        t = _trabajo_o_404(id_)
+        t = agentes.aceptar(t, pid) if accion == "aceptar" else agentes.descartar(t, pid)
     return {**_trabajo_completo(t), **_agentes_curso(t)}
 
 

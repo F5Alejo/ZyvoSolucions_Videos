@@ -147,8 +147,11 @@ def frase(voz: dict, texto: str, cache: Path) -> Path:
     if final.exists():
         return final
     p = proveedor(voz)
-    crudo = cache / f"{final.stem}.crudo{p.extension}"
+    # Dos renders en paralelo pueden pedir la misma frase: cada uno escribe aparte y el último reemplaza.
+    propio = f"{final.stem}.{threading.get_ident()}"
+    crudo, listo = cache / f"{propio}.crudo{p.extension}", cache / f"{propio}.wav"
     p.generar(texto, crudo)
-    a_wav(crudo, final)
+    a_wav(crudo, listo)
     crudo.unlink()
+    listo.replace(final)
     return final

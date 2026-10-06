@@ -16,6 +16,7 @@ reglas.
 
 import copy
 import secrets
+import threading
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Callable
@@ -29,6 +30,10 @@ class ErrorAgente(RuntimeError):
 
 
 LLM = ollama.Ollama()  # el LLMProvider de todos los agentes
+
+# Varios agentes corren a la vez (motor/cola.py): el modelo se descarga cuando termina el último.
+_usando_modelo: dict[str, int] = {}
+_candado_modelo = threading.Lock()
 
 
 _INVALIDO = object()
@@ -185,10 +190,15 @@ def ejecutar(id_trabajo: str, id_agente: str, avisar=lambda paso, x: None) -> di
         raise ErrorAgente(f"{a.nombre} necesita Ollama con el modelo {modelo}: «ollama pull {modelo}»")
     ctx = Contexto(con_ia=con_ia, modelo=modelo, avisar=avisar, tiempo=a.tiempo)
 
+    with _candado_modelo:
+        _usando_modelo[modelo] = _usando_modelo.get(modelo, 0) + 1
     try:
         propuestas = a.proponer(t, ctx)
     finally:
-        if ctx.usadas:
+        with _candado_modelo:
+            _usando_modelo[modelo] -= 1
+            ultimo = not _usando_modelo[modelo]
+        if ctx.usadas and ultimo:
             LLM.liberar(modelo)  # libera la RAM para el render
     ahora = datetime.now().isoformat(timespec="seconds")
     for p in propuestas:
@@ -196,11 +206,12 @@ def ejecutar(id_trabajo: str, id_agente: str, avisar=lambda paso, x: None) -> di
         p.update(id=secrets.token_hex(4), agente=a.id, creada=ahora, estado="pendiente",
                  hecha_con=propio or (modelo if p.pop("con_ia", False) else "reglas"))
 
-    # Se relee el curso: mientras el agente pensaba, la persona pudo guardar otras cosas.
-    fresco = taller.cargar(id_trabajo)
-    viejas = [p for p in fresco.get("propuestas", []) if not (p["agente"] == a.id and p["estado"] == "pendiente")]
-    fresco["propuestas"] = viejas + propuestas
-    taller.guardar(fresco)
+    # Se relee el curso: mientras el agente pensaba, la persona (u otro agente) pudo guardar otras cosas.
+    with taller.candado(id_trabajo):
+        fresco = taller.cargar(id_trabajo)
+        viejas = [p for p in fresco.get("propuestas", []) if not (p["agente"] == a.id and p["estado"] == "pendiente")]
+        fresco["propuestas"] = viejas + propuestas
+        taller.guardar(fresco)
     return {"propuestas": len(propuestas), "con_ia": bool(ctx.usadas), "invalidas": ctx.invalidas}
 
 

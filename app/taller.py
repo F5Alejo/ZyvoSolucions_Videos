@@ -9,6 +9,7 @@ import json
 import re
 import secrets
 import shutil
+import threading
 import unicodedata
 from datetime import datetime
 from pathlib import Path
@@ -203,6 +204,16 @@ def ruta_trabajo(id_: str) -> Path | None:
 def cargar(id_: str) -> dict | None:
     ruta = ruta_trabajo(id_)
     return json.loads(ruta.read_text(encoding="utf-8")) if ruta else None
+
+
+_candados: dict[str, threading.RLock] = {}
+_candado_candados = threading.Lock()
+
+
+def candado(id_: str) -> threading.RLock:
+    """Para leer, cambiar y guardar un curso sin que otro hilo (un agente, otra persona) se cruce."""
+    with _candado_candados:
+        return _candados.setdefault(id_, threading.RLock())
 
 
 def guardar(t: dict) -> None:

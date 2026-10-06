@@ -9,6 +9,7 @@ El director es sobrio a propósito: los efectos refuerzan la experiencia, no la 
 - Bajo: -26 dB por defecto, nunca más de -12 dB.
 """
 
+import threading
 from pathlib import Path
 
 import numpy as np
@@ -104,7 +105,9 @@ def archivo(id_: str, cache: Path) -> Path:
     cache.mkdir(parents=True, exist_ok=True)
     ruta = cache / f"{id_}.wav"
     if not ruta.exists():
-        sf.write(str(ruta), sintetizar(id_), FRECUENCIA, subtype="PCM_16")
+        propio = cache / f"{id_}.{threading.get_ident()}.wav"  # otro render puede estar escribiendo el mismo
+        sf.write(str(propio), sintetizar(id_), FRECUENCIA, subtype="PCM_16")
+        propio.replace(ruta)
     return ruta
 
 

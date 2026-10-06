@@ -8,6 +8,38 @@ resolvieron) y **Pendiente**.
 
 ---
 
+## 2026-10-06 · Cola en paralelo y aceptar guiones sin esperas
+
+### Qué se hizo
+- `motor/cola.py` pasa de un solo hilo a dos carriles: **render** (videos y completo) y **agentes**.
+  Cada uno corre varios trabajos a la vez, con el límite de `configuracion["cola"]`: renders
+  `None` = uno por cada 6 núcleos (de 1 a 4), y agentes 4.
+- Turno justo: en cada carril se atiende primero el curso con menos trabajos corriendo, así quien
+  manda 8 videos no deja a los demás esperando.
+- El completo de un curso corre solo y después de los videos que se pidieron antes que él, como
+  pasaba con la fila única.
+- Las cachés compartidas (voz, efectos de sonido, escenas) se escriben aparte y se mueven al final,
+  para que dos renders no se pisen.
+- `taller.candado(id)`: los agentes y las propuestas aceptadas leen, cambian y guardan el curso
+  por turnos.
+- El modelo de Ollama se descarga cuando termina el último agente que lo usa, no el primero.
+- `ollama.estado()` se guarda 10 s. Con Ollama apagado, cada consulta tardaba ~4 s y la interfaz
+  la pedía al aceptar cada propuesta. «Aceptar todas» ahora es una sola petición:
+  `POST /api/trabajos/{id}/agentes/{agente}/aceptar`.
+
+### Decisiones
+- Esto cambia la de la fase de agentes («los agentes van en la cola de los renders»). El equipo
+  de producción tiene 32 GB y varias personas trabajan a la vez. Un guion no puede esperar minutos a
+  un render.
+
+### Pendiente
+- En un equipo de 8 GB con Ollama, un agente con IA y un render juntos pueden quedarse sin memoria.
+  Si pasa, conviene un modo que vuelva a ponerlos en fila.
+- Las demás ediciones del curso (láminas, ajustes) todavía no toman `taller.candado`.
+- Los límites de la cola solo se cambian en `datos/configuracion.json`: no hay control en la pantalla de Configuración.
+
+---
+
 ## 2026-10-02 · Fase 16: prueba de punta a punta y un falso positivo del control de calidad
 
 ### Qué se hizo
