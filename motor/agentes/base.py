@@ -229,6 +229,17 @@ def aceptar(t: dict, id_propuesta: str) -> dict:
     return t
 
 
+def aceptar_todas(t: dict, id_agente: str) -> tuple[dict, list[str]]:
+    """Acepta las pendientes de un agente de una vez. Devuelve el curso y los errores de las que no se pudo."""
+    errores = []
+    for p in [p for p in t.get("propuestas", []) if p["agente"] == id_agente and p["estado"] == "pendiente"]:
+        try:
+            aceptar(t, p["id"])
+        except (ErrorAgente, ValueError) as e:
+            errores.append(f"{p['titulo']}: {e}")
+    return t, errores
+
+
 def descartar(t: dict, id_propuesta: str) -> dict:
     _buscar(t, id_propuesta).update(estado="descartada", resuelta=datetime.now().isoformat(timespec="seconds"))
     taller.guardar(t)
