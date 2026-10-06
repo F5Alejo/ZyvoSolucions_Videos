@@ -79,12 +79,12 @@ y Fly, y las funciones de Vercel.
 2. Instalar Docker y Compose; escribir `Dockerfile` y `docker-compose.yml` (caddy, api, worker, redis, postgres).
 3. Configurar el subdominio en DuckDNS, el HTTPS con Caddy y Cloudflare Access delante.
 4. Copias nocturnas a R2.
-5. Entornos: `main` en producción y `Alejodev` en pruebas (otro subdominio), con despliegue desde Actions.
+5. Entornos: `main` en producción y `develop` en pruebas (otro subdominio), con despliegue desde Actions.
 
 **Fase 1b. Servidor pagado** (≤ 30 USD al mes, cuando la prueba funcione): Hetzner CPX31 o
 similar, con la misma configuración.
 
-**Fase 2. Listo para SaaS** (cambios de código en `Alejodev`)
+**Fase 2. Listo para SaaS** (cambios de código en ramas `feature/*` hacia `develop`)
 1. Redis con RQ y un worker en un proceso aparte; la API ya no renderiza.
 2. PostgreSQL: organizaciones, usuarios, cursos, videos, trabajos, propuestas y configuración por empresa; migrar los JSON.
 3. Capa de almacenamiento (disco local o R2) con enlaces firmados.

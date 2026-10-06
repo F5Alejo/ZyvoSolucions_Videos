@@ -1,16 +1,18 @@
 # Pruebas del estudio en cada cambio.
 #
-# - Alejodev y juandev son las ramas de trabajo: cada push corre todo.
-# - main es la versión estable: cada push y cada pull request hacia main corren todo.
-# - Todos los pull request se prueban, sin importar la rama de destino: cuando el filtro
-#   era [main, Alejodev], el trabajo de juandev llegó a integrarse sin pasar por ruff.
-#   main solo se actualiza cuando estas pruebas pasan.
+# Las normas de ramas están en docs/GIT_WORKFLOW.md.
+#
+# - develop integra el trabajo terminado y main es la versión publicada: cada push a una de
+#   las dos corre todo.
+# - Todos los pull request se prueban, sin importar la rama de destino. Cuando el filtro era
+#   [main, Alejodev], el trabajo de juandev llegó a integrarse sin pasar por ruff; las ramas
+#   de trabajo (feature/*, fix/*, chore/*…) se prueban con su pull request.
 
 name: Pruebas
 
 on:
   push:
-    branches: [main, Alejodev, juandev]
+    branches: [main, develop]
   pull_request:  # sin filtro de ramas: ningún PR se integra sin pruebas
   workflow_dispatch:
 

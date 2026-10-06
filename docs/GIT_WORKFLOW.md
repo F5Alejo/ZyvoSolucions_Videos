@@ -223,3 +223,29 @@ Estas reglas son obligatorias para cualquier asistente de IA que genere commits,
 - [ ] El mensaje sigue Conventional Commits y tiene ≤ 72 caracteres.
 - [ ] No hay secretos, archivos temporales ni código de depuración.
 - [ ] No hay trailers de coautoría ni firmas de IA.
+
+---
+
+## 8. Estado de la adopción (2026-10-06)
+
+Este documento es la norma, pero no todo está **forzado** por GitHub todavía. Lo que la norma
+pide y nadie puede saltarse, frente a lo que por ahora depende de que cada quien lo cumpla:
+
+| Regla | ¿Forzada? | Por qué |
+|---|---|---|
+| `main` solo cambia por pull request | **Sí** | Ruleset «Proteger main» |
+| Los 4 trabajos de «Pruebas» en verde antes de integrar a `main` | **Sí** | Ruleset, *required status checks* |
+| Sin force push ni borrado de `main` | **Sí** | Ruleset |
+| `main` se integra con merge commit | **Sí** | Ruleset: `allowed_merge_methods: [merge]` |
+| Todos los pull request corren pruebas | **Sí** | `pruebas.yml`, sin filtro de ramas |
+| `develop` solo cambia por pull request | **No** | El ruleset cubre solo `refs/heads/main` |
+| Los pull request apuntan a `develop` por defecto | **No** | La rama por defecto del repositorio sigue siendo `main` |
+
+Las dos últimas necesitan permiso de **administrador** sobre el repositorio, que es de
+`F5Alejo`. Para cerrarlas hay que pedirle que:
+
+1. Extienda el ruleset (o cree uno igual) sobre `refs/heads/develop`.
+2. Cambie la rama por defecto a `develop`, para que los pull request no apunten a `main` por error.
+
+Mientras tanto, **nadie hace commit directo a `develop`**: es una regla de equipo, no una
+barrera técnica.
