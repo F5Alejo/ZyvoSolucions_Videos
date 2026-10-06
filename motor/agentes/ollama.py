@@ -6,6 +6,7 @@ el equipo tiene 8 GB y el render también necesita memoria.
 """
 
 import json
+import time
 
 import httpx
 
@@ -20,18 +21,29 @@ def _url() -> str:
     return configuracion.leer()["agentes"]["url"].rstrip("/")
 
 
+# Con Ollama apagado, cada consulta tarda ~4 s en Windows (localhost prueba ::1 y luego 127.0.0.1)
+# y la interfaz la pide al aceptar cada propuesta: se guarda unos segundos.
+SEGUNDOS_ESTADO = 10
+_estado: dict = {"hora": 0.0, "clave": None, "datos": None}
+
+
 def estado() -> dict:
     """Si Ollama responde, qué modelos tiene y si están los que pide la configuración."""
     conf = configuracion.leer()["agentes"]
+    clave = (conf["url"], conf["modelo_texto"], conf["modelo_vision"])
+    if _estado["clave"] == clave and time.monotonic() - _estado["hora"] < SEGUNDOS_ESTADO:
+        return _estado["datos"]
     try:
         r = httpx.get(f"{_url()}/api/tags", timeout=2)
         r.raise_for_status()
         modelos = sorted(m["name"] for m in r.json().get("models", []))
+        faltan = [m for m in (conf["modelo_texto"], conf["modelo_vision"])
+                  if m not in modelos and f"{m}:latest" not in modelos]
+        datos = {"encendido": True, "modelos": modelos, "faltan": faltan}
     except (httpx.HTTPError, ValueError):
-        return {"encendido": False, "modelos": [], "faltan": [conf["modelo_texto"], conf["modelo_vision"]]}
-    faltan = [m for m in (conf["modelo_texto"], conf["modelo_vision"])
-              if m not in modelos and f"{m}:latest" not in modelos]
-    return {"encendido": True, "modelos": modelos, "faltan": faltan}
+        datos = {"encendido": False, "modelos": [], "faltan": [conf["modelo_texto"], conf["modelo_vision"]]}
+    _estado.update(hora=time.monotonic(), clave=clave, datos=datos)
+    return datos
 
 
 def chat(modelo: str, sistema: str, usuario: str, esquema: dict, imagenes: list[str] | None = None,

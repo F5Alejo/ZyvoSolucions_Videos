@@ -623,6 +623,16 @@ def api_ejecutar_agente(id_: str, agente: str):
     return _agentes_curso(t)
 
 
+@app.post("/api/trabajos/{id_}/agentes/{agente}/aceptar")
+def api_aceptar_todas(id_: str, agente: str):
+    """Acepta todas las propuestas pendientes de un agente en una sola petición."""
+    t = _trabajo_o_404(id_)
+    if agente not in agentes.REGISTRO:
+        raise HTTPException(404, "No existe ese agente")
+    t, errores = agentes.aceptar_todas(t, agente)
+    return {**_trabajo_completo(t), **_agentes_curso(t), "errores": errores}
+
+
 @app.post("/api/trabajos/{id_}/propuestas/{pid}/{accion}")
 def api_resolver_propuesta(id_: str, pid: str, accion: str):
     """Acepta (aplica al curso) o descarta una propuesta. Devuelve el curso y los agentes."""

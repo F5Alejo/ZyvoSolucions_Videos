@@ -224,6 +224,12 @@ def test_agentes_por_la_api_y_ediciones(datos_copia, sin_ollama):
     assert c.post(f"/api/trabajos/{id_}/propuestas/{pid}/descartar").status_code == 200
     assert c.post(f"/api/trabajos/{id_}/propuestas/{pid}/aceptar").status_code == 400  # ya estaba resuelta
 
+    # «Aceptar todas»: una sola petición resuelve las pendientes del agente.
+    r = c.post(f"/api/trabajos/{id_}/agentes/verificador/aceptar").json()
+    assert r["errores"] == []
+    assert [p["estado"] for p in r["propuestas"] if p["agente"] == "verificador"] == ["descartada", "aceptada"]
+    assert c.post(f"/api/trabajos/{id_}/agentes/nadie/aceptar").status_code == 404
+
     # Un agente que necesita IA, sin Ollama: el error llega al estado del agente.
     c.post(f"/api/trabajos/{id_}/agentes/evaluador")
     cola.esperar()
@@ -237,6 +243,25 @@ def test_agentes_por_la_api_y_ediciones(datos_copia, sin_ollama):
     assert c.put(f"/api/trabajos/{id_}/laminas/1/edicion", json={"cambios": {"titulo": " "}}).status_code == 400
     r = c.put(f"/api/trabajos/{id_}/laminas/1/edicion", json={"cambios": None})
     assert r.json()["trabajo"]["laminas"][0]["notas"].startswith("El riesgo vial")
+
+
+def test_el_estado_de_ollama_se_guarda_unos_segundos(monkeypatch):
+    import httpx
+
+    from motor.agentes import ollama
+    llamadas = []
+
+    def get(*a, **k):
+        llamadas.append(a)
+        raise httpx.ConnectError("apagado")
+    monkeypatch.setattr(ollama.httpx, "get", get)
+    monkeypatch.setattr(ollama, "_estado", {"hora": 0.0, "clave": None, "datos": None})
+    assert not ollama.estado()["encendido"]
+    assert not ollama.estado()["encendido"]
+    assert len(llamadas) == 1  # la segunda vez no vuelve a esperar a Ollama
+    monkeypatch.setattr(ollama, "SEGUNDOS_ESTADO", 0)
+    ollama.estado()
+    assert len(llamadas) == 2
 
 
 def test_una_norma_cambiada_con_los_mismos_numeros_tambien_se_detecta():

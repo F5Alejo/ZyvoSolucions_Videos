@@ -57,8 +57,19 @@ async function resolver(p: Propuesta, accion: "aceptar" | "descartar") {
   }
 }
 
+const aceptandoTodas = ref<string | null>(null);
 async function aceptarTodas(id: string) {
-  for (const p of pendientes(id)) await resolver(p, "aceptar");
+  aceptandoTodas.value = id;
+  try {
+    const r = await api.post<TrabajoCompleto & AgentesCurso & { errores: string[] }>(`/api/trabajos/${props.trabajo}/agentes/${id}/aceptar`);
+    datos.value = { agentes: r.agentes, estados: r.estados, propuestas: r.propuestas };
+    emit("actualizado", { trabajo: r.trabajo, resumen: r.resumen });
+    for (const e of r.errores) avisar(e, "error");
+  } catch (e) {
+    avisar((e as Error).message, "error");
+  } finally {
+    aceptandoTodas.value = null;
+  }
 }
 
 /** Muestra un valor de propuesta como texto legible. */
@@ -134,7 +145,9 @@ function legible(x: unknown): string {
           </div>
         </li>
         <li v-if="a.acepta && pendientes(a.id).length > 1" class="text-right">
-          <button class="boton-fantasma text-xs" @click="aceptarTodas(a.id)"><Check class="size-3.5" /> Aceptar las {{ pendientes(a.id).length }}</button>
+          <button class="boton-fantasma text-xs" :disabled="aceptandoTodas === a.id" @click="aceptarTodas(a.id)">
+            <LoaderCircle v-if="aceptandoTodas === a.id" class="size-3.5 animate-spin" /><Check v-else class="size-3.5" />
+            Aceptar las {{ pendientes(a.id).length }}</button>
         </li>
       </ul>
     </div>
