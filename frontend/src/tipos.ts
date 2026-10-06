@@ -241,7 +241,8 @@ export interface AjustesVideo {
 
 export interface Configuracion extends AjustesVideo {
   cursos: { marca: string; voz: string; formatos: string[]; animacion: string };
-  agentes: { url: string; modelo_texto: string; modelo_vision: string; activos: Record<string, boolean> };
+  agentes: { proveedor: "ollama" | "claude"; url: string; modelo_texto: string; modelo_vision: string; modelo_claude: string;
+             activos: Record<string, boolean> };
 }
 
 export type OpcionesConfig = Record<string, { valor: string | number; texto: string }[] | { min: number; max: number }>;
@@ -259,6 +260,8 @@ export interface Revision { ok: boolean; detalle: string; arreglo?: string | nul
 export interface Sistema {
   ffmpeg: Revision;
   chromium: Revision;
+  hyperframes: Revision;
+  ia: Revision & { proveedor: "ollama" | "claude" };
   elevenlabs: Revision;
   voces: { id: string; nombre: string; proveedor: string; ok: boolean; detalle: string }[];
   ollama: Revision & { encendido: boolean; modelos: string[] };
@@ -406,4 +409,19 @@ export interface EventoRegistro {
   severity?: string | null;
   recovery?: string | null;
   stacktrace?: string;
+}
+
+/** Una toma del banco de medios de una marca (GET /api/marcas/:id/banco). */
+export interface TomaBanco {
+  id: string;
+  tipo: "clip" | "foto";
+  archivo: string;
+  miniatura: string | null;
+  nombre: string;
+  descripcion: string;
+  etiquetas: string[];
+  subido: string;
+  ancho: number;
+  alto: number;
+  duracion: number | null;
 }
