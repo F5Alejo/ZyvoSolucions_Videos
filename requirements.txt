@@ -13,6 +13,7 @@ playwright>=1.50         # dibuja las escenas HTML; luego: python -m playwright 
 piper-tts>=1.2           # voz rápida para borradores internos (ver docs/bitacora.md: licencia de davefx)
 faster-whisper>=1.1       # Revisor de voz: escucha el video y lo compara con el guion (MIT)
 httpx>=0.27              # cliente de Ollama (agentes)
+anthropic>=1.11          # Claude, la IA opcional de los agentes (motor/agentes/claude.py)
 
 # Pruebas y estilo
 pytest>=8

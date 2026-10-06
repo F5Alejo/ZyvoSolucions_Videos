@@ -21,9 +21,13 @@ DEFECTO = {
     # Cuántos trabajos corren a la vez en cada carril de la cola (motor/cola.py). Renders None: según los núcleos.
     "cola": {"render": None, "agentes": 4},
     "agentes": {
+        # La IA de los agentes: "ollama" (local, el material no sale del equipo) o "claude"
+        # (API de Anthropic, necesita ANTHROPIC_API_KEY en .env; el texto del curso sale a la nube).
+        "proveedor": "ollama",
         "url": "http://localhost:11434",
         "modelo_texto": "qwen3:4b",
         "modelo_vision": "qwen3.5:2b",
+        "modelo_claude": "claude-opus-5",
         "activos": {"redactor": True, "director": True, "guionista": True, "verificador": True,
                     "evaluador": True, "publicador": True, "descriptor": True, "revisor_voz": True},
     },
@@ -120,6 +124,8 @@ def _validar(conf: dict, estricto: bool = True) -> dict:
             raise ValueError(f"«cola.{carril}» tiene que ser un número entero entre 1 y 8")
 
     a = conf["agentes"]
+    if a["proveedor"] not in ("ollama", "claude"):
+        raise ValueError("La IA de los agentes tiene que ser «ollama» o «claude»")
     if not str(a["url"]).startswith(("http://", "https://")):
         raise ValueError("La dirección de Ollama tiene que empezar por http:// o https://")
     a["activos"] = {k: bool(a["activos"].get(k, True)) for k in DEFECTO["agentes"]["activos"]}

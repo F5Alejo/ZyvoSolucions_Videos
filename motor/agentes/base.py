@@ -22,14 +22,34 @@ from datetime import datetime
 from typing import Callable
 
 from app import configuracion, taller
-from motor.agentes import ollama
+from motor.agentes import claude, ollama
 
 
 class ErrorAgente(RuntimeError):
     """Algo que la persona puede resolver (agente desactivado, falta Ollama o un modelo…)."""
 
 
-LLM = ollama.Ollama()  # el LLMProvider de todos los agentes
+LLM = ollama.Ollama()  # el LLMProvider por defecto: local, el material no sale del equipo
+PROVEEDORES = {"ollama": LLM, "claude": claude.Claude()}
+
+
+def ia(tipo: str | None, conf: dict | None = None) -> tuple:
+    """(proveedor, modelo) para un agente de `tipo` "texto" o "vision", según Configuración. Sin tipo: sin IA."""
+    conf = conf or configuracion.leer()["agentes"]
+    proveedor = PROVEEDORES.get(conf.get("proveedor"), LLM)
+    if tipo is None:
+        return proveedor, None
+    if proveedor is not LLM:
+        return proveedor, conf["modelo_claude"]
+    return proveedor, conf["modelo_texto"] if tipo == "texto" else conf["modelo_vision"]
+
+
+def contexto(tipo: str | None, avisar=lambda paso, x: None, tiempo: float = 300) -> "Contexto":
+    """Un Contexto listo para preguntar a la IA configurada (o sin IA, si no está disponible)."""
+    proveedor, modelo = ia(tipo)
+    o = proveedor.estado() if modelo else {"encendido": False, "modelos": []}
+    con_ia = bool(modelo) and o["encendido"] and (modelo in o["modelos"] or f"{modelo}:latest" in o["modelos"])
+    return Contexto(con_ia=con_ia, modelo=modelo, avisar=avisar, tiempo=tiempo, llm=proveedor)
 
 # Varios agentes corren a la vez (motor/cola.py): el modelo se descarga cuando termina el último.
 _usando_modelo: dict[str, int] = {}
@@ -91,13 +111,14 @@ class Contexto:
     usadas: list = field(default_factory=list)  # cuántas respuestas vinieron de la IA
     tiempo: float = 300                         # segundos máximos por pregunta
     invalidas: int = 0                          # respuestas que no cumplían el esquema (se usaron reglas)
+    llm: object = None                          # el LLMProvider (Ollama o Claude); None = el de por defecto
 
     def chat(self, sistema: str, usuario: str, esquema: dict, imagenes: list[str] | None = None) -> dict | None:
         """Pregunta al modelo; None si no hay IA o si falló (el agente usa sus reglas)."""
         if not self.con_ia:
             return None
         try:
-            r = LLM.chat(self.modelo, sistema, usuario, esquema, imagenes, self.tiempo)
+            r = (self.llm or LLM).chat(self.modelo, sistema, usuario, esquema, imagenes, self.tiempo)
         except ollama.OllamaNoDisponible:
             self.con_ia = False  # si se cae a mitad de camino, el resto va con reglas
             return None
@@ -158,10 +179,11 @@ def _hay_whisper() -> bool:
 
 def estado_agentes() -> list[dict]:
     conf = configuracion.leer()["agentes"]
-    o = LLM.estado()
+    proveedor, _ = ia(None, conf)
+    o = proveedor.estado()
     salida = []
     for a in REGISTRO.values():
-        modelo = conf["modelo_texto"] if a.modelo == "texto" else conf["modelo_vision"] if a.modelo == "vision" else None
+        _, modelo = ia(a.modelo, conf)
         tiene = bool(modelo) and o["encendido"] and (modelo in o["modelos"] or f"{modelo}:latest" in o["modelos"])
         if a.id == "revisor_voz":
             modelo, tiene = "whisper small", _hay_whisper()
@@ -183,12 +205,12 @@ def ejecutar(id_trabajo: str, id_agente: str, avisar=lambda paso, x: None) -> di
     if t is None:
         raise ErrorAgente("El curso ya no existe")
 
-    modelo = conf["modelo_texto"] if a.modelo == "texto" else conf["modelo_vision"] if a.modelo == "vision" else None
-    o = LLM.estado() if modelo else {"encendido": False, "modelos": []}
-    con_ia = bool(modelo) and o["encendido"] and (modelo in o["modelos"] or f"{modelo}:latest" in o["modelos"])
-    if a.necesita_ia and not con_ia:
+    ctx = contexto(a.modelo, avisar, a.tiempo)
+    modelo = ctx.modelo
+    if a.necesita_ia and not ctx.con_ia:
+        if ctx.llm is not LLM:
+            raise ErrorAgente(f"{a.nombre} necesita Claude: pon ANTHROPIC_API_KEY en .env")
         raise ErrorAgente(f"{a.nombre} necesita Ollama con el modelo {modelo}: «ollama pull {modelo}»")
-    ctx = Contexto(con_ia=con_ia, modelo=modelo, avisar=avisar, tiempo=a.tiempo)
 
     with _candado_modelo:
         _usando_modelo[modelo] = _usando_modelo.get(modelo, 0) + 1
@@ -199,7 +221,7 @@ def ejecutar(id_trabajo: str, id_agente: str, avisar=lambda paso, x: None) -> di
             _usando_modelo[modelo] -= 1
             ultimo = not _usando_modelo[modelo]
         if ctx.usadas and ultimo:
-            LLM.liberar(modelo)  # libera la RAM para el render
+            ctx.llm.liberar(modelo)  # libera la RAM para el render
     ahora = datetime.now().isoformat(timespec="seconds")
     for p in propuestas:
         propio = p.pop("hecha_con", None)  # p. ej. «whisper small»: IA local que no es Ollama
