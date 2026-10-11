@@ -6,6 +6,7 @@ from app import datos, extractor, taller
 from motor import escenas
 from motor.agentes.base import Agente, Contexto, en_videos, registrar, texto_de
 from motor.agentes.guardas import inventado
+from motor.escenas import lamina
 
 SISTEMA = ("Trabajas en un estudio que convierte presentaciones en videos de formación en español de Colombia. "
            "Nunca inventes datos, cifras, normas ni nombres: usa solo lo que está en el texto que se te da. "
@@ -74,6 +75,17 @@ registrar(Agente("redactor", "Redactor de pantalla", "Títulos y viñetas cortas
 
 ESQUEMA_GUION = {"type": "object", "properties": {"narracion": {"type": "string"}}, "required": ["narracion"]}
 
+# Por debajo de esto, la voz y la lámina van cada una por su lado: se oye una cosa y se ve
+# otra. Medido en los videos de referencia del curso, la voz nombra el 100 % de lo que se ve;
+# en un PPTX cuyas notas son un ensayo paralelo baja al 30-40 %.
+COBERTURA_MINIMA = 0.55
+
+
+def _como_lo_diria(parrafos: list[str]) -> str:
+    """Sin IA: la lámina leída en voz alta. Tosco, pero dice lo que se ve."""
+    frases = [p.strip().rstrip(".;:·-— ") for p in parrafos if p.strip()]
+    return ". ".join(f[0].upper() + f[1:] if f else f for f in frases) + "." if frases else ""
+
 
 def _guionista(t: dict, ctx: Contexto) -> list[dict]:
     salida = []
@@ -99,6 +111,19 @@ def _guionista(t: dict, ctx: Contexto) -> list[dict]:
                 continue  # acortar bien necesita IA
             con_ia, narracion = True, r["narracion"].strip()
             razon = f"El video «{video['titulo']}» pasa de 4 minutos"
+        elif (cob := lamina.cobertura(" ".join(parrafos), l["notas"])) < COBERTURA_MINIMA:
+            # La voz habla de otra cosa que lo que se muestra: se oye una cosa y se ve otra.
+            # No se tira la narración: se le pide que nombre la lámina conservando sus ideas.
+            r = ctx.chat(SISTEMA + " Escribes guiones para voz en off: frases cortas y claras.",
+                         "La voz de esta lámina no nombra lo que se ve en pantalla, así que quien mira "
+                         "lee una cosa y oye otra. Reescribe la narración para que vaya nombrando lo que "
+                         "se muestra, en el mismo orden, conservando las ideas, cifras y normas que ya "
+                         "tiene. No añadas nada que no esté en una de las dos.\n\n"
+                         "LO QUE SE VE:\n" + "\n".join(f"- {p}" for p in parrafos)
+                         + "\n\nLO QUE DICE LA VOZ AHORA:\n" + l["notas"], ESQUEMA_GUION)
+            con_ia = r is not None
+            narracion = r["narracion"].strip() if r else _como_lo_diria(parrafos)
+            razon = f"La voz solo nombra el {cob:.0%} de lo que se ve en la lámina"
         else:
             continue
         if not narracion.strip(". ") or narracion == l["notas"] or inventado(narracion, texto_de(l)):
@@ -112,7 +137,8 @@ def _aplicar_guion(t: dict, p: dict) -> None:
     taller.editar_lamina(t, p["lamina"], {"notas": p["despues"]["notas"]})
 
 
-registrar(Agente("guionista", "Guionista", "Narración para láminas sin notas y para acortar videos muy largos",
+registrar(Agente("guionista", "Guionista",
+                 "Narración para láminas sin notas, para las que no cuentan lo que se ve, y para acortar videos largos",
                  "guion", "texto", _guionista, _aplicar_guion))
 
 

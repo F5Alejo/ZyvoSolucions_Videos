@@ -29,8 +29,8 @@ Datos locales: datos/ (catálogos en git) · datos/trabajos/<id>/ (cada proyecto
 | `core/domain` (presentation, slide, scene, timeline, video) | `motor/videospec.py` (Escena, Frase, Efecto, Video, Audio) y `motor/analisis.py` |
 | `core/pipeline` (stages, jobs) | `motor/produccion.py` (etapas), `motor/cola.py` (trabajos) |
 | `core/providers` (tts, llm, render, music, sfx) | `motor/proveedores.py`, `voz.py`, `agentes/ollama.py`, `renderers.py`, `estilos.py`, `sfx.py` |
-| `presentation/pptx` | `app/extractor.py` |
-| `video/` (scenes, templates, transitions, effects, subtitles) | `motor/escenas/`, `camara.py`, `catalogo.py`, `subtitulos.py` |
+| `presentation/pptx` | `app/extractor.py` (lo que dice) y `app/disposicion.py` (cómo se ve) |
+| `video/` (scenes, templates, transitions, effects, subtitles) | `motor/escenas/` (incl. `lamina.py`, el modo fiel), `camara.py`, `catalogo.py`, `subtitulos.py`, `hyperframes.py` |
 | `audio/` (narration, music, sfx, mixing, mastering) | `voz.py`, `normalizar.py`, `sfx.py`, `audio.py` |
 | `ai/` (analysis, scripting, animation, quality) | `analisis.py`, `agentes/`, `qa.py`, `bugs.py` |
 | `storage/projects/{id}` | `datos/trabajos/<id>/` |

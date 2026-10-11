@@ -17,6 +17,8 @@ CODIGOS = {
     "TTS_002": ("MEDIUM", "El servicio de voz no respondió.", "REINTENTAR"),
     "AI_001": ("LOW", "La IA local no respondió; se usaron reglas.", "NINGUNA"),
     "RENDER_001": ("HIGH", "No pudimos dibujar una escena.", "REINTENTAR"),
+    "RENDER_002": ("HIGH", "Falta Node para dibujar con HyperFrames.", "DIAGNOSTICO"),
+    "RENDER_003": ("HIGH", "HyperFrames no pudo dibujar el video.", "REINTENTAR"),
     "AUDIO_001": ("HIGH", "No pudimos mezclar el audio.", "REINTENTAR"),
     "VIDEO_001": ("HIGH", "No pudimos armar el video.", "REINTENTAR"),
     "QA_001": ("MEDIUM", "El control de calidad encontró un problema.", "REVISAR_QA"),

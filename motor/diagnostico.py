@@ -6,6 +6,7 @@ import subprocess
 import time
 
 from app import datos, taller
+from motor import hyperframes
 from motor import voz as motor_voz
 from motor.agentes import ollama
 
@@ -48,6 +49,7 @@ def revisar(forzar: bool = False) -> dict:
     resultado = {
         "ffmpeg": _ffmpeg(),
         "chromium": _chromium(),
+        "hyperframes": hyperframes.disponible(),
         "elevenlabs": {"ok": bool(os.environ.get("ELEVENLABS_API_KEY")),
                        "detalle": "Clave cargada desde .env" if os.environ.get("ELEVENLABS_API_KEY")
                        else "Sin clave: pon ELEVENLABS_API_KEY en .env"},

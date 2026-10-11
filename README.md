@@ -31,7 +31,7 @@ Detalle en [`docs/produccion.md`](docs/produccion.md).
 |---|---|---|
 | Interfaz | **Vue 3** + TypeScript + **Tailwind CSS 4** + Vite | `frontend/` (el flujo de Zyvo en `/crear`) |
 | API | FastAPI (Python), JSON en `/api/*`, documentación en `/api/docs` | `app/` |
-| Motor | VideoSpec, voz (Kokoro, ElevenLabs, Piper), escenas HTML con Playwright, ffmpeg, cámara, música, efectos, subtítulos, control de calidad | `motor/` |
+| Motor | VideoSpec, voz (Kokoro, ElevenLabs, Piper), escenas HTML con Playwright **o HyperFrames**, ffmpeg, cámara, música, efectos, subtítulos, control de calidad | `motor/` |
 | Agentes | Analizador, guionista, director de animación y más; con IA local (Ollama) o reglas | `motor/agentes/`, `motor/analisis.py` |
 | Datos | Archivos JSON y carpetas: sin base de datos ni nube | `datos/` |
 
@@ -143,6 +143,26 @@ el ritmo de cada lámina, el volumen final (-14/-16/-23 LUFS), la música de fon
 licencia y baja sola cuando habla la voz), el MP4 completo del curso (tarjetas y capítulos) y los
 agentes. Muestra también qué tiene el equipo (ffmpeg, navegador, voces, clave, Ollama, disco) y cómo
 arreglar lo que falta. Cada curso puede cambiar estos ajustes para sí mismo en «Marca y voz».
+
+### Cómo se dibuja: rearmar la lámina o animarla
+
+En `/configuracion` → «Cómo se dibuja» se elige entre dos motores de imagen. No cambian la
+calidad: cambian **qué se ve**.
+
+| | Rearmar con la plantilla (`playwright`) | Animar la diapositiva (`hyperframes`) |
+|---|---|---|
+| La lámina | se rehace con la identidad de la marca: título, viñetas y foto | se redibuja como está en el PPTX, forma por forma |
+| Los elementos | entran al principio de la lámina | **van entrando mientras habla la voz** |
+| Sirve cuando | la presentación es pobre y conviene rehacerla | la presentación ya está diseñada |
+| Tarda | segundos por lámina | unos 2,5 min por minuto de video |
+
+El modo fiel lee la geometría real del PPTX (`app/disposicion.py`) y reparte las formas en
+bloques de aparición: el fondo y el marco entran con la escena, y cada bloque de contenido se
+engancha a la frase de la narración que le toca. Los bloques salen de los nombres de las formas,
+así que una presentación con nombres ordenados (`title`, `body`, `bar-1`, `bar-num-1`…) se anima
+mucho mejor. Necesita **Node 20+** además de ffmpeg; `/configuracion` avisa si falta.
+
+Detalle en [`motor/renderers.py`](motor/renderers.py) y [`motor/escenas/lamina.py`](motor/escenas/lamina.py).
 
 ### Animación
 
