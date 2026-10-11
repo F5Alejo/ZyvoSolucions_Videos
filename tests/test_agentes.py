@@ -244,3 +244,88 @@ def test_una_norma_cambiada_con_los_mismos_numeros_tambien_se_detecta():
     origen = "Lo exige la Ley 1503 de 2011 y el 30 % ocurre en misión."
     assert inventado("Lo exige el Decreto 1503 de 2011", origen) == ["norma «Decreto 1503 de 2011»"]
     assert inventado("El 30% ocurre en misión", origen) == []
+
+
+def test_el_guionista_avisa_cuando_la_voz_no_cuenta_la_lamina(datos_copia, sin_ollama):
+    """El defecto que se veía en el video: se lee una cosa en pantalla y se oye otra.
+
+    Sin Ollama el agente no puede redactar prosa, pero igual propone la lámina leída en voz
+    alta, que al menos dice lo que se muestra. La persona acepta o descarta, lámina por lámina.
+    """
+    import io
+
+    from pptx import Presentation
+    from pptx.util import Inches
+
+    from app import taller
+    from motor.agentes import registro
+
+    pres = Presentation()
+    s = pres.slides.add_slide(pres.slide_layouts[5])
+    s.shapes.title.text = "Inspección preoperacional"
+    caja = s.shapes.add_textbox(Inches(1), Inches(2), Inches(6), Inches(2))
+    caja.name = "body"
+    caja.text_frame.text = "Exterior: fugas, golpes, parabrisas, espejos"
+    caja.text_frame.add_paragraph().text = "Neumáticos: presión, profundidad, cortes"
+    # La narración habla del tema, pero no nombra nada de lo que se ve.
+    s.notes_slide.notes_text_frame.text = (
+        "El aprendizaje funciona cuando las experiencias reales pueden analizarse sin "
+        "convertir la conversación en una competencia entre compañeros de trabajo.")
+    buf = io.BytesIO()
+    pres.save(buf)
+
+    t = taller.desde_pptx("x.pptx", buf.getvalue(), "Curso")
+    t = taller.ajustar(t, "riskmann", "kokoro-dora", ["16:9"])
+    taller.guardar(t)
+
+    registro.ejecutar(t["id"], "guionista", avisar=lambda *a: None)
+    guardado = taller.cargar(t["id"])
+    propuestas = [p for p in guardado["propuestas"] if "nombra" in p.get("razon", "")]
+    assert propuestas, f"no detectó la desconexión: {[p.get('razon') for p in guardado['propuestas']]}"
+    p = propuestas[0]
+    assert "%" in p["razon"]
+    # Lo propuesto sí nombra lo que se ve.
+    from motor.escenas import lamina
+    visible = "Exterior: fugas, golpes, parabrisas, espejos Neumáticos: presión, profundidad, cortes"
+    assert lamina.cobertura(visible, p["despues"]["notas"]) > lamina.cobertura(visible, p["antes"]["notas"])
+
+
+def test_el_revisor_de_voz_nunca_le_pasa_una_ruta_a_faster_whisper(monkeypatch, tmp_path):
+    """El audio se decodifica con ffmpeg y se entrega ya en muestras, nunca como ruta.
+
+    La lectura propia de faster-whisper (PyAV) revienta con las versiones recientes de `av`
+    («open() got an unexpected keyword argument 'metadata_errors'»). El rodeo está en
+    `revision._transcribir`, pero hasta ahora solo lo guardaba un comentario: si alguien lo
+    «simplifica» pasando el mp4 directamente, el Revisor de voz deja de funcionar y nadie se
+    entera hasta que un curso falla el control de calidad.
+    """
+    import numpy as np
+
+    from motor.agentes import revision
+
+    recibido = {}
+
+    class ModeloFalso:
+        def transcribe(self, audio, **kw):
+            recibido["audio"] = audio
+            recibido["kw"] = kw
+            return ([], None)
+
+    monkeypatch.setattr(revision, "_modelo_whisper", ModeloFalso())
+    mp4 = tmp_path / "v.mp4"
+    mp4.write_bytes(b"")
+
+    def ffmpeg_falso(cmd, **kw):
+        assert cmd[0] == "ffmpeg" and "s16le" in cmd, f"no decodificó con ffmpeg: {cmd}"
+
+        class R:
+            stdout = np.zeros(1600, dtype=np.int16).tobytes()
+        return R()
+
+    import subprocess
+    monkeypatch.setattr(subprocess, "run", ffmpeg_falso)
+    revision._transcribir(mp4)
+
+    assert isinstance(recibido["audio"], np.ndarray), "le pasó una ruta, no las muestras"
+    assert recibido["audio"].dtype == np.float32
+    assert recibido["kw"].get("language") == "es"
