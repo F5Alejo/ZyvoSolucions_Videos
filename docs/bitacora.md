@@ -641,6 +641,12 @@ Plan de esta ronda (configuración, plantillas de animación y agentes): ver `do
 ### Decisiones
 - **Render con Playwright + ffmpeg** (no HyperFrames ni Remotion): todo en Python, sin Node, con
   licencias conocidas. Remotion pide licencia pagada a empresas.
+  - **Revisado (10-oct-2026): HyperFrames entra, junto al de siempre.** Ver «Animar la
+    diapositiva» más abajo. La decisión original seguía valiendo para lo que resolvía, pero no
+    para animar la lámina: con Playwright solo se dibujan la entrada y la salida de cada escena
+    y el medio va congelado, así que los elementos no pueden ir entrando mientras habla la voz.
+    `plan-motor.md` ya lo dejaba previsto («HyperFrames queda para las fases 3 y 4, si hacen
+    falta animaciones más ricas»). HyperFrames es Apache 2.0, sin pagos por render.
 - **Kokoro-82M es la voz gratuita para entregar** (Apache 2.0). Voces en español: `ef_dora`
   (mujer), `em_alex` y `em_santa` (hombres). En este equipo genera ~6 s de audio en ~7 s de CPU.
 - **Piper davefx solo para borradores internos.** Ver «Errores / hallazgos».
@@ -664,3 +670,191 @@ Plan de esta ronda (configuración, plantillas de animación y agentes): ver `do
   para igualar los tiempos y las plantillas del curso csm.
 - La clave de ElevenLabs caducó el 21-sep-2026 (pendiente en la ficha de RiskMann): sin ella la
   voz Carlos no se puede producir.
+
+## 10-oct-2026 · Animar la diapositiva (modo fiel)
+
+### Qué se pedía
+Que el video se pareciera a la presentación: **animar la lámina**, no sacarle los textos y
+rearmar otra cosa.
+
+### Por qué no salía antes
+Tres cosas, ninguna de configuración:
+
+1. `app/extractor.py` guardaba de cada lámina solo `{nombre_de_forma: [párrafos]}`. Posición,
+   tamaño, color, tipografía y orden de pintado se perdían: la diapositiva dejaba de existir.
+2. `motor/escenas/escena.html` era **una** plantilla para todo (título, viñetas con bolita,
+   foto a un lado y dos anillos). Una lámina con tarjetas numeradas no se puede expresar ahí.
+3. `motor/render.py` dibuja cuadro a cuadro solo la entrada y la salida de cada escena, y
+   sostiene el medio con `tpad=stop_mode=clone`. Con el medio congelado, los elementos no
+   pueden ir entrando mientras habla la voz.
+
+### Qué se hizo
+- **`app/disposicion.py`** (nuevo): lee la geometría de cada lámina —caja normalizada, giro,
+  relleno, borde, y el texto con sus tipografías, tamaños y colores— y el fondo que la lámina
+  hereda de su patrón. Se guarda una vez en `disposicion.json` (`motor/recursos.disposicion`).
+- **`motor/escenas/lamina.py`** + `lamina.html` + `video.html`: la lámina se redibuja en HTML
+  con cada forma en su sitio, y se reparte en **bloques de aparición** enganchados a las frases
+  de la narración. Los bloques salen de los nombres de las formas (`bar-1`, `bar-num-1`… son
+  un mismo bloque); el fondo y el marco entran con la escena.
+- **`motor/hyperframes.py`** + `HyperFramesRenderer`: arma el proyecto y lo renderiza. El video
+  sale mudo; la voz, la música y los efectos los sigue mezclando ffmpeg, así que el ducking,
+  el -14 LUFS, los subtítulos y el QA no cambian.
+- Se elige en `/configuracion` → «Cómo se dibuja» (`video.renderer`). El de siempre sigue ahí.
+
+### Errores / hallazgos
+- **`Frase.inicio` es el segundo del *video*, no el de su escena.** La composición de cada
+  lámina cuenta desde cero. Sin restar dónde empieza la escena, en la lámina 3 de un curso
+  todos los bloques se amontonaban contra el final y no se veía entrar nada.
+- **El texto no se puede encajar en el navegador.** Mientras se arma la composición cada
+  lámina está fuera de su ventana de tiempo y el framework la tiene oculta: mide cero. El
+  ajuste se hace en Python con las métricas de la fuente (`lamina.encajar`, Pillow).
+- **Montserrat es variable y su eje de peso viene en `default: 100` (Thin).** `ImageFont.truetype`
+  sin fijar el peso medía la variante más estrecha que existe, mientras Chrome dibuja en 400 o
+  700: todo «cabía» y no se achicaba nada. Hay que llamar a `set_variation_by_axes([peso])`.
+- **Un error de lint apaga la auditoría de `hyperframes check`**: `layout`, `motion` y
+  `contrast` vuelven con cero hallazgos y `browserSkipped: true`. Leer solo los contadores da
+  un «limpio» que no significa nada; así se coló durante varias pasadas un texto que se salía
+  de su caja. `hyperframes.revisar` ahora lo dice explícitamente.
+- **La sub-composición no puede estilarse por la clase de su root** (`#x.lamina-root`): el
+  runtime scopea cada regla a `[data-composition-id="x"] <selector>` y queda como selector de
+  descendiente. Va con `id="root"` y `#root { … }`.
+- **El PPTX del curso de moto trae dos textos con contraste bajo** (dorado sobre fondo claro,
+  2,14:1 y 2,36:1, cuando hacen falta 3:1). Viene del diseño original, no del render.
+- La tipografía del curso es **Aptos**, que no se puede redistribuir y no está en el equipo: se
+  dibuja con Montserrat y el texto se reajusta solo. Es el desvío de fidelidad que queda.
+
+### Pendiente
+- Un render con HyperFrames dibuja **todos** los cuadros: ~2,5 min por minuto de video en este
+  equipo, frente a segundos por lámina del modo de siempre. Si hace falta, `--workers` y
+  `--gpu` están sin explorar.
+- Los 7 estilos (`datos/estilos/`) y la cámara no se aplican todavía en el modo fiel.
+
+## 10-oct-2026 · Fluidez y sincronía con la voz
+
+Dos pedidos: animaciones más fluidas y la voz más coordinada con lo que se ve.
+
+### Sincronía
+El enganche era **posicional** (`bloque k de n → frase k de n`): no miraba lo que decía la
+frase. Ahora se empareja por contenido (`lamina.emparejar`), comparando raíces de palabras con
+peso tipo IDF, con umbral, monotonía y ajuste al borde de frase. Detalle en `produccion.md`.
+
+En el curso de moto engancha ~24 % de los bloques, casi todos bien. Se queda ahí porque las
+notas **parafrasean** la lámina; es el techo del material, no del algoritmo. Comparar raíces en
+vez de palabras enteras subió la lámina 3 de 2 a 4 anclas de 9.
+
+### Fluidez
+Los valores estaban fuera de la norma de HyperFrames (`hyperframes-animation`):
+
+| | Antes | Ahora | Por qué |
+|---|---|---|---|
+| Curva | `power2.out` | `power3.out` | es la curva de la casa: arranca rápido y se posa largo |
+| Recorrido | 60 px | 24 px | 60 px en medio segundo se ve brusco; 24 se asienta |
+| Escalonado | `k × 0,08` sin tope | repartido en ≤ 0,5 s | un bloque tiene que leerse como una sola llegada |
+| Escenografía | 10 formas animándose a la vez | un fundido de la lámina entera | quita el corte seco al cambiar de lámina |
+| Imágenes | quietas | deriva lenta (Ken Burns, `sine.inOut`) | un plano congelado delata que es una diapositiva |
+
+### Hallazgos
+- Un segundo tween sobre la misma forma (la deriva de una imagen sobre su entrada) necesita
+  `immediateRender: false`: si no, GSAP aplica su estado inicial al construir la línea de
+  tiempo y pisa al primero.
+- Una coincidencia de **una sola raíz** es frágil (~50 %): «técnica» de la lámina enganchó con
+  «técnicos» de la voz, que no hablan de lo mismo. Exigir dos raíces quitaba también aciertos,
+  así que se deja; el daño es que el bloque entra en otro cambio de frase.
+
+## 10-oct-2026 · El estilo, medido en los videos de referencia
+
+Se analizaron seis videos del curso (Apertura y módulos 1, 3, 5, 6 y 12; 1920×1080 a 30 fps,
+66–144 s). En vez de imitarlos a ojo, se midieron con ffmpeg y Pillow.
+
+### Lo que dicen los números
+
+**Ritmo.** Con detección de cambios de escena a umbral bajo, la Apertura revela sus chips en
+11,17 · 12,33 · 13,47 · 14,63 s: **~1,16 s entre hermanos**. El módulo 3 revela en 17,7 · 25,1
+· 36,1 · 51,3 · 61,3 y tiene dos ráfagas densas (87,6–89,5 y 113,2–114,9) que son cambios de
+sección dentro del mismo video.
+
+**La entrada**, midiendo el borde y la opacidad cuadro a cuadro sobre un chip:
+
+```
+ t=11.133  nada
+ t=11.167  opacidad 0.53   borde x=40
+ t=11.233  opacidad 0.73   borde x=36
+ t=11.267  opacidad 0.98   borde x=32
+ t=11.333  opacidad 1.00   borde x=30   ← asentado
+```
+
+O sea: **0,23 s de duración, la opacidad sube en 0,13, y el elemento viaja unos 10 px** desde
+la derecha. Los dos bordes se mueven hacia la izquierda, así que es un desplazamiento y no un
+artefacto del umbral de detección.
+
+La conclusión importante es que **el ritmo no lo pone la animación, lo pone la voz**: entradas
+rápidas y pequeñas, muy separadas entre sí. El motor lo tenía al revés (entradas de 0,6 s con
+0,08 s de separación).
+
+**Paleta** (colores más frecuentes del fotograma): fondo claro `#f1f2f9`, navy `#1c245d`, navy
+profundo de portada `#10173c`, dorado `#fdc100`, tarjetas `#fafcff`, texto apagado `#888bab`.
+
+**La transición de sección no es un encadenado**: lo anterior se funde entero (~0,5 s), hay un
+respiro con el lienzo vacío y lo nuevo se reconstruye desde la cabecera (~1,5 s). Las imágenes
+se descubren con un **barrido horizontal anclado a la izquierda**, no creciendo.
+
+### El rasgo que había que copiar
+La viñeta recién nombrada se queda sobre un **velo del color de la marca** y se apaga cuando
+entra la siguiente. Es lo que permite seguir la lámina mientras se escucha. Se implementó en
+`lamina._resaltes`.
+
+### Hallazgos
+- El resaltado va sobre los **párrafos**, no sobre la caja de la forma: así abraza el texto
+  como en las referencias y no se nota cuando el texto rebasa un poco su caja (en un PPTX pasa
+  a menudo). Puesto sobre la caja, `hyperframes check` sacó un `text_box_overflow` real que
+  antes estaba oculto porque la caja era invisible.
+- **No se resalta una caja de más de dos párrafos.** Subrayar una lista de cinco viñetas no
+  señala nada: pinta medio lienzo.
+- El apagado del resaltado necesita un tope `apaga ≥ entra + RESALTE_ENTRA`. Sin él, dos
+  bloques que entraban casi a la vez se quedaban encendidos para siempre y acababa media
+  lámina subrayada.
+
+## 10-oct-2026 · La voz no cuenta la lámina (y una falsa alarma)
+
+### Lo que se veía
+«Lo que dice la voz no tiene nada que ver con la diapositiva; van de la mano pero no es lo que
+se muestra.»
+
+### Lo que era
+Primero se descartó un desalineado: cada lámina lleva **sus** notas, no hay off-by-one.
+
+Lo que pasa se puede medir. Transcribiendo el audio del Módulo 3 de referencia con
+faster-whisper y comparándolo con lo que esa misma lámina muestra:
+
+```
+REFERENCIA  → la voz nombra el 100 % de lo que se ve   (no queda ni una palabra sin decir)
+conductor_moto → la voz nombra el 35 % de lo que se ve
+```
+
+En las referencias la voz **enumera la lámina casi palabra por palabra**: la pantalla dice
+«Exterior: fugas, golpes, parabrisas, espejos, puertas» y la voz dice «se revisa el exterior
+buscando fugas, golpes, estado de parabrisas, espejos, puertas». En el PPTX del motociclista
+las notas son un ensayo paralelo, bien escrito, que desarrolla el tema sin nombrar lo que está
+en pantalla.
+
+**Esto no lo arregla el renderizador.** Por bien que se anime y se sincronice, si el texto
+habla de otra cosa se seguirá viendo una cosa y oyendo otra. Es material, no motor.
+
+### Lo que se hizo
+- `lamina.cobertura(visible, narracion)`: qué parte de la lámina llega a decir la voz.
+- El agente **guionista** ya escribía narración para láminas sin notas; ahora también marca las
+  que tienen notas que no cuentan lo que se ve (por debajo de `COBERTURA_MINIMA`, 55 %) y
+  **propone** una narración que las nombre conservando ideas, cifras y normas. Propone: la
+  persona acepta o descarta, lámina por lámina, como el resto de agentes.
+- En `conductor_moto` marcaría 79 de 88 láminas. Las peores: 42 (8 %), 5 (11 %), 48 (13 %).
+
+### Falsa alarma, anotada para que no se repita
+Se avisó de que `faster-whisper` estaba roto con `av` 19 y que eso dejaría el control de
+calidad fallando en silencio. **No era cierto**: `motor/agentes/revision.py` ya conoce el
+fallo y lo esquiva decodificando con ffmpeg y pasando muestras. Se comprobó transcribiendo un
+video real (3 839 caracteres, correctos). El error salió de llamar a faster-whisper con una
+ruta desde un script suelto.
+
+Lo que sí faltaba: el rodeo solo lo protegía un comentario. Ahora hay una prueba que falla si
+alguien vuelve a pasarle la ruta (verificada simulando la regresión), y una nota en
+`requirements.txt`.
