@@ -59,3 +59,58 @@ La interfaz las traduce a pasos humanos («Generando narración…») en `fronte
 - Si se cambia una lámina, **solo esa escena** se vuelve a dibujar (su huella cambió).
 - «Regenerar esta escena» borra su caché aunque no haya cambiado.
 - «Regenerar voz» borra el audio de las frases del video; las escenas no se tocan si la duración no cambia.
+
+## Las dos formas de dibujar la lámina
+
+La etapa «Escenas» tiene dos motores (`motor/renderers.py`), y se elige en `/configuracion`:
+
+```
+playwright   PPTX ─▶ texto ─▶ plantilla de la marca ─▶ Chromium dibuja entrada y salida
+                                                        (ffmpeg congela el medio)
+
+hyperframes  PPTX ─▶ geometría ─▶ la lámina redibujada ─▶ todos los cuadros, buscando
+             (app/disposicion.py)   (motor/escenas/lamina.py)   cada instante
+```
+
+Con `hyperframes` las formas de la lámina **van entrando mientras habla la voz**: cada bloque
+de aparición se engancha a una frase de la narración, con los tiempos reales que midió
+`motor/voz.py`. Con `playwright` no es posible, porque el medio de cada escena es un fotograma
+clonado.
+
+Lo demás no cambia: los dos entregan un **MP4 mudo** y de ahí siguen la mezcla de audio
+(ducking y -14 LUFS), los subtítulos, el control de calidad y las versiones.
+
+Antes de dibujar, el modo fiel pasa `hyperframes check`, que revisa la composición entera
+(lint, layout, movimiento y contraste) en un navegador. Lo que encuentre va al informe del
+video como problemas de encuadre; no aborta el render.
+
+### Cómo se sincroniza la lámina con la voz
+
+Cada bloque de la lámina entra con **la frase que lo nombra**, no con la que le tocaría por
+orden. Repartir por posición («el tercero de ocho con la tercera frase de ocho») es lo que hacía
+que la lámina fuera por su lado: si la voz habla de «percibir» en la quinta frase, la tarjeta
+salía cuatro frases antes.
+
+El emparejado (`motor/escenas/lamina.emparejar`) compara **raíces** de palabras, no palabras
+enteras: unas buenas notas del orador parafrasean la lámina en vez de leerla, y así «analizan»
+encuentra «analizarse» y «experiencia» encuentra «experiencias». Las palabras pesan según lo
+que distingan: una que sale en todas las frases no señala ninguna.
+
+Tres reglas sostienen el resultado:
+
+- **Umbral.** Por debajo de una coincidencia clara no se engancha nada: es mejor repartir que
+  inventarse una correspondencia.
+- **Monotonía.** Un bloque nunca entra antes que el anterior, aunque su mejor frase vaya hacia
+  atrás. En la lámina las cosas aparecen en orden.
+- **Al borde de una frase.** Lo que no engancha se interpola entre sus vecinos y después se
+  lleva al comienzo de la frase más cercana. Una entrada que coincide con un cambio de frase
+  parece intencionada; una que cae en mitad de una, parece un descuadre.
+
+En el curso de moto engancha alrededor de **una cuarta parte** de los bloques. No es un
+limitador del motor: es que las notas parafrasean mucho. **Cuanto más compartan las notas del
+orador las palabras de la lámina, mejor se sincroniza** — y eso está en manos de quien escribe
+el curso. Lo que no engancha sigue cayendo en un cambio de frase, nunca en medio.
+
+Queda un margen de error conocido: una coincidencia de una sola raíz puede ser casual
+(«técnica» en la lámina con «técnicos» en la voz, que no hablan de lo mismo). Pasa poco y el
+bloque igual entra en un cambio de frase.
