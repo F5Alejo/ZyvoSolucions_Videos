@@ -70,6 +70,11 @@ class Escena(BaseModel):
     lamina: int
     indice: int
     vista: dict                      # lo que se ve: tipo, título, viñetas, imagen (motor/escenas.vista)
+    # La lámina original, forma por forma (app/disposicion.py). Solo la usa el modo fiel
+    # (`HyperFramesRenderer`), que redibuja la diapositiva en vez de rearmarla; con el renderer
+    # de siempre va vacía y no pesa nada.
+    formas: list[dict] = []
+    fondo_lamina: str | None = None  # el color de fondo que la lámina hereda de su patrón
     animacion: dict                  # entradas y salidas ya resueltas (motor/escenas/animacion.plan)
     entrada: float                   # segundos que tarda en entrar todo
     salida: float                    # segundos antes del final en que empieza a salir
@@ -171,6 +176,9 @@ class VideoSpec(BaseModel):
     tiempos: Tiempos
     estilo: dict                     # colores, nombre y logo de la marca para la escena
     estilo_video: str | None = None  # el estilo elegido (motor/estilos.py), si hay
+    # Cuánto mide la lámina del PPTX frente a las 7,5 pulgadas con las que PowerPoint guarda
+    # los tamaños de letra. Solo lo usa el modo fiel, para pasar los puntos al lienzo.
+    escala_pt: float = 1.0
     escenas: list[Escena] = Field(min_length=1)
     avisos: list[str] = []
     resuelto: bool = False
@@ -253,6 +261,10 @@ def construir(t: dict, clave: str, firma: str, formato: str = "16:9") -> VideoSp
     ancho, alto = escenas.FORMATOS[formato]
     media = recursos.media(t)
     laminas = video["laminas_detalle"]
+    # El modo fiel necesita la geometría del PPTX; el renderer de siempre, no. Se lee una vez.
+    fiel = cv.get("renderer") == "hyperframes"
+    geometria = recursos.disposicion(t) if fiel else None
+    por_lamina = {l["n"]: l for l in (geometria or {}).get("laminas", [])}
 
     lista, avisos = [], []
     for i, l in enumerate(laminas):
@@ -264,7 +276,9 @@ def construir(t: dict, clave: str, firma: str, formato: str = "16:9") -> VideoSp
         habla = sum(len(f.texto_voz.split()) / extractor.PALABRAS_POR_SEGUNDO for f in narracion)
         estimada = (ct["entrada"] + habla + ct["pausa"] * max(0, len(narracion) - 1) + max(ct["salida"], sal + 0.3)
                     if narracion else max(MUDA, ent + sal + 1.0))
+        g = por_lamina.get(l["n"]) or {}
         lista.append({"id": f"escena-{i + 1:03d}", "lamina": l["n"], "indice": i, "vista": v, "animacion": p,
+                      "formas": g.get("formas", []), "fondo_lamina": g.get("fondo"),
                       "entrada": ent, "salida": sal, "narracion": [f.model_dump() for f in narracion],
                       "duracion_estimada": round(estimada, 3), **_escena_opciones(t, l["n"])})
         if not narracion:
@@ -287,6 +301,7 @@ def construir(t: dict, clave: str, firma: str, formato: str = "16:9") -> VideoSp
          "audio": {"lufs": ca["lufs"], "musica": musica, "musica_volumen": ca["musica_volumen"],
                    "musica_elegida_por": elegida_por},
          "estilo_video": (estilo_video or {}).get("id"),
+         "escala_pt": (geometria or {}).get("escala_pt", 1.0),
          "tiempos": ct, "estilo": escenas.estilo(marca, recursos.logo(marca)), "escenas": lista, "avisos": avisos}
     d, _ = sanear(d)
     return validar(d)

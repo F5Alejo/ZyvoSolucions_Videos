@@ -1,0 +1,37 @@
+{#
+  El `index.html` de un video: una sub-composición por lámina, cada una en su sitio del tiempo.
+
+  Este es un root **standalone**, así que va directo en el <body> y NO lleva <template>
+  (envolverlo esconde todo y `hyperframes lint` lo rechaza con
+  `standalone_composition_wrapped_in_template`).
+
+  El video no lleva audio: la voz, la música y los efectos los mezcla ffmpeg después
+  (`motor/audio.py`), que es donde está el ducking y el -14 LUFS. Aquí solo se dibuja.
+#}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width={{ ancho }}, height={{ alto }}">
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: {{ ancho }}px; height: {{ alto }}px; overflow: hidden; background: {{ fondo }}; }
+    #root { position: relative; overflow: hidden; background: {{ fondo }}; }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="video" data-width="{{ ancho }}" data-height="{{ alto }}"
+       data-duration="{{ total }}">
+    {% for l in laminas %}
+    <div class="clip" id="lamina-{{ l.n }}" data-composition-id="{{ l.cid }}"
+         data-composition-src="{{ l.archivo }}" data-start="{{ l.inicio }}" data-duration="{{ l.duracion }}"
+         data-width="{{ ancho }}" data-height="{{ alto }}" data-track-index="0"></div>
+    {% endfor %}
+  </div>
+  <script>
+    // El video no anima nada por su cuenta: cada lámina trae la suya y el runtime las anida.
+    window.__timelines["video"] = gsap.timeline({ paused: true });
+  </script>
+</body>
+</html>

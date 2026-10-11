@@ -35,7 +35,8 @@ OPCIONES = {
     ("video", "resolucion"): {"1080p": "1920×1080 (Full HD)", "720p": "1280×720 (más liviano)"},
     ("video", "fps"): {25: "25 fps", 30: "30 fps", 60: "60 fps (animaciones más suaves, render más lento)"},
     ("video", "calidad"): {"final": "Final (CRF 18, más lento)", "borrador": "Borrador rápido (CRF 23)"},
-    ("video", "renderer"): {"playwright": "Navegador (Chromium) y ffmpeg"},
+    ("video", "renderer"): {"playwright": "Rearmar con la plantilla de la marca (Chromium y ffmpeg)",
+                            "hyperframes": "Animar la diapositiva tal como está (HyperFrames)"},
     ("audio", "lufs"): {-14: "-14 LUFS · YouTube y redes", -16: "-16 LUFS · podcast y web", -23: "-23 LUFS · TV (EBU R128)"},
 }
 RANGOS = {
