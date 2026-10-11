@@ -1,8 +1,23 @@
-"""Producir en segundo plano, un video a la vez.
+"""Producir en segundo plano, por carriles.
 
-Producir tarda minutos y usa toda la CPU: un solo hilo trabajador atiende una cola. El estado
-de cada video vive en `salida/<clave>/estado.json` (no en trabajo.json, para no pisar lo que
-la persona guarda mientras tanto) y la página lo consulta con `GET /taller/<id>/render`.
+Producir un video tarda minutos y usa toda la CPU, así que los renders siguen yendo de a uno.
+Pero un agente no compite con un render: es una llamada a Ollama (o a sus reglas) que apenas
+usa memoria. Antes todo compartía una sola cola y un solo hilo, así que pedir un render dejaba
+la interfaz sin poder hacer nada más hasta que terminara.
+
+Ahora hay un **carril** por tipo de trabajo, cada uno con su cola y sus hilos:
+
+| Carril | Qué lleva | A la vez |
+|---|---|---|
+| `render` | producir un video y armar el curso completo (`empaquetar`) | 1: satura CPU y disco |
+| `agentes` | los agentes (`agente-*`) | 2: son llamadas a Ollama, no compiten con el render |
+
+Dos trabajos del mismo carril siguen esperándose; dos de carriles distintos corren a la vez.
+`CARRILES` se puede bajar a 1 y 1 en un equipo chico (la decisión original era de un equipo de
+8 GB; ver `motor/agentes/base.py`).
+
+El estado de cada video vive en `salida/<clave>/estado.json` (no en trabajo.json, para no pisar
+lo que la persona guarda mientras tanto) y la página lo consulta con `GET /taller/<id>/render`.
 
 Estados: `en_cola` → `produciendo` → `listo` | `error`. Mientras produce un video, `fase` dice la etapa
 (QUEUED, SCRIPTING, GENERATING_AUDIO, … QA_PASSED, COMPLETED o FAILED; ver `produccion.FASES`).
@@ -22,10 +37,19 @@ from motor.voz import VozNoDisponible
 
 PREFIJO_AGENTE = "agente-"  # la clave en la cola de un agente: «agente-redactor»
 
-_cola: queue.Queue = queue.Queue()
+# Cuántos trabajos a la vez admite cada carril. Un render satura el equipo: va de a uno.
+CARRILES = {"render": 1, "agentes": 2}
+CARRIL_DEFECTO = "render"
+
+_colas: dict[str, queue.Queue] = {c: queue.Queue() for c in CARRILES}
 _activos: set[tuple[str, str]] = set()
 _candado = threading.Lock()
-_hilo: threading.Thread | None = None
+_hilos: dict[str, list[threading.Thread]] = {c: [] for c in CARRILES}
+
+
+def carril(clave: str) -> str:
+    """En qué carril va un trabajo. Los agentes tienen el suyo; todo lo demás es render."""
+    return "agentes" if clave.startswith(PREFIJO_AGENTE) else CARRIL_DEFECTO
 
 
 def _ruta(id_: str, clave: str):
@@ -65,25 +89,32 @@ def en_cola(id_: str, clave: str) -> bool:
 
 
 def encolar(id_: str, clave: str) -> bool:
-    """Pone el video en la cola. False si ya estaba en la cola o produciéndose."""
-    global _hilo
+    """Pone el trabajo en la cola de su carril. False si ya estaba en la cola o produciéndose."""
+    c = carril(clave)
     with _candado:
         if (id_, clave) in _activos:
             return False
         _activos.add((id_, clave))
         _escribir(id_, clave, estado="en_cola", fase="QUEUED", paso="En la cola", progreso=0, mensaje=None,
                   codigo=None, severidad=None, recuperacion=None, etapa=None, detalle=None,
-                  pedido=datetime.now().isoformat(timespec="seconds"))
-        _cola.put((id_, clave))
-        if _hilo is None or not _hilo.is_alive():
-            _hilo = threading.Thread(target=_trabajar, name="motor-cola", daemon=True)
-            _hilo.start()
+                  carril=c, pedido=datetime.now().isoformat(timespec="seconds"))
+        _colas[c].put((id_, clave))
+        _arrancar(c)
     return True
 
 
-def _trabajar() -> None:
+def _arrancar(c: str) -> None:
+    """Levanta los hilos que le falten al carril. Se llama con `_candado` tomado."""
+    _hilos[c] = [h for h in _hilos[c] if h.is_alive()]
+    if len(_hilos[c]) < CARRILES[c]:
+        h = threading.Thread(target=_trabajar, args=(c,), name=f"motor-cola-{c}", daemon=True)
+        _hilos[c].append(h)
+        h.start()
+
+
+def _trabajar(c: str) -> None:
     while True:
-        id_, clave = _cola.get()
+        id_, clave = _colas[c].get()
         try:
             t = taller.cargar(id_)  # lo último que guardó la persona
             if t is None:
@@ -116,9 +147,10 @@ def _trabajar() -> None:
         finally:
             with _candado:
                 _activos.discard((id_, clave))
-            _cola.task_done()
+            _colas[c].task_done()
 
 
 def esperar() -> None:
-    """Bloquea hasta que la cola quede vacía (para las pruebas)."""
-    _cola.join()
+    """Bloquea hasta que todos los carriles queden vacíos (para las pruebas)."""
+    for cola in _colas.values():
+        cola.join()

@@ -5,8 +5,11 @@ Un agente **propone**; una persona acepta o descarta. Las propuestas viven en
 hicieron (el modelo de Ollama o «reglas» si no había IA). Volver a correr un agente reemplaza
 sus propuestas pendientes; las aceptadas y descartadas quedan como historial.
 
-Los agentes corren en la misma cola que los renders (motor/cola.py): uno a la vez, y nunca al
-mismo tiempo que un render (el equipo tiene 8 GB).
+Los agentes corren en su propio carril de la cola (motor/cola.py, `CARRILES["agentes"]`): hasta
+dos a la vez, y sin esperar a que termine un render. Antes compartían la cola con los renders
+—uno a la vez, pensado para un equipo de 8 GB—, y eso dejaba la interfaz bloqueada mientras se
+producía un video. En un equipo chico se baja `CARRILES` a 1 y 1 para volver al comportamiento
+anterior.
 
 Cada agente tiene permisos (`PERMISOS`): qué partes del curso lee y cuáles puede cambiar al aceptar
 su propuesta. Si al aplicar toca otra cosa, el cambio se deshace y la propuesta se rechaza. Toda
