@@ -858,3 +858,32 @@ ruta desde un script suelto.
 Lo que sí faltaba: el rodeo solo lo protegía un comentario. Ahora hay una prueba que falla si
 alguien vuelve a pasarle la ruta (verificada simulando la regresión), y una nota en
 `requirements.txt`.
+
+## 11-oct-2026 · Dos motores a la vez: por qué este solo trae el modo fiel
+
+Al subir el trabajo apareció que ya había dos ramas abiertas desde el 6-oct con parte de lo
+mismo: **#17 `feature/parallel-queue`** (carriles en la cola) y **#18 `feature/hyperframes-engine`**
+(HyperFrames + director de ritmo). Se construyó sin verlas. Lo que se decidió, y por qué:
+
+- **Los carriles de la cola se quitaron de aquí.** El #17 los hace mejor: límites por carril en
+  `configuracion["cola"]`, turno justo entre cursos (quien manda 8 videos no deja esperando a
+  los demás), reintentos al reemplazar `estado.json` en Windows, cuenta de usos del modelo para
+  liberar la RAM cuando termina el último agente y `taller.candado()` al guardar. Aquí eran dos
+  colas con un número fijo de hilos. Dos implementaciones de lo mismo en el mismo archivo solo
+  dan un conflicto que una de las dos tenía que perder; pierde la peor.
+
+- **Los dos usan HyperFrames para cosas distintas, y no son la misma decisión.** El #18 arma el
+  video **de cero**: saca las palabras de la lámina y las anima como texto cinético sobre tomas
+  de archivo, fotos o un fondo de marca, con velo, barrido diagonal y barra de avance. Es un
+  video nuevo *inspirado* en la lámina. Este arma el video **con la lámina**: lee su geometría
+  del PPTX y la redibuja forma por forma, en su sitio, con sus colores, y la anima.
+
+  No es que uno esté mal: son dos productos. El que se pidió es el segundo («animar la
+  diapositiva y convertirla en video, no sacar los ítems y crear un video de 0»). Si entran los
+  dos, son dos valores de `video.renderer`, no un merge: comparten el nombre de HyperFrames y
+  nada más. Lo que no puede quedar duplicado es el paquete (`motor/hyperframes.py` aquí,
+  `motor/hyperframes/` allá: archivo contra carpeta, el mismo nombre).
+
+Lo medido en los videos de referencia (tiempos de entrada, resalte que sigue a la voz, y que la
+voz nombra el 35 % de lo que se ve cuando en las referencias nombra el 100 %) vale para
+cualquiera de los dos motores: no depende de cómo se dibuje.
