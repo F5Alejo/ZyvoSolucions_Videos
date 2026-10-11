@@ -1,0 +1,111 @@
+{#
+  Una lámina del PPTX como sub-composición de HyperFrames (ver motor/escenas/lamina.py).
+
+  Va envuelta en <template>: el ensamblador descarta el <head> de una sub-composición, así que
+  el <style> y el <script> tienen que ir dentro. Cada forma son dos capas: `.f` lleva el sitio,
+  el tamaño y el giro en CSS, y `.a` es la que anima GSAP (nunca la misma propiedad en los dos).
+#}
+<!doctype html>
+<html lang="es">
+<body>
+<template>
+  {# El root se llama `root` y se estila con `#root`: el runtime scopea cada regla de la
+     sub-composición a `[data-composition-id="<cid>"] <selector>`, así que una regla que
+     empiece por la clase del propio root se vuelve un selector de descendiente y no lo
+     alcanza (lint: `subcomposition_root_styled_by_class`). Los ids de las formas sí llevan
+     el prefijo del cid, para que sigan siendo únicos en la página ya ensamblada. #}
+  <div id="root" data-composition-id="{{ cid }}" data-width="{{ ancho }}" data-height="{{ alto }}"
+       data-duration="{{ duracion }}">
+    {# Todas las formas van dentro de `.todo`: es lo que se funde al entrar la lámina, para
+       que el cambio de diapositiva no se vea como un corte seco. #}
+    <div class="todo">
+    {% for f in formas %}
+    <div class="f" id="{{ f._cid }}" data-w="{{ f._w }}" data-h="{{ f._h }}" style="{{ f._estilo }}">
+      <div class="a" style="{{ f._caja }}">
+        {%- if f.tipo == "imagen" and f._src %}
+        <img src="{{ f._src }}" alt="">
+        {%- elif f.tipo == "tabla" %}
+        <table>
+          {%- for fila in f.tabla.filas %}
+          <tr>{% for c in fila %}<td{% if c.relleno %} style="background:{{ c.relleno }}"{% endif %}>{{ c.texto }}</td>{% endfor %}</tr>
+          {%- endfor %}
+        </table>
+        {%- elif f.parrafos %}
+        {%- for p in f.parrafos %}
+        <p{% if p.vacio %} class="vacio"{% endif %} style="margin:0;line-height:{{ p.interlineado or 1.22 }};{% if p.alineacion %}text-align:{{ p.alineacion }};{% endif %}{% if p.nivel %}padding-left:{{ p.nivel * 24 }}px;{% endif %}">
+          {%- for r in p.runs %}<span style="{{ r._estilo }}">{{ r.texto }}</span>{% endfor -%}
+        </p>
+        {%- endfor %}
+        {%- endif %}
+      </div>
+    </div>
+    {% endfor %}
+    </div>
+  </div>
+
+  <style>
+    @font-face { font-family: "Lamina"; src: url("{{ fuente }}") format("truetype"); font-weight: 100 900; font-display: block; }
+
+    /* La sub-composición trae su propio reinicio: no puede dar por hecho el del `index.html`.
+       Sin `border-box`, el margen interno de cada cuadro de texto se suma a su ancho, toda
+       forma «desborda» por 29×14 px y el ajuste de abajo achica la lámina entera al mínimo. */
+    #root, #root .f, #root .a, #root .f * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    #root {
+      position: relative; width: 100%; height: 100%; overflow: hidden;
+      font-family: "Lamina", sans-serif; -webkit-font-smoothing: antialiased;
+      {% if fondo %}background: {{ fondo }};{% endif %}
+    }
+    #root .todo { position: absolute; inset: 0; }
+    #root .f { position: absolute; }
+    /* La capa que anima GSAP. `will-change` evita que Chrome recalcule la capa en cada cuadro. */
+    #root .a {
+      width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: flex-start;
+      will-change: transform, opacity;
+    }
+    #root .f img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    #root .f p { line-height: 1.22; }
+    #root .f p.vacio { height: .6em; }
+    #root .f span { white-space: pre-wrap; }
+    #root .f table { width: 100%; height: 100%; border-collapse: collapse; }
+    #root .f td { border: 1px solid rgba(128,128,128,.45); padding: .35em .6em; vertical-align: middle; }
+  </style>
+
+  <script>
+    (() => {
+      // Por el id no: `root` se repite en cada sub-composición. El `data-composition-id` es
+      // el que distingue a esta lámina (lo lleva tanto el root como el hueco que la carga,
+      // y en los dos casos las formas quedan dentro).
+      const raiz = document.querySelector('[data-composition-id=' + JSON.stringify({{ cid | tojson }}) + ']');
+      const pasos = {{ pasos | safe }};
+      if (!raiz) return;
+
+      // El texto ya viene encajado en su caja desde Python (`lamina.encajar`), con las
+      // métricas de la fuente. Aquí no se puede medir: mientras se arma la composición, cada
+      // lámina está fuera de su ventana de tiempo y el framework la tiene oculta, así que
+      // todo mide cero.
+      const construir = () => {
+        const tl = gsap.timeline({ paused: true });
+        for (const p of pasos) {
+          // `querySelectorAll`: el resaltado se aplica a todos los párrafos de una viñeta.
+          const el = [...raiz.querySelectorAll(p.selector)];
+          if (!el.length) continue;
+          if (p.origen) gsap.set(el, { transformOrigin: p.origen });
+          const hasta = { ...p.hasta, duration: p.duracion, ease: p.curva };
+          // Un segundo tween sobre la misma forma (la deriva de una imagen sobre su entrada)
+          // no puede aplicar su estado inicial al construir la línea de tiempo: pisaría al
+          // primero. GSAP lo evita con `immediateRender: false`.
+          if (p.inmediato === false) hasta.immediateRender = false;
+          tl.fromTo(el, { ...p.desde }, hasta, p.en);
+        }
+        // La composición dura lo que dice `data-duration`, no lo que dure la línea de tiempo.
+        window.__timelines[{{ cid | tojson }}] = tl;
+        tl.seek(0);
+      };
+
+      construir();
+    })();
+  </script>
+</template>
+</body>
+</html>
